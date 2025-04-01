@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Tuple
 from collections import Counter
 
-from memory.system import MemorySystem
+from ..memory.system import MemorySystem
 
 
 class PatternRecognition:
@@ -22,204 +22,13 @@ class PatternRecognition:
         self.memory = memory_system
         self.logger = logging.getLogger("PatternRecognition")
 
-    def analyze_temporal_trends(self, lookback_days: int = 90, interval_days: int = 7) -> Dict[str, Any]:
-        """
-        Analyze trends over time, including manipulation scores and topic frequency.
-
-        Args:
-            lookback_days: Total days to look back
-            interval_days: Interval for grouping data points
-
-        Returns:
-            Dictionary containing temporal trend analysis
-        """
-        # Get analyses within the lookback period
-        recent_analyses = self.memory.get_recent_analyses(lookback_days)
-
-        if not recent_analyses:
-            return {"error": "No analyses found in the specified time period"}
-
-        # Calculate time intervals
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=lookback_days)
-
-        intervals = []
-        current_date = start_date
-        while current_date < end_date:
-            interval_end = min(current_date + timedelta(days=interval_days), end_date)
-            intervals.append((current_date, interval_end))
-            current_date = interval_end
-
-        # Group analyses by interval
-        interval_data = []
-
-        for interval_start, interval_end in intervals:
-            interval_start_str = interval_start.isoformat()
-            interval_end_str = interval_end.isoformat()
-
-            # Filter analyses in this interval
-            interval_analyses = [
-                a for a in recent_analyses
-                if (a.get("metadata", {}).get("analysis_timestamp", "") >= interval_start_str and
-                    a.get("metadata", {}).get("analysis_timestamp", "") < interval_end_str)
-            ]
-
-            if interval_analyses:
-                # Calculate metrics for this interval
-                total_score = sum(a.get("metadata", {}).get("manipulation_score", 0) for a in interval_analyses)
-                avg_score = total_score / len(interval_analyses)
-
-                # Count sources and topics
-                sources = {}
-                all_topics = []
-
-                for analysis in interval_analyses:
-                    metadata = analysis.get("metadata", {})
-                    source = metadata.get("source", "Unknown")
-                    sources[source] = sources.get(source, 0) + 1
-
-                    # Extract topics
-                    analysis_text = analysis.get("text", "")
-                    topics = self._extract_topics(analysis_text)
-                    all_topics.extend(topics)
-
-                # Count topic frequencies
-                topic_counts = Counter(all_topics)
-                top_topics = [{"topic": topic, "count": count}
-                             for topic, count in topic_counts.most_common(5)]
-
-                interval_data.append({
-                    "interval_start": interval_start_str,
-                    "interval_end": interval_end_str,
-                    "article_count": len(interval_analyses),
-                    "avg_manipulation_score": avg_score,
-                    "sources": sources,
-                    "top_topics": top_topics
-                })
-
-        return {
-            "lookback_days": lookback_days,
-            "interval_days": interval_days,
-            "intervals": interval_data,
-            "total_articles_analyzed": len(recent_analyses)
-        }
-
-    def analyze_source_correlation(self) -> Dict[str, Any]:
-        """
-        Analyze correlation between sources in terms of topic coverage and narrative framing.
-
-        Returns:
-            Dictionary containing source correlation analysis
-        """
-        # Get all article analyses
-        analyses = []
-        for item_id, item in self.memory.store.items.items():
-            metadata = item.get("metadata", {})
-            if metadata.get("type") == "article_analysis":
-                analysis = item.copy()
-                analysis["id"] = item_id
-                analyses.append(analysis)
-
-        if not analyses:
-            return {"error": "No analyses found"}
-
-        # Group by source
-        by_source = {}
-        for analysis in analyses:
-            metadata = analysis.get("metadata", {})
-            source = metadata.get("source", "Unknown")
-
-            if source not in by_source:
-                by_source[source] = []
-
-            by_source[source].append(analysis)
-
-        # Extract topics and frames by source
-        source_profiles = {}
-        for source, source_analyses in by_source.items():
-            topics = []
-            frames = []
-
-            for analysis in source_analyses:
-                analysis_text = analysis.get("text", "")
-                topics.extend(self._extract_topics(analysis_text))
-                frames.extend(self._extract_frames(analysis_text))
-
-            # Count frequencies
-            topic_counts = Counter(topics)
-            frame_counts = Counter(frames)
-
-            source_profiles[source] = {
-                "count": len(source_analyses),
-                "top_topics": [{"topic": topic, "count": count}
-                             for topic, count in topic_counts.most_common(10)],
-                "top_frames": [{"frame": frame, "count": count}
-                              for frame, count in frame_counts.most_common(10)],
-                "avg_manipulation_score": sum(a.get("metadata", {}).get("manipulation_score", 0)
-                                          for a in source_analyses) / len(source_analyses) if source_analyses else 0
-            }
-
-        # Calculate correlation between sources
-        correlations = []
-        source_names = list(source_profiles.keys())
-
-        for i, source1 in enumerate(source_names):
-            for j in range(i+1, len(source_names)):
-                source2 = source_names[j]
-
-                # Calculate topic overlap
-                source1_topics = {item["topic"] for item in source_profiles[source1]["top_topics"]}
-                source2_topics = {item["topic"] for item in source_profiles[source2]["top_topics"]}
-                topic_overlap = len(source1_topics.intersection(source2_topics)) / max(1, min(len(source1_topics), len(source2_topics)))
-
-                # Calculate frame overlap
-                source1_frames = {item["frame"] for item in source_profiles[source1]["top_frames"]}
-                source2_frames = {item["frame"] for item in source_profiles[source2]["top_frames"]}
-                frame_overlap = len(source1_frames.intersection(source2_frames)) / max(1, min(len(source1_frames), len(source2_frames)))
-
-                # Calculate manipulation score difference
-                score_diff = abs(source_profiles[source1]["avg_manipulation_score"] -
-                                 source_profiles[source2]["avg_manipulation_score"])
-
-                correlations.append({
-                    "source1": source1,
-                    "source2": source2,
-                    "topic_overlap": topic_overlap,
-                    "frame_overlap": frame_overlap,
-                    "manipulation_score_diff": score_diff
-                })
-
-        # Sort by overall correlation (topic + frame overlap)
-        correlations.sort(key=lambda x: x["topic_overlap"] + x["frame_overlap"], reverse=True)
-
-        return {
-            "source_profiles": source_profiles,
-            "correlations": correlations
-        }
-
-    def _extract_frames(self, analysis: str) -> List[str]:
-        """Extract frames from analysis text"""
-        frames = []
-
-        try:
-            if "FRAMING" in analysis:
-                frames_section = analysis.split("FRAMING:")[1].split("\n\n")[0]
-
-                # Simple extraction - split by sentences and clean up
-                for item in re.split(r'\.', frames_section):
-                    frame = item.strip()
-                    if frame and len(frame) > 5 and not frame.startswith("EMOTIONAL"):
-                        frames.append(frame)
-        except Exception as e:
-            self.logger.error(f"Error extracting frames: {str(e)}")
-
-        return framessource_bias_patterns(self, days: int = 30) -> Dict[str, Any]:
+    def analyze_source_bias_patterns(self, days: int = 30) -> Dict[str, Any]:
         """
         Analyze patterns in source bias and manipulation scores.
-        
+
         Args:
             days: Number of days to look back for analysis
-            
+
         Returns:
             Dictionary containing bias analysis results
         """
@@ -591,4 +400,334 @@ class PatternRecognition:
         # Return top phrases (limit to 20)
         return common_phrases[:20]
 
-    def analyze_
+    def analyze_temporal_trends(self, lookback_days: int = 90, interval_days: int = 7) -> Dict[str, Any]:
+        """
+        Analyze trends over time, including manipulation scores and topic frequency.
+
+        Args:
+            lookback_days: Total days to look back
+            interval_days: Interval for grouping data points
+
+        Returns:
+            Dictionary containing temporal trend analysis
+        """
+        # Get analyses within the lookback period
+        recent_analyses = self.memory.get_recent_analyses(lookback_days)
+
+        if not recent_analyses:
+            return {"error": "No analyses found in the specified time period"}
+
+        # Calculate time intervals
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=lookback_days)
+
+        intervals = []
+        current_date = start_date
+        while current_date < end_date:
+            interval_end = min(current_date + timedelta(days=interval_days), end_date)
+            intervals.append((current_date, interval_end))
+            current_date = interval_end
+
+        # Group analyses by interval
+        interval_data = []
+
+        for interval_start, interval_end in intervals:
+            interval_start_str = interval_start.isoformat()
+            interval_end_str = interval_end.isoformat()
+
+            # Filter analyses in this interval
+            interval_analyses = [
+                a for a in recent_analyses
+                if (a.get("metadata", {}).get("analysis_timestamp", "") >= interval_start_str and
+                    a.get("metadata", {}).get("analysis_timestamp", "") < interval_end_str)
+            ]
+
+            if interval_analyses:
+                # Calculate metrics for this interval
+                total_score = sum(a.get("metadata", {}).get("manipulation_score", 0) for a in interval_analyses)
+                avg_score = total_score / len(interval_analyses)
+
+                # Count sources and topics
+                sources = {}
+                all_topics = []
+
+                for analysis in interval_analyses:
+                    metadata = analysis.get("metadata", {})
+                    source = metadata.get("source", "Unknown")
+                    sources[source] = sources.get(source, 0) + 1
+
+                    # Extract topics
+                    analysis_text = analysis.get("text", "")
+                    topics = self._extract_topics(analysis_text)
+                    all_topics.extend(topics)
+
+                # Count topic frequencies
+                topic_counts = Counter(all_topics)
+                top_topics = [{"topic": topic, "count": count}
+                             for topic, count in topic_counts.most_common(5)]
+
+                interval_data.append({
+                    "interval_start": interval_start_str,
+                    "interval_end": interval_end_str,
+                    "article_count": len(interval_analyses),
+                    "avg_manipulation_score": avg_score,
+                    "sources": sources,
+                    "top_topics": top_topics
+                })
+
+        return {
+            "lookback_days": lookback_days,
+            "interval_days": interval_days,
+            "intervals": interval_data,
+            "total_articles_analyzed": len(recent_analyses)
+        }
+
+    def analyze_source_correlation(self) -> Dict[str, Any]:
+        """
+        Analyze correlation between sources in terms of topic coverage and narrative framing.
+
+        Returns:
+            Dictionary containing source correlation analysis
+        """
+        # Get all article analyses
+        analyses = []
+        for item_id, item in self.memory.store.items.items():
+            metadata = item.get("metadata", {})
+            if metadata.get("type") == "article_analysis":
+                analysis = item.copy()
+                analysis["id"] = item_id
+                analyses.append(analysis)
+
+        if not analyses:
+            return {"error": "No analyses found"}
+
+        # Group by source
+        by_source = {}
+        for analysis in analyses:
+            metadata = analysis.get("metadata", {})
+            source = metadata.get("source", "Unknown")
+
+            if source not in by_source:
+                by_source[source] = []
+
+            by_source[source].append(analysis)
+
+        # Extract topics and frames by source
+        source_profiles = {}
+        for source, source_analyses in by_source.items():
+            topics = []
+            frames = []
+
+            for analysis in source_analyses:
+                analysis_text = analysis.get("text", "")
+                topics.extend(self._extract_topics(analysis_text))
+                frames.extend(self._extract_frames(analysis_text))
+
+            # Count frequencies
+            topic_counts = Counter(topics)
+            frame_counts = Counter(frames)
+
+            source_profiles[source] = {
+                "count": len(source_analyses),
+                "top_topics": [{"topic": topic, "count": count}
+                             for topic, count in topic_counts.most_common(10)],
+                "top_frames": [{"frame": frame, "count": count}
+                              for frame, count in frame_counts.most_common(10)],
+                "avg_manipulation_score": sum(a.get("metadata", {}).get("manipulation_score", 0)
+                                          for a in source_analyses) / len(source_analyses) if source_analyses else 0
+            }
+
+        # Calculate correlation between sources
+        correlations = []
+        source_names = list(source_profiles.keys())
+
+        for i, source1 in enumerate(source_names):
+            for j in range(i+1, len(source_names)):
+                source2 = source_names[j]
+
+                # Calculate topic overlap
+                source1_topics = {item["topic"] for item in source_profiles[source1]["top_topics"]}
+                source2_topics = {item["topic"] for item in source_profiles[source2]["top_topics"]}
+                topic_overlap = len(source1_topics.intersection(source2_topics)) / max(1, min(len(source1_topics), len(source2_topics)))
+
+                # Calculate frame overlap
+                source1_frames = {item["frame"] for item in source_profiles[source1]["top_frames"]}
+                source2_frames = {item["frame"] for item in source_profiles[source2]["top_frames"]}
+                frame_overlap = len(source1_frames.intersection(source2_frames)) / max(1, min(len(source1_frames), len(source2_frames)))
+
+                # Calculate manipulation score difference
+                score_diff = abs(source_profiles[source1]["avg_manipulation_score"] -
+                                 source_profiles[source2]["avg_manipulation_score"])
+
+                correlations.append({
+                    "source1": source1,
+                    "source2": source2,
+                    "topic_overlap": topic_overlap,
+                    "frame_overlap": frame_overlap,
+                    "manipulation_score_diff": score_diff
+                })
+
+        # Sort by overall correlation (topic + frame overlap)
+        correlations.sort(key=lambda x: x["topic_overlap"] + x["frame_overlap"], reverse=True)
+
+        return {
+            "source_profiles": source_profiles,
+            "correlations": correlations
+        }
+
+    def _extract_frames(self, analysis: str) -> List[str]:
+        """Extract frames from analysis text"""
+        frames = []
+
+        try:
+            if "FRAMING" in analysis:
+                frames_section = analysis.split("FRAMING:")[1].split("\n\n")[0]
+
+                # Simple extraction - split by sentences and clean up
+                for item in re.split(r'\.', frames_section):
+                    frame = item.strip()
+                    if frame and len(frame) > 5 and not frame.startswith("EMOTIONAL"):
+                        frames.append(frame)
+        except Exception as e:
+            self.logger.error(f"Error extracting frames: {str(e)}")
+
+        return frames
+
+    def analyze_manipulation_techniques(self) -> Dict[str, Any]:
+        """
+        Analyze the prevalence of different manipulation techniques across sources.
+
+        Returns:
+            Dictionary containing manipulation technique analysis
+        """
+        # Get all article analyses
+        analyses = []
+        for item_id, item in self.memory.store.items.items():
+            metadata = item.get("metadata", {})
+            if metadata.get("type") == "article_analysis":
+                analysis = item.copy()
+                analysis["id"] = item_id
+                analyses.append(analysis)
+
+        if not analyses:
+            return {"error": "No analyses found"}
+
+        # Extract manipulation techniques from analyses
+        technique_count = Counter()
+        technique_by_source = {}
+        technique_by_bias = {
+            "left": Counter(),
+            "center-left": Counter(),
+            "center": Counter(),
+            "center-right": Counter(),
+            "right": Counter(),
+            "unknown": Counter()
+        }
+
+        high_manipulation_examples = {}  # Track examples of each technique
+
+        for analysis in analyses:
+            metadata = analysis.get("metadata", {})
+            source = metadata.get("source", "Unknown")
+            bias = metadata.get("bias_label", "unknown")
+            score = metadata.get("manipulation_score", 0)
+            analysis_text = analysis.get("text", "")
+
+            # Extract techniques
+            techniques = self._extract_manipulation_techniques(analysis_text)
+
+            # Count techniques
+            for technique in techniques:
+                technique_count[technique] += 1
+
+                # Count by source
+                if source not in technique_by_source:
+                    technique_by_source[source] = Counter()
+                technique_by_source[source][technique] += 1
+
+                # Count by bias
+                if bias not in technique_by_bias:
+                    bias = "unknown"
+                technique_by_bias[bias][technique] += 1
+
+                # Track high manipulation examples
+                if score >= 7:  # High manipulation threshold
+                    if technique not in high_manipulation_examples:
+                        high_manipulation_examples[technique] = []
+
+                    if len(high_manipulation_examples[technique]) < 3:  # Keep up to 3 examples
+                        high_manipulation_examples[technique].append({
+                            "id": analysis.get("id", ""),
+                            "title": metadata.get("title", ""),
+                            "source": source,
+                            "score": score
+                        })
+
+        # Prepare results
+        technique_results = []
+        for technique, count in technique_count.most_common():
+            technique_results.append({
+                "technique": technique,
+                "count": count,
+                "percentage": count / len(analyses) * 100 if analyses else 0,
+                "examples": high_manipulation_examples.get(technique, [])
+            })
+
+        # Format source-specific results
+        source_results = {}
+        for source, counts in technique_by_source.items():
+            total = sum(counts.values())
+            techniques = [
+                {"technique": technique, "count": count, "percentage": count / total * 100 if total else 0}
+                for technique, count in counts.most_common(5)
+            ]
+            source_results[source] = {
+                "total_articles": len([a for a in analyses if a.get("metadata", {}).get("source") == source]),
+                "top_techniques": techniques
+            }
+
+        # Format bias-specific results
+        bias_results = {}
+        for bias, counts in technique_by_bias.items():
+            if sum(counts.values()) > 0:  # Only include biases with data
+                total = sum(counts.values())
+                techniques = [
+                    {"technique": technique, "count": count, "percentage": count / total * 100 if total else 0}
+                    for technique, count in counts.most_common(5)
+                ]
+                bias_results[bias] = {
+                    "total_articles": len([a for a in analyses if a.get("metadata", {}).get("bias_label") == bias]),
+                    "top_techniques": techniques
+                }
+
+        return {
+            "total_articles": len(analyses),
+            "techniques": technique_results,
+            "by_source": source_results,
+            "by_bias": bias_results
+        }
+
+    def _extract_manipulation_techniques(self, analysis: str) -> List[str]:
+        """Extract manipulation techniques from analysis text"""
+        techniques = []
+        technique_list = [
+            "Appeal to fear or outrage",
+            "False equivalence",
+            "Cherry-picking of facts",
+            "Ad hominem attacks",
+            "Straw man arguments",
+            "Bandwagon appeal",
+            "Black-and-white fallacy"
+        ]
+
+        try:
+            if "MANIPULATION TECHNIQUES" in analysis:
+                techniques_section = analysis.split("MANIPULATION TECHNIQUES:")[1].split("MANIPULATION SCORE:")[0]
+
+                for technique in technique_list:
+                    if technique.lower() in techniques_section.lower():
+                        techniques.append(technique)
+        except Exception as e:
+            self.logger.error(f"Error extracting manipulation techniques: {str(e)}")
+
+        return techniques
