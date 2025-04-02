@@ -10,7 +10,7 @@ from typing import Dict, List, Any, Optional, Union
 from datetime import datetime, timedelta
 
 from .base import Agent, LLMProvider
-from ..utils.helpers import rate_limiter, validate_article_data
+from .utils.helpers import rate_limiter, validate_article_data
 
 
 class ContentCollector(Agent):
