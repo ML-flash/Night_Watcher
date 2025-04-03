@@ -1,6 +1,3 @@
-Here's the complete updated `run.py` file for the Night_watcher framework:
-
-```python
 #!/usr/bin/env python3
 """
 Night_watcher - Simple Launcher
@@ -172,4 +169,3 @@ if __name__ == "__main__":
     """)
     
     sys.exit(main())
-    
