@@ -1,115 +1,123 @@
 # Night_watcher Framework
 
-A modular system for analyzing news, identifying divisive content, and generating counter-narratives with memory capabilities.
+A covert system for analyzing news, identifying divisive content, and generating counter-narratives with memory capabilities.
 
 ## Overview
 
-Night_watcher is a sophisticated tool designed to analyze news articles, identify divisive content and manipulation techniques, and generate strategic counter-narratives aimed at reducing polarization. The framework uses large language models (LLMs) to perform its analysis and generation tasks, with a modular architecture that allows for easy extension and customization.
+Night_watcher is designed as a standalone, low-profile tool that analyzes media content for manipulation techniques and generates strategic counter-narratives. It uses large language models (LLMs) through LM Studio to perform its analysis and generation tasks.
 
-Key features include:
-- Automated collection of news articles from diverse sources
-- Deep analysis of media framing, emotional triggers, and manipulation techniques
-- Generation of targeted counter-narratives for different demographic groups
-- Strategic messaging optimized for different audiences
-- Memory system for maintaining context across analyses
-- Pattern recognition to identify trends in media coverage
+## Installation Options
 
-## Installation
+### Option 1: Quick Setup (Recommended)
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/night_watcher.git
-cd night_watcher
+1. Download the `install_nightwatcher.py` script
+2. Run the installer:
+   ```bash
+   python install_nightwatcher.py
+   ```
+3. The installer will set up everything in a hidden directory at `~/.documents/analysis_tool` by default
 
-# Create a virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+### Option 2: Manual Setup
 
-# Install dependencies
-pip install -r requirements.txt
-```
+1. Clone or download the source code
+2. Create a Python virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Initialize the configuration:
+   ```bash
+   python main.py init
+   ```
 
 ## Dependencies
 
 - Python 3.8+
-- requests
-- feedparser
-- newspaper3k
-- numpy
-- Optional: 
+- Required:
+  - requests
+  - feedparser
+  - newspaper3k
+  - numpy
+- Optional (enhanced capabilities): 
   - faiss-cpu (for enhanced vector search)
   - chromadb (for persistent vector store)
   - sentence-transformers (for better embeddings)
 
-## Usage
+## Using Night_watcher
+
+### Prerequisites
+
+1. Install and run [LM Studio](https://lmstudio.ai/) locally
+2. Start a local server with a language model of your choice
+   - The default configuration expects the server at http://localhost:1234
+
+### Commands
 
 Initialize the configuration:
 ```bash
-python -m night_watcher init --output config.json
+python nightwatcher.py init --output config.json
 ```
 
 Run the analysis workflow:
 ```bash
-python -m night_watcher run --config config.json
+python nightwatcher.py run --config config.json
 ```
 
 Analyze existing data for patterns:
 ```bash
-python -m night_watcher analyze --memory-file data/memory/night_watcher_memory.pkl --output-dir analysis_results
+python nightwatcher.py analyze --memory-file data/memory/night_watcher_memory.pkl --output-dir analysis_results
 ```
 
 Search the memory system:
 ```bash
-python -m night_watcher search --memory-file data/memory/night_watcher_memory.pkl --query "climate change"
+python nightwatcher.py search --memory-file data/memory/night_watcher_memory.pkl --query "climate change"
 ```
+
+### Configuration Options
+
+Edit `config.json` to customize:
+- LLM provider settings
+- News sources and bias labels
+- Manipulation thresholds
+- Demographic targets for counter-narratives
+
+## Security Considerations
+
+- The framework is designed to be covert and leave minimal traces
+- Files are stored in non-obvious locations by default
+- No external API calls except to specified news sources
+- All LLM interactions happen locally through LM Studio
 
 ## Architecture
 
-The framework is structured around modular components:
+The framework uses a modular architecture:
 
-- **Agents**: Each specialized for a specific task (collection, analysis, generation)
-- **Memory System**: Vector-based storage for maintaining context across analyses
-- **Pattern Recognition**: Tools for identifying trends and narratives in data
-- **Workflow Orchestration**: Coordinates execution of agents in a configurable pipeline
+- **Agents**: Specialized components for collection, analysis, and generation
+- **Memory System**: Vector-based storage for maintaining context over time
+- **Workflow Orchestration**: Coordinates the analysis pipeline
+- **Pattern Recognition**: Identifies trends and narratives in collected data
 
-## Configuration
+## Creating a Distribution Package
 
-The framework is configured via a JSON file. Here's a sample configuration:
+To create a standalone installer for distribution:
 
-```json
-{
-  "llm_provider": {
-    "type": "lm_studio",
-    "host": "http://localhost:1234"
-  },
-  "content_collection": {
-    "article_limit": 5,
-    "sources": [
-      {"url": "https://www.reuters.com/rss/topNews", "type": "rss", "bias": "center"},
-      {"url": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", "type": "rss", "bias": "center-left"},
-      {"url": "https://feeds.foxnews.com/foxnews/politics", "type": "rss", "bias": "right"}
-    ]
-  },
-  "content_analysis": {
-    "manipulation_threshold": 6
-  },
-  "memory": {
-    "store_type": "simple",
-    "file_path": "data/memory/night_watcher_memory.pkl"
-  }
-}
+```bash
+python bundle_nightwatcher.py
 ```
+
+This creates a self-contained script that can be sent to other systems and will set up the entire framework when run.
+
+## Operational Security
+
+- Run behind a VPN or Tor when collecting content
+- Use a separate user account for running the framework
+- Consider using a dedicated machine not connected to personal accounts
+- Regularly clear logs and memory if not needed for analysis
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+This project is released into the public domain - see the [LICENSE](LICENSE) file for details.
