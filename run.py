@@ -117,11 +117,11 @@ def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None):
 def ensure_directories(base_dir="."):
     """Ensure required directories exist."""
     directories = [
-        f"{base_dir}/data/collected",
-        f"{base_dir}/data/analyzed",
-        f"{base_dir}/data/counter_narratives",
-        f"{base_dir}/data/memory",
-        f"{base_dir}/logs"
+        os.path.join(base_dir, "data", "collected"),
+        os.path.join(base_dir, "data", "analyzed"),
+        os.path.join(base_dir, "data", "counter_narratives"),
+        os.path.join(base_dir, "data", "memory"),
+        os.path.join(base_dir, "logs")
     ]
     
     for directory in directories:
