@@ -1,115 +1,83 @@
 # Night_watcher Framework
 
-A modular system for analyzing news, identifying divisive content, and generating counter-narratives with memory capabilities.
+A system for analyzing news, identifying divisive content, and generating counter-narratives with memory capabilities.
 
-## Overview
+## Quick Start
 
-Night_watcher is a sophisticated tool designed to analyze news articles, identify divisive content and manipulation techniques, and generate strategic counter-narratives aimed at reducing polarization. The framework uses large language models (LLMs) to perform its analysis and generation tasks, with a modular architecture that allows for easy extension and customization.
+1. Extract the Night_watcher files to any directory
+2. Make sure you have Python 3.8+ installed
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Run the framework:
+   ```bash
+   python run.py
+   ```
 
-Key features include:
-- Automated collection of news articles from diverse sources
-- Deep analysis of media framing, emotional triggers, and manipulation techniques
-- Generation of targeted counter-narratives for different demographic groups
-- Strategic messaging optimized for different audiences
-- Memory system for maintaining context across analyses
-- Pattern recognition to identify trends in media coverage
+That's it! The script will automatically:
+- Create necessary directories
+- Generate a default configuration file if needed
+- Connect to LM Studio at localhost:1234
+- Collect and analyze articles
+- Generate counter-narratives
+- Save all results in the current directory
 
-## Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/night_watcher.git
-cd night_watcher
-
-# Create a virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-## Dependencies
+## Requirements
 
 - Python 3.8+
-- requests
-- feedparser
-- newspaper3k
-- numpy
-- Optional: 
-  - faiss-cpu (for enhanced vector search)
-  - chromadb (for persistent vector store)
-  - sentence-transformers (for better embeddings)
+- Local LLM server via [LM Studio](https://lmstudio.ai/) running on http://localhost:1234
+- Required Python packages (see requirements.txt):
+  - requests
+  - feedparser
+  - newspaper3k
+  - numpy
 
-## Usage
+## Command Line Options
 
-Initialize the configuration:
+The `run.py` script accepts several optional parameters:
+
 ```bash
-python -m night_watcher init --output config.json
+python run.py [OPTIONS]
 ```
 
-Run the analysis workflow:
+Options:
+- `--config PATH` - Path to configuration file (default: config.json)
+- `--llm-host URL` - LLM provider URL (default: http://localhost:1234)
+- `--article-limit N` - Maximum articles to collect per source (default: 50)
+- `--output-dir PATH` - Output directory (default: current directory)
+
+Example:
 ```bash
-python -m night_watcher run --config config.json
+python run.py --llm-host http://192.168.1.100:1234 --article-limit 20 --output-dir ./outputs
 ```
-
-Analyze existing data for patterns:
-```bash
-python -m night_watcher analyze --memory-file data/memory/night_watcher_memory.pkl --output-dir analysis_results
-```
-
-Search the memory system:
-```bash
-python -m night_watcher search --memory-file data/memory/night_watcher_memory.pkl --query "climate change"
-```
-
-## Architecture
-
-The framework is structured around modular components:
-
-- **Agents**: Each specialized for a specific task (collection, analysis, generation)
-- **Memory System**: Vector-based storage for maintaining context across analyses
-- **Pattern Recognition**: Tools for identifying trends and narratives in data
-- **Workflow Orchestration**: Coordinates execution of agents in a configurable pipeline
 
 ## Configuration
 
-The framework is configured via a JSON file. Here's a sample configuration:
+The default configuration will be created automatically on first run. 
+To customize, edit the generated `config.json` file:
 
-```json
-{
-  "llm_provider": {
-    "type": "lm_studio",
-    "host": "http://localhost:1234"
-  },
-  "content_collection": {
-    "article_limit": 5,
-    "sources": [
-      {"url": "https://www.reuters.com/rss/topNews", "type": "rss", "bias": "center"},
-      {"url": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", "type": "rss", "bias": "center-left"},
-      {"url": "https://feeds.foxnews.com/foxnews/politics", "type": "rss", "bias": "right"}
-    ]
-  },
-  "content_analysis": {
-    "manipulation_threshold": 6
-  },
-  "memory": {
-    "store_type": "simple",
-    "file_path": "data/memory/night_watcher_memory.pkl"
-  }
-}
-```
+- **LLM Provider**: Connection settings for your local LLM
+- **Content Sources**: RSS feeds to monitor
+- **Manipulation Threshold**: Sensitivity for detecting divisive content
+- **Demographics**: Target audiences for counter-narratives
+
+## Output Structure
+
+After running, you'll find the following in your output directory:
+
+- `data/collected/` - Raw article data
+- `data/analyzed/` - Analysis results with manipulation scoring
+- `data/counter_narratives/` - Generated counter-narratives
+- `data/memory/` - System memory for tracking patterns over time
+- `logs/` - Execution logs
+
+## Security Considerations
+
+- The framework runs locally with no external API calls except to specified news sources
+- All LLM interactions happen locally through LM Studio
+- No data is sent to external servers
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+This project is released into the public domain - see the [LICENSE](LICENSE) file for details.
