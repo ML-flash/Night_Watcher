@@ -1,122 +1,82 @@
 # Night_watcher Framework
 
-A covert system for analyzing news, identifying divisive content, and generating counter-narratives with memory capabilities.
+A system for analyzing news, identifying divisive content, and generating counter-narratives with memory capabilities.
 
-## Overview
+## Quick Start
 
-Night_watcher is designed as a standalone, low-profile tool that analyzes media content for manipulation techniques and generates strategic counter-narratives. It uses large language models (LLMs) through LM Studio to perform its analysis and generation tasks.
-
-## Installation Options
-
-### Option 1: Quick Setup (Recommended)
-
-1. Download the `install_nightwatcher.py` script
-2. Run the installer:
-   ```bash
-   python install_nightwatcher.py
-   ```
-3. The installer will set up everything in a hidden directory at `~/.documents/analysis_tool` by default
-
-### Option 2: Manual Setup
-
-1. Clone or download the source code
-2. Create a Python virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+1. Extract the Night_watcher files to any directory
+2. Make sure you have Python 3.8+ installed
 3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-4. Initialize the configuration:
+4. Run the framework:
    ```bash
-   python main.py init
+   python run.py
    ```
 
-## Dependencies
+That's it! The script will automatically:
+- Create necessary directories
+- Generate a default configuration file if needed
+- Connect to LM Studio at localhost:1234
+- Collect and analyze articles
+- Generate counter-narratives
+- Save all results in the current directory
+
+## Requirements
 
 - Python 3.8+
-- Required:
+- Local LLM server via [LM Studio](https://lmstudio.ai/) running on http://localhost:1234
+- Required Python packages (see requirements.txt):
   - requests
   - feedparser
   - newspaper3k
   - numpy
-- Optional (enhanced capabilities): 
-  - faiss-cpu (for enhanced vector search)
-  - chromadb (for persistent vector store)
-  - sentence-transformers (for better embeddings)
 
-## Using Night_watcher
+## Command Line Options
 
-### Prerequisites
+The `run.py` script accepts several optional parameters:
 
-1. Install and run [LM Studio](https://lmstudio.ai/) locally
-2. Start a local server with a language model of your choice
-   - The default configuration expects the server at http://localhost:1234
-
-### Commands
-
-Initialize the configuration:
 ```bash
-python nightwatcher.py init --output config.json
+python run.py [OPTIONS]
 ```
 
-Run the analysis workflow:
+Options:
+- `--config PATH` - Path to configuration file (default: config.json)
+- `--llm-host URL` - LLM provider URL (default: http://localhost:1234)
+- `--article-limit N` - Maximum articles to collect per source (default: 50)
+- `--output-dir PATH` - Output directory (default: current directory)
+
+Example:
 ```bash
-python nightwatcher.py run --config config.json
+python run.py --llm-host http://192.168.1.100:1234 --article-limit 20 --output-dir ./outputs
 ```
 
-Analyze existing data for patterns:
-```bash
-python nightwatcher.py analyze --memory-file data/memory/night_watcher_memory.pkl --output-dir analysis_results
-```
+## Configuration
 
-Search the memory system:
-```bash
-python nightwatcher.py search --memory-file data/memory/night_watcher_memory.pkl --query "climate change"
-```
+The default configuration will be created automatically on first run. 
+To customize, edit the generated `config.json` file:
 
-### Configuration Options
+- **LLM Provider**: Connection settings for your local LLM
+- **Content Sources**: RSS feeds to monitor
+- **Manipulation Threshold**: Sensitivity for detecting divisive content
+- **Demographics**: Target audiences for counter-narratives
 
-Edit `config.json` to customize:
-- LLM provider settings
-- News sources and bias labels
-- Manipulation thresholds
-- Demographic targets for counter-narratives
+## Output Structure
+
+After running, you'll find the following in your output directory:
+
+- `data/collected/` - Raw article data
+- `data/analyzed/` - Analysis results with manipulation scoring
+- `data/counter_narratives/` - Generated counter-narratives
+- `data/memory/` - System memory for tracking patterns over time
+- `logs/` - Execution logs
 
 ## Security Considerations
 
-- The framework is designed to be covert and leave minimal traces
-- Files are stored in non-obvious locations by default
-- No external API calls except to specified news sources
+- The framework runs locally with no external API calls except to specified news sources
 - All LLM interactions happen locally through LM Studio
-
-## Architecture
-
-The framework uses a modular architecture:
-
-- **Agents**: Specialized components for collection, analysis, and generation
-- **Memory System**: Vector-based storage for maintaining context over time
-- **Workflow Orchestration**: Coordinates the analysis pipeline
-- **Pattern Recognition**: Identifies trends and narratives in collected data
-
-## Creating a Distribution Package
-
-To create a standalone installer for distribution:
-
-```bash
-python bundle_nightwatcher.py
-```
-
-This creates a self-contained script that can be sent to other systems and will set up the entire framework when run.
-
-## Operational Security
-
-- Run behind a VPN or Tor when collecting content
-- Use a separate user account for running the framework
-- Consider using a dedicated machine not connected to personal accounts
-- Regularly clear logs and memory if not needed for analysis
+- No data is sent to external servers
 
 ## License
 
