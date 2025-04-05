@@ -9,8 +9,8 @@ import logging
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
-from .base import Agent, LLMProvider
-from ..utils.text import truncate_text
+from base import Agent, LLMProvider
+from utils.text import truncate_text
 
 
 class ContentAnalyzer(Agent):

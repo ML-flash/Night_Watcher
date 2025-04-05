@@ -7,7 +7,7 @@ import logging
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
-from .base import Agent, LLMProvider
+from base import Agent, LLMProvider
 
 
 class DistributionPlanner(Agent):

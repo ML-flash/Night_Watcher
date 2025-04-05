@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Tuple
 from collections import Counter
 
-from ..memory.system import MemorySystem
+from memory.system import MemorySystem
 
 
 class PatternRecognition:
