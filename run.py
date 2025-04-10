@@ -10,35 +10,13 @@ import logging
 import argparse
 from pathlib import Path
 
-# Get the absolute path to the project root directory
-project_root = os.path.dirname(os.path.abspath(__file__))
-
-# Add the project root to the Python path
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
-    print(f"Added {project_root} to Python path")
-
 # Import Night_watcher modules
-try:
-    from config import load_config, create_default_config
-    from agents import base
-    from agents import lm_studio
-    from workflow import orchestrator
-    from memory import system
-    from utils import logging as utils_logging
-
-    # Create aliases for frequently used classes
-    LLMProvider = base.LLMProvider
-    LMStudioProvider = lm_studio.LMStudioProvider
-    NightWatcherWorkflow = orchestrator.NightWatcherWorkflow
-    MemorySystem = system.MemorySystem
-    setup_logging = utils_logging.setup_logging
-except ImportError as e:
-    print(f"Error importing Night_watcher modules: {e}")
-    print(f"Current Python path: {sys.path}")
-    print(f"Project root: {project_root}")
-    print("Make sure you're running this script from the Night_watcher directory.")
-    sys.exit(1)
+from config import load_config, create_default_config
+from agents.base import LLMProvider
+from agents.lm_studio import LMStudioProvider
+from workflow.orchestrator import NightWatcherWorkflow
+from memory.system import MemorySystem
+from utils.logging import setup_logging
 
 
 def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None):
