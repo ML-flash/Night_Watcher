@@ -6,7 +6,7 @@ Implementation of LLM provider using LM Studio API.
 import logging
 from typing import Dict, List, Any, Optional
 
-from base import LLMProvider
+from agents.base import LLMProvider
 
 
 class LMStudioProvider(LLMProvider):

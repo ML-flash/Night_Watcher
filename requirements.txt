@@ -2,6 +2,7 @@ requests>=2.28.1
 feedparser>=6.0.10
 newspaper3k>=0.2.8
 numpy>=1.22.0
+lxml_html_clean
 
 # Optional dependencies for enhanced functionality
 # faiss-cpu>=1.7.3

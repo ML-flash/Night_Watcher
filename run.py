@@ -4,8 +4,14 @@ Night_watcher - Simple Launcher
 Starts the Night_watcher framework with minimal setup required.
 """
 
-import os
 import sys
+import os
+
+# Add project root and agents directory to Python path
+project_root = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(project_root)
+sys.path.append(os.path.join(project_root, "agents"))
+
 import logging
 import argparse
 from pathlib import Path
@@ -14,6 +20,7 @@ from pathlib import Path
 from config import load_config, create_default_config
 from agents.base import LLMProvider
 from agents.lm_studio import LMStudioProvider
+
 from workflow.orchestrator import NightWatcherWorkflow
 from memory.system import MemorySystem
 from utils.logging import setup_logging
