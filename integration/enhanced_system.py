@@ -1,85 +1,78 @@
 """
-Enhanced Night_watcher Workflow Orchestrator
-Manages the Night_watcher workflow with focus on authoritarian pattern detection and democratic resilience.
+Night_watcher Enhanced Integration Module
+Integrates the advanced memory and analysis system with the existing workflow.
 """
 
 import os
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List, Any, Optional
 
+from memory.advanced_system import AdvancedMemorySystem
+from analysis.enhanced_patterns import EnhancedPatternRecognition
+from workflow.orchestrator import NightWatcherWorkflow
 from agents.base import LLMProvider
-from agents.collector import ContentCollector
-from agents.analyzer import ContentAnalyzer
-from agents.counter_narrative import CounterNarrativeGenerator
-from agents.distribution import DistributionPlanner
-from agents.strategic import StrategicMessaging
-from memory.system import MemorySystem
-from utils.io import save_to_file
-from utils.text import create_slug
-from analysis.patterns import PatternRecognition
+
+logger = logging.getLogger(__name__)
 
 
-class NightWatcherWorkflow:
-    """Manages the enhanced Night_watcher workflow focused on democratic resilience"""
+class EnhancedNightWatcherWorkflow(NightWatcherWorkflow):
+    """Enhanced version of the Night_watcher workflow with advanced memory and analysis"""
 
-    def __init__(self, llm_provider: LLMProvider, memory_system: Optional[MemorySystem] = None,
+    def __init__(self, llm_provider: LLMProvider, memory_config: Dict[str, Any] = None,
                  output_dir: str = "data"):
-        """Initialize workflow with agents and output directory"""
+        """
+        Initialize with LLM provider and optional memory configuration.
+
+        Args:
+            llm_provider: LLM provider
+            memory_config: Configuration for the advanced memory system
+            output_dir: Output directory
+        """
         self.llm_provider = llm_provider
         self.output_dir = output_dir
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-        # Initialize memory system if not provided
-        self.memory = memory_system or MemorySystem()
+        # Initialize advanced memory system
+        self.advanced_memory = AdvancedMemorySystem(memory_config or {})
 
-        # Initialize agents
-        self.collector = ContentCollector(llm_provider)
-        self.analyzer = ContentAnalyzer(llm_provider)
-        self.counter_narrative_gen = CounterNarrativeGenerator(llm_provider)
-        self.distribution_planner = DistributionPlanner(llm_provider)
-        self.strategic_messaging = StrategicMessaging(llm_provider)
+        # Initialize the base workflow with the advanced memory's legacy system for compatibility
+        super().__init__(
+            llm_provider=llm_provider,
+            memory_system=self.advanced_memory.legacy_memory,
+            output_dir=output_dir
+        )
 
-        # Add pattern recognition
-        self.pattern_recognition = PatternRecognition(self.memory)
+        # Replace pattern recognition with enhanced version
+        self.pattern_recognition = self.advanced_memory.pattern_recognition
 
         # Add report generator if available
         try:
             from agents.report_generator import DemocraticResilienceReportGenerator
-            self.report_generator = DemocraticResilienceReportGenerator(llm_provider, self.memory)
+            self.report_generator = DemocraticResilienceReportGenerator(
+                llm_provider, self.advanced_memory.legacy_memory
+            )
             self.has_report_generator = True
         except ImportError:
             self.has_report_generator = False
             self.logger.warning("DemocraticResilienceReportGenerator not available")
 
         # Set up logging
-        self.logger = logging.getLogger("NightWatcherWorkflow")
+        self.logger = logging.getLogger("EnhancedNightWatcherWorkflow")
 
         # Ensure output directories exist
         self._ensure_data_dirs()
 
-    def _ensure_data_dirs(self):
-        """Ensure all data directories exist"""
-        directories = [
-            f"{self.output_dir}/collected",
-            f"{self.output_dir}/analyzed",
-            f"{self.output_dir}/counter_narratives",
-            f"{self.output_dir}/reports",
-            f"{self.output_dir}/analysis"
-        ]
-        for directory in directories:
-            os.makedirs(directory, exist_ok=True)
-
-        self.narrative_dir = f"{self.output_dir}/counter_narratives/{self.timestamp}"
-        self.report_dir = f"{self.output_dir}/reports/{self.timestamp}"
-        self.analysis_dir = f"{self.output_dir}/analysis/{self.timestamp}"
-
-        os.makedirs(self.narrative_dir, exist_ok=True)
-        os.makedirs(self.report_dir, exist_ok=True)
-        os.makedirs(self.analysis_dir, exist_ok=True)
-
     def run(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Run the enhanced Night_watcher workflow"""
+        """
+        Run the enhanced Night_watcher workflow with advanced memory and analysis.
+
+        Args:
+            config: Configuration parameters
+
+        Returns:
+            Workflow results
+        """
         if config is None:
             config = {}
 
@@ -90,9 +83,9 @@ class NightWatcherWorkflow:
         generate_reports = config.get("generate_reports", True)
         pattern_analysis_days = config.get("pattern_analysis_days", 30)
 
-        self.logger.info(f"Starting Night_watcher workflow with timestamp {self.timestamp}")
+        self.logger.info(f"Starting enhanced Night_watcher workflow with timestamp {self.timestamp}")
 
-        # 1. Collect articles
+        # 1. Collect articles (use base implementation)
         self.logger.info("Collecting articles with focus on government/political content...")
         collection_params = {"limit": article_limit}
         if sources:
@@ -103,6 +96,7 @@ class NightWatcherWorkflow:
         self.logger.info(f"Collected {len(articles)} articles")
 
         # Save collected articles
+        from utils.io import save_to_file
         save_to_file(articles, f"{self.output_dir}/collected/articles_{self.timestamp}.json")
 
         # 2. Analyze content for both divisive elements and authoritarian patterns
@@ -114,37 +108,17 @@ class NightWatcherWorkflow:
         # Save individual analyses and store in memory system
         for i, analysis in enumerate(analyses):
             if "article" in analysis:
-                article_slug = create_slug(analysis['article']['title'])
+                article_slug = self._create_slug(analysis['article']['title'])
                 save_to_file(analysis, f"{self.output_dir}/analyzed/analysis_{article_slug}_{self.timestamp}.json")
 
-                # Store in memory system
-                analysis_id = self.memory.store_article_analysis(analysis)
+                # Store in advanced memory system instead of base memory
+                analysis_id = self.advanced_memory.store_article_analysis(analysis)
 
                 # If we have corresponding authoritarian analysis, save it
                 if i < len(auth_analyses):
                     auth_analysis = auth_analyses[i]
                     save_to_file(auth_analysis,
                                  f"{self.output_dir}/analyzed/auth_analysis_{article_slug}_{self.timestamp}.json")
-
-                    # Store authoritarian analysis in memory (could enhance memory system to handle this specifically)
-                    auth_meta = {
-                        "type": "authoritarian_analysis",
-                        "title": analysis['article']['title'],
-                        "source": analysis['article']['source'],
-                        "url": analysis['article'].get('url', ''),
-                        "parent_id": analysis_id
-                    }
-
-                    # Extract authoritarian score if available
-                    if "structured_elements" in auth_analysis:
-                        auth_meta["authoritarian_score"] = auth_analysis["structured_elements"].get(
-                            "authoritarian_score", 0)
-
-                    self.memory.store.add_item(
-                        f"auth_{analysis_id}",
-                        auth_analysis.get("authoritarian_analysis", ""),
-                        auth_meta
-                    )
 
         # 3. Generate counter-narratives with enhanced focus on democratic resilience
         self.logger.info("Generating counter-narratives for divisive and authoritarian content...")
@@ -157,10 +131,10 @@ class NightWatcherWorkflow:
 
         narratives = counter_narrative_result.get("counter_narratives", [])
 
-        # Process counter-narratives
+        # Process counter-narratives (with advanced memory storage)
         for narrative in narratives:
             article_title = narrative.get("article_title", "untitled")
-            article_slug = create_slug(article_title)
+            article_slug = self._create_slug(article_title)
 
             # Save the full narrative result
             save_to_file(narrative, f"{self.narrative_dir}/{article_slug}_counter_narratives.json")
@@ -169,7 +143,7 @@ class NightWatcherWorkflow:
             analysis_id = ""
             for analysis in analyses:
                 if analysis.get("article", {}).get("title") == article_title:
-                    analysis_id = self.memory.store_article_analysis(analysis)
+                    analysis_id = self.advanced_memory.store_article_analysis(analysis)
                     break
 
             # Save individual demographic-targeted narratives
@@ -180,8 +154,8 @@ class NightWatcherWorkflow:
                     f"{self.narrative_dir}/{article_slug}_{demo_id}_narrative.txt"
                 )
 
-                # Store in memory system
-                self.memory.store_counter_narrative(demo_narrative, analysis_id)
+                # Store in advanced memory system
+                self.advanced_memory.store_counter_narrative(demo_narrative, analysis_id)
 
             # Save authoritarian responses if available
             for auth_response in narrative.get("authoritarian_responses", []):
@@ -205,10 +179,8 @@ class NightWatcherWorkflow:
                 f"{self.narrative_dir}/{article_slug}_bridging.txt"
             )
 
-            # Store in memory system
-            self.memory.store_bridging_content(bridging_content, analysis_id)
-
-            # Generate and save strategic messaging
+            # Generate and save strategic messaging (same as base implementation)
+            # [strategic messaging code from base unchanged]
             for analysis in analyses:
                 if analysis.get("article", {}).get("title") == article_title:
                     strategic_result = self.strategic_messaging.process({
@@ -231,7 +203,8 @@ class NightWatcherWorkflow:
                                 f"{self.narrative_dir}/{article_slug}_{audience}_strategic.txt"
                             )
 
-            # Generate and save distribution plan
+            # Generate and save distribution plan (same as base implementation)
+            # [distribution plan code from base unchanged]
             distribution_result = self.distribution_planner.process({
                 "counter_narratives": [narrative]
             })
@@ -257,31 +230,61 @@ class NightWatcherWorkflow:
                         f"{self.narrative_dir}/{article_slug}_{demo}_talking_points.txt"
                     )
 
-        # 4. Run pattern analysis to identify authoritarian trends
-        self.logger.info(f"Running pattern analysis over the last {pattern_analysis_days} days...")
+        # 4. Run enhanced pattern analysis
+        self.logger.info(f"Running enhanced pattern analysis over the last {pattern_analysis_days} days...")
 
-        # Authoritarian trend analysis
+        # Authoritarian trend analysis (using enhanced pattern recognition)
         auth_trends = self.pattern_recognition.analyze_authoritarian_trend_patterns(pattern_analysis_days)
         save_to_file(
             auth_trends,
             f"{self.analysis_dir}/authoritarian_trends_{self.timestamp}.json"
         )
 
-        # Topic analysis
-        topic_analysis = self.pattern_recognition.identify_recurring_topics()
-        save_to_file(
-            topic_analysis,
-            f"{self.analysis_dir}/topic_analysis_{self.timestamp}.json"
-        )
+        # Store in advanced memory
+        self.advanced_memory.store_pattern_analysis("authoritarian_trends", auth_trends)
 
-        # Actor analysis
+        # Actor analysis (using enhanced pattern recognition)
         actor_analysis = self.pattern_recognition.analyze_authoritarian_actors(pattern_analysis_days)
         save_to_file(
             actor_analysis,
             f"{self.analysis_dir}/actor_analysis_{self.timestamp}.json"
         )
 
-        # 5. Generate comprehensive reports if enabled and available
+        # Store in advanced memory
+        self.advanced_memory.store_pattern_analysis("actor_analysis", actor_analysis)
+
+        # Topic analysis (using enhanced pattern recognition)
+        topic_analysis = self.pattern_recognition.identify_recurring_topics()
+        save_to_file(
+            topic_analysis,
+            f"{self.analysis_dir}/topic_analysis_{self.timestamp}.json"
+        )
+
+        # Store in advanced memory
+        self.advanced_memory.store_pattern_analysis("topic_analysis", topic_analysis)
+
+        # NEW: Predictive analysis
+        predictive_analysis = self.pattern_recognition.predict_authoritarian_escalation()
+        save_to_file(
+            predictive_analysis,
+            f"{self.analysis_dir}/predictive_analysis_{self.timestamp}.json"
+        )
+
+        # Store in advanced memory
+        self.advanced_memory.store_pattern_analysis("predictive_analysis", predictive_analysis)
+
+        # 5. Generate enhanced intelligence brief
+        intelligence_brief = self.advanced_memory.generate_intelligence_brief(
+            focus="general",
+            lookback_days=pattern_analysis_days
+        )
+
+        save_to_file(
+            intelligence_brief,
+            f"{self.report_dir}/intelligence_brief_{self.timestamp}.json"
+        )
+
+        # 6. Generate comprehensive reports if enabled and available (same as base implementation)
         reports_generated = 0
         if generate_reports and self.has_report_generator:
             self.logger.info("Generating democratic resilience reports...")
@@ -293,9 +296,17 @@ class NightWatcherWorkflow:
                 "pattern_findings": auth_trends
             })
 
+            report_content = weekly_report.get("report", "")
             save_to_file(
-                weekly_report.get("report", ""),
+                report_content,
                 f"{self.report_dir}/weekly_resilience_report_{self.timestamp}.txt"
+            )
+
+            # Store in advanced memory
+            self.advanced_memory.store_intelligence_report(
+                report_type="weekly",
+                report_content=report_content,
+                report_data=weekly_report
             )
 
             # Action kit
@@ -304,9 +315,17 @@ class NightWatcherWorkflow:
                 "pattern_findings": auth_trends
             })
 
+            action_kit_content = action_kit.get("action_kit", "")
             save_to_file(
-                action_kit.get("action_kit", ""),
+                action_kit_content,
                 f"{self.report_dir}/democratic_action_kit_{self.timestamp}.txt"
+            )
+
+            # Store in advanced memory
+            self.advanced_memory.store_intelligence_report(
+                report_type="action_kit",
+                report_content=action_kit_content,
+                report_data=action_kit
             )
 
             # Actor reports for top 3 concerning actors
@@ -324,10 +343,18 @@ class NightWatcherWorkflow:
                     "actor_data": data
                 })
 
+                actor_report_content = actor_report.get("report", "")
                 actor_slug = actor.lower().replace(" ", "_")
                 save_to_file(
-                    actor_report.get("report", ""),
+                    actor_report_content,
                     f"{self.report_dir}/actor_report_{actor_slug}_{self.timestamp}.txt"
+                )
+
+                # Store in advanced memory
+                self.advanced_memory.store_intelligence_report(
+                    report_type=f"actor_{actor_slug}",
+                    report_content=actor_report_content,
+                    report_data=actor_report
                 )
 
             # Topic reports for top 3 concerning topics
@@ -345,15 +372,29 @@ class NightWatcherWorkflow:
                     "topic_data": data
                 })
 
-                topic_slug = create_slug(topic)
+                topic_report_content = topic_report.get("report", "")
+                topic_slug = self._create_slug(topic)
                 save_to_file(
-                    topic_report.get("report", ""),
+                    topic_report_content,
                     f"{self.report_dir}/topic_report_{topic_slug}_{self.timestamp}.txt"
+                )
+
+                # Store in advanced memory
+                self.advanced_memory.store_intelligence_report(
+                    report_type=f"topic_{topic_slug}",
+                    report_content=topic_report_content,
+                    report_data=topic_report
                 )
 
             reports_generated = 5 + len(sorted_actors[:3]) + len(sorted_topics[:3])
 
-        self.logger.info(f"Processing complete. All outputs saved in {self.output_dir}")
+        # Save the advanced memory system
+        memory_dir = os.path.join(self.output_dir, "memory")
+        memory_path = os.path.join(memory_dir, "night_watcher_memory.pkl")
+        os.makedirs(memory_dir, exist_ok=True)
+        self.advanced_memory.save(memory_path)
+
+        self.logger.info(f"Enhanced processing complete. All outputs saved in {self.output_dir}")
 
         return {
             "timestamp": self.timestamp,
@@ -361,6 +402,64 @@ class NightWatcherWorkflow:
             "articles_collected": len(articles),
             "articles_analyzed": len(analyses),
             "counter_narratives_generated": len(narratives),
-            "pattern_analyses_generated": 3,  # Auth trends, topics, actors
-            "reports_generated": reports_generated
+            "pattern_analyses_generated": 4,  # Auth trends, topics, actors, predictive
+            "reports_generated": reports_generated,
+            "intelligence_brief_generated": True
         }
+
+    def _create_slug(self, text: str) -> str:
+        """Create a URL-safe slug from text"""
+        import re
+        # Remove non-alphanumeric characters and replace with hyphens
+        slug = re.sub(r'[^\w\s-]', '', text.lower())
+        # Replace whitespace with hyphens
+        slug = re.sub(r'[\s]+', '-', slug)
+        # Limit length
+        slug = slug[:40].rstrip('-')
+        return slug
+
+
+def run_enhanced_workflow(config_path: str, llm_provider: LLMProvider,
+                          output_dir: str = "data", memory_path: str = None) -> Dict[str, Any]:
+    """
+    Helper function to run the enhanced workflow.
+
+    Args:
+        config_path: Path to configuration file
+        llm_provider: LLM provider
+        output_dir: Output directory
+        memory_path: Path to memory file
+
+    Returns:
+        Workflow results
+    """
+    from config import load_config
+
+    # Load configuration
+    config = load_config(config_path)
+
+    # Create memory configuration
+    memory_config = config.get("memory", {})
+
+    # Initialize workflow
+    workflow = EnhancedNightWatcherWorkflow(
+        llm_provider=llm_provider,
+        memory_config=memory_config,
+        output_dir=output_dir
+    )
+
+    # Load existing memory if path provided
+    if memory_path and os.path.exists(memory_path):
+        logger.info(f"Loading memory from {memory_path}")
+        workflow.advanced_memory.load(memory_path)
+
+    # Run workflow
+    workflow_config = {
+        "article_limit": config["content_collection"]["article_limit"],
+        "manipulation_threshold": config["content_analysis"]["manipulation_threshold"],
+        "sources": config["content_collection"]["sources"]
+    }
+
+    result = workflow.run(workflow_config)
+
+    return result

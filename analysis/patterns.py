@@ -1,6 +1,6 @@
 """
-Night_watcher Enhanced Pattern Recognition Module
-Analyzes stored data to identify patterns in authoritarian governance trends and media coverage.
+Night_watcher Pattern Recognition Module
+Analyzes stored data to identify patterns in media coverage and narratives.
 """
 
 import re
@@ -14,26 +14,13 @@ from memory.system import MemorySystem
 
 class PatternRecognition:
     """
-    Identifies patterns in authoritarian governance indicators, media coverage, and narrative strategies.
+    Identifies patterns in media coverage and narrative strategies from the memory system data.
     """
 
     def __init__(self, memory_system: MemorySystem):
         """Initialize with memory system"""
         self.memory = memory_system
         self.logger = logging.getLogger("PatternRecognition")
-        
-        # Authoritarian indicators for tracking
-        self.authoritarian_indicators = [
-            "institutional_undermining",
-            "democratic_norm_violations",
-            "media_delegitimization",
-            "opposition_targeting",
-            "power_concentration",
-            "accountability_evasion",
-            "threat_exaggeration",
-            "authoritarian_rhetoric",
-            "rule_of_law_undermining"
-        ]
 
     def analyze_source_bias_patterns(self, days: int = 30) -> Dict[str, Any]:
         """
@@ -138,290 +125,6 @@ class PatternRecognition:
             "highest_scores": highest_scores
         }
 
-    def analyze_authoritarian_trend_patterns(self, lookback_days: int = 90) -> Dict[str, Any]:
-        """
-        Analyze trends in authoritarian governance indicators over time.
-        
-        Args:
-            lookback_days: Days to look back for analysis
-            
-        Returns:
-            Dictionary containing trend analysis of authoritarian indicators
-        """
-        # Get analyses within the lookback period
-        recent_analyses = self.memory.get_recent_analyses(lookback_days)
-        
-        if not recent_analyses:
-            return {"error": "No recent analyses found"}
-            
-        # Track indicators over time
-        indicators = {indicator: [] for indicator in self.authoritarian_indicators}
-        indicators["authoritarian_score"] = []
-        
-        # Process analyses to extract indicators
-        for analysis in recent_analyses:
-            metadata = analysis.get("metadata", {})
-            timestamp = metadata.get("analysis_timestamp", "")
-            
-            # Extract authoritarian indicators and score from analysis
-            analysis_text = analysis.get("text", "")
-            auth_elements = self._extract_authoritarian_elements(analysis_text)
-            
-            # Track authoritarian score
-            if "authoritarian_score" in auth_elements:
-                indicators["authoritarian_score"].append({
-                    "date": timestamp,
-                    "source": metadata.get("source", ""),
-                    "title": metadata.get("title", ""),
-                    "score": auth_elements["authoritarian_score"]
-                })
-            
-            # Track indicators
-            for indicator in self.authoritarian_indicators:
-                if indicator in auth_elements and auth_elements[indicator]["present"]:
-                    indicators[indicator].append({
-                        "date": timestamp,
-                        "source": metadata.get("source", ""),
-                        "title": metadata.get("title", ""),
-                        "examples": auth_elements[indicator]["examples"]
-                    })
-        
-        # Calculate trend strength for each indicator
-        trend_analysis = {}
-        for indicator, occurrences in indicators.items():
-            trend_analysis[indicator] = {
-                "count": len(occurrences),
-                "examples": occurrences[:3],  # Top 3 examples
-                "trend_strength": self._calculate_trend_strength(occurrences, lookback_days),
-                "timeline": self._create_timeline(occurrences, lookback_days)
-            }
-        
-        # Calculate aggregate authoritarian risk
-        aggregate_risk = self._calculate_aggregate_risk(trend_analysis)
-        
-        return {
-            "lookback_days": lookback_days,
-            "trend_analysis": trend_analysis,
-            "aggregate_authoritarian_risk": aggregate_risk,
-            "risk_level": self._determine_risk_level(aggregate_risk)
-        }
-    
-    def _extract_authoritarian_elements(self, analysis_text: str) -> Dict[str, Any]:
-        """
-        Extract authoritarian elements from analysis text.
-        
-        Args:
-            analysis_text: Analysis text to extract from
-            
-        Returns:
-            Dictionary of authoritarian elements
-        """
-        elements = {}
-        
-        # Extract authoritarian score
-        score_match = re.search(r'AUTHORITARIAN SCORE:?\s*(\d+)[^\d]', analysis_text)
-        if score_match:
-            score = int(score_match.group(1))
-            elements["authoritarian_score"] = score
-        
-        # Extract indicators
-        for indicator in self.authoritarian_indicators:
-            indicator_label = indicator.upper().replace("_", " ")
-            if indicator_label in analysis_text:
-                # Get the section for this indicator
-                pattern = f"{indicator_label}:(.+?)(?=\n\n\d+\.|\n\n[A-Z]|\Z)"
-                section_match = re.search(pattern, analysis_text, re.DOTALL)
-                
-                if section_match:
-                    section_text = section_match.group(1).strip()
-                    
-                    # Determine if indicator is present
-                    negative_patterns = ["not present", "no evidence", "none found", "not identified"]
-                    is_present = True
-                    
-                    for pattern in negative_patterns:
-                        if pattern in section_text.lower():
-                            is_present = False
-                            break
-                    
-                    # Extract examples
-                    examples = []
-                    if is_present:
-                        # Split by bullet points, periods, or other separators
-                        for line in re.split(r'(?:•|\*|\-|\d+\.|\n)', section_text):
-                            line = line.strip()
-                            if line and len(line) > 10:
-                                examples.append(line)
-                    
-                    elements[indicator] = {
-                        "present": is_present,
-                        "examples": examples
-                    }
-                else:
-                    elements[indicator] = {
-                        "present": False,
-                        "examples": []
-                    }
-        
-        return elements
-    
-    def _calculate_trend_strength(self, occurrences: List[Dict[str, Any]], lookback_days: int) -> float:
-        """
-        Calculate the strength of a trend based on occurrences.
-        
-        Args:
-            occurrences: List of occurrences
-            lookback_days: Total days to look back
-            
-        Returns:
-            Trend strength as a float from 0-1
-        """
-        if not occurrences:
-            return 0.0
-            
-        # Calculate recent vs older ratio
-        midpoint = datetime.now() - timedelta(days=lookback_days/2)
-        midpoint_str = midpoint.isoformat()
-        
-        recent_count = len([o for o in occurrences if o.get("date", "") >= midpoint_str])
-        older_count = len(occurrences) - recent_count
-        
-        # Calculate trend direction (positive means increasing)
-        trend_direction = 0
-        if older_count > 0:
-            trend_direction = (recent_count / max(1, older_count)) - 1
-        elif recent_count > 0:
-            trend_direction = 1  # All occurrences are recent
-        
-        # Calculate frequency relative to total period
-        frequency = len(occurrences) / lookback_days
-        
-        # Combine into trend strength (0-1 scale)
-        strength = min(1.0, (frequency * 10) * (0.5 + max(0, trend_direction)))
-        
-        return strength
-    
-    def _create_timeline(self, occurrences: List[Dict[str, Any]], lookback_days: int) -> List[Dict[str, Any]]:
-        """
-        Create a timeline of occurrences for visualization.
-        
-        Args:
-            occurrences: List of occurrences
-            lookback_days: Total days to look back
-            
-        Returns:
-            Timeline data points
-        """
-        if not occurrences:
-            return []
-            
-        # Sort by date
-        sorted_occurrences = sorted(occurrences, key=lambda x: x.get("date", ""))
-        
-        # Group by week
-        timeline = []
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=lookback_days)
-        
-        # Create weekly buckets
-        current_date = start_date
-        while current_date < end_date:
-            week_end = current_date + timedelta(days=7)
-            week_start_str = current_date.isoformat()
-            week_end_str = min(week_end, end_date).isoformat()
-            
-            # Count occurrences in this week
-            week_occurrences = [
-                o for o in sorted_occurrences 
-                if o.get("date", "") >= week_start_str and o.get("date", "") < week_end_str
-            ]
-            
-            if week_occurrences:
-                timeline.append({
-                    "start_date": week_start_str,
-                    "end_date": week_end_str,
-                    "count": len(week_occurrences),
-                    "items": week_occurrences
-                })
-            else:
-                timeline.append({
-                    "start_date": week_start_str,
-                    "end_date": week_end_str,
-                    "count": 0,
-                    "items": []
-                })
-            
-            current_date = week_end
-        
-        return timeline
-    
-    def _calculate_aggregate_risk(self, trend_analysis: Dict[str, Any]) -> float:
-        """
-        Calculate aggregate authoritarian risk score.
-        
-        Args:
-            trend_analysis: Trend analysis dictionary
-            
-        Returns:
-            Aggregate risk score from 0-10
-        """
-        # Weights for different indicators
-        weights = {
-            "institutional_undermining": 1.5,
-            "democratic_norm_violations": 1.5,
-            "media_delegitimization": 1.2,
-            "opposition_targeting": 1.2,
-            "power_concentration": 1.5,
-            "accountability_evasion": 1.0,
-            "threat_exaggeration": 0.8,
-            "authoritarian_rhetoric": 1.0,
-            "rule_of_law_undermining": 1.3,
-            "authoritarian_score": 2.0
-        }
-        
-        # Calculate weighted score
-        total_weight = sum(weights.values())
-        weighted_score = 0
-        
-        for indicator, weight in weights.items():
-            if indicator in trend_analysis:
-                indicator_data = trend_analysis[indicator]
-                
-                # For authoritarian_score, use average of scores
-                if indicator == "authoritarian_score" and indicator_data["examples"]:
-                    scores = [item.get("score", 0) for item in indicator_data["examples"] if "score" in item]
-                    avg_score = sum(scores) / len(scores) if scores else 0
-                    weighted_score += (avg_score / 10) * weight  # Normalize to 0-1
-                else:
-                    # For other indicators, use trend strength
-                    weighted_score += indicator_data.get("trend_strength", 0) * weight
-        
-        # Normalize to 0-10 scale
-        aggregate_risk = (weighted_score / total_weight) * 10
-        
-        return aggregate_risk
-    
-    def _determine_risk_level(self, risk_score: float) -> str:
-        """
-        Determine risk level category from score.
-        
-        Args:
-            risk_score: Aggregate risk score
-            
-        Returns:
-            Risk level category
-        """
-        if risk_score < 2:
-            return "Low"
-        elif risk_score < 4:
-            return "Moderate"
-        elif risk_score < 6:
-            return "Substantial"
-        elif risk_score < 8:
-            return "High"
-        else:
-            return "Severe"
-
     def identify_recurring_topics(self, min_count: int = 3) -> Dict[str, Any]:
         """
         Identify recurring topics and track their manipulation scores over time.
@@ -447,26 +150,17 @@ class PatternRecognition:
                     # Extract timestamps and scores
                     timeline = []
                     total_score = 0
-                    total_auth_score = 0
-                    auth_score_count = 0
 
                     for analysis in matching_analyses:
                         metadata = analysis.get("metadata", {})
                         timestamp = metadata.get("analysis_timestamp", "")
                         score = metadata.get("manipulation_score", 0)
-                        
-                        # Try to extract authoritarian score
-                        auth_score = self._extract_authoritarian_score(analysis.get("text", ""))
-                        if auth_score > 0:
-                            total_auth_score += auth_score
-                            auth_score_count += 1
 
                         if timestamp:
                             timeline.append({
                                 "id": analysis.get("id", ""),
                                 "timestamp": timestamp,
                                 "score": score,
-                                "auth_score": auth_score,
                                 "title": metadata.get("title", ""),
                                 "source": metadata.get("source", ""),
                                 "bias_label": metadata.get("bias_label", "unknown")
@@ -479,10 +173,8 @@ class PatternRecognition:
                     recurring_topics[topic] = {
                         "count": data["count"],
                         "average_score": total_score / len(timeline) if timeline else 0,
-                        "average_auth_score": total_auth_score / auth_score_count if auth_score_count else 0,
                         "examples": data.get("examples", []),
-                        "timeline": timeline,
-                        "related_indicators": self._find_related_indicators(topic, matching_analyses)
+                        "timeline": timeline
                     }
 
         # Sort by count
@@ -497,28 +189,6 @@ class PatternRecognition:
             "total_topics_analyzed": len(topics_summary.get("top_topics", {})),
             "min_count_threshold": min_count
         }
-    
-    def _extract_authoritarian_score(self, text: str) -> int:
-        """Extract authoritarian score from text"""
-        score_match = re.search(r'AUTHORITARIAN SCORE:?\s*(\d+)[^\d]', text)
-        if score_match:
-            return int(score_match.group(1))
-        return 0
-    
-    def _find_related_indicators(self, topic: str, analyses: List[Dict[str, Any]]) -> Dict[str, int]:
-        """Find authoritarian indicators related to a topic"""
-        indicator_counts = {indicator: 0 for indicator in self.authoritarian_indicators}
-        
-        for analysis in analyses:
-            text = analysis.get("text", "")
-            auth_elements = self._extract_authoritarian_elements(text)
-            
-            for indicator in self.authoritarian_indicators:
-                if indicator in auth_elements and auth_elements[indicator]["present"]:
-                    indicator_counts[indicator] += 1
-        
-        # Return only indicators that appear at least once
-        return {k: v for k, v in indicator_counts.items() if v > 0}
 
     def _extract_topic_summary(self, limit: int = 10) -> Dict[str, Any]:
         """
@@ -669,28 +339,14 @@ class PatternRecognition:
 
             # Calculate average manipulation score of parent articles
             avg_parent_score = 0
-            avg_auth_score = 0
-            auth_score_count = 0
-            
             if parent_analyses:
                 total_score = sum(p.get("metadata", {}).get("manipulation_score", 0) for p in parent_analyses)
                 avg_parent_score = total_score / len(parent_analyses)
-                
-                # Calculate average authoritarian score if available
-                for p in parent_analyses:
-                    auth_score = self._extract_authoritarian_score(p.get("text", ""))
-                    if auth_score > 0:
-                        avg_auth_score += auth_score
-                        auth_score_count += 1
-                
-                if auth_score_count > 0:
-                    avg_auth_score = avg_auth_score / auth_score_count
 
             demographic_themes[demo] = {
                 "count": len(demo_narratives),
                 "common_themes": common_themes,
                 "avg_parent_manipulation_score": avg_parent_score,
-                "avg_parent_authoritarian_score": avg_auth_score if auth_score_count > 0 else 0,
                 "sample_narratives": demo_narratives[:3]  # Include a few examples
             }
 
@@ -699,3 +355,379 @@ class PatternRecognition:
             "total_narratives": len(narratives),
             "demographic_distribution": {demo: len(items) for demo, items in by_demographic.items()}
         }
+
+    def _extract_common_phrases(self, texts: List[str], min_length: int = 3, min_count: int = 2) -> List[Dict[str, Any]]:
+        """
+        Extract common phrases from a list of texts.
+
+        Args:
+            texts: List of text strings to analyze
+            min_length: Minimum number of words in a phrase
+            min_count: Minimum number of occurrences to include a phrase
+
+        Returns:
+            List of common phrases with counts
+        """
+        # Extract n-grams from texts
+        all_ngrams = Counter()
+
+        for text in texts:
+            # Normalize text
+            text = text.lower()
+            # Remove special characters
+            text = re.sub(r'[^\w\s]', ' ', text)
+            # Replace multiple spaces with single space
+            text = re.sub(r'\s+', ' ', text).strip()
+
+            words = text.split()
+
+            # Extract n-grams
+            for n in range(min_length, min(8, len(words))):
+                for i in range(len(words) - n + 1):
+                    ngram = ' '.join(words[i:i+n])
+                    all_ngrams[ngram] += 1
+
+        # Filter by minimum count
+        common_phrases = [
+            {"phrase": phrase, "count": count}
+            for phrase, count in all_ngrams.items()
+            if count >= min_count
+        ]
+
+        # Sort by count
+        common_phrases.sort(key=lambda x: x["count"], reverse=True)
+
+        # Return top phrases (limit to 20)
+        return common_phrases[:20]
+
+    def analyze_temporal_trends(self, lookback_days: int = 90, interval_days: int = 7) -> Dict[str, Any]:
+        """
+        Analyze trends over time, including manipulation scores and topic frequency.
+
+        Args:
+            lookback_days: Total days to look back
+            interval_days: Interval for grouping data points
+
+        Returns:
+            Dictionary containing temporal trend analysis
+        """
+        # Get analyses within the lookback period
+        recent_analyses = self.memory.get_recent_analyses(lookback_days)
+
+        if not recent_analyses:
+            return {"error": "No analyses found in the specified time period"}
+
+        # Calculate time intervals
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=lookback_days)
+
+        intervals = []
+        current_date = start_date
+        while current_date < end_date:
+            interval_end = min(current_date + timedelta(days=interval_days), end_date)
+            intervals.append((current_date, interval_end))
+            current_date = interval_end
+
+        # Group analyses by interval
+        interval_data = []
+
+        for interval_start, interval_end in intervals:
+            interval_start_str = interval_start.isoformat()
+            interval_end_str = interval_end.isoformat()
+
+            # Filter analyses in this interval
+            interval_analyses = [
+                a for a in recent_analyses
+                if (a.get("metadata", {}).get("analysis_timestamp", "") >= interval_start_str and
+                    a.get("metadata", {}).get("analysis_timestamp", "") < interval_end_str)
+            ]
+
+            if interval_analyses:
+                # Calculate metrics for this interval
+                total_score = sum(a.get("metadata", {}).get("manipulation_score", 0) for a in interval_analyses)
+                avg_score = total_score / len(interval_analyses)
+
+                # Count sources and topics
+                sources = {}
+                all_topics = []
+
+                for analysis in interval_analyses:
+                    metadata = analysis.get("metadata", {})
+                    source = metadata.get("source", "Unknown")
+                    sources[source] = sources.get(source, 0) + 1
+
+                    # Extract topics
+                    analysis_text = analysis.get("text", "")
+                    topics = self._extract_topics(analysis_text)
+                    all_topics.extend(topics)
+
+                # Count topic frequencies
+                topic_counts = Counter(all_topics)
+                top_topics = [{"topic": topic, "count": count}
+                             for topic, count in topic_counts.most_common(5)]
+
+                interval_data.append({
+                    "interval_start": interval_start_str,
+                    "interval_end": interval_end_str,
+                    "article_count": len(interval_analyses),
+                    "avg_manipulation_score": avg_score,
+                    "sources": sources,
+                    "top_topics": top_topics
+                })
+
+        return {
+            "lookback_days": lookback_days,
+            "interval_days": interval_days,
+            "intervals": interval_data,
+            "total_articles_analyzed": len(recent_analyses)
+        }
+
+    def analyze_source_correlation(self) -> Dict[str, Any]:
+        """
+        Analyze correlation between sources in terms of topic coverage and narrative framing.
+
+        Returns:
+            Dictionary containing source correlation analysis
+        """
+        # Get all article analyses
+        analyses = []
+        for item_id, item in self.memory.store.items.items():
+            metadata = item.get("metadata", {})
+            if metadata.get("type") == "article_analysis":
+                analysis = item.copy()
+                analysis["id"] = item_id
+                analyses.append(analysis)
+
+        if not analyses:
+            return {"error": "No analyses found"}
+
+        # Group by source
+        by_source = {}
+        for analysis in analyses:
+            metadata = analysis.get("metadata", {})
+            source = metadata.get("source", "Unknown")
+
+            if source not in by_source:
+                by_source[source] = []
+
+            by_source[source].append(analysis)
+
+        # Extract topics and frames by source
+        source_profiles = {}
+        for source, source_analyses in by_source.items():
+            topics = []
+            frames = []
+
+            for analysis in source_analyses:
+                analysis_text = analysis.get("text", "")
+                topics.extend(self._extract_topics(analysis_text))
+                frames.extend(self._extract_frames(analysis_text))
+
+            # Count frequencies
+            topic_counts = Counter(topics)
+            frame_counts = Counter(frames)
+
+            source_profiles[source] = {
+                "count": len(source_analyses),
+                "top_topics": [{"topic": topic, "count": count}
+                             for topic, count in topic_counts.most_common(10)],
+                "top_frames": [{"frame": frame, "count": count}
+                              for frame, count in frame_counts.most_common(10)],
+                "avg_manipulation_score": sum(a.get("metadata", {}).get("manipulation_score", 0)
+                                          for a in source_analyses) / len(source_analyses) if source_analyses else 0
+            }
+
+        # Calculate correlation between sources
+        correlations = []
+        source_names = list(source_profiles.keys())
+
+        for i, source1 in enumerate(source_names):
+            for j in range(i+1, len(source_names)):
+                source2 = source_names[j]
+
+                # Calculate topic overlap
+                source1_topics = {item["topic"] for item in source_profiles[source1]["top_topics"]}
+                source2_topics = {item["topic"] for item in source_profiles[source2]["top_topics"]}
+                topic_overlap = len(source1_topics.intersection(source2_topics)) / max(1, min(len(source1_topics), len(source2_topics)))
+
+                # Calculate frame overlap
+                source1_frames = {item["frame"] for item in source_profiles[source1]["top_frames"]}
+                source2_frames = {item["frame"] for item in source_profiles[source2]["top_frames"]}
+                frame_overlap = len(source1_frames.intersection(source2_frames)) / max(1, min(len(source1_frames), len(source2_frames)))
+
+                # Calculate manipulation score difference
+                score_diff = abs(source_profiles[source1]["avg_manipulation_score"] -
+                                 source_profiles[source2]["avg_manipulation_score"])
+
+                correlations.append({
+                    "source1": source1,
+                    "source2": source2,
+                    "topic_overlap": topic_overlap,
+                    "frame_overlap": frame_overlap,
+                    "manipulation_score_diff": score_diff
+                })
+
+        # Sort by overall correlation (topic + frame overlap)
+        correlations.sort(key=lambda x: x["topic_overlap"] + x["frame_overlap"], reverse=True)
+
+        return {
+            "source_profiles": source_profiles,
+            "correlations": correlations
+        }
+
+    def _extract_frames(self, analysis: str) -> List[str]:
+        """Extract frames from analysis text"""
+        frames = []
+
+        try:
+            if "FRAMING" in analysis:
+                frames_section = analysis.split("FRAMING:")[1].split("\n\n")[0]
+
+                # Simple extraction - split by sentences and clean up
+                for item in re.split(r'\.', frames_section):
+                    frame = item.strip()
+                    if frame and len(frame) > 5 and not frame.startswith("EMOTIONAL"):
+                        frames.append(frame)
+        except Exception as e:
+            self.logger.error(f"Error extracting frames: {str(e)}")
+
+        return frames
+
+    def analyze_manipulation_techniques(self) -> Dict[str, Any]:
+        """
+        Analyze the prevalence of different manipulation techniques across sources.
+
+        Returns:
+            Dictionary containing manipulation technique analysis
+        """
+        # Get all article analyses
+        analyses = []
+        for item_id, item in self.memory.store.items.items():
+            metadata = item.get("metadata", {})
+            if metadata.get("type") == "article_analysis":
+                analysis = item.copy()
+                analysis["id"] = item_id
+                analyses.append(analysis)
+
+        if not analyses:
+            return {"error": "No analyses found"}
+
+        # Extract manipulation techniques from analyses
+        technique_count = Counter()
+        technique_by_source = {}
+        technique_by_bias = {
+            "left": Counter(),
+            "center-left": Counter(),
+            "center": Counter(),
+            "center-right": Counter(),
+            "right": Counter(),
+            "unknown": Counter()
+        }
+
+        high_manipulation_examples = {}  # Track examples of each technique
+
+        for analysis in analyses:
+            metadata = analysis.get("metadata", {})
+            source = metadata.get("source", "Unknown")
+            bias = metadata.get("bias_label", "unknown")
+            score = metadata.get("manipulation_score", 0)
+            analysis_text = analysis.get("text", "")
+
+            # Extract techniques
+            techniques = self._extract_manipulation_techniques(analysis_text)
+
+            # Count techniques
+            for technique in techniques:
+                technique_count[technique] += 1
+
+                # Count by source
+                if source not in technique_by_source:
+                    technique_by_source[source] = Counter()
+                technique_by_source[source][technique] += 1
+
+                # Count by bias
+                if bias not in technique_by_bias:
+                    bias = "unknown"
+                technique_by_bias[bias][technique] += 1
+
+                # Track high manipulation examples
+                if score >= 7:  # High manipulation threshold
+                    if technique not in high_manipulation_examples:
+                        high_manipulation_examples[technique] = []
+
+                    if len(high_manipulation_examples[technique]) < 3:  # Keep up to 3 examples
+                        high_manipulation_examples[technique].append({
+                            "id": analysis.get("id", ""),
+                            "title": metadata.get("title", ""),
+                            "source": source,
+                            "score": score
+                        })
+
+        # Prepare results
+        technique_results = []
+        for technique, count in technique_count.most_common():
+            technique_results.append({
+                "technique": technique,
+                "count": count,
+                "percentage": count / len(analyses) * 100 if analyses else 0,
+                "examples": high_manipulation_examples.get(technique, [])
+            })
+
+        # Format source-specific results
+        source_results = {}
+        for source, counts in technique_by_source.items():
+            total = sum(counts.values())
+            techniques = [
+                {"technique": technique, "count": count, "percentage": count / total * 100 if total else 0}
+                for technique, count in counts.most_common(5)
+            ]
+            source_results[source] = {
+                "total_articles": len([a for a in analyses if a.get("metadata", {}).get("source") == source]),
+                "top_techniques": techniques
+            }
+
+        # Format bias-specific results
+        bias_results = {}
+        for bias, counts in technique_by_bias.items():
+            if sum(counts.values()) > 0:  # Only include biases with data
+                total = sum(counts.values())
+                techniques = [
+                    {"technique": technique, "count": count, "percentage": count / total * 100 if total else 0}
+                    for technique, count in counts.most_common(5)
+                ]
+                bias_results[bias] = {
+                    "total_articles": len([a for a in analyses if a.get("metadata", {}).get("bias_label") == bias]),
+                    "top_techniques": techniques
+                }
+
+        return {
+            "total_articles": len(analyses),
+            "techniques": technique_results,
+            "by_source": source_results,
+            "by_bias": bias_results
+        }
+
+    def _extract_manipulation_techniques(self, analysis: str) -> List[str]:
+        """Extract manipulation techniques from analysis text"""
+        techniques = []
+        technique_list = [
+            "Appeal to fear or outrage",
+            "False equivalence",
+            "Cherry-picking of facts",
+            "Ad hominem attacks",
+            "Straw man arguments",
+            "Bandwagon appeal",
+            "Black-and-white fallacy"
+        ]
+
+        try:
+            if "MANIPULATION TECHNIQUES" in analysis:
+                techniques_section = analysis.split("MANIPULATION TECHNIQUES:")[1].split("MANIPULATION SCORE:")[0]
+
+                for technique in technique_list:
+                    if technique.lower() in techniques_section.lower():
+                        techniques.append(technique)
+        except Exception as e:
+            self.logger.error(f"Error extracting manipulation techniques: {str(e)}")
+
+        return techniques

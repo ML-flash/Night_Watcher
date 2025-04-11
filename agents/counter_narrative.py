@@ -7,18 +7,16 @@ import logging
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
-from agents.base import LLMProvider
+from agents.base import Agent, LLMProvider
 from utils.text import truncate_text, extract_manipulation_score
 
 
-class CounterNarrativeGenerator:
+class CounterNarrativeGenerator(Agent):
     """Agent for generating counter-narratives to divisive content and authoritarian rhetoric"""
 
     def __init__(self, llm_provider: LLMProvider):
         """Initialize with LLM provider and demographics"""
-        self.llm_provider = llm_provider
-        self.name = "CounterNarrativeGenerator"
-        self.logger = logging.getLogger(f"{self.name}")
+        super().__init__(llm_provider, name="CounterNarrativeGenerator")
         self.demographics = self._load_demographics()
 
     def _load_demographics(self) -> List[Dict[str, Any]]:
@@ -26,45 +24,30 @@ class CounterNarrativeGenerator:
         return [
             {
                 "id": "progressive",
-                "values": ["equality", "social justice", "collective welfare", "change", 
+                "values": ["equality", "social justice", "collective welfare", "change",
                           "diversity", "inclusion", "democratic participation"]
             },
             {
                 "id": "moderate_left",
-                "values": ["pragmatism", "incremental progress", "compromise", "institutions", 
+                "values": ["pragmatism", "incremental progress", "compromise", "institutions",
                           "reform", "balance", "civic engagement"]
             },
             {
                 "id": "moderate_right",
-                "values": ["tradition", "individual liberty", "fiscal responsibility", 
+                "values": ["tradition", "individual liberty", "fiscal responsibility",
                           "stability", "order", "meritocracy", "constitutional principles"]
             },
             {
                 "id": "conservative",
-                "values": ["tradition", "faith", "patriotism", "security", "family values", 
+                "values": ["tradition", "faith", "patriotism", "security", "family values",
                           "individualism", "constitutional originalism"]
             },
             {
                 "id": "libertarian",
-                "values": ["individual freedom", "limited government", "self-reliance", 
+                "values": ["individual freedom", "limited government", "self-reliance",
                           "markets", "personal responsibility", "civil liberties"]
             }
         ]
-    
-    def _call_llm(self, prompt: str, max_tokens: int = 1000,
-                  temperature: float = 0.7, stop: Optional[List[str]] = None) -> str:
-        """Helper method to call the LLM and extract text response"""
-        response = self.llm_provider.complete(prompt, max_tokens, temperature, stop)
-
-        if "error" in response:
-            self.logger.error(f"LLM error: {response['error']}")
-            return f"Error: {response['error']}"
-
-        try:
-            return response["choices"][0]["text"].strip()
-        except (KeyError, IndexError) as e:
-            self.logger.error(f"Error extracting text from LLM response: {str(e)}")
-            return f"Error extracting response: {str(e)}"
 
     def generate_for_demographic(self, article: Dict[str, Any], analysis: str,
                                  demographic: Dict[str, Any]) -> Dict[str, Any]:
@@ -134,24 +117,24 @@ class CounterNarrativeGenerator:
             "timestamp": datetime.now().isoformat()
         }
 
-    def generate_authoritarian_response(self, article: Dict[str, Any], 
-                                        auth_analysis: str, 
+    def generate_authoritarian_response(self, article: Dict[str, Any],
+                                        auth_analysis: str,
                                         demographic: Dict[str, Any]) -> Dict[str, Any]:
         """
         Generate a response to authoritarian patterns for a specific demographic.
-        
+
         Args:
             article: Article data
             auth_analysis: Authoritarian analysis text
             demographic: Demographic info
-            
+
         Returns:
             Democratic resilience narrative
         """
         # Truncate content if too long
         content = article.get('content', '')
         content = truncate_text(content, max_length=3000)
-        
+
         prompt = f"""
         Generate a democratic resilience response for {demographic["id"]} readers that addresses 
         the authoritarian indicators identified in this analysis.
@@ -189,10 +172,10 @@ class CounterNarrativeGenerator:
         
         UNIFYING MESSAGE: How protecting democracy transcends typical partisan divides
         """
-        
+
         self.logger.info(f"Generating authoritarian response for {demographic['id']} demographic...")
         content = self._call_llm(prompt, max_tokens=1200, temperature=0.7)
-        
+
         return {
             "demographic": demographic["id"],
             "content": content,
@@ -259,22 +242,22 @@ class CounterNarrativeGenerator:
             "timestamp": datetime.now().isoformat()
         }
 
-    def generate_democratic_principles_narrative(self, article: Dict[str, Any], 
+    def generate_democratic_principles_narrative(self, article: Dict[str, Any],
                                                 auth_analysis: str) -> Dict[str, Any]:
         """
         Generate content focused on shared democratic principles across political divides.
-        
+
         Args:
             article: Article data
             auth_analysis: Authoritarian analysis text
-            
+
         Returns:
             Democratic principles narrative
         """
         # Truncate content if too long
         content = article.get('content', '')
         content = truncate_text(content, max_length=3000)
-        
+
         prompt = f"""
         Create a narrative that appeals to BOTH conservative AND progressive Americans
         by emphasizing shared democratic principles over partisan divisions.
@@ -313,89 +296,12 @@ class CounterNarrativeGenerator:
         
         CALL TO ACTION: Concrete steps citizens across the political spectrum can take together
         """
-        
+
         self.logger.info(f"Generating democratic principles narrative...")
         content = self._call_llm(prompt, max_tokens=1200, temperature=0.7)
-        
+
         return {
             "type": "democratic_principles",
             "content": content,
             "timestamp": datetime.now().isoformat()
         }
-
-    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Generate counter-narratives for analyzed articles.
-
-        Args:
-            input_data: Dict with 'analyses', 'authoritarian_analyses', and 'manipulation_threshold' keys
-
-        Returns:
-            Dict with 'counter_narratives' containing generated narratives
-        """
-        analyses = input_data.get("analyses", [])
-        auth_analyses = input_data.get("authoritarian_analyses", [])
-        manipulation_threshold = input_data.get("manipulation_threshold", 6)
-        auth_threshold = input_data.get("authoritarian_threshold", 5)
-        results = []
-
-        # Process each article analysis
-        for i, analysis_result in enumerate(analyses):
-            if "error" in analysis_result:
-                self.logger.warning(f"Skipping analysis with error: {analysis_result.get('error')}")
-                continue
-
-            # Extract manipulation score
-            manipulation_score = extract_manipulation_score(analysis_result["analysis"])
-            
-            # Get corresponding authoritarian analysis
-            auth_analysis_result = auth_analyses[i] if i < len(auth_analyses) else None
-            auth_score = 0
-            
-            if auth_analysis_result and "structured_elements" in auth_analysis_result:
-                auth_score = auth_analysis_result["structured_elements"].get("authoritarian_score", 0)
-            
-            # Process articles that meet either threshold
-            if manipulation_score >= manipulation_threshold or auth_score >= auth_threshold:
-                article = analysis_result["article"]
-                analysis = analysis_result["analysis"]
-                
-                # Generate counter-narratives for all demographics
-                counter_narratives = []
-                for demo in self.demographics:
-                    narrative = self.generate_for_demographic(article, analysis, demo)
-                    counter_narratives.append(narrative)
-                
-                # Generate authoritarian responses if applicable
-                auth_responses = []
-                if auth_analysis_result and auth_score >= auth_threshold:
-                    auth_analysis = auth_analysis_result["authoritarian_analysis"]
-                    for demo in self.demographics:
-                        response = self.generate_authoritarian_response(article, auth_analysis, demo)
-                        auth_responses.append(response)
-                    
-                    # Generate democratic principles narrative
-                    democratic_principles = self.generate_democratic_principles_narrative(
-                        article, auth_analysis
-                    )
-                
-                # Generate bridging content
-                bridging_content = self.generate_bridging_content(
-                    article, analysis, opposing_groups=["progressive", "conservative"]
-                )
-
-                result = {
-                    "article_title": article["title"],
-                    "source": article["source"],
-                    "url": article.get("url", ""),
-                    "manipulation_score": manipulation_score,
-                    "authoritarian_score": auth_score,
-                    "counter_narratives": counter_narratives,
-                    "authoritarian_responses": auth_responses if auth_score >= auth_threshold else [],
-                    "democratic_principles_narrative": democratic_principles if auth_score >= auth_threshold else None,
-                    "bridging_content": bridging_content
-                }
-
-                results.append(result)
-
-        return {"counter_narratives": results}

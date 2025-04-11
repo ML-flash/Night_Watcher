@@ -1,0 +1,104 @@
+{
+  "llm_provider": {
+    "type": "lm_studio",
+    "host": "http://localhost:1234",
+    "model": "default"
+  },
+  "content_collection": {
+    "article_limit": 5,
+    "sources": [
+      {
+        "url": "https://www.reuters.com/rss/topNews",
+        "type": "rss",
+        "bias": "center"
+      },
+      {
+        "url": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+        "type": "rss",
+        "bias": "center-left"
+      },
+      {
+        "url": "https://feeds.foxnews.com/foxnews/politics",
+        "type": "rss",
+        "bias": "right"
+      }
+    ]
+  },
+  "content_analysis": {
+    "manipulation_threshold": 6
+  },
+  "counter_narratives": {
+    "demographics": [
+      {
+        "id": "progressive",
+        "values": [
+          "equality",
+          "social justice",
+          "collective welfare",
+          "change",
+          "diversity",
+          "inclusion"
+        ]
+      },
+      {
+        "id": "moderate_left",
+        "values": [
+          "pragmatism",
+          "incremental progress",
+          "compromise",
+          "institutions",
+          "reform",
+          "balance"
+        ]
+      },
+      {
+        "id": "moderate_right",
+        "values": [
+          "tradition",
+          "individual liberty",
+          "fiscal responsibility",
+          "stability",
+          "order",
+          "meritocracy"
+        ]
+      },
+      {
+        "id": "conservative",
+        "values": [
+          "tradition",
+          "faith",
+          "patriotism",
+          "security",
+          "family values",
+          "individualism"
+        ]
+      },
+      {
+        "id": "libertarian",
+        "values": [
+          "individual freedom",
+          "limited government",
+          "self-reliance",
+          "markets",
+          "personal responsibility"
+        ]
+      }
+    ]
+  },
+  "memory": {
+    "store_type": "simple",
+    "file_path": "data/memory/night_watcher_memory.pkl",
+    "embedding_provider": "simple"
+  },
+  "output": {
+    "base_dir": "data",
+    "save_collected": true,
+    "save_analyses": true,
+    "save_counter_narratives": true,
+    "save_strategic_messages": true
+  },
+  "logging": {
+    "level": "INFO",
+    "log_dir": "logs"
+  }
+}

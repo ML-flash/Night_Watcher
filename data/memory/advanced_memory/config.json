@@ -1,0 +1,7 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-04-11T09:56:57.312230",
+  "store_path": "data/memory\\advanced_memory\\vector_store.pkl",
+  "graph_path": "data/memory\\advanced_memory\\knowledge_graph.pkl",
+  "legacy_path": "data/memory/night_watcher_memory.pkl"
+}

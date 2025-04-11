@@ -9,33 +9,16 @@ import logging
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
-from agents.base import LLMProvider
+from agents.base import Agent, LLMProvider
 from utils.text import truncate_text
 
 
-class ContentAnalyzer:
+class ContentAnalyzer(Agent):
     """Agent for analyzing articles for divisive content and authoritarian patterns"""
 
     def __init__(self, llm_provider: LLMProvider):
         """Initialize with LLM provider"""
-        self.llm_provider = llm_provider
-        self.name = "ContentAnalyzer"
-        self.logger = logging.getLogger(f"{self.name}")
-
-    def _call_llm(self, prompt: str, max_tokens: int = 1000,
-                  temperature: float = 0.7, stop: Optional[List[str]] = None) -> str:
-        """Helper method to call the LLM and extract text response"""
-        response = self.llm_provider.complete(prompt, max_tokens, temperature, stop)
-
-        if "error" in response:
-            self.logger.error(f"LLM error: {response['error']}")
-            return f"Error: {response['error']}"
-
-        try:
-            return response["choices"][0]["text"].strip()
-        except (KeyError, IndexError) as e:
-            self.logger.error(f"Error extracting text from LLM response: {str(e)}")
-            return f"Error extracting response: {str(e)}"
+        super().__init__(llm_provider, name="ContentAnalyzer")
 
     def analyze_article(self, article_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -96,17 +79,17 @@ class ContentAnalyzer:
     def analyze_authoritarian_patterns(self, article_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Analyze article for specific authoritarian governance patterns.
-        
+
         Args:
             article_data: Article data to analyze
-            
+
         Returns:
             Authoritarian pattern analysis result
         """
         # Trim content if it's too long
         content = article_data.get('content', '')
         content = truncate_text(content, max_length=6000)
-        
+
         prompt = f"""
         Analyze this political/governmental content for specific indicators of authoritarian governance trends.
         Focus particularly on identifying authoritarian patterns in the Trump administration's actions or rhetoric.
@@ -139,10 +122,10 @@ class ContentAnalyzer:
         10. AUTHORITARIAN SCORE: Rate from 1-10 how strongly this content indicates authoritarian governance trends.
             Explain your rating using specific examples from the text.
         """
-        
+
         self.logger.info(f"Analyzing authoritarian patterns in: {article_data['title']}")
         analysis = self._call_llm(prompt, max_tokens=1200, temperature=0.1)
-        
+
         return {
             "article": article_data,
             "authoritarian_analysis": analysis,
@@ -197,10 +180,10 @@ class ContentAnalyzer:
     def extract_authoritarian_elements(self, analysis: str) -> Dict[str, Any]:
         """
         Extract structured authoritarian elements from an analysis.
-        
+
         Args:
             analysis: Authoritarian analysis text to extract from
-            
+
         Returns:
             Dict with structured authoritarian elements
         """
@@ -228,15 +211,15 @@ class ContentAnalyzer:
         Include specific examples as short phrases or sentences.
         Provide only valid JSON with no explanations or extra text.
         """
-        
+
         result = self._call_llm(prompt, max_tokens=1000, temperature=0.1)
-        
+
         try:
             # Find the JSON part (in case there's extra text)
             json_match = re.search(r'\{.*\}', result, re.DOTALL)
             if json_match:
                 result = json_match.group(0)
-                
+
             return json.loads(result)
         except Exception as e:
             self.logger.error(f"Error parsing extracted authoritarian elements: {str(e)}")
@@ -258,21 +241,21 @@ class ContentAnalyzer:
         articles = input_data.get("articles", [])
         results = []
         auth_results = []
-        
+
         for article in articles:
             # Perform standard divisive content analysis
             analysis = self.analyze_article(article)
             results.append(analysis)
-            
+
             # Perform authoritarian pattern analysis for government-related content
             auth_analysis = self.analyze_authoritarian_patterns(article)
             auth_results.append(auth_analysis)
-            
+
             # Extract structured elements from both analyses
             if "analysis" in analysis:
                 elements = self.extract_key_elements(analysis["analysis"])
                 analysis["structured_elements"] = elements
-                
+
             if "authoritarian_analysis" in auth_analysis:
                 auth_elements = self.extract_authoritarian_elements(auth_analysis["authoritarian_analysis"])
                 auth_analysis["structured_elements"] = auth_elements

@@ -42,7 +42,7 @@ class NightWatcherWorkflow:
 
         # Add pattern recognition
         self.pattern_recognition = PatternRecognition(self.memory)
-        
+
         # Add report generator if available
         try:
             from agents.report_generator import DemocraticResilienceReportGenerator
@@ -73,7 +73,7 @@ class NightWatcherWorkflow:
         self.narrative_dir = f"{self.output_dir}/counter_narratives/{self.timestamp}"
         self.report_dir = f"{self.output_dir}/reports/{self.timestamp}"
         self.analysis_dir = f"{self.output_dir}/analysis/{self.timestamp}"
-        
+
         os.makedirs(self.narrative_dir, exist_ok=True)
         os.makedirs(self.report_dir, exist_ok=True)
         os.makedirs(self.analysis_dir, exist_ok=True)
@@ -116,15 +116,15 @@ class NightWatcherWorkflow:
             if "article" in analysis:
                 article_slug = create_slug(analysis['article']['title'])
                 save_to_file(analysis, f"{self.output_dir}/analyzed/analysis_{article_slug}_{self.timestamp}.json")
-                
+
                 # Store in memory system
                 analysis_id = self.memory.store_article_analysis(analysis)
-                
+
                 # If we have corresponding authoritarian analysis, save it
                 if i < len(auth_analyses):
                     auth_analysis = auth_analyses[i]
                     save_to_file(auth_analysis, f"{self.output_dir}/analyzed/auth_analysis_{article_slug}_{self.timestamp}.json")
-                    
+
                     # Store authoritarian analysis in memory (could enhance memory system to handle this specifically)
                     auth_meta = {
                         "type": "authoritarian_analysis",
@@ -133,11 +133,11 @@ class NightWatcherWorkflow:
                         "url": analysis['article'].get('url', ''),
                         "parent_id": analysis_id
                     }
-                    
+
                     # Extract authoritarian score if available
                     if "structured_elements" in auth_analysis:
                         auth_meta["authoritarian_score"] = auth_analysis["structured_elements"].get("authoritarian_score", 0)
-                    
+
                     self.memory.store.add_item(
                         f"auth_{analysis_id}",
                         auth_analysis.get("authoritarian_analysis", ""),
@@ -180,7 +180,7 @@ class NightWatcherWorkflow:
 
                 # Store in memory system
                 self.memory.store_counter_narrative(demo_narrative, analysis_id)
-            
+
             # Save authoritarian responses if available
             for auth_response in narrative.get("authoritarian_responses", []):
                 demo_id = auth_response.get("demographic", "unknown")
@@ -188,7 +188,7 @@ class NightWatcherWorkflow:
                     auth_response.get("content", ""),
                     f"{self.narrative_dir}/{article_slug}_{demo_id}_auth_response.txt"
                 )
-            
+
             # Save democratic principles narrative if available
             if narrative.get("democratic_principles_narrative"):
                 save_to_file(
@@ -254,59 +254,59 @@ class NightWatcherWorkflow:
                         content,
                         f"{self.narrative_dir}/{article_slug}_{demo}_talking_points.txt"
                     )
-        
+
         # 4. Run pattern analysis to identify authoritarian trends
         self.logger.info(f"Running pattern analysis over the last {pattern_analysis_days} days...")
-        
+
         # Authoritarian trend analysis
         auth_trends = self.pattern_recognition.analyze_authoritarian_trend_patterns(pattern_analysis_days)
         save_to_file(
             auth_trends,
             f"{self.analysis_dir}/authoritarian_trends_{self.timestamp}.json"
         )
-        
+
         # Topic analysis
         topic_analysis = self.pattern_recognition.identify_recurring_topics()
         save_to_file(
             topic_analysis,
             f"{self.analysis_dir}/topic_analysis_{self.timestamp}.json"
         )
-        
+
         # Actor analysis
         actor_analysis = self.pattern_recognition.analyze_authoritarian_actors(pattern_analysis_days)
         save_to_file(
             actor_analysis,
             f"{self.analysis_dir}/actor_analysis_{self.timestamp}.json"
         )
-        
+
         # 5. Generate comprehensive reports if enabled and available
         reports_generated = 0
         if generate_reports and self.has_report_generator:
             self.logger.info("Generating democratic resilience reports...")
-            
+
             # Weekly report
             weekly_report = self.report_generator.process({
                 "report_type": "weekly",
                 "lookback_days": 7,
                 "pattern_findings": auth_trends
             })
-            
+
             save_to_file(
                 weekly_report.get("report", ""),
                 f"{self.report_dir}/weekly_resilience_report_{self.timestamp}.txt"
             )
-            
+
             # Action kit
             action_kit = self.report_generator.process({
                 "report_type": "action_kit",
                 "pattern_findings": auth_trends
             })
-            
+
             save_to_file(
                 action_kit.get("action_kit", ""),
                 f"{self.report_dir}/democratic_action_kit_{self.timestamp}.txt"
             )
-            
+
             # Actor reports for top 3 concerning actors
             actor_data = actor_analysis.get("actor_patterns", {})
             sorted_actors = sorted(
@@ -314,20 +314,20 @@ class NightWatcherWorkflow:
                 key=lambda x: x[1].get("authoritarian_pattern_score", 0),
                 reverse=True
             )
-            
+
             for actor, data in sorted_actors[:3]:
                 actor_report = self.report_generator.process({
                     "report_type": "actor",
                     "actor": actor,
                     "actor_data": data
                 })
-                
+
                 actor_slug = actor.lower().replace(" ", "_")
                 save_to_file(
                     actor_report.get("report", ""),
                     f"{self.report_dir}/actor_report_{actor_slug}_{self.timestamp}.txt"
                 )
-            
+
             # Topic reports for top 3 concerning topics
             topic_data = topic_analysis.get("recurring_topics", {})
             sorted_topics = sorted(
@@ -335,20 +335,20 @@ class NightWatcherWorkflow:
                 key=lambda x: x[1].get("average_auth_score", 0),
                 reverse=True
             )
-            
+
             for topic, data in sorted_topics[:3]:
                 topic_report = self.report_generator.process({
                     "report_type": "topic",
                     "topic": topic,
                     "topic_data": data
                 })
-                
+
                 topic_slug = create_slug(topic)
                 save_to_file(
                     topic_report.get("report", ""),
                     f"{self.report_dir}/topic_report_{topic_slug}_{self.timestamp}.txt"
                 )
-            
+
             reports_generated = 5 + len(sorted_actors[:3]) + len(sorted_topics[:3])
 
         self.logger.info(f"Processing complete. All outputs saved in {self.output_dir}")
