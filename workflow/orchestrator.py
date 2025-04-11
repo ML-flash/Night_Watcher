@@ -26,6 +26,9 @@ class NightWatcherWorkflow:
     def __init__(self, llm_provider: LLMProvider, memory_system: Optional[MemorySystem] = None,
                 output_dir: str = "data"):
         """Initialize workflow with agents and output directory"""
+        # Set up logging first to avoid attribute errors
+        self.logger = logging.getLogger("NightWatcherWorkflow")
+
         self.llm_provider = llm_provider
         self.output_dir = output_dir
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -44,16 +47,20 @@ class NightWatcherWorkflow:
         self.pattern_recognition = PatternRecognition(self.memory)
 
         # Add report generator if available
+        self.has_report_generator = False
         try:
-            from agents.report_generator import DemocraticResilienceReportGenerator
-            self.report_generator = DemocraticResilienceReportGenerator(llm_provider, self.memory)
-            self.has_report_generator = True
+            # Only attempt to import if the module exists
+            import importlib.util
+            if importlib.util.find_spec("agents.report_generator"):
+                from agents.report_generator import DemocraticResilienceReportGenerator
+                self.report_generator = DemocraticResilienceReportGenerator(llm_provider, self.memory)
+                self.has_report_generator = True
+            else:
+                self.logger.warning("DemocraticResilienceReportGenerator module not found")
         except ImportError:
-            self.has_report_generator = False
             self.logger.warning("DemocraticResilienceReportGenerator not available")
-
-        # Set up logging
-        self.logger = logging.getLogger("NightWatcherWorkflow")
+        except Exception as e:
+            self.logger.warning(f"Error initializing report generator: {str(e)}")
 
         # Ensure output directories exist
         self._ensure_data_dirs()
@@ -136,7 +143,8 @@ class NightWatcherWorkflow:
 
                     # Extract authoritarian score if available
                     if "structured_elements" in auth_analysis:
-                        auth_meta["authoritarian_score"] = auth_analysis["structured_elements"].get("authoritarian_score", 0)
+                        auth_meta["authoritarian_score"] = auth_analysis["structured_elements"].get(
+                            "authoritarian_score", 0)
 
                     self.memory.store.add_item(
                         f"auth_{analysis_id}",
@@ -259,7 +267,7 @@ class NightWatcherWorkflow:
         self.logger.info(f"Running pattern analysis over the last {pattern_analysis_days} days...")
 
         # Authoritarian trend analysis
-        auth_trends = self.pattern_recognition.analyze_authoritarian_trend_patterns(pattern_analysis_days)
+        auth_trends = self.pattern_recognition.analyze_source_bias_patterns(pattern_analysis_days)
         save_to_file(
             auth_trends,
             f"{self.analysis_dir}/authoritarian_trends_{self.timestamp}.json"

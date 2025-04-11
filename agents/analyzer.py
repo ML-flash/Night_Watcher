@@ -20,6 +20,27 @@ class ContentAnalyzer(Agent):
         """Initialize with LLM provider"""
         super().__init__(llm_provider, name="ContentAnalyzer")
 
+    def preprocess_llm_output(self, text: str) -> str:
+        """
+        Remove reasoning tags and other artifacts from LLM outputs.
+
+        Args:
+            text: Text to preprocess, potentially containing reasoning tags
+
+        Returns:
+            Cleaned text with reasoning tags and other artifacts removed
+        """
+        # Remove reasoning tags and their contents
+        text = re.sub(r'<reasoning>.*?</reasoning>', '', text, flags=re.DOTALL)
+        # Remove standalone reasoning end tag
+        text = re.sub(r'</reasoning>', '', text)
+        # Remove sep tag and anything after it
+        text = re.sub(r'<sep>.*?$', '', text, flags=re.DOTALL)
+        # Remove any other model-specific artifacts
+        text = re.sub(r'human:', '', text)
+
+        return text.strip()
+
     def analyze_article(self, article_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Analyze a single article for divisive content.
@@ -69,6 +90,9 @@ class ContentAnalyzer(Agent):
 
         self.logger.info(f"Analyzing article: {article_data['title']}")
         analysis = self._call_llm(prompt, max_tokens=1000, temperature=0.1, stop=["User:", "\n\n\n"])
+
+        # Preprocess the analysis to remove any reasoning tags
+        analysis = self.preprocess_llm_output(analysis)
 
         return {
             "article": article_data,
@@ -126,6 +150,9 @@ class ContentAnalyzer(Agent):
         self.logger.info(f"Analyzing authoritarian patterns in: {article_data['title']}")
         analysis = self._call_llm(prompt, max_tokens=1200, temperature=0.1)
 
+        # Preprocess the analysis to remove any reasoning tags
+        analysis = self.preprocess_llm_output(analysis)
+
         return {
             "article": article_data,
             "authoritarian_analysis": analysis,
@@ -142,6 +169,9 @@ class ContentAnalyzer(Agent):
         Returns:
             Dict with structured elements
         """
+        # Ensure analysis is preprocessed
+        analysis = self.preprocess_llm_output(analysis)
+
         prompt = f"""
         Extract the key elements from this article analysis in a structured format.
 
@@ -162,19 +192,44 @@ class ContentAnalyzer(Agent):
         """
 
         result = self._call_llm(prompt, max_tokens=800, temperature=0.1)
+        result = self.preprocess_llm_output(result)
 
         try:
             # Find the JSON part (in case there's extra text)
             json_match = re.search(r'\{.*\}', result, re.DOTALL)
             if json_match:
                 result = json_match.group(0)
+                return json.loads(result)
+            else:
+                # No JSON found, create a fallback structure
+                self.logger.warning(f"No JSON found in LLM response, creating fallback structure")
 
-            return json.loads(result)
+                # Extract manipulation score if possible
+                score_match = re.search(r'manipulation_score["\s:]+(\d+)', result, re.IGNORECASE)
+                score = int(score_match.group(1)) if score_match else 5
+
+                return {
+                    "main_topics": ["Unspecified topic"],
+                    "frames": ["Unspecified frame"],
+                    "emotional_triggers": ["Unspecified trigger"],
+                    "divisive_elements": ["Unspecified element"],
+                    "manipulation_techniques": ["Unspecified technique"],
+                    "manipulation_score": score
+                }
         except Exception as e:
             self.logger.error(f"Error parsing extracted elements: {str(e)}")
+            self.logger.debug(f"Raw LLM response: {result}")
+
+            # Return a fallback structure
             return {
+                "main_topics": ["Unspecified topic"],
+                "frames": ["Unspecified frame"],
+                "emotional_triggers": ["Unspecified trigger"],
+                "divisive_elements": ["Unspecified element"],
+                "manipulation_techniques": ["Unspecified technique"],
+                "manipulation_score": 5,
                 "error": f"Failed to extract elements: {str(e)}",
-                "raw_result": result
+                "raw_result": result[:200]  # Include first 200 chars of raw result for debugging
             }
 
     def extract_authoritarian_elements(self, analysis: str) -> Dict[str, Any]:
@@ -187,12 +242,15 @@ class ContentAnalyzer(Agent):
         Returns:
             Dict with structured authoritarian elements
         """
+        # Ensure analysis is preprocessed
+        analysis = self.preprocess_llm_output(analysis)
+
         prompt = f"""
         Extract the key authoritarian indicators from this analysis in a structured format.
-        
+
         ANALYSIS:
         {analysis}
-        
+
         Extract and return ONLY the following in JSON format:
         {{
             "institutional_undermining": {{"present": true/false, "examples": ["example1", "example2"]}},
@@ -206,26 +264,65 @@ class ContentAnalyzer(Agent):
             "rule_of_law_undermining": {{"present": true/false, "examples": ["example1", "example2"]}},
             "authoritarian_score": 0-10
         }}
-        
+
         For each indicator, set "present" to true only if there is clear evidence in the analysis.
         Include specific examples as short phrases or sentences.
         Provide only valid JSON with no explanations or extra text.
         """
 
         result = self._call_llm(prompt, max_tokens=1000, temperature=0.1)
+        result = self.preprocess_llm_output(result)
 
         try:
             # Find the JSON part (in case there's extra text)
             json_match = re.search(r'\{.*\}', result, re.DOTALL)
             if json_match:
                 result = json_match.group(0)
+                return json.loads(result)
+            else:
+                # No JSON found, create a fallback structure
+                self.logger.warning(f"No JSON found in LLM response, creating fallback structure")
 
-            return json.loads(result)
+                # Extract authoritarian score if possible
+                score_match = re.search(r'authoritarian_score["\s:]+(\d+)', result, re.IGNORECASE)
+                score = int(score_match.group(1)) if score_match else 3
+
+                # Create default structure for all indicators
+                default_indicator = {"present": False, "examples": []}
+
+                return {
+                    "institutional_undermining": default_indicator.copy(),
+                    "democratic_norm_violations": default_indicator.copy(),
+                    "media_delegitimization": default_indicator.copy(),
+                    "opposition_targeting": default_indicator.copy(),
+                    "power_concentration": default_indicator.copy(),
+                    "accountability_evasion": default_indicator.copy(),
+                    "threat_exaggeration": default_indicator.copy(),
+                    "authoritarian_rhetoric": default_indicator.copy(),
+                    "rule_of_law_undermining": default_indicator.copy(),
+                    "authoritarian_score": score
+                }
         except Exception as e:
             self.logger.error(f"Error parsing extracted authoritarian elements: {str(e)}")
+            self.logger.debug(f"Raw LLM response: {result}")
+
+            # Create default structure for all indicators
+            default_indicator = {"present": False, "examples": []}
+
+            # Return a fallback structure
             return {
+                "institutional_undermining": default_indicator.copy(),
+                "democratic_norm_violations": default_indicator.copy(),
+                "media_delegitimization": default_indicator.copy(),
+                "opposition_targeting": default_indicator.copy(),
+                "power_concentration": default_indicator.copy(),
+                "accountability_evasion": default_indicator.copy(),
+                "threat_exaggeration": default_indicator.copy(),
+                "authoritarian_rhetoric": default_indicator.copy(),
+                "rule_of_law_undermining": default_indicator.copy(),
+                "authoritarian_score": 3,
                 "error": f"Failed to extract authoritarian elements: {str(e)}",
-                "raw_result": result
+                "raw_result": result[:200]  # Include first 200 chars of raw result for debugging
             }
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:

@@ -305,3 +305,86 @@ class CounterNarrativeGenerator(Agent):
             "content": content,
             "timestamp": datetime.now().isoformat()
         }
+
+    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Process analyses to generate counter-narratives for divisive and authoritarian content.
+
+        Args:
+            input_data: Dictionary with analyses, manipulation threshold, and authoritarian threshold
+
+        Returns:
+            Dictionary with generated counter-narratives
+        """
+        analyses = input_data.get("analyses", [])
+        auth_analyses = input_data.get("authoritarian_analyses", [])
+        manipulation_threshold = input_data.get("manipulation_threshold", 6)
+        authoritarian_threshold = input_data.get("authoritarian_threshold", 5)
+
+        results = []
+
+        for i, analysis in enumerate(analyses):
+            if "error" in analysis:
+                self.logger.warning(f"Skipping analysis with error: {analysis.get('error')}")
+                continue
+
+            # Extract manipulation score
+            manipulation_score = extract_manipulation_score(analysis["analysis"])
+
+            # Get authoritarian analysis if available
+            auth_analysis = None
+            if i < len(auth_analyses):
+                auth_analysis = auth_analyses[i]
+
+                # Extract authoritarian score if available
+                auth_score = 0
+                if "structured_elements" in auth_analysis:
+                    auth_score = auth_analysis["structured_elements"].get("authoritarian_score", 0)
+
+            # Check if we should generate counter-narratives
+            if manipulation_score >= manipulation_threshold or (auth_analysis and auth_score >= authoritarian_threshold):
+                article = analysis["article"]
+                article_title = article["title"]
+                self.logger.info(f"Generating counter-narratives for '{article_title}'...")
+
+                # Generate narratives for all demographics
+                counter_narratives = []
+                for demographic in self.demographics:
+                    narrative = self.generate_for_demographic(article, analysis["analysis"], demographic)
+                    counter_narratives.append(narrative)
+
+                # Generate authoritarian responses if we have authoritarian analysis
+                authoritarian_responses = []
+                if auth_analysis:
+                    for demographic in self.demographics:
+                        response = self.generate_authoritarian_response(
+                            article, auth_analysis.get("authoritarian_analysis", ""), demographic
+                        )
+                        authoritarian_responses.append(response)
+
+                # Generate bridging content
+                bridging_content = self.generate_bridging_content(
+                    article, analysis["analysis"], ["progressive", "conservative"]
+                )
+
+                # Generate democratic principles narrative
+                democratic_principles = None
+                if auth_analysis:
+                    democratic_principles = self.generate_democratic_principles_narrative(
+                        article, auth_analysis.get("authoritarian_analysis", "")
+                    )
+
+                result = {
+                    "article_title": article_title,
+                    "source": article.get("source", ""),
+                    "manipulation_score": manipulation_score,
+                    "counter_narratives": counter_narratives,
+                    "authoritarian_responses": authoritarian_responses if auth_analysis else [],
+                    "bridging_content": bridging_content,
+                    "democratic_principles_narrative": democratic_principles,
+                    "timestamp": datetime.now().isoformat()
+                }
+
+                results.append(result)
+
+        return {"counter_narratives": results}

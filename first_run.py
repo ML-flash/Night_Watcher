@@ -11,15 +11,17 @@ sys.path.append(project_root)
 
 from utils.logging import setup_logging
 from agents.lm_studio import LMStudioProvider
-from memory.advanced_system import AdvancedMemorySystem
-from integration.enhanced_system import EnhancedNightWatcherWorkflow
+from memory.system import MemorySystem
 from config import load_config, create_default_config
+
+# Import the regular workflow instead of enhanced to avoid dependency issues
+from workflow.orchestrator import NightWatcherWorkflow
 
 
 def main():
     # Set up logging
     logger = setup_logging()
-    logger.info("Starting first-time setup of Enhanced Night_watcher")
+    logger.info("Starting first-time setup of Night_watcher")
 
     # Create default config if it doesn't exist
     if not os.path.exists("config.json"):
@@ -34,7 +36,6 @@ def main():
         logger.info("Adding memory configuration to config...")
         config["memory"] = {
             "store_type": "simple",  # Start with simple store for first run
-            "use_networkx": True,
             "file_path": "data/memory/night_watcher_memory.pkl"
         }
 
@@ -44,42 +45,14 @@ def main():
             json.dump(config, f, indent=2)
 
     # Initialize memory system with defaults
-    logger.info("Initializing advanced memory system...")
-    memory_system = AdvancedMemorySystem(config.get("memory", {}))
-
-    # Initialize tracked entities for knowledge graph
-    logger.info("Adding default tracked entities to knowledge graph...")
-    kg = memory_system.knowledge_graph
+    logger.info("Initializing memory system...")
+    memory_system = MemorySystem(config.get("memory", {}))
 
     # Add default entities to track
-    default_actors = [
-        "Donald Trump", "Joe Biden", "Congress", "Supreme Court",
-        "Republican Party", "Democratic Party", "White House"
-    ]
+    logger.info("Adding default tracked entities...")
 
-    # Add default organizations
-    default_orgs = [
-        "FBI", "Justice Department", "State Department", "Pentagon",
-        "Fox News", "CNN", "MSNBC", "New York Times"
-    ]
-
-    # Add actors to knowledge graph
-    for actor in default_actors:
-        kg.add_actor(actor)
-
-    # Add organizations
-    for org in default_orgs:
-        kg.add_organization(org)
-
-    # Add indicators
-    indicators = [
-        "Institutional Undermining", "Democratic Norm Violations",
-        "Media Delegitimization", "Opposition Targeting",
-        "Power Concentration", "Accountability Evasion"
-    ]
-
-    for indicator in indicators:
-        kg.add_indicator(indicator)
+    # Create directories if they don't exist
+    os.makedirs("data/memory", exist_ok=True)
 
     # Save initialized memory
     logger.info("Saving initialized memory system...")
@@ -110,27 +83,34 @@ def main():
     # Limit articles for first run
     config["content_collection"]["article_limit"] = 3
 
-    # Initialize workflow
-    workflow = EnhancedNightWatcherWorkflow(
+    # Initialize standard workflow instead of enhanced
+    workflow = NightWatcherWorkflow(
         llm_provider=llm_provider,
-        memory_config=config.get("memory", {}),
+        memory_system=memory_system,
         output_dir="data"
     )
 
     # Run minimal workflow
-    result = workflow.run({
-        "article_limit": 3,
-        "manipulation_threshold": config["content_analysis"]["manipulation_threshold"],
-        "sources": config["content_collection"]["sources"][:2],  # Limit sources for first run
-        "generate_reports": True
-    })
+    try:
+        result = workflow.run({
+            "article_limit": 3,
+            "manipulation_threshold": config["content_analysis"]["manipulation_threshold"],
+            "sources": config["content_collection"]["sources"][:2],  # Limit sources for first run
+            "generate_reports": True
+        })
 
-    print("\n=== First-time setup complete ===")
-    print(f"Articles collected: {result['articles_collected']}")
-    print(f"Articles analyzed: {result['articles_analyzed']}")
-    print(f"Counter-narratives generated: {result['counter_narratives_generated']}")
-    print(f"Memory initialized and saved to: data/memory/night_watcher_memory.pkl")
-    print(f"You can now run the full workflow with: python run_enhanced.py")
+        print("\n=== First-time setup complete ===")
+        print(f"Articles collected: {result['articles_collected']}")
+        print(f"Articles analyzed: {result['articles_analyzed']}")
+        print(f"Counter-narratives generated: {result['counter_narratives_generated']}")
+        print(f"Memory initialized and saved to: data/memory/night_watcher_memory.pkl")
+        print(f"You can now run the full workflow with: python run.py")
+    except Exception as e:
+        logger.error(f"Error running workflow: {str(e)}")
+        print(f"Error during workflow execution: {str(e)}")
+        print("Basic memory system has been initialized, but workflow execution failed.")
+        print("You can still try running the system with: python run.py")
+        return 1
 
     return 0
 
