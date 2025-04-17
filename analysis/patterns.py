@@ -1,15 +1,12 @@
-"""
-Night_watcher Pattern Recognition Module
-Analyzes stored data to identify patterns in media coverage and narratives.
-"""
-
 import re
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Tuple
-from collections import Counter
+from collections import Counter, defaultdict
 
 from memory.system import MemorySystem
+
+logger = logging.getLogger(__name__)
 
 
 class PatternRecognition:
@@ -731,3 +728,96 @@ class PatternRecognition:
             self.logger.error(f"Error extracting manipulation techniques: {str(e)}")
 
         return techniques
+        
+    def analyze_authoritarian_actors(self, lookback_days: int = 90) -> Dict[str, Any]:
+        """
+        Analyze actors associated with authoritarian patterns.
+
+        Args:
+            lookback_days: Days to look back for analysis
+
+        Returns:
+            Dictionary containing actor analysis
+        """
+        # Get analyses within the lookback period
+        recent_analyses = self.memory.get_recent_analyses(lookback_days)
+
+        if not recent_analyses:
+            return {"error": "No recent analyses found"}
+
+        # Track actor mentions and indicators
+        from collections import defaultdict
+        actor_mentions = defaultdict(int)
+        actor_indicators = defaultdict(lambda: defaultdict(int))
+        actor_examples = defaultdict(list)
+        actor_sources = defaultdict(set)
+
+        # Define authoritarian indicators
+        authoritarian_indicators = [
+            "institutional_undermining",
+            "democratic_norm_violations", 
+            "media_delegitimization",
+            "opposition_targeting",
+            "power_concentration",
+            "accountability_evasion"
+        ]
+
+        # Process analyses
+        for analysis in recent_analyses:
+            metadata = analysis.get("metadata", {})
+            timestamp = metadata.get("analysis_timestamp", "")
+            source = metadata.get("source", "")
+            title = metadata.get("title", "")
+            
+            # Extract text and look for actor mentions
+            analysis_text = analysis.get("text", "")
+            
+            # Simple pattern matching for key political actors
+            key_actors = ["Donald Trump", "Joe Biden", "Congress", "Supreme Court", "White House"]
+            
+            for actor in key_actors:
+                if actor in analysis_text:
+                    # Count mention
+                    actor_mentions[actor] += 1
+                    
+                    # Track source
+                    actor_sources[actor].add(source)
+                    
+                    # Simple check for indicator associations
+                    for indicator in authoritarian_indicators:
+                        indicator_term = indicator.replace("_", " ")
+                        if indicator_term in analysis_text.lower():
+                            actor_indicators[actor][indicator] += 1
+                            
+                            # Add example
+                            if len(actor_examples[actor]) < 3:
+                                actor_examples[actor].append({
+                                    "indicator": indicator,
+                                    "source": source,
+                                    "title": title
+                                })
+
+        # Calculate basic scores
+        actor_patterns = {}
+        for actor, indicators in actor_indicators.items():
+            actor_patterns[actor] = {
+                "authoritarian_pattern_score": min(10, sum(indicators.values())),
+                "total_mentions": actor_mentions[actor],
+                "indicator_counts": dict(indicators),
+                "sources": list(actor_sources[actor]),
+                "examples": actor_examples[actor]
+            }
+
+        # Sort actors by score
+        top_actors = sorted(
+            actor_patterns.keys(),
+            key=lambda x: actor_patterns[x]["authoritarian_pattern_score"],
+            reverse=True
+        )[:5]
+
+        return {
+            "lookback_days": lookback_days,
+            "actor_patterns": actor_patterns,
+            "top_actors": top_actors,
+            "timestamp": datetime.now().isoformat()
+        }
