@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Night_watcher - Simple Launcher
-Starts the Night_watcher framework with minimal setup required.
+Night_watcher - Intelligence Analysis System
+Starts the Night_watcher framework focused on intelligence gathering and analysis.
 """
 
 import sys
@@ -27,10 +27,10 @@ from utils.logging import setup_logging
 
 
 def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None):
-    """Run the Night_watcher workflow with the given configuration."""
+    """Run the Night_watcher intelligence analysis workflow with the given configuration."""
     # Set up logging
     logger = setup_logging()
-    logger.info("Starting Night_watcher workflow")
+    logger.info("Starting Night_watcher intelligence analysis workflow")
 
     # Load configuration
     if not os.path.exists(config_path):
@@ -87,8 +87,8 @@ def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None):
 
         result = workflow.run({
             "article_limit": config["content_collection"]["article_limit"],
-            "manipulation_threshold": config["content_analysis"]["manipulation_threshold"],
-            "sources": config["content_collection"]["sources"]
+            "sources": config["content_collection"]["sources"],
+            "pattern_analysis_days": 30  # Default analysis period
         })
 
         # Save memory system
@@ -102,7 +102,7 @@ def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None):
         print(f"\n=== Processing complete ===")
         print(f"Articles collected: {result['articles_collected']}")
         print(f"Articles analyzed: {result['articles_analyzed']}")
-        print(f"Counter-narratives generated: {result['counter_narratives_generated']}")
+        print(f"Pattern analyses generated: {result['pattern_analyses_generated']}")
         print(f"All outputs saved in {result['output_dir']}")
 
         return 0
@@ -117,8 +117,8 @@ def ensure_directories(base_dir="."):
     directories = [
         os.path.join(base_dir, "data", "collected"),
         os.path.join(base_dir, "data", "analyzed"),
-        os.path.join(base_dir, "data", "counter_narratives"),
         os.path.join(base_dir, "data", "memory"),
+        os.path.join(base_dir, "data", "analysis"),
         os.path.join(base_dir, "logs")
     ]
 
@@ -127,9 +127,9 @@ def ensure_directories(base_dir="."):
 
 
 def main():
-    """Main entry point for Night_watcher simple launcher."""
+    """Main entry point for Night_watcher intelligence analysis system."""
     parser = argparse.ArgumentParser(
-        description="Night_watcher - Simple Launcher"
+        description="Night_watcher - Intelligence Analysis System"
     )
 
     parser.add_argument("--config", default="config.json",
@@ -159,9 +159,9 @@ if __name__ == "__main__":
     print("""
     ╔═══════════════════════════════════════════════════════════╗
     ║                                                           ║
-    ║  Night_watcher Framework - Simple Launcher                ║
+    ║  Night_watcher Intelligence Analysis System               ║
     ║                                                           ║
-    ║  A counter-narrative tool for democratic resilience       ║
+    ║  Monitoring and analyzing authoritarian patterns          ║
     ║                                                           ║
     ╚═══════════════════════════════════════════════════════════╝
     """)
