@@ -1,6 +1,6 @@
 """
-Night_watcher Analysis Workflow Orchestrator
-Manages the Night_watcher workflow focused on intelligence gathering and analysis.
+Night_watcher Workflow Orchestrator
+Manages the Night_watcher workflow with focus on intelligence gathering and analysis.
 """
 
 import os
@@ -18,7 +18,7 @@ from analysis.patterns import PatternRecognition
 
 
 class NightWatcherWorkflow:
-    """Manages the Night_watcher workflow focused on intelligence gathering and analysis"""
+    """Manages the enhanced Night_watcher workflow focused on intelligence analysis"""
 
     def __init__(self, llm_provider: LLMProvider, memory_system: Optional[MemorySystem] = None,
                  output_dir: str = "data"):
@@ -33,7 +33,7 @@ class NightWatcherWorkflow:
         # Initialize memory system if not provided
         self.memory = memory_system or MemorySystem()
 
-        # Initialize analysis agents only
+        # Initialize agents - only for collection and analysis
         self.collector = ContentCollector(llm_provider)
         self.analyzer = ContentAnalyzer(llm_provider)
 
@@ -48,20 +48,16 @@ class NightWatcherWorkflow:
         directories = [
             f"{self.output_dir}/collected",
             f"{self.output_dir}/analyzed",
-            f"{self.output_dir}/reports",
             f"{self.output_dir}/analysis"
         ]
         for directory in directories:
             os.makedirs(directory, exist_ok=True)
 
-        self.report_dir = f"{self.output_dir}/reports/{self.timestamp}"
         self.analysis_dir = f"{self.output_dir}/analysis/{self.timestamp}"
-
-        os.makedirs(self.report_dir, exist_ok=True)
         os.makedirs(self.analysis_dir, exist_ok=True)
 
     def run(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Run the Night_watcher intelligence analysis workflow"""
+        """Run the Night_watcher workflow with focus on intelligence analysis"""
         if config is None:
             config = {}
 
@@ -69,7 +65,7 @@ class NightWatcherWorkflow:
         sources = config.get("sources", None)
         pattern_analysis_days = config.get("pattern_analysis_days", 30)
 
-        self.logger.info(f"Starting Night_watcher intelligence analysis workflow with timestamp {self.timestamp}")
+        self.logger.info(f"Starting Night_watcher workflow with timestamp {self.timestamp}")
 
         # 1. Collect articles
         self.logger.info("Collecting articles with focus on government/political content...")
@@ -102,7 +98,8 @@ class NightWatcherWorkflow:
                 # If we have corresponding authoritarian analysis, save it
                 if i < len(auth_analyses):
                     auth_analysis = auth_analyses[i]
-                    save_to_file(auth_analysis, f"{self.output_dir}/analyzed/auth_analysis_{article_slug}_{self.timestamp}.json")
+                    save_to_file(auth_analysis,
+                                 f"{self.output_dir}/analyzed/auth_analysis_{article_slug}_{self.timestamp}.json")
 
                     # Store authoritarian analysis in memory (could enhance memory system to handle this specifically)
                     auth_meta = {
