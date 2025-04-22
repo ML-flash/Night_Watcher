@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Night_watcher - Simple Launcher
-Starts the Night_watcher framework with minimal setup required.
+Night_watcher - Intelligence Analysis System
+Starts the Night_watcher framework focused on intelligence gathering and analysis.
 """
 
 import sys
@@ -14,6 +14,7 @@ sys.path.append(os.path.join(project_root, "agents"))
 
 import logging
 import argparse
+from datetime import datetime
 from pathlib import Path
 
 # Import Night_watcher modules
@@ -24,13 +25,14 @@ from agents.lm_studio import LMStudioProvider
 from workflow.orchestrator import NightWatcherWorkflow
 from memory.system import MemorySystem
 from utils.logging import setup_logging
+from utils.date_tracking import get_analysis_date_range
 
 
-def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None):
-    """Run the Night_watcher workflow with the given configuration."""
+def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None, reset_date=False):
+    """Run the Night_watcher intelligence analysis workflow with the given configuration."""
     # Set up logging
     logger = setup_logging()
-    logger.info("Starting Night_watcher workflow")
+    logger.info("Starting Night_watcher intelligence analysis workflow")
 
     # Load configuration
     if not os.path.exists(config_path):
@@ -60,6 +62,9 @@ def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None):
     # Override output directory if specified
     if output_dir:
         config["output"]["base_dir"] = output_dir
+        
+    # Create necessary directories
+    ensure_directories(config["output"]["base_dir"])
 
     try:
         # Initialize LLM provider
@@ -84,11 +89,22 @@ def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None):
             memory_system=memory_system,
             output_dir=config["output"]["base_dir"]
         )
+        
+        # If reset_date is specified, we'll use Jan 20, 2025 as the start date
+        if reset_date:
+            start_date = datetime(2025, 1, 20)
+            end_date = datetime.now()
+            logger.info(f"Date range reset to start from inauguration day: {start_date.isoformat()}")
+        else:
+            # Get the date range from the tracking system
+            start_date, end_date = get_analysis_date_range(config["output"]["base_dir"])
 
         result = workflow.run({
             "article_limit": config["content_collection"]["article_limit"],
-            "manipulation_threshold": config["content_analysis"]["manipulation_threshold"],
-            "sources": config["content_collection"]["sources"]
+            "sources": config["content_collection"]["sources"],
+            "pattern_analysis_days": 30,  # Default analysis period
+            "start_date": start_date,
+            "end_date": end_date
         })
 
         # Save memory system
@@ -102,7 +118,8 @@ def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None):
         print(f"\n=== Processing complete ===")
         print(f"Articles collected: {result['articles_collected']}")
         print(f"Articles analyzed: {result['articles_analyzed']}")
-        print(f"Counter-narratives generated: {result['counter_narratives_generated']}")
+        print(f"Pattern analyses generated: {result['pattern_analyses_generated']}")
+        print(f"Date range: {result['date_range']['start_date']} to {result['date_range']['end_date']}")
         print(f"All outputs saved in {result['output_dir']}")
 
         return 0
@@ -117,8 +134,8 @@ def ensure_directories(base_dir="."):
     directories = [
         os.path.join(base_dir, "data", "collected"),
         os.path.join(base_dir, "data", "analyzed"),
-        os.path.join(base_dir, "data", "counter_narratives"),
         os.path.join(base_dir, "data", "memory"),
+        os.path.join(base_dir, "data", "analysis"),
         os.path.join(base_dir, "logs")
     ]
 
@@ -127,9 +144,9 @@ def ensure_directories(base_dir="."):
 
 
 def main():
-    """Main entry point for Night_watcher simple launcher."""
+    """Main entry point for Night_watcher intelligence analysis system."""
     parser = argparse.ArgumentParser(
-        description="Night_watcher - Simple Launcher"
+        description="Night_watcher - Intelligence Analysis System"
     )
 
     parser.add_argument("--config", default="config.json",
@@ -140,18 +157,18 @@ def main():
                         help="Override maximum articles to collect per source (default: 50)")
     parser.add_argument("--output-dir", default=".",
                         help="Override output directory (default: current directory)")
+    parser.add_argument("--reset-date", action="store_true",
+                        help="Reset date tracking to start from inauguration day (Jan 20, 2025)")
 
     args = parser.parse_args()
-
-    # Create necessary directories
-    ensure_directories(args.output_dir)
 
     # Run workflow
     return run_workflow(
         config_path=args.config,
         llm_host=args.llm_host,
         article_limit=args.article_limit,
-        output_dir=args.output_dir
+        output_dir=args.output_dir,
+        reset_date=args.reset_date
     )
 
 
@@ -159,9 +176,9 @@ if __name__ == "__main__":
     print("""
     ╔═══════════════════════════════════════════════════════════╗
     ║                                                           ║
-    ║  Night_watcher Framework - Simple Launcher                ║
+    ║  Night_watcher Intelligence Analysis System               ║
     ║                                                           ║
-    ║  A counter-narrative tool for democratic resilience       ║
+    ║  Monitoring and analyzing authoritarian patterns          ║
     ║                                                           ║
     ╚═══════════════════════════════════════════════════════════╝
     """)
