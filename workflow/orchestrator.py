@@ -15,6 +15,7 @@ from memory.system import MemorySystem
 from utils.io import save_to_file
 from utils.text import create_slug
 from analysis.patterns import PatternRecognition
+from utils.date_tracking import get_analysis_date_range, save_run_date
 
 
 class NightWatcherWorkflow:
@@ -64,12 +65,25 @@ class NightWatcherWorkflow:
         article_limit = config.get("article_limit", 5)
         sources = config.get("sources", None)
         pattern_analysis_days = config.get("pattern_analysis_days", 30)
+        
+        # Get date range for this run
+        start_date = config.get("start_date")
+        end_date = config.get("end_date", datetime.now())
+        
+        # If dates not provided, calculate based on tracking
+        if start_date is None:
+            start_date, end_date = get_analysis_date_range(self.output_dir)
 
         self.logger.info(f"Starting Night_watcher workflow with timestamp {self.timestamp}")
+        self.logger.info(f"Collecting and analyzing content from {start_date.isoformat()} to {end_date.isoformat()}")
 
         # 1. Collect articles
         self.logger.info("Collecting articles with focus on government/political content...")
-        collection_params = {"limit": article_limit}
+        collection_params = {
+            "limit": article_limit,
+            "start_date": start_date,
+            "end_date": end_date
+        }
         if sources:
             collection_params["sources"] = sources
 
@@ -165,6 +179,10 @@ class NightWatcherWorkflow:
             techniques_analysis,
             f"{self.analysis_dir}/manipulation_techniques_{self.timestamp}.json"
         )
+        
+        # 4. Save run date for next time
+        save_run_date(self.output_dir, end_date)
+        self.logger.info(f"Saved end date {end_date.isoformat()} for next run")
 
         self.logger.info(f"Processing complete. All outputs saved in {self.output_dir}")
 
@@ -173,5 +191,9 @@ class NightWatcherWorkflow:
             "output_dir": self.output_dir,
             "articles_collected": len(articles),
             "articles_analyzed": len(analyses),
-            "pattern_analyses_generated": 6  # All the pattern analyses we generated
+            "pattern_analyses_generated": 6,  # All the pattern analyses we generated
+            "date_range": {
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat()
+            }
         }
