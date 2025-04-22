@@ -111,13 +111,17 @@ class ContentCollector(Agent):
 
         return False
 
-    def _collect_from_rss(self, source: Dict[str, str], limit: int) -> List[Dict[str, Any]]:
+    def _collect_from_rss(self, source: Dict[str, str], limit: int, 
+                         start_date: Optional[datetime] = None,
+                         end_date: Optional[datetime] = None) -> List[Dict[str, Any]]:
         """
-        Collect articles from an RSS feed with government content filtering.
+        Collect articles from an RSS feed with government content filtering and date range filtering.
 
         Args:
             source: Source configuration
             limit: Maximum number of articles to collect
+            start_date: Optional start date for filtering articles
+            end_date: Optional end date for filtering articles
 
         Returns:
             List of collected articles
@@ -155,17 +159,21 @@ class ContentCollector(Agent):
                     parsed_url = urlparse(url)
                     source_name = parsed_url.netloc.replace("www.", "")
 
-                # Check if article was published recently (within 7 days instead of 3)
-                pub_date = entry.get("published_parsed")
-                is_recent = True
-                if pub_date:
+                # Check if article was published within the requested date range
+                pub_date = None
+                if entry.get("published_parsed"):
                     from time import mktime
-                    pub_datetime = datetime.fromtimestamp(mktime(pub_date))
-                    is_recent = (datetime.now() - pub_datetime).days <= 7
+                    pub_datetime = datetime.fromtimestamp(mktime(entry.get("published_parsed")))
+                    pub_date = pub_datetime
 
-                if not is_recent:
-                    self.logger.debug(f"Skipping old article: {entry.get('title', '')}")
-                    continue
+                # Apply date range filtering if specified
+                if pub_date:
+                    if start_date and pub_date < start_date:
+                        self.logger.debug(f"Skipping article before start date: {entry.get('title', '')}")
+                        continue
+                    if end_date and pub_date > end_date:
+                        self.logger.debug(f"Skipping article after end date: {entry.get('title', '')}")
+                        continue
 
                 # Fetch the full article content
                 content = self._fetch_article_content(article_url)
@@ -195,7 +203,7 @@ class ContentCollector(Agent):
                     "source": source_name,
                     "url": article_url,
                     "bias_label": bias_label,
-                    "published": entry.get("published", ""),
+                    "published": pub_date.isoformat() if pub_date else datetime.now().isoformat(),
                     "collected_at": datetime.now().isoformat()
                 }
 
@@ -220,7 +228,7 @@ class ContentCollector(Agent):
         Collect articles from sources with focus on governmental content.
 
         Args:
-            input_data: Dict with optional 'sources' and 'limit' keys
+            input_data: Dict with optional 'sources', 'limit', 'start_date', and 'end_date' keys
 
         Returns:
             Dict with 'articles' key containing collected articles
@@ -228,8 +236,30 @@ class ContentCollector(Agent):
         # Get sources from input or use defaults
         sources = input_data.get("sources", self.sources)
         limit = input_data.get("limit", self.article_limit)
+        
+        # Get date range if specified
+        start_date = input_data.get("start_date")
+        end_date = input_data.get("end_date")
+        
+        # Convert string dates to datetime objects if needed
+        if isinstance(start_date, str):
+            try:
+                start_date = datetime.fromisoformat(start_date)
+            except ValueError:
+                self.logger.warning(f"Invalid start_date format: {start_date}. Ignoring date filtering.")
+                start_date = None
+                
+        if isinstance(end_date, str):
+            try:
+                end_date = datetime.fromisoformat(end_date)
+            except ValueError:
+                self.logger.warning(f"Invalid end_date format: {end_date}. Using current date.")
+                end_date = datetime.now()
 
-        self.logger.info(f"Starting content collection from {len(sources)} sources, limit {limit} per source")
+        if start_date and end_date:
+            self.logger.info(f"Collecting content from {start_date.isoformat()} to {end_date.isoformat()}")
+        else:
+            self.logger.info(f"Starting content collection from {len(sources)} sources, limit {limit} per source")
 
         all_articles = []
 
@@ -237,7 +267,7 @@ class ContentCollector(Agent):
             source_type = source.get("type", "").lower()
 
             if source_type == "rss":
-                articles = self._collect_from_rss(source, limit)
+                articles = self._collect_from_rss(source, limit, start_date, end_date)
                 all_articles.extend(articles)
             else:
                 self.logger.warning(f"Unsupported source type: {source_type}")
