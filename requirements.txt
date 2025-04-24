@@ -11,6 +11,9 @@ scikit-learn>=1.0.2
 matplotlib>=3.5.1
 pandas>=1.4.2
 
+# AI Provider SDKs
+anthropic>=0.19.1  # For Anthropic API integration
+
 # Optional dependencies for enhanced functionality
 # faiss-cpu>=1.7.3
 # chromadb>=0.3.26
