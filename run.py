@@ -21,11 +21,79 @@ from pathlib import Path
 from config import load_config, create_default_config
 from agents.base import LLMProvider
 from agents.lm_studio import LMStudioProvider
-
 from workflow.orchestrator import NightWatcherWorkflow
 from memory.system import MemorySystem
 from utils.logging import setup_logging
 from utils.date_tracking import get_analysis_date_range
+
+
+def check_lm_studio_connection(host: str) -> bool:
+    """Check if LM Studio is running and accessible"""
+    import requests
+    try:
+        response = requests.get(f"{host}/v1/models", timeout=5)
+        return response.status_code == 200
+    except Exception:
+        return False
+
+
+def use_anthropic_api() -> bool:
+    """Ask user if they want to use the Anthropic API"""
+    print("\nLM Studio server is not available.")
+    print("Would you like to use the Anthropic API instead? (requires API key)")
+    response = input("Use Anthropic API? (y/n): ").strip().lower()
+    return response == 'y' or response == 'yes'
+
+
+def get_anthropic_credentials():
+    """Get Anthropic API key and model from user"""
+    api_key = input("\nEnter your Anthropic API key: ").strip()
+    
+    print("\nAvailable Claude models:")
+    print("1. Claude 3 Opus (most powerful)")
+    print("2. Claude 3 Sonnet (balanced)")
+    print("3. Claude 3 Haiku (fastest)")
+    
+    model_choice = input("Select model (1-3, default=3): ").strip()
+    
+    models = {
+        "1": "claude-3-opus-20240229",
+        "2": "claude-3-sonnet-20240229",
+        "3": "claude-3-haiku-20240307"
+    }
+    
+    model = models.get(model_choice, "claude-3-haiku-20240307")
+    
+    return api_key, model
+
+
+def initialize_llm_provider(config, logger) -> LLMProvider:
+    """Initialize LLM provider (either LM Studio or Anthropic)"""
+    llm_host = config["llm_provider"]["host"]
+    
+    # Check if LM Studio is running
+    if check_lm_studio_connection(llm_host):
+        logger.info(f"Connected to LM Studio at {llm_host}")
+        return LMStudioProvider(host=llm_host)
+    
+    # If LM Studio is not available, offer to use Anthropic API
+    if use_anthropic_api():
+        try:
+            # Import here to avoid dependency requirement if not used
+            from agents.anthropic_provider import AnthropicProvider
+            
+            api_key, model = get_anthropic_credentials()
+            logger.info(f"Using Anthropic API with model: {model}")
+            return AnthropicProvider(api_key=api_key, model=model)
+            
+        except ImportError:
+            print("\nError: Anthropic SDK not installed.")
+            print("Install with: pip install anthropic")
+            print("Continuing without LLM capabilities (content collection only)...")
+            return None
+    else:
+        print("\nContinuing without LLM capabilities (content collection only)...")
+        return None
 
 
 def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None, reset_date=False):
@@ -67,9 +135,13 @@ def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None, 
     ensure_directories(config["output"]["base_dir"])
 
     try:
-        # Initialize LLM provider
-        llm_config = config["llm_provider"]
-        llm_provider = LMStudioProvider(host=llm_config.get("host", "http://localhost:1234"))
+        # Initialize LLM provider with fallback support
+        llm_provider = initialize_llm_provider(config, logger)
+        
+        # If no LLM provider is available, run limited workflow
+        if llm_provider is None:
+            logger.warning("Running with limited capabilities (content collection only)")
+            print("\nRunning with limited capabilities (content collection only)")
 
         # Initialize memory system
         memory_system = MemorySystem(
@@ -104,7 +176,8 @@ def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None, 
             "sources": config["content_collection"]["sources"],
             "pattern_analysis_days": 30,  # Default analysis period
             "start_date": start_date,
-            "end_date": end_date
+            "end_date": end_date,
+            "llm_provider_available": llm_provider is not None
         })
 
         # Save memory system
@@ -116,11 +189,11 @@ def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None, 
             memory_system.save(memory_path)
 
         print(f"\n=== Processing complete ===")
-        print(f"Articles collected: {result['articles_collected']}")
-        print(f"Articles analyzed: {result['articles_analyzed']}")
-        print(f"Pattern analyses generated: {result['pattern_analyses_generated']}")
-        print(f"Date range: {result['date_range']['start_date']} to {result['date_range']['end_date']}")
-        print(f"All outputs saved in {result['output_dir']}")
+        print(f"Articles collected: {result.get('articles_collected', 0)}")
+        print(f"Articles analyzed: {result.get('articles_analyzed', 0) if llm_provider else 'N/A (No LLM available)'}")
+        print(f"Pattern analyses generated: {result.get('pattern_analyses_generated', 0) if llm_provider else 'N/A (No LLM available)'}")
+        print(f"Date range: {start_date.isoformat()} to {end_date.isoformat()}")
+        print(f"All outputs saved in {result.get('output_dir', config['output']['base_dir'])}")
 
         return 0
     except Exception as e:
@@ -159,8 +232,33 @@ def main():
                         help="Override output directory (default: current directory)")
     parser.add_argument("--reset-date", action="store_true",
                         help="Reset date tracking to start from inauguration day (Jan 20, 2025)")
+    parser.add_argument("--use-anthropic", action="store_true",
+                        help="Force using Anthropic API instead of LM Studio")
 
     args = parser.parse_args()
+    
+    # Handle --use-anthropic flag
+    if args.use_anthropic:
+        try:
+            from agents.anthropic_provider import AnthropicProvider
+            
+            print("\nUsing Anthropic API as requested.")
+            api_key, model = get_anthropic_credentials()
+            
+            # Create config to use Anthropic
+            config = load_config(args.config)
+            config["llm_provider"]["type"] = "anthropic"
+            config["llm_provider"]["api_key"] = api_key
+            config["llm_provider"]["model"] = model
+            
+            # Save updated config
+            with open(args.config, "w") as f:
+                import json
+                json.dump(config, f, indent=2)
+                
+        except ImportError:
+            print("\nError: Anthropic SDK not installed.")
+            print("Install with: pip install anthropic")
 
     # Run workflow
     return run_workflow(
