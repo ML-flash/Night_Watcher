@@ -192,7 +192,7 @@ class NightWatcherWorkflow:
             }
         }
 
-    # NEW METHODS BELOW FOR REPOSITORY-BASED ARCHITECTURE
+    # REPOSITORY-BASED ARCHITECTURE METHODS
 
     def initialize_repository_components(self):
         """Initialize repository components for the workflow"""
@@ -617,4 +617,136 @@ class NightWatcherWorkflow:
                     
                     analysis_ids["content_analysis"].append(analysis_id)
                     
-                    # Handle authoritarian analysis if
+                    # Find existing analysis to update
+                    existing_analyses = []
+                    if proc_id:
+                        existing_analyses = self.analysis_registry.get_derived_analyses(proc_id)
+                        
+                    existing_analysis_id = None
+                    for existing in existing_analyses:
+                        if existing.get("analysis_type") == "content_analysis" and existing.get("version", "") != new_version:
+                            existing_analysis_id = existing.get("analysis_id")
+                            break
+                    
+                    # Register as a new version if we found an existing one
+                    if existing_analysis_id:
+                        self.analysis_registry.register_new_version(
+                            original_id=existing_analysis_id,
+                            new_analysis_id=analysis_id,
+                            version=new_version,
+                            metadata_updates={
+                                "reanalysis": True,
+                                "timestamp": analysis.get("timestamp", "")
+                            }
+                        )
+                    
+                    # Handle authoritarian analysis if available
+                    if i < len(auth_analyses):
+                        auth_analysis = auth_analyses[i]
+                        
+                        # Generate analysis ID with version
+                        auth_analysis_id = f"auth_analysis_{article_slug}_{new_version}_{self.timestamp}"
+                        
+                        # Save analysis
+                        save_to_file(auth_analysis, f"{analysis_dir}/{auth_analysis_id}.json")
+                        
+                        # Register in registry
+                        self.analysis_registry.register_analysis(
+                            analysis_id=auth_analysis_id,
+                            analysis_type="authoritarian_analysis",
+                            source_ids=[proc_id, analysis_id] if proc_id else [analysis_id],
+                            metadata={
+                                "title": analysis["article"].get("title", ""),
+                                "source": analysis["article"].get("source", ""),
+                                "version": new_version,
+                                "reanalysis": True,
+                                "timestamp": auth_analysis.get("timestamp", "")
+                            },
+                            version=new_version
+                        )
+                        
+                        analysis_ids["authoritarian_analysis"].append(auth_analysis_id)
+                        
+                        # Find existing authoritarian analysis to update
+                        existing_auth_analyses = []
+                        if existing_analysis_id:
+                            existing_auth_analyses = self.analysis_registry.get_derived_analyses(existing_analysis_id)
+                        
+                        existing_auth_id = None
+                        for existing in existing_auth_analyses:
+                            if existing.get("analysis_type") == "authoritarian_analysis" and existing.get("version", "") != new_version:
+                                existing_auth_id = existing.get("analysis_id")
+                                break
+                        
+                        # Register as a new version if we found an existing one
+                        if existing_auth_id:
+                            self.analysis_registry.register_new_version(
+                                original_id=existing_auth_id,
+                                new_analysis_id=auth_analysis_id,
+                                version=new_version,
+                                metadata_updates={
+                                    "reanalysis": True,
+                                    "timestamp": auth_analysis.get("timestamp", "")
+                                }
+                            )
+        
+        # Run pattern analysis with new data
+        pattern_analysis_days = 30  # Default value
+        pattern_ids = {}
+        
+        # Only run pattern analysis if we have new analyses
+        if analysis_ids["authoritarian_analysis"]:
+            # Authoritarian trend analysis
+            auth_trends = self.pattern_recognition.analyze_source_bias_patterns(pattern_analysis_days)
+            
+            pattern_dir = os.path.join(self.output_dir, "analysis", self.timestamp)
+            os.makedirs(pattern_dir, exist_ok=True)
+            
+            trend_id = f"trends_{new_version}_{self.timestamp}"
+            save_to_file(auth_trends, f"{pattern_dir}/authoritarian_trends_{new_version}_{self.timestamp}.json")
+            
+            self.analysis_registry.register_analysis(
+                analysis_id=trend_id,
+                analysis_type="authoritarian_trends",
+                source_ids=analysis_ids.get("authoritarian_analysis", []),
+                metadata={
+                    "lookback_days": pattern_analysis_days,
+                    "version": new_version,
+                    "reanalysis": True,
+                    "timestamp": datetime.now().isoformat()
+                },
+                version=new_version
+            )
+            
+            pattern_ids["authoritarian_trends"] = [trend_id]
+            
+            # Actor analysis
+            actor_analysis = self.pattern_recognition.analyze_authoritarian_actors(pattern_analysis_days)
+            actor_id = f"actors_{new_version}_{self.timestamp}"
+            save_to_file(actor_analysis, f"{pattern_dir}/actor_analysis_{new_version}_{self.timestamp}.json")
+            
+            self.analysis_registry.register_analysis(
+                analysis_id=actor_id,
+                analysis_type="actor_analysis",
+                source_ids=analysis_ids.get("authoritarian_analysis", []),
+                metadata={
+                    "lookback_days": pattern_analysis_days,
+                    "version": new_version,
+                    "reanalysis": True,
+                    "timestamp": datetime.now().isoformat()
+                },
+                version=new_version
+            )
+            
+            pattern_ids["actor_analysis"] = [actor_id]
+        
+        self.logger.info(f"Reanalysis complete. Generated {len(analysis_ids['content_analysis'])} content analyses and {len(analysis_ids['authoritarian_analysis'])} authoritarian analyses")
+        
+        return {
+            "content_ids": content_ids,
+            "processed_ids": processed_ids,
+            "analysis_ids": analysis_ids, 
+            "pattern_ids": pattern_ids,
+            "version": new_version,
+            "timestamp": self.timestamp
+        }
