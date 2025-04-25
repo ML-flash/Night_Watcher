@@ -24,7 +24,7 @@ from agents.lm_studio import LMStudioProvider
 from workflow.orchestrator import NightWatcherWorkflow
 from memory.system import MemorySystem
 from utils.logging import setup_logging
-from utils.date_tracking import get_analysis_date_range
+from utils.date_tracking import get_analysis_date_range, save_run_date
 
 
 def check_lm_studio_connection(host: str) -> bool:
@@ -96,7 +96,8 @@ def initialize_llm_provider(config, logger) -> LLMProvider:
         return None
 
 
-def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None, reset_date=False):
+def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None, 
+                reset_date=False, use_repository=False):
     """Run the Night_watcher intelligence analysis workflow with the given configuration."""
     # Set up logging
     logger = setup_logging()
@@ -162,6 +163,11 @@ def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None, 
             output_dir=config["output"]["base_dir"]
         )
         
+        # Initialize repository components if requested
+        if use_repository:
+            logger.info("Using repository-based architecture")
+            workflow.initialize_repository_components()
+        
         # If reset_date is specified, we'll use Jan 20, 2025 as the start date
         if reset_date:
             start_date = datetime(2025, 1, 20)
@@ -171,14 +177,21 @@ def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None, 
             # Get the date range from the tracking system
             start_date, end_date = get_analysis_date_range(config["output"]["base_dir"])
 
-        result = workflow.run({
+        # Set up workflow parameters
+        workflow_params = {
             "article_limit": config["content_collection"]["article_limit"],
             "sources": config["content_collection"]["sources"],
             "pattern_analysis_days": 30,  # Default analysis period
             "start_date": start_date,
             "end_date": end_date,
             "llm_provider_available": llm_provider is not None
-        })
+        }
+            
+        # Run workflow with appropriate method
+        if use_repository:
+            result = workflow.run_with_repository(workflow_params)
+        else:
+            result = workflow.run(workflow_params)
 
         # Save memory system
         if memory_path:
@@ -187,11 +200,24 @@ def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None, 
                 os.makedirs(memory_dir, exist_ok=True)
             logger.info(f"Saving memory to {memory_path}")
             memory_system.save(memory_path)
+            
+        # Update date tracking
+        save_run_date(config["output"]["base_dir"], end_date)
 
         print(f"\n=== Processing complete ===")
         print(f"Articles collected: {result.get('articles_collected', 0)}")
-        print(f"Articles analyzed: {result.get('articles_analyzed', 0) if llm_provider else 'N/A (No LLM available)'}")
-        print(f"Pattern analyses generated: {result.get('pattern_analyses_generated', 0) if llm_provider else 'N/A (No LLM available)'}")
+        
+        if use_repository:
+            print(f"Articles analyzed: {result.get('articles_analyzed', 0) if llm_provider else 'N/A (No LLM available)'}")
+            print(f"Content IDs: {len(result.get('content_ids', []))}")
+            print(f"Processed IDs: {len(result.get('processed_ids', []))}")
+            if result.get('analysis_ids'):
+                print(f"Content analyses: {len(result.get('analysis_ids', {}).get('content_analysis', []))}")
+                print(f"Authoritarian analyses: {len(result.get('analysis_ids', {}).get('authoritarian_analysis', []))}")
+        else:
+            print(f"Articles analyzed: {result.get('articles_analyzed', 0) if llm_provider else 'N/A (No LLM available)'}")
+            print(f"Pattern analyses generated: {result.get('pattern_analyses_generated', 0) if llm_provider else 'N/A (No LLM available)'}")
+        
         print(f"Date range: {start_date.isoformat()} to {end_date.isoformat()}")
         print(f"All outputs saved in {result.get('output_dir', config['output']['base_dir'])}")
 
@@ -234,6 +260,8 @@ def main():
                         help="Reset date tracking to start from inauguration day (Jan 20, 2025)")
     parser.add_argument("--use-anthropic", action="store_true",
                         help="Force using Anthropic API instead of LM Studio")
+    parser.add_argument("--use-repository", action="store_true",
+                        help="Use repository-based architecture for data provenance")
 
     args = parser.parse_args()
     
@@ -266,7 +294,8 @@ def main():
         llm_host=args.llm_host,
         article_limit=args.article_limit,
         output_dir=args.output_dir,
-        reset_date=args.reset_date
+        reset_date=args.reset_date,
+        use_repository=args.use_repository
     )
 
 
