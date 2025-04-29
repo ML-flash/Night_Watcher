@@ -66,22 +66,3 @@ def save_run_date(data_dir: str, date: Optional[datetime] = None) -> bool:
 
 def get_analysis_date_range(data_dir: str, days_overlap: int = 1) -> Tuple[datetime, datetime]:
     """
-    Get the date range for the current analysis run with optional overlap
-    to ensure no gaps in coverage.
-    
-    Args:
-        data_dir: Directory where date tracking is stored
-        days_overlap: Number of days to overlap with previous run (default: 1)
-        
-    Returns:
-        Tuple of (start_date, end_date) for the current run
-    """
-    start_date = get_last_run_date(data_dir)
-    end_date = datetime.now()
-    
-    # Apply overlap to avoid gaps
-    if days_overlap > 0:
-        start_date = start_date - timedelta(days=days_overlap)
-    
-    logger.info(f"Analysis date range: {start_date.isoformat()} to {end_date.isoformat()}")
-    return start_date, end_date
