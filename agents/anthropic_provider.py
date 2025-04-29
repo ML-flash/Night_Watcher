@@ -29,41 +29,58 @@ class AnthropicProvider(LLMProvider):
             raise ImportError("Anthropic SDK not installed. Install with: pip install anthropic")
 
     def complete(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7,
-                 stop: Optional[List[str]] = None) -> Dict[str, Any]:
+             stop: Optional[List[str]] = None) -> Dict[str, Any]:
         """Execute a completion request to Anthropic"""
         try:
             import anthropic
-
-            # Convert to Claude API format
-            message = anthropic.Message(
-                role="user",
-                content=prompt
-            )
-
-            params = {
-                "model": self.model,
-                "max_tokens": max_tokens,
-                "temperature": temperature
-            }
             
-            if stop:
-                params["stop_sequences"] = stop
-
-            response = self.client.messages.create(
-                **params,
-                messages=[message]
-            )
-
-            # Convert Anthropic response to format expected by Night_watcher
-            converted_response = {
-                "choices": [
-                    {
-                        "text": response.content[0].text
-                    }
-                ]
-            }
-
-            return converted_response
+            # Check the version - newer versions use a different API structure
+            if hasattr(anthropic, "Anthropic"):
+                # For newer versions (anthropic>=0.5.0)
+                params = {
+                    "model": self.model,
+                    "max_tokens": max_tokens,
+                    "temperature": temperature
+                }
+                
+                if stop:
+                    params["stop_sequences"] = stop
+                    
+                message = {
+                    "role": "user",
+                    "content": prompt
+                }
+    
+                response = self.client.messages.create(
+                    **params,
+                    messages=[message]
+                )
+    
+                # Convert Anthropic response to format expected by Night_watcher
+                return {
+                    "choices": [
+                        {
+                            "text": response.content[0].text
+                        }
+                    ]
+                }
+            else:
+                # For older versions (anthropic<0.5.0)
+                response = self.client.completion(
+                    prompt=f"{anthropic.HUMAN_PROMPT} {prompt} {anthropic.AI_PROMPT}",
+                    max_tokens_to_sample=max_tokens,
+                    temperature=temperature,
+                    stop_sequences=stop if stop else None
+                )
+    
+                # Convert Anthropic response to format expected by Night_watcher
+                return {
+                    "choices": [
+                        {
+                            "text": response["completion"]
+                        }
+                    ]
+                }
         except Exception as e:
             self.logger.error(f"Anthropic API error: {str(e)}")
             return {"error": f"Failed to complete: {str(e)}"}
