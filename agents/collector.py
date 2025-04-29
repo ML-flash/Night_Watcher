@@ -71,24 +71,50 @@ class ContentCollector(Agent):
     @rate_limiter(max_rate=5, period=1.0)
     def _fetch_article_content(self, url: str) -> str:
         """
-        Fetch the full content of an article from its URL.
-
+        Fetch the full content of an article from its URL with enhanced error handling.
+    
         Args:
             url: The article URL
-
+    
         Returns:
             The article content as string
         """
         try:
             from newspaper import Article
-
+            import random
+    
+            # List of common user agents for rotation
+            user_agents = [
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15',
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
+                'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36'
+            ]
+    
             article = Article(url)
+            # Set a random user agent to avoid being blocked
+            article.config.browser_user_agent = random.choice(user_agents)
             article.download()
             article.parse()
-
-            return article.text
+    
+            content = article.text
+            
+            # If content is empty or too short, try a fallback method
+            if not content or len(content) < 200:
+                # Try extracting from summary
+                article.nlp()
+                if article.summary and len(article.summary) > content:
+                    content = article.summary
+                
+                # If still empty, try using RSS summary if available
+                if (not content or len(content) < 100) and hasattr(article, 'meta_description'):
+                    if article.meta_description:
+                        content = article.meta_description
+            
+            return content
         except Exception as e:
             self.logger.warning(f"Error fetching article content: {str(e)}")
+            # Return empty string on failure
             return ""
 
     def _is_government_related(self, title: str, content: str) -> bool:
