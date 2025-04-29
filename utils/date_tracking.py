@@ -12,6 +12,62 @@ logger = logging.getLogger(__name__)
 
 def get_last_run_date(data_dir: str) -> datetime:
     """
+    Get the date range for the current analysis run with optional overlap
+    to ensure no gaps in coverage.
+    
+    Args:
+        data_dir: Directory where date tracking is stored
+        days_overlap: Number of days to overlap with previous run (default: 1)
+        
+    Returns:
+        Tuple of (start_date, end_date) for the current run
+    """
+    start_date = get_last_run_date(data_dir)
+    end_date = datetime.now()
+    
+    # Apply overlap to avoid gaps
+    if days_overlap > 0:
+        start_date = start_date - timedelta(days=days_overlap)
+    
+    logger.info(f"Analysis date range: {start_date.isoformat()} to {end_date.isoformat()}")
+    return start_date, end_date
+
+def reset_to_inauguration() -> datetime:
+    """
+    Reset date tracking to inauguration day (January 20, 2025).
+    
+    Returns:
+        Inauguration date
+    """
+    return datetime(2025, 1, 20)
+
+def format_date_for_filename(date: datetime) -> str:
+    """
+    Format a date for use in filenames.
+    
+    Args:
+        date: Date to format
+        
+    Returns:
+        Formatted date string
+    """
+    return date.strftime("%Y%m%d")
+
+def format_date_range_for_filename(start_date: datetime, end_date: datetime) -> str:
+    """
+    Format a date range for use in filenames.
+    
+    Args:
+        start_date: Start date
+        end_date: End date
+        
+    Returns:
+        Formatted date range string
+    """
+    start_str = format_date_for_filename(start_date)
+    end_str = format_date_for_filename(end_date)
+    return f"{start_str}-{end_str}"
+
     Get the last run date or return the default start date (Jan 20, 2025).
     
     Args:
