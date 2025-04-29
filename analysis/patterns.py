@@ -122,6 +122,192 @@ class PatternRecognition:
             "highest_scores": highest_scores
         }
 
+    def analyze_authoritarian_trend_patterns(self, lookback_days: int = 30) -> Dict[str, Any]:
+        """
+        Analyze trends in authoritarian patterns over time.
+        
+        Args:
+            lookback_days: Number of days to look back for analysis
+        
+        Returns:
+            Dictionary containing authoritarian trend analysis
+        """
+        # Get recent analyses
+        recent_analyses = self.memory.get_recent_analyses(lookback_days)
+        
+        if not recent_analyses:
+            return {"error": "No recent analyses found"}
+        
+        # Define authoritarian indicators to track
+        authoritarian_indicators = {
+            "institutional_undermining": {
+                "count": 0,
+                "examples": [],
+                "trend_strength": 0
+            },
+            "democratic_norm_violations": {
+                "count": 0,
+                "examples": [],
+                "trend_strength": 0
+            },
+            "media_delegitimization": {
+                "count": 0,
+                "examples": [],
+                "trend_strength": 0
+            },
+            "opposition_targeting": {
+                "count": 0,
+                "examples": [],
+                "trend_strength": 0
+            },
+            "power_concentration": {
+                "count": 0,
+                "examples": [],
+                "trend_strength": 0
+            },
+            "accountability_evasion": {
+                "count": 0,
+                "examples": [],
+                "trend_strength": 0
+            },
+            "threat_exaggeration": {
+                "count": 0,
+                "examples": [],
+                "trend_strength": 0
+            },
+            "authoritarian_rhetoric": {
+                "count": 0,
+                "examples": [],
+                "trend_strength": 0
+            },
+            "rule_of_law_undermining": {
+                "count": 0,
+                "examples": [],
+                "trend_strength": 0
+            },
+            "authoritarian_score": {
+                "count": 0,
+                "examples": [],
+                "trend_strength": 0,
+                "values": []
+            }
+        }
+        
+        # Extract and count authoritarian elements from analyses
+        for item in recent_analyses:
+            analysis_text = item.get("text", "")
+            metadata = item.get("metadata", {})
+            
+            # Extract authoritarian score
+            auth_score = 0
+            
+            # Check for authoritarian score in analysis text
+            if "AUTHORITARIAN SCORE" in analysis_text:
+                score_text = analysis_text.split("AUTHORITARIAN SCORE:")[1].split("\n")[0]
+                # Extract numbers from text
+                import re
+                numbers = [int(s) for s in re.findall(r'\d+', score_text)]
+                if numbers:
+                    auth_score = numbers[0]
+                    authoritarian_indicators["authoritarian_score"]["count"] += 1
+                    authoritarian_indicators["authoritarian_score"]["values"].append(auth_score)
+                    
+                    # Add example if score is high
+                    if auth_score >= 7:
+                        example = {
+                            "title": metadata.get("title", "Unknown"),
+                            "source": metadata.get("source", "Unknown"),
+                            "score": auth_score
+                        }
+                        authoritarian_indicators["authoritarian_score"]["examples"].append(example)
+            
+            # Check for specific authoritarian indicators
+            for indicator in list(authoritarian_indicators.keys()):
+                if indicator == "authoritarian_score":
+                    continue
+                    
+                # Check if indicator is present in text
+                indicator_term = indicator.replace("_", " ")
+                if indicator_term.upper() in analysis_text:
+                    # Extract section about this indicator
+                    try:
+                        section = analysis_text.split(indicator_term.upper() + ":")[1].split("\n\n")[0]
+                        authoritarian_indicators[indicator]["count"] += 1
+                        
+                        # Add example with sufficient context
+                        example = {
+                            "title": metadata.get("title", "Unknown"),
+                            "source": metadata.get("source", "Unknown"),
+                            "text": section.strip(),
+                            "date": metadata.get("analysis_timestamp", "")
+                        }
+                        authoritarian_indicators[indicator]["examples"].append(example)
+                    except:
+                        pass
+        
+        # Calculate trend strengths
+        for indicator, data in authoritarian_indicators.items():
+            # Calculate trend strength based on frequency and recency
+            count = data["count"]
+            total_analyses = len(recent_analyses)
+            
+            if total_analyses > 0:
+                # Base strength on percentage of articles showing this indicator
+                base_strength = count / total_analyses
+                
+                # For authoritarian score, also consider the average value
+                if indicator == "authoritarian_score" and data["values"]:
+                    avg_score = sum(data["values"]) / len(data["values"])
+                    # Normalize to 0-1 range (assuming scores are 0-10)
+                    score_factor = avg_score / 10.0
+                    # Weight by both frequency and severity
+                    data["trend_strength"] = (base_strength + score_factor) / 2.0
+                else:
+                    data["trend_strength"] = base_strength
+            
+            # Limit examples to top 3
+            data["examples"] = data["examples"][:3]
+        
+        # Calculate aggregate risk score (0-10)
+        indicators_count = sum(1 for k, v in authoritarian_indicators.items() if k != "authoritarian_score" and v["count"] > 0)
+        total_indicators = len(authoritarian_indicators) - 1  # Exclude authoritarian_score
+        
+        # Factors in overall calculation:
+        # 1. Breadth: How many different indicators are present
+        # 2. Depth: How strongly each indicator is trending
+        # 3. Severity: Average authoritarian score
+        
+        breadth_factor = indicators_count / total_indicators if total_indicators > 0 else 0
+        
+        trend_strengths = [v["trend_strength"] for k, v in authoritarian_indicators.items() if k != "authoritarian_score"]
+        depth_factor = sum(trend_strengths) / len(trend_strengths) if trend_strengths else 0
+        
+        severity_factor = 0
+        if authoritarian_indicators["authoritarian_score"]["values"]:
+            avg_score = sum(authoritarian_indicators["authoritarian_score"]["values"]) / len(authoritarian_indicators["authoritarian_score"]["values"])
+            severity_factor = avg_score / 10.0
+        
+        # Calculate weighted aggregate risk
+        aggregate_risk = (breadth_factor * 0.3 + depth_factor * 0.3 + severity_factor * 0.4) * 10
+        
+        # Determine risk level
+        risk_level = "Low"
+        if aggregate_risk >= 7:
+            risk_level = "Severe"
+        elif aggregate_risk >= 5:
+            risk_level = "High"
+        elif aggregate_risk >= 3:
+            risk_level = "Moderate"
+        
+        return {
+            "lookback_days": lookback_days,
+            "total_analyses": len(recent_analyses),
+            "trend_analysis": authoritarian_indicators,
+            "aggregate_authoritarian_risk": aggregate_risk,
+            "risk_level": risk_level,
+            "analysis_timestamp": datetime.now().isoformat()
+        }
+
     def identify_recurring_topics(self, min_count: int = 3) -> Dict[str, Any]:
         """
         Identify recurring topics and track their manipulation scores over time.
