@@ -1,124 +1,154 @@
 """
-Night_watcher Date Tracking Utilities
-Utilities for tracking and managing analysis date ranges.
+Modifications to run.py to integrate knowledge graph functionality.
+
+These changes need to be integrated into the existing run.py file,
+not used as a standalone file.
 """
 
-import os
-import logging
-from datetime import datetime, timedelta
-from typing import Optional, Tuple
+# Import additional modules
+from knowledge_graph_integration import KnowledgeGraphManager
 
-logger = logging.getLogger(__name__)
+# Update run_workflow function to include knowledge graph
+def run_workflow_with_kg(config_path, llm_host=None, article_limit=50, output_dir=None, 
+                reset_date=False, use_repository=False):
+    """Run the Night_watcher intelligence analysis workflow with knowledge graph integration."""
+    # Set up logging
+    logger = setup_logging()
+    logger.info("Starting Night_watcher intelligence analysis workflow with knowledge graph")
 
-def get_last_run_date(data_dir: str) -> datetime:
-    """
-    Get the date range for the current analysis run with optional overlap
-    to ensure no gaps in coverage.
-    
-    Args:
-        data_dir: Directory where date tracking is stored
-        days_overlap: Number of days to overlap with previous run (default: 1)
+    # Load configuration
+    if not os.path.exists(config_path):
+        print(f"Configuration file not found at {config_path}")
+        print("Creating default configuration...")
+        create_default_config(config_path)
+        print(f"Default configuration created at {config_path}")
+
+    config = load_config(config_path)
+
+    # Override config with command-line arguments
+    if llm_host:
+        config["llm_provider"]["host"] = llm_host
+
+    # Set default article limit to 50 if not specified in config
+    if "article_limit" not in config["content_collection"]:
+        config["content_collection"]["article_limit"] = 50
+
+    # Override article limit if specified
+    if article_limit:
+        config["content_collection"]["article_limit"] = article_limit
+
+    # Set default output directory to current directory if not specified
+    if "base_dir" not in config["output"]:
+        config["output"]["base_dir"] = "."
+
+    # Override output directory if specified
+    if output_dir:
+        config["output"]["base_dir"] = output_dir
         
-    Returns:
-        Tuple of (start_date, end_date) for the current run
-    """
-    start_date = get_last_run_date(data_dir)
-    end_date = datetime.now()
-    
-    # Apply overlap to avoid gaps
-    if days_overlap > 0:
-        start_date = start_date - timedelta(days=days_overlap)
-    
-    logger.info(f"Analysis date range: {start_date.isoformat()} to {end_date.isoformat()}")
-    return start_date, end_date
+    # Create necessary directories
+    ensure_directories(config["output"]["base_dir"])
 
-def reset_to_inauguration() -> datetime:
-    """
-    Reset date tracking to inauguration day (January 20, 2025).
-    
-    Returns:
-        Inauguration date
-    """
-    return datetime(2025, 1, 20)
-
-def format_date_for_filename(date: datetime) -> str:
-    """
-    Format a date for use in filenames.
-    
-    Args:
-        date: Date to format
-        
-    Returns:
-        Formatted date string
-    """
-    return date.strftime("%Y%m%d")
-
-def format_date_range_for_filename(start_date: datetime, end_date: datetime) -> str:
-    """
-    Format a date range for use in filenames.
-    
-    Args:
-        start_date: Start date
-        end_date: End date
-        
-    Returns:
-        Formatted date range string
-    """
-    start_str = format_date_for_filename(start_date)
-    end_str = format_date_for_filename(end_date)
-    return f"{start_str}-{end_str}"
-
-    Get the last run date or return the default start date (Jan 20, 2025).
-    
-    Args:
-        data_dir: Directory where date tracking is stored
-        
-    Returns:
-        Last run date as datetime object
-    """
-    date_file = os.path.join(data_dir, "last_run_date.txt")
-    
-    if os.path.exists(date_file):
-        try:
-            with open(date_file, 'r') as f:
-                date_str = f.read().strip()
-                return datetime.fromisoformat(date_str)
-        except (ValueError, IOError) as e:
-            logger.error(f"Error reading last run date: {str(e)}")
-            # Return default date if there's an error reading the file
-            return datetime(2025, 1, 20)
-    else:
-        # Default to inauguration day if no previous run
-        logger.info("No previous run date found, starting from inauguration day (Jan 20, 2025)")
-        return datetime(2025, 1, 20)
-
-def save_run_date(data_dir: str, date: Optional[datetime] = None) -> bool:
-    """
-    Save the current date as the last run date.
-    
-    Args:
-        data_dir: Directory where date tracking is stored
-        date: Date to save as last run date (defaults to current date)
-        
-    Returns:
-        True if successful, False otherwise
-    """
-    if date is None:
-        date = datetime.now()
-        
-    date_file = os.path.join(data_dir, "last_run_date.txt")
-    
     try:
-        os.makedirs(os.path.dirname(date_file), exist_ok=True)
+        # Initialize LLM provider with fallback support
+        llm_provider = initialize_llm_provider(config, logger)
         
-        with open(date_file, 'w') as f:
-            f.write(date.isoformat())
-            
-        logger.info(f"Saved run date: {date.isoformat()}")
-        return True
-    except Exception as e:
-        logger.error(f"Error saving run date: {str(e)}")
-        return False
+        # If no LLM provider is available, run limited workflow
+        if llm_provider is None:
+            logger.warning("Running with limited capabilities (content collection only)")
+            print("\nRunning with limited capabilities (content collection only)")
 
-def get_analysis_date_range(data_dir: str, days_overlap: int = 1) -> Tuple[datetime, datetime]:
-    """
+        # Initialize memory system
+        memory_system = MemorySystem(
+            store_type=config.get("memory", {}).get("store_type", "simple"),
+            config=config.get("memory", {})
+        )
+
+        # Load existing memory if available
+        memory_path = config.get("memory", {}).get("file_path")
+        if memory_path and os.path.exists(memory_path):
+            logger.info(f"Loading memory from {memory_path}")
+            memory_system.load(memory_path)
+
+        # Initialize knowledge graph manager
+        kg_manager = KnowledgeGraphManager(
+            llm_provider=llm_provider,
+            memory_system=memory_system,
+            output_dir=config["output"]["base_dir"]
+        )
+        
+        # Initialize and run workflow
+        workflow = NightWatcherWorkflow(
+            llm_provider=llm_provider,
+            memory_system=memory_system,
+            output_dir=config["output"]["base_dir"]
+        )
+        
+        # If reset_date is specified, we'll use Jan 20, 2025 as the start date
+        if reset_date:
+            start_date = datetime(2025, 1, 20)
+            end_date = datetime.now()
+            logger.info(f"Date range reset to start from inauguration day: {start_date.isoformat()}")
+        else:
+            # Get the date range from the tracking system
+            start_date, end_date = get_analysis_date_range(config["output"]["base_dir"])
+
+        # Set up workflow parameters
+        workflow_params = {
+            "article_limit": config["content_collection"]["article_limit"],
+            "sources": config["content_collection"]["sources"],
+            "pattern_analysis_days": 30,  # Default analysis period
+            "start_date": start_date,
+            "end_date": end_date,
+            "llm_provider_available": llm_provider is not None
+        }
+            
+        # Run workflow
+        result = workflow.run(workflow_params)
+        
+        # Process analyses with knowledge graph extraction
+        if llm_provider is not None and "analyses" in result:
+            logger.info("Processing analyses with knowledge graph extraction")
+            kg_result = kg_manager.process_analyses(result["analyses"])
+            result["knowledge_graph"] = kg_result
+            
+            # Generate intelligence report
+            logger.info("Generating intelligence report from knowledge graph")
+            report_result = kg_manager.generate_intelligence_report()
+            result["intelligence_report"] = report_result
+        
+        # Save memory system
+        if memory_path:
+            memory_dir = os.path.dirname(memory_path)
+            if memory_dir:
+                os.makedirs(memory_dir, exist_ok=True)
+            logger.info(f"Saving memory to {memory_path}")
+            memory_system.save(memory_path)
+            
+        # Save knowledge graph
+        kg_manager.save_knowledge_graph()
+            
+        # Update date tracking
+        save_run_date(config["output"]["base_dir"], end_date)
+
+        print(f"\n=== Processing complete ===")
+        print(f"Articles collected: {result.get('articles_collected', 0)}")
+        print(f"Articles analyzed: {result.get('articles_analyzed', 0) if llm_provider else 'N/A (No LLM available)'}")
+        print(f"Pattern analyses generated: {result.get('pattern_analyses_generated', 0) if llm_provider else 'N/A (No LLM available)'}")
+        
+        if "knowledge_graph" in result:
+            print(f"Entities extracted: {result['knowledge_graph']['extraction_results'].get('entities', 0)}")
+            print(f"Relationships extracted: {result['knowledge_graph']['extraction_results'].get('relationships', 0)}")
+        
+        if "intelligence_report" in result:
+            print(f"Intelligence report generated: Yes")
+            report_risk = result['intelligence_report']['report']['risk_assessment'].get('risk_level', 'Unknown')
+            print(f"Current risk assessment: {report_risk}")
+            
+        print(f"Date range: {start_date.isoformat()} to {end_date.isoformat()}")
+        print(f"All outputs saved in {result.get('output_dir', config['output']['base_dir'])}")
+
+        return 0
+    except Exception as e:
+        logger.error(f"Error in workflow execution: {str(e)}", exc_info=True)
+        print(f"Error: {str(e)}")
+        return 1
