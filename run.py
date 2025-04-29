@@ -1,313 +1,124 @@
-#!/usr/bin/env python3
 """
-Night_watcher - Intelligence Analysis System
-Starts the Night_watcher framework focused on intelligence gathering and analysis.
+Night_watcher Date Tracking Utilities
+Utilities for tracking and managing analysis date ranges.
 """
 
-import sys
 import os
-
-# Add project root and agents directory to Python path
-project_root = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(project_root)
-sys.path.append(os.path.join(project_root, "agents"))
-
 import logging
-import argparse
-from datetime import datetime
-from pathlib import Path
+from datetime import datetime, timedelta
+from typing import Optional, Tuple
 
-# Import Night_watcher modules
-from config import load_config, create_default_config
-from agents.base import LLMProvider
-from agents.lm_studio import LMStudioProvider
-from workflow.orchestrator import NightWatcherWorkflow
-from memory.system import MemorySystem
-from utils.logging import setup_logging
-from utils.date_tracking import get_analysis_date_range, save_run_date
+logger = logging.getLogger(__name__)
 
+def get_last_run_date(data_dir: str) -> datetime:
+    """
+    Get the date range for the current analysis run with optional overlap
+    to ensure no gaps in coverage.
+    
+    Args:
+        data_dir: Directory where date tracking is stored
+        days_overlap: Number of days to overlap with previous run (default: 1)
+        
+    Returns:
+        Tuple of (start_date, end_date) for the current run
+    """
+    start_date = get_last_run_date(data_dir)
+    end_date = datetime.now()
+    
+    # Apply overlap to avoid gaps
+    if days_overlap > 0:
+        start_date = start_date - timedelta(days=days_overlap)
+    
+    logger.info(f"Analysis date range: {start_date.isoformat()} to {end_date.isoformat()}")
+    return start_date, end_date
 
-def check_lm_studio_connection(host: str) -> bool:
-    """Check if LM Studio is running and accessible"""
-    import requests
+def reset_to_inauguration() -> datetime:
+    """
+    Reset date tracking to inauguration day (January 20, 2025).
+    
+    Returns:
+        Inauguration date
+    """
+    return datetime(2025, 1, 20)
+
+def format_date_for_filename(date: datetime) -> str:
+    """
+    Format a date for use in filenames.
+    
+    Args:
+        date: Date to format
+        
+    Returns:
+        Formatted date string
+    """
+    return date.strftime("%Y%m%d")
+
+def format_date_range_for_filename(start_date: datetime, end_date: datetime) -> str:
+    """
+    Format a date range for use in filenames.
+    
+    Args:
+        start_date: Start date
+        end_date: End date
+        
+    Returns:
+        Formatted date range string
+    """
+    start_str = format_date_for_filename(start_date)
+    end_str = format_date_for_filename(end_date)
+    return f"{start_str}-{end_str}"
+
+    Get the last run date or return the default start date (Jan 20, 2025).
+    
+    Args:
+        data_dir: Directory where date tracking is stored
+        
+    Returns:
+        Last run date as datetime object
+    """
+    date_file = os.path.join(data_dir, "last_run_date.txt")
+    
+    if os.path.exists(date_file):
+        try:
+            with open(date_file, 'r') as f:
+                date_str = f.read().strip()
+                return datetime.fromisoformat(date_str)
+        except (ValueError, IOError) as e:
+            logger.error(f"Error reading last run date: {str(e)}")
+            # Return default date if there's an error reading the file
+            return datetime(2025, 1, 20)
+    else:
+        # Default to inauguration day if no previous run
+        logger.info("No previous run date found, starting from inauguration day (Jan 20, 2025)")
+        return datetime(2025, 1, 20)
+
+def save_run_date(data_dir: str, date: Optional[datetime] = None) -> bool:
+    """
+    Save the current date as the last run date.
+    
+    Args:
+        data_dir: Directory where date tracking is stored
+        date: Date to save as last run date (defaults to current date)
+        
+    Returns:
+        True if successful, False otherwise
+    """
+    if date is None:
+        date = datetime.now()
+        
+    date_file = os.path.join(data_dir, "last_run_date.txt")
+    
     try:
-        response = requests.get(f"{host}/v1/models", timeout=5)
-        return response.status_code == 200
-    except Exception:
+        os.makedirs(os.path.dirname(date_file), exist_ok=True)
+        
+        with open(date_file, 'w') as f:
+            f.write(date.isoformat())
+            
+        logger.info(f"Saved run date: {date.isoformat()}")
+        return True
+    except Exception as e:
+        logger.error(f"Error saving run date: {str(e)}")
         return False
 
-
-def use_anthropic_api() -> bool:
-    """Ask user if they want to use the Anthropic API"""
-    print("\nLM Studio server is not available.")
-    print("Would you like to use the Anthropic API instead? (requires API key)")
-    response = input("Use Anthropic API? (y/n): ").strip().lower()
-    return response == 'y' or response == 'yes'
-
-
-def get_anthropic_credentials():
-    """Get Anthropic API key and model from user"""
-    api_key = input("\nEnter your Anthropic API key: ").strip()
-    
-    print("\nAvailable Claude models:")
-    print("1. Claude 3 Opus (most powerful)")
-    print("2. Claude 3 Sonnet (balanced)")
-    print("3. Claude 3 Haiku (fastest)")
-    
-    model_choice = input("Select model (1-3, default=3): ").strip()
-    
-    models = {
-        "1": "claude-3-opus-20240229",
-        "2": "claude-3-sonnet-20240229",
-        "3": "claude-3-haiku-20240307"
-    }
-    
-    model = models.get(model_choice, "claude-3-haiku-20240307")
-    
-    return api_key, model
-
-
-def initialize_llm_provider(config, logger) -> LLMProvider:
-    """Initialize LLM provider (either LM Studio or Anthropic)"""
-    llm_host = config["llm_provider"]["host"]
-    
-    # Check if LM Studio is running
-    if check_lm_studio_connection(llm_host):
-        logger.info(f"Connected to LM Studio at {llm_host}")
-        return LMStudioProvider(host=llm_host)
-    
-    # If LM Studio is not available, offer to use Anthropic API
-    if use_anthropic_api():
-        try:
-            # Import here to avoid dependency requirement if not used
-            from agents.anthropic_provider import AnthropicProvider
-            
-            api_key, model = get_anthropic_credentials()
-            logger.info(f"Using Anthropic API with model: {model}")
-            return AnthropicProvider(api_key=api_key, model=model)
-            
-        except ImportError:
-            print("\nError: Anthropic SDK not installed.")
-            print("Install with: pip install anthropic")
-            print("Continuing without LLM capabilities (content collection only)...")
-            return None
-    else:
-        print("\nContinuing without LLM capabilities (content collection only)...")
-        return None
-
-
-def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None, 
-                reset_date=False, use_repository=False):
-    """Run the Night_watcher intelligence analysis workflow with the given configuration."""
-    # Set up logging
-    logger = setup_logging()
-    logger.info("Starting Night_watcher intelligence analysis workflow")
-
-    # Load configuration
-    if not os.path.exists(config_path):
-        print(f"Configuration file not found at {config_path}")
-        print("Creating default configuration...")
-        create_default_config(config_path)
-        print(f"Default configuration created at {config_path}")
-
-    config = load_config(config_path)
-
-    # Override config with command-line arguments
-    if llm_host:
-        config["llm_provider"]["host"] = llm_host
-
-    # Set default article limit to 50 if not specified in config
-    if "article_limit" not in config["content_collection"]:
-        config["content_collection"]["article_limit"] = 50
-
-    # Override article limit if specified
-    if article_limit:
-        config["content_collection"]["article_limit"] = article_limit
-
-    # Set default output directory to current directory if not specified
-    if "base_dir" not in config["output"]:
-        config["output"]["base_dir"] = "."
-
-    # Override output directory if specified
-    if output_dir:
-        config["output"]["base_dir"] = output_dir
-        
-    # Create necessary directories
-    ensure_directories(config["output"]["base_dir"])
-
-    try:
-        # Initialize LLM provider with fallback support
-        llm_provider = initialize_llm_provider(config, logger)
-        
-        # If no LLM provider is available, run limited workflow
-        if llm_provider is None:
-            logger.warning("Running with limited capabilities (content collection only)")
-            print("\nRunning with limited capabilities (content collection only)")
-
-        # Initialize memory system
-        memory_system = MemorySystem(
-            store_type=config.get("memory", {}).get("store_type", "simple"),
-            config=config.get("memory", {})
-        )
-
-        # Load existing memory if available
-        memory_path = config.get("memory", {}).get("file_path")
-        if memory_path and os.path.exists(memory_path):
-            logger.info(f"Loading memory from {memory_path}")
-            memory_system.load(memory_path)
-
-        # Initialize and run workflow
-        workflow = NightWatcherWorkflow(
-            llm_provider=llm_provider,
-            memory_system=memory_system,
-            output_dir=config["output"]["base_dir"]
-        )
-        
-        # Initialize repository components if requested
-        if use_repository:
-            logger.info("Using repository-based architecture")
-            workflow.initialize_repository_components()
-        
-        # If reset_date is specified, we'll use Jan 20, 2025 as the start date
-        if reset_date:
-            start_date = datetime(2025, 1, 20)
-            end_date = datetime.now()
-            logger.info(f"Date range reset to start from inauguration day: {start_date.isoformat()}")
-        else:
-            # Get the date range from the tracking system
-            start_date, end_date = get_analysis_date_range(config["output"]["base_dir"])
-
-        # Set up workflow parameters
-        workflow_params = {
-            "article_limit": config["content_collection"]["article_limit"],
-            "sources": config["content_collection"]["sources"],
-            "pattern_analysis_days": 30,  # Default analysis period
-            "start_date": start_date,
-            "end_date": end_date,
-            "llm_provider_available": llm_provider is not None
-        }
-            
-        # Run workflow with appropriate method
-        if use_repository:
-            result = workflow.run_with_repository(workflow_params)
-        else:
-            result = workflow.run(workflow_params)
-
-        # Save memory system
-        if memory_path:
-            memory_dir = os.path.dirname(memory_path)
-            if memory_dir:
-                os.makedirs(memory_dir, exist_ok=True)
-            logger.info(f"Saving memory to {memory_path}")
-            memory_system.save(memory_path)
-            
-        # Update date tracking
-        save_run_date(config["output"]["base_dir"], end_date)
-
-        print(f"\n=== Processing complete ===")
-        print(f"Articles collected: {result.get('articles_collected', 0)}")
-        
-        if use_repository:
-            print(f"Articles analyzed: {result.get('articles_analyzed', 0) if llm_provider else 'N/A (No LLM available)'}")
-            print(f"Content IDs: {len(result.get('content_ids', []))}")
-            print(f"Processed IDs: {len(result.get('processed_ids', []))}")
-            if result.get('analysis_ids'):
-                print(f"Content analyses: {len(result.get('analysis_ids', {}).get('content_analysis', []))}")
-                print(f"Authoritarian analyses: {len(result.get('analysis_ids', {}).get('authoritarian_analysis', []))}")
-        else:
-            print(f"Articles analyzed: {result.get('articles_analyzed', 0) if llm_provider else 'N/A (No LLM available)'}")
-            print(f"Pattern analyses generated: {result.get('pattern_analyses_generated', 0) if llm_provider else 'N/A (No LLM available)'}")
-        
-        print(f"Date range: {start_date.isoformat()} to {end_date.isoformat()}")
-        print(f"All outputs saved in {result.get('output_dir', config['output']['base_dir'])}")
-
-        return 0
-    except Exception as e:
-        logger.error(f"Error in workflow execution: {str(e)}", exc_info=True)
-        print(f"Error: {str(e)}")
-        return 1
-
-
-def ensure_directories(base_dir="."):
-    """Ensure required directories exist."""
-    directories = [
-        os.path.join(base_dir, "data", "collected"),
-        os.path.join(base_dir, "data", "analyzed"),
-        os.path.join(base_dir, "data", "memory"),
-        os.path.join(base_dir, "data", "analysis"),
-        os.path.join(base_dir, "logs")
-    ]
-
-    for directory in directories:
-        os.makedirs(directory, exist_ok=True)
-
-
-def main():
-    """Main entry point for Night_watcher intelligence analysis system."""
-    parser = argparse.ArgumentParser(
-        description="Night_watcher - Intelligence Analysis System"
-    )
-
-    parser.add_argument("--config", default="config.json",
-                        help="Path to configuration file (default: config.json)")
-    parser.add_argument("--llm-host", default="http://localhost:1234",
-                        help="Override LLM API host URL (default: http://localhost:1234)")
-    parser.add_argument("--article-limit", type=int, default=50,
-                        help="Override maximum articles to collect per source (default: 50)")
-    parser.add_argument("--output-dir", default=".",
-                        help="Override output directory (default: current directory)")
-    parser.add_argument("--reset-date", action="store_true",
-                        help="Reset date tracking to start from inauguration day (Jan 20, 2025)")
-    parser.add_argument("--use-anthropic", action="store_true",
-                        help="Force using Anthropic API instead of LM Studio")
-    parser.add_argument("--use-repository", action="store_true",
-                        help="Use repository-based architecture for data provenance")
-
-    args = parser.parse_args()
-    
-    # Handle --use-anthropic flag
-    if args.use_anthropic:
-        try:
-            from agents.anthropic_provider import AnthropicProvider
-            
-            print("\nUsing Anthropic API as requested.")
-            api_key, model = get_anthropic_credentials()
-            
-            # Create config to use Anthropic
-            config = load_config(args.config)
-            config["llm_provider"]["type"] = "anthropic"
-            config["llm_provider"]["api_key"] = api_key
-            config["llm_provider"]["model"] = model
-            
-            # Save updated config
-            with open(args.config, "w") as f:
-                import json
-                json.dump(config, f, indent=2)
-                
-        except ImportError:
-            print("\nError: Anthropic SDK not installed.")
-            print("Install with: pip install anthropic")
-
-    # Run workflow
-    return run_workflow(
-        config_path=args.config,
-        llm_host=args.llm_host,
-        article_limit=args.article_limit,
-        output_dir=args.output_dir,
-        reset_date=args.reset_date,
-        use_repository=args.use_repository
-    )
-
-
-if __name__ == "__main__":
-    print("""
-    ╔═══════════════════════════════════════════════════════════╗
-    ║                                                           ║
-    ║  Night_watcher Intelligence Analysis System               ║
-    ║                                                           ║
-    ║  Monitoring and analyzing authoritarian patterns          ║
-    ║                                                           ║
-    ╚═══════════════════════════════════════════════════════════╝
-    """)
-
-    sys.exit(main())
+def get_analysis_date_range(data_dir: str, days_overlap: int = 1) -> Tuple[datetime, datetime]:
+    """
