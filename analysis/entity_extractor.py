@@ -78,19 +78,8 @@ class EntityExtractor:
         }
     
     def _extract_entities(self, title: str, content: str, analysis: str, 
-                         authoritarian_analysis: str = "") -> List[Dict[str, Any]]:
-        """
-        Extract entities from content using LLM
-        
-        Args:
-            title: Article title
-            content: Article content
-            analysis: Analysis text
-            authoritarian_analysis: Authoritarian analysis text (optional)
-            
-        Returns:
-            List of extracted entities
-        """
+                     authoritarian_analysis: str = "") -> List[Dict[str, Any]]:
+        """Extract entities from content using LLM"""
         # Prepare context for extraction
         context = f"""
         TITLE: {title}
@@ -103,7 +92,7 @@ class EntityExtractor:
         if authoritarian_analysis:
             context += f"\n\nAUTHORITARIAN ANALYSIS: {authoritarian_analysis}"
         
-        # Create extraction prompt
+        # Create extraction prompt with simpler formatting
         prompt = f"""
         Extract all political entities mentioned in this article and analysis. Focus on identifying governmental 
         and political entities relevant to tracking authoritarian patterns.
@@ -120,40 +109,10 @@ class EntityExtractor:
         7. INDICATOR: Authoritarian pattern indicators
         8. TOPIC: Subject areas and domains of political discourse
         
-        For each entity, include:
-        - id: Generate a unique identifier (e.g., "actor_123abc")
-        - name: The canonical name (normalized form)
-        - type: EXACTLY one of the 8 types listed above (uppercase)
-        - subtype: An optional more specific categorization
-        - attributes: A dictionary of relevant properties
-        - confidence: "HIGH", "MEDIUM", or "LOW" based on clarity in the text
-        - evidence: List of text snippets that mention this entity
+        Return your response as a JSON array where each object represents an entity.
+        Each entity must have id, name, type, and attributes fields.
         
-        Format your response as a JSON array where each object represents an entity:
-        [
-          {
-            "id": "unique_identifier",
-            "name": "Entity Name",
-            "type": "ACTOR",
-            "subtype": "optional_subtype",
-            "attributes": {
-              "attribute1": "value1",
-              "attribute2": "value2"
-            },
-            "confidence": "HIGH",
-            "evidence": [
-              {
-                "text": "Extracted text evidence",
-                "source_id": "content",
-                "confidence": "HIGH"
-              }
-            ]
-          },
-          ...
-        ]
-        
-        Extract only entities clearly mentioned or implied in the text. Exclude speculative entities.
-        Only include the JSON array in your response, no other text.
+        Respond with ONLY the JSON array, no explanation or other text.
         """
         
         try:
