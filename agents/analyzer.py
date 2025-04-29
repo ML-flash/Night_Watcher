@@ -160,123 +160,123 @@ class ContentAnalyzer(Agent):
         }
 
     def extract_key_elements(self, analysis: str) -> Dict[str, Any]:
-    """
-    Extract structured key elements from an analysis.
-
-    Args:
-        analysis: Analysis text to extract from
-
-    Returns:
-        Dict with structured elements
-    """
-    # Ensure analysis is preprocessed
-    analysis = self.preprocess_llm_output(analysis)
-
-    # Create a more direct prompt with a clear example
-    prompt = f"""
-    Extract the key elements from this article analysis into a JSON format.
+        """
+        Extract structured key elements from an analysis.
     
-    ANALYSIS:
-    {analysis}
-
-    Return a JSON object with EXACTLY this structure:
-    {{
-        "main_topics": ["topic1", "topic2", "topic3"],
-        "frames": ["frame1", "frame2"],
-        "emotional_triggers": ["emotion1", "emotion2"],
-        "divisive_elements": ["element1", "element2"],
-        "manipulation_techniques": ["technique1", "technique2"],
-        "manipulation_score": 7
-    }}
+        Args:
+            analysis: Analysis text to extract from
     
-    In the above example:
-    - The arrays contain strings extracted from the analysis
-    - The manipulation_score is a number from 0-10
-    - There are NO other fields, comments, or explanations
-
-    Replace the example values with actual content from the analysis.
-    Your response must be VALID JSON with no other text.
-    """
-
-    # Call LLM with lower temperature to get more consistent output
-    result = self._call_llm(prompt, max_tokens=800, temperature=0.1)
-    result = self.preprocess_llm_output(result)
-
-    try:
-        # Find the JSON part (in case there's extra text)
-        json_match = re.search(r'\{.*\}', result, re.DOTALL)
-        if json_match:
-            json_str = json_match.group(0)
-            
-            # Try direct parsing first
-            try:
-                return json.loads(json_str)
-            except json.JSONDecodeError:
-                # Apply more aggressive cleaning
-                self.logger.warning("Initial JSON parsing failed, applying cleanup")
+        Returns:
+            Dict with structured elements
+        """
+        # Ensure analysis is preprocessed
+        analysis = self.preprocess_llm_output(analysis)
+    
+        # Create a more direct prompt with a clear example
+        prompt = f"""
+        Extract the key elements from this article analysis into a JSON format.
+        
+        ANALYSIS:
+        {analysis}
+    
+        Return a JSON object with EXACTLY this structure:
+        {{
+            "main_topics": ["topic1", "topic2", "topic3"],
+            "frames": ["frame1", "frame2"],
+            "emotional_triggers": ["emotion1", "emotion2"],
+            "divisive_elements": ["element1", "element2"],
+            "manipulation_techniques": ["technique1", "technique2"],
+            "manipulation_score": 7
+        }}
+        
+        In the above example:
+        - The arrays contain strings extracted from the analysis
+        - The manipulation_score is a number from 0-10
+        - There are NO other fields, comments, or explanations
+    
+        Replace the example values with actual content from the analysis.
+        Your response must be VALID JSON with no other text.
+        """
+    
+        # Call LLM with lower temperature to get more consistent output
+        result = self._call_llm(prompt, max_tokens=800, temperature=0.1)
+        result = self.preprocess_llm_output(result)
+    
+        try:
+            # Find the JSON part (in case there's extra text)
+            json_match = re.search(r'\{.*\}', result, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(0)
                 
-                # Replace single quotes with double quotes
-                json_str = json_str.replace("'", '"')
-                
-                # Fix common issues with quotes in arrays
-                json_str = re.sub(r'"\s*,\s*"', '", "', json_str)
-                
-                # Remove trailing commas before closing brackets
-                json_str = re.sub(r',\s*}', '}', json_str)
-                json_str = re.sub(r',\s*]', ']', json_str)
-                
+                # Try direct parsing first
                 try:
                     return json.loads(json_str)
                 except json.JSONDecodeError:
-                    self.logger.warning("Advanced cleanup failed, extracting components manually")
+                    # Apply more aggressive cleaning
+                    self.logger.warning("Initial JSON parsing failed, applying cleanup")
                     
-                    # Extract score first
-                    score_match = re.search(r'"manipulation_score":\s*(\d+)', json_str)
-                    score = int(score_match.group(1)) if score_match else 5
+                    # Replace single quotes with double quotes
+                    json_str = json_str.replace("'", '"')
                     
-                    # Extract arrays using regex
-                    result = {
-                        "main_topics": self._extract_array(json_str, "main_topics"),
-                        "frames": self._extract_array(json_str, "frames"),
-                        "emotional_triggers": self._extract_array(json_str, "emotional_triggers"),
-                        "divisive_elements": self._extract_array(json_str, "divisive_elements"),
-                        "manipulation_techniques": self._extract_array(json_str, "manipulation_techniques"),
-                        "manipulation_score": score
-                    }
+                    # Fix common issues with quotes in arrays
+                    json_str = re.sub(r'"\s*,\s*"', '", "', json_str)
                     
-                    return result
-        
-        # No valid JSON found, extract using regex
-        self.logger.warning("No valid JSON found, using fallback extraction")
-        
-        # Extract manipulation score
-        score_match = re.search(r'manipulation_score["\s:]+(\d+)', result, re.IGNORECASE)
-        score = int(score_match.group(1)) if score_match else 5
-        
-        # Create result with fallback values
-        return {
-            "main_topics": self._extract_array(result, "main_topics") or ["Unspecified topic"],
-            "frames": self._extract_array(result, "frames") or ["Unspecified frame"],
-            "emotional_triggers": self._extract_array(result, "emotional_triggers") or ["Unspecified trigger"],
-            "divisive_elements": self._extract_array(result, "divisive_elements") or ["Unspecified element"],
-            "manipulation_techniques": self._extract_array(result, "manipulation_techniques") or ["Unspecified technique"],
-            "manipulation_score": score
-        }
-    except Exception as e:
-        self.logger.error(f"Error parsing extracted elements: {str(e)}")
-        self.logger.debug(f"Raw LLM response: {result}")
-
-        # Return a fallback structure
-        return {
-            "main_topics": ["Unspecified topic"],
-            "frames": ["Unspecified frame"],
-            "emotional_triggers": ["Unspecified trigger"],
-            "divisive_elements": ["Unspecified element"],
-            "manipulation_techniques": ["Unspecified technique"],
-            "manipulation_score": 5,
-            "error": f"Failed to extract elements: {str(e)}",
-            "raw_result": result[:200]  # Include first 200 chars of raw result for debugging
-        }
+                    # Remove trailing commas before closing brackets
+                    json_str = re.sub(r',\s*}', '}', json_str)
+                    json_str = re.sub(r',\s*]', ']', json_str)
+                    
+                    try:
+                        return json.loads(json_str)
+                    except json.JSONDecodeError:
+                        self.logger.warning("Advanced cleanup failed, extracting components manually")
+                        
+                        # Extract score first
+                        score_match = re.search(r'"manipulation_score":\s*(\d+)', json_str)
+                        score = int(score_match.group(1)) if score_match else 5
+                        
+                        # Extract arrays using regex
+                        result = {
+                            "main_topics": self._extract_array(json_str, "main_topics"),
+                            "frames": self._extract_array(json_str, "frames"),
+                            "emotional_triggers": self._extract_array(json_str, "emotional_triggers"),
+                            "divisive_elements": self._extract_array(json_str, "divisive_elements"),
+                            "manipulation_techniques": self._extract_array(json_str, "manipulation_techniques"),
+                            "manipulation_score": score
+                        }
+                        
+                        return result
+            
+            # No valid JSON found, extract using regex
+            self.logger.warning("No valid JSON found, using fallback extraction")
+            
+            # Extract manipulation score
+            score_match = re.search(r'manipulation_score["\s:]+(\d+)', result, re.IGNORECASE)
+            score = int(score_match.group(1)) if score_match else 5
+            
+            # Create result with fallback values
+            return {
+                "main_topics": self._extract_array(result, "main_topics") or ["Unspecified topic"],
+                "frames": self._extract_array(result, "frames") or ["Unspecified frame"],
+                "emotional_triggers": self._extract_array(result, "emotional_triggers") or ["Unspecified trigger"],
+                "divisive_elements": self._extract_array(result, "divisive_elements") or ["Unspecified element"],
+                "manipulation_techniques": self._extract_array(result, "manipulation_techniques") or ["Unspecified technique"],
+                "manipulation_score": score
+            }
+        except Exception as e:
+            self.logger.error(f"Error parsing extracted elements: {str(e)}")
+            self.logger.debug(f"Raw LLM response: {result}")
+    
+            # Return a fallback structure
+            return {
+                "main_topics": ["Unspecified topic"],
+                "frames": ["Unspecified frame"],
+                "emotional_triggers": ["Unspecified trigger"],
+                "divisive_elements": ["Unspecified element"],
+                "manipulation_techniques": ["Unspecified technique"],
+                "manipulation_score": 5,
+                "error": f"Failed to extract elements: {str(e)}",
+                "raw_result": result[:200]  # Include first 200 chars of raw result for debugging
+            }
 
     def _extract_array(self, text: str, field_name: str) -> List[str]:
         """Helper method to extract array values using regex"""
