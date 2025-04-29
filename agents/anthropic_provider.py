@@ -32,47 +32,58 @@ class AnthropicProvider(LLMProvider):
              stop: Optional[List[str]] = None) -> Dict[str, Any]:
         """Execute a completion request to Anthropic"""
         try:
+            # Filter out empty or whitespace-only stop sequences
+            filtered_stop = None
+            if stop:
+                filtered_stop = [s for s in stop if s and s.strip()]
+                if not filtered_stop:
+                    filtered_stop = None
+    
+            # Check the Anthropic SDK version and use appropriate API
             import anthropic
+            import pkg_resources
+            anthropic_version = pkg_resources.get_distribution("anthropic").version
             
-            # Check the version - newer versions use a different API structure
-            if hasattr(anthropic, "Anthropic"):
-                # For newer versions (anthropic>=0.5.0)
+            if anthropic_version >= "0.5.0":
+                # For newer versions of the SDK (claude-3 API)
                 params = {
                     "model": self.model,
                     "max_tokens": max_tokens,
                     "temperature": temperature
                 }
                 
-                if stop:
-                    params["stop_sequences"] = stop
-                    
-                message = {
-                    "role": "user",
-                    "content": prompt
-                }
-    
+                if filtered_stop:
+                    params["stop_sequences"] = filtered_stop
+                
                 response = self.client.messages.create(
-                    **params,
-                    messages=[message]
+                    messages=[{"role": "user", "content": prompt}],
+                    **params
                 )
-    
+                
+                # Extract the text content from the response
+                text_content = ""
+                for content_block in response.content:
+                    if content_block.type == "text":
+                        text_content = content_block.text
+                        break
+                
                 # Convert Anthropic response to format expected by Night_watcher
                 return {
                     "choices": [
                         {
-                            "text": response.content[0].text
+                            "text": text_content
                         }
                     ]
                 }
             else:
-                # For older versions (anthropic<0.5.0)
+                # For older versions (claude-2 API)
                 response = self.client.completion(
                     prompt=f"{anthropic.HUMAN_PROMPT} {prompt} {anthropic.AI_PROMPT}",
                     max_tokens_to_sample=max_tokens,
                     temperature=temperature,
-                    stop_sequences=stop if stop else None
+                    stop_sequences=filtered_stop if filtered_stop else None
                 )
-    
+                
                 # Convert Anthropic response to format expected by Night_watcher
                 return {
                     "choices": [
