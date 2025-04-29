@@ -6,6 +6,7 @@ Extracts political entities and relationships from analyzed content.
 import logging
 import re
 import json
+import uuid
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Set, Tuple
 
@@ -30,6 +31,10 @@ class EntityExtractor:
         self.knowledge_graph = knowledge_graph
         self.logger = logging.getLogger("EntityExtractor")
         
+        # Define valid entity and relationship types
+        self.valid_entity_types = list(ENTITY_TYPES.values())
+        self.valid_relationship_types = list(RELATIONSHIP_TYPES.values())
+        
     def extract_from_analysis(self, analysis: Dict[str, Any]) -> Dict[str, Any]:
         """
         Extract entities and relationships from an analysis
@@ -48,7 +53,7 @@ class EntityExtractor:
         authoritarian_analysis = analysis.get("authoritarian_analysis", "")
         
         # Create a unique content ID for evidence tracking
-        content_id = analysis.get("id", f"analysis_{datetime.now().strftime('%Y%m%d%H%M%S')}")
+        content_id = analysis.get("id", f"analysis_{uuid.uuid4().hex[:8]}")
         
         # Extract basic information
         article_title = article.get("title", "")
@@ -105,27 +110,45 @@ class EntityExtractor:
         
         {context}
         
-        Extract and classify the following entity types:
-        1. ACTORS: Individual political actors (specific people)
-        2. INSTITUTIONS: Formal government institutions (agencies, courts, committees, etc.)
-        3. ACTIONS: Specific actions or decisions taken (orders, votes, statements, etc.)
-        4. EVENTS: Discrete political events (hearings, speeches, rallies, etc.)
-        5. ARTIFACTS: Created political objects (laws, policies, documents, etc.)
+        Extract and classify entities into ONLY these exact entity types:
+        1. ACTOR: Individual political actors (specific people)
+        2. INSTITUTION: Formal government institutions and organizations
+        3. ACTION: Specific actions or decisions taken
+        4. EVENT: Discrete political occurrences with date and participants
+        5. ARTIFACT: Created political objects or documents
+        6. NARRATIVE: Recurring storylines and framing devices
+        7. INDICATOR: Authoritarian pattern indicators
+        8. TOPIC: Subject areas and domains of political discourse
         
         For each entity, include:
-        - Name (normalized/canonical form)
-        - Type (one of the categories above)
-        - Description (brief factual description)
-        - Attributes (any relevant properties like political affiliation, role, status, etc.)
+        - id: Generate a unique identifier (e.g., "actor_123abc")
+        - name: The canonical name (normalized form)
+        - type: EXACTLY one of the 8 types listed above (uppercase)
+        - subtype: An optional more specific categorization
+        - attributes: A dictionary of relevant properties
+        - confidence: "HIGH", "MEDIUM", or "LOW" based on clarity in the text
+        - evidence: List of text snippets that mention this entity
         
         Format your response as a JSON array where each object represents an entity:
         [
-          {{
-            "name": "entity name",
-            "type": "ACTOR/INSTITUTION/ACTION/EVENT/ARTIFACT",
-            "description": "brief description",
-            "attributes": {{"key1": "value1", "key2": "value2"}}
-          }},
+          {
+            "id": "unique_identifier",
+            "name": "Entity Name",
+            "type": "ACTOR",
+            "subtype": "optional_subtype",
+            "attributes": {
+              "attribute1": "value1",
+              "attribute2": "value2"
+            },
+            "confidence": "HIGH",
+            "evidence": [
+              {
+                "text": "Extracted text evidence",
+                "source_id": "content",
+                "confidence": "HIGH"
+              }
+            ]
+          },
           ...
         ]
         
@@ -150,8 +173,40 @@ class EntityExtractor:
                 json_text = json_match.group(0)
                 # Parse JSON
                 entities = json.loads(json_text)
-                self.logger.info(f"Extracted {len(entities)} entities")
-                return entities
+                
+                # Validate entity types
+                validated_entities = []
+                for entity in entities:
+                    # Ensure entity has required fields
+                    if "name" not in entity or "type" not in entity:
+                        continue
+                        
+                    # Normalize type
+                    entity_type = entity["type"].lower()
+                    
+                    # Check if type is valid
+                    if entity_type not in self.valid_entity_types:
+                        # Try to map to valid type
+                        entity_type = self._map_entity_type(entity["type"])
+                        if not entity_type:
+                            continue
+                            
+                    # Update with normalized type
+                    entity["type"] = entity_type
+                    
+                    # Ensure entity has all required fields
+                    if "attributes" not in entity:
+                        entity["attributes"] = {}
+                    if "confidence" not in entity:
+                        entity["confidence"] = "MEDIUM"
+                    if "evidence" not in entity:
+                        entity["evidence"] = []
+                        
+                    # Add to validated entities
+                    validated_entities.append(entity)
+                    
+                self.logger.info(f"Extracted {len(validated_entities)} valid entities")
+                return validated_entities
             else:
                 self.logger.warning("No valid JSON array found in LLM response")
                 return []
@@ -181,7 +236,45 @@ class EntityExtractor:
         entity_map = {entity["name"]: entity for entity in entities}
         
         # Create entity list for prompt
-        entity_list = "\n".join([f"- {entity['name']} ({entity['type']})" for entity in entities])
+        entity_list = "\n".join([f"- {entity['name']} ({entity['type'].upper()})" for entity in entities])
+        
+        # List all relationship types
+        relationship_types = """
+        POWER RELATIONSHIPS:
+        - controls: Actor has authority over target
+        - influences: Actor shapes decisions of target without formal authority
+        - undermines: Actor/Action weakens target's effectiveness or legitimacy
+        - strengthens: Actor/Action increases target's power or legitimacy
+        
+        ACTION RELATIONSHIPS:
+        - performs: Actor executes an action
+        - authorizes: Actor approves action performed by others
+        - blocks: Actor prevents an action
+        - responds_to: Action is created as response to another action
+        
+        PARTICIPATION RELATIONSHIPS:
+        - participates_in: Actor is involved in event
+        - organizes: Actor plans or controls event
+        - targeted_by: Institution/Actor is focus of an action
+        - benefits_from: Actor/Institution gains advantage from action/event
+        
+        TEMPORAL RELATIONSHIPS:
+        - precedes: Entity exists/occurs chronologically before another
+        - causes: Entity directly leads to existence/occurrence of another
+        - accelerates: Entity speeds up development or occurrence of another
+        - part_of: Entity is component of a larger entity
+        
+        NARRATIVE RELATIONSHIPS:
+        - justifies: Action/Event provides rationale for action
+        - contradicts: Entity logically conflicts with another
+        - distracts_from: Entity diverts attention from another
+        - reinforces: Entity strengthens meaning or impact of another
+        
+        ADDITIONAL RELATIONSHIPS:
+        - allies_with: Actor works with another actor toward common goals
+        - opposes: Actor works against another's interests/goals
+        - delegates_to: Actor transfers responsibility or authority
+        """
         
         # Create context
         context = f"""
@@ -200,45 +293,41 @@ class EntityExtractor:
         ENTITIES:
         {entity_list}
         
+        RELATIONSHIP TYPES:
+        {relationship_types}
+        
         ARTICLE CONTEXT:
         {context}
         
-        Extract relationships between these entities, focusing on connections relevant to tracking authoritarian patterns.
-        
-        Consider these relationship types:
-        - controls: Actor has authority over target
-        - influences: Actor shapes decisions of target without formal authority
-        - undermines: Actor/Action weakens the target's effectiveness or legitimacy
-        - strengthens: Actor/Action increases target's power or legitimacy
-        - performs: Actor executes an action
-        - authorizes: Actor approves an action performed by others
-        - blocks: Actor prevents an action
-        - responds_to: Action is created as response to another action
-        - participates_in: Actor is involved in an event
-        - organizes: Actor plans or controls an event
-        - targeted_by: Institution/Actor is the focus of an action
-        - benefits_from: Actor/Institution gains advantage from action/event
-        - justifies: Action/Event provides rationale for action
-        - contradicts: Any entity logically conflicts with another
-        - reinforces: Any entity strengthens meaning or impact of another
-        
         For each relationship, include:
-        - source: The entity initiating the relationship
-        - relation: The type of relationship (from list above)
-        - target: The entity receiving the relationship
-        - confidence: How clearly this relationship is stated (high/medium/low)
-        - evidence: Brief text from the article or analysis supporting this relationship
-        - attributes: Any relevant properties of this relationship
+        - source_id: The entity ID initiating the relationship
+        - target_id: The entity ID receiving the relationship
+        - type: The relationship type (must be one of the types listed above)
+        - strength: Numeric value between 0.1 and 1.0 representing relationship strength
+        - confidence: "HIGH", "MEDIUM", or "LOW" based on clarity in the text
+        - evidence: List of text snippets supporting this relationship
+        - attributes: Any relevant properties (timeframe, impact, etc.)
         
         Format your response as a JSON array where each object represents a relationship:
         [
           {{
-            "source": "source entity name",
-            "relation": "relationship type",
-            "target": "target entity name",
-            "confidence": "high/medium/low",
-            "evidence": "text supporting this relationship",
-            "attributes": {{"key1": "value1", "key2": "value2"}}
+            "source_id": "entity_id_1",
+            "target_id": "entity_id_2",
+            "type": "relationship type",
+            "strength": 0.8,
+            "confidence": "HIGH",
+            "evidence": [
+              {{
+                "text": "Extracted text evidence",
+                "source_id": "content",
+                "confidence": "HIGH"
+              }}
+            ],
+            "attributes": {{
+              "timeframe": "date or period",
+              "impact": "NATIONAL",
+              "attribute3": "value3"
+            }}
           }},
           ...
         ]
@@ -265,20 +354,41 @@ class EntityExtractor:
                 # Parse JSON
                 relationships = json.loads(json_text)
                 
-                # Filter relationships to only include entities we extracted
-                valid_relationships = []
+                # Validate relationships
+                validated_relationships = []
                 for rel in relationships:
-                    source = rel.get("source")
-                    target = rel.get("target")
+                    # Ensure relationship has required fields
+                    if "source_id" not in rel or "target_id" not in rel or "type" not in rel:
+                        continue
+                        
+                    # Normalize type
+                    rel_type = rel["type"].lower()
                     
-                    if source in entity_map and target in entity_map:
-                        # Add entity types for reference
-                        rel["source_type"] = entity_map[source]["type"]
-                        rel["target_type"] = entity_map[target]["type"]
-                        valid_relationships.append(rel)
+                    # Check if type is valid
+                    if rel_type not in self.valid_relationship_types:
+                        # Try to map to valid type
+                        rel_type = self._map_relation_type(rel["type"])
+                        if not rel_type:
+                            continue
+                            
+                    # Update with normalized type
+                    rel["type"] = rel_type
+                    
+                    # Ensure relationship has all required fields
+                    if "strength" not in rel:
+                        rel["strength"] = 0.7
+                    if "confidence" not in rel:
+                        rel["confidence"] = "MEDIUM"
+                    if "evidence" not in rel:
+                        rel["evidence"] = []
+                    if "attributes" not in rel:
+                        rel["attributes"] = {}
+                        
+                    # Add to validated relationships
+                    validated_relationships.append(rel)
                 
-                self.logger.info(f"Extracted {len(valid_relationships)} valid relationships")
-                return valid_relationships
+                self.logger.info(f"Extracted {len(validated_relationships)} valid relationships")
+                return validated_relationships
             else:
                 self.logger.warning("No valid JSON array found in LLM response")
                 return []
@@ -304,26 +414,27 @@ class EntityExtractor:
         for entity in entities:
             name = entity.get("name")
             entity_type = entity.get("type")
-            description = entity.get("description", "")
             attributes = entity.get("attributes", {})
             
-            # Map entity type to knowledge graph type
-            kg_type = self._map_entity_type(entity_type)
-            if not kg_type:
-                continue
-                
-            # Add description to attributes
-            if description:
-                attributes["description"] = description
+            # Add subtype to attributes if present
+            if "subtype" in entity:
+                attributes["subtype"] = entity["subtype"]
                 
             # Find or create entity in graph
-            entity_id = self.knowledge_graph.find_or_create_entity(name, kg_type, attributes)
+            entity_id = self.knowledge_graph.find_or_create_entity(name, entity_type, attributes)
             
-            # Add evidence source
-            entity_obj = self.knowledge_graph.get_entity(entity_id)
-            if entity_obj:
-                entity_obj.add_evidence(content_id)
-                
+            # Add evidence
+            for evidence in entity.get("evidence", []):
+                entity_obj = self.knowledge_graph.get_entity(entity_id)
+                if entity_obj:
+                    evidence_text = evidence.get("text", "")
+                    entity_obj.add_evidence(content_id)
+                    
+                    # Add evidence text to entity attributes
+                    if "evidence_texts" not in entity_obj.attributes:
+                        entity_obj.attributes["evidence_texts"] = []
+                    entity_obj.attributes["evidence_texts"].append(evidence_text)
+                    
             # Store in map
             entity_map[name] = entity_id
             
@@ -346,46 +457,44 @@ class EntityExtractor:
         relationship_ids = []
         
         for rel in relationships:
-            source_name = rel.get("source")
-            target_name = rel.get("target")
-            relation_type = rel.get("relation")
-            confidence = rel.get("confidence", "medium")
-            evidence = rel.get("evidence", "")
+            source_id = rel.get("source_id")
+            target_id = rel.get("target_id")
+            relation_type = rel.get("type")
+            
+            # Skip if source/target don't have IDs in entity map
+            source_name = self._find_entity_name_by_id(rel.get("source_id"), entity_map)
+            target_name = self._find_entity_name_by_id(rel.get("target_id"), entity_map)
+            
+            if not source_name or not target_name:
+                continue
+                
+            # Get entity IDs from map
+            source_graph_id = entity_map.get(source_name)
+            target_graph_id = entity_map.get(target_name)
+            
+            if not source_graph_id or not target_graph_id:
+                continue
+                
+            # Get strength and attributes
+            strength = rel.get("strength", 0.7)
             attributes = rel.get("attributes", {})
             
-            # Skip if we don't have entity IDs
-            if source_name not in entity_map or target_name not in entity_map:
-                continue
-                
-            # Get entity IDs
-            source_id = entity_map[source_name]
-            target_id = entity_map[target_name]
-            
-            # Map relation type if needed
-            rel_type = self._map_relation_type(relation_type)
-            if not rel_type:
-                continue
-                
-            # Calculate weight based on confidence
-            weight = 1.0
-            if confidence == "high":
-                weight = 1.0
-            elif confidence == "medium":
-                weight = 0.7
-            elif confidence == "low":
-                weight = 0.4
-                
             # Add confidence to attributes
-            attributes["confidence"] = confidence
+            attributes["confidence"] = rel.get("confidence", "MEDIUM")
             
+            # Get evidence
+            evidence_text = ""
+            if rel.get("evidence"):
+                evidence_text = rel["evidence"][0].get("text", "")
+                
             # Add relationship with evidence
             rel_id = self.knowledge_graph.add_relationship_with_evidence(
-                source_id=source_id,
-                target_id=target_id,
-                relation_type=rel_type,
-                evidence_text=evidence,
+                source_id=source_graph_id,
+                target_id=target_graph_id,
+                relation_type=relation_type,
+                evidence_text=evidence_text,
                 source_content_id=content_id,
-                weight=weight,
+                weight=strength,
                 attributes=attributes
             )
             
@@ -393,6 +502,19 @@ class EntityExtractor:
                 relationship_ids.append(rel_id)
                 
         return relationship_ids
+        
+    def _find_entity_name_by_id(self, entity_id: str, entity_map: Dict[str, str]) -> Optional[str]:
+        """Find entity name by ID in extracted entities"""
+        # First check if entity_id is already a name in the map
+        if entity_id in entity_map:
+            return entity_id
+            
+        # Otherwise, try to find by ID match
+        for name, graph_id in entity_map.items():
+            if graph_id == entity_id:
+                return name
+                
+        return None
         
     def _map_entity_type(self, entity_type: str) -> Optional[str]:
         """Map extraction entity type to knowledge graph type"""
@@ -404,16 +526,22 @@ class EntityExtractor:
             "ACTION": "action",
             "EVENT": "event",
             "ARTIFACT": "artifact",
+            "NARRATIVE": "narrative",
+            "INDICATOR": "indicator",
+            "TOPIC": "topic",
             # Handle variations
             "PERSON": "actor",
             "AGENCY": "institution",
             "ORGANIZATION": "institution",
             "DOCUMENT": "artifact",
             "POLICY": "artifact",
-            "LAW": "artifact"
+            "LAW": "artifact",
+            "STORY": "narrative",
+            "THEME": "topic",
+            "PATTERN": "indicator"
         }
         
-        return type_mapping.get(entity_type)
+        return type_mapping.get(entity_type, "").lower()
         
     def _map_relation_type(self, relation_type: str) -> Optional[str]:
         """Map extraction relation type to knowledge graph relation type"""
@@ -424,7 +552,7 @@ class EntityExtractor:
         relation_type = relation_type.lower()
         
         # Direct mapping for standard types
-        if relation_type in RELATIONSHIP_TYPES.values():
+        if relation_type in self.valid_relationship_types:
             return relation_type
             
         # Handle variations
@@ -451,10 +579,19 @@ class EntityExtractor:
             "oppose": "contradicts",
             "support": "strengthens",
             "assist": "strengthens",
-            "create": "performs"
+            "create": "performs",
+            "ally with": "allies_with",
+            "collaborate with": "allies_with",
+            "delegate to": "delegates_to",
+            "distract from": "distracts_from",
+            "precede": "precedes",
+            "cause": "causes",
+            "accelerate": "accelerates",
+            "part of": "part_of",
+            "belongs to": "part_of"
         }
         
-        return variation_mapping.get(relation_type, relation_type)
+        return variation_mapping.get(relation_type)
         
     def batch_process(self, analyses: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
@@ -472,8 +609,13 @@ class EntityExtractor:
             "entities": 0,
             "relationships": 0,
             "errors": 0,
-            "extracted_entity_types": {},
-            "extracted_relationship_types": {},
+            "entity_types": {},
+            "relationship_types": {},
+            "confidence_levels": {
+                "HIGH": 0,
+                "MEDIUM": 0,
+                "LOW": 0
+            },
             "extraction_timestamp": datetime.now().isoformat()
         }
         
@@ -495,14 +637,18 @@ class EntityExtractor:
                     entity = self.knowledge_graph.get_entity(entity_id)
                     if entity:
                         entity_type = entity.type
-                        results["extracted_entity_types"][entity_type] = results["extracted_entity_types"].get(entity_type, 0) + 1
+                        results["entity_types"][entity_type] = results["entity_types"].get(entity_type, 0) + 1
                         
                 # Count relationship types
                 for rel_id in extraction.get("relationships", []):
                     rel = self.knowledge_graph.graph.get_relationship(rel_id)
                     if rel:
                         rel_type = rel.type
-                        results["extracted_relationship_types"][rel_type] = results["extracted_relationship_types"].get(rel_type, 0) + 1
+                        results["relationship_types"][rel_type] = results["relationship_types"].get(rel_type, 0) + 1
+                        
+                        # Count confidence levels
+                        confidence = rel.attributes.get("confidence", "MEDIUM")
+                        results["confidence_levels"][confidence] = results["confidence_levels"].get(confidence, 0) + 1
                         
             except Exception as e:
                 self.logger.error(f"Error processing analysis: {str(e)}")
