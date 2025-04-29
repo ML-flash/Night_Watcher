@@ -162,23 +162,24 @@ class ContentAnalyzer(Agent):
     def extract_key_elements(self, analysis: str) -> Dict[str, Any]:
         """
         Extract structured key elements from an analysis.
-
+    
         Args:
             analysis: Analysis text to extract from
-
+    
         Returns:
             Dict with structured elements
         """
         # Ensure analysis is preprocessed
         analysis = self.preprocess_llm_output(analysis)
-
+    
+        # Create a more direct prompt focused on JSON output
         prompt = f"""
-        Extract the key elements from this article analysis in a structured format.
-
+        Extract the key elements from this article analysis into a JSON format.
+        
         ANALYSIS:
         {analysis}
-
-        Extract and return ONLY the following in JSON format:
+    
+        Return ONLY the following JSON object with no extra text or explanation:
         {{
             "main_topics": ["topic1", "topic2", ...],
             "frames": ["frame1", "frame2", ...],
@@ -187,39 +188,61 @@ class ContentAnalyzer(Agent):
             "manipulation_techniques": ["technique1", "technique2", ...],
             "manipulation_score": 0-10
         }}
-
-        Provide only valid JSON with no explanations or extra text.
         """
-
+    
         result = self._call_llm(prompt, max_tokens=800, temperature=0.1)
         result = self.preprocess_llm_output(result)
-
+    
         try:
             # Find the JSON part (in case there's extra text)
             json_match = re.search(r'\{.*\}', result, re.DOTALL)
             if json_match:
-                result = json_match.group(0)
-                return json.loads(result)
-            else:
-                # No JSON found, create a fallback structure
-                self.logger.warning(f"No JSON found in LLM response, creating fallback structure")
-
-                # Extract manipulation score if possible
-                score_match = re.search(r'manipulation_score["\s:]+(\d+)', result, re.IGNORECASE)
-                score = int(score_match.group(1)) if score_match else 5
-
-                return {
-                    "main_topics": ["Unspecified topic"],
-                    "frames": ["Unspecified frame"],
-                    "emotional_triggers": ["Unspecified trigger"],
-                    "divisive_elements": ["Unspecified element"],
-                    "manipulation_techniques": ["Unspecified technique"],
-                    "manipulation_score": score
-                }
+                json_str = json_match.group(0)
+                # Clean up any potential format issues
+                json_str = re.sub(r'(\w+)(?=:)(?=(?:[^"]*"[^"]*")*[^"]*$)', r'"\1"', json_str)  # Quote unquoted keys
+                json_str = re.sub(r':\s*([^",\s\[\]\{\}][^",\]\}]*?)(?=,|}|])', r': "\1"', json_str)  # Quote unquoted values
+                
+                # Additional cleanup for common JSON issues
+                json_str = json_str.replace("'", '"')  # Replace single quotes with double quotes
+                json_str = re.sub(r',\s*}', '}', json_str)  # Remove trailing commas
+                
+                try:
+                    return json.loads(json_str)
+                except json.JSONDecodeError:
+                    # If still can't parse, try a simpler cleanup approach
+                    self.logger.warning("Initial JSON parsing failed, trying alternative cleanup")
+                    pattern = r'{\s*"main_topics":.+?"manipulation_score":\s*(\d+)\s*}'
+                    match = re.search(pattern, json_str, re.DOTALL)
+                    if match:
+                        score = int(match.group(1))
+                        return {
+                            "main_topics": ["Extracted topic"],
+                            "frames": ["Extracted frame"],
+                            "emotional_triggers": ["Extracted trigger"],
+                            "divisive_elements": ["Extracted element"],
+                            "manipulation_techniques": ["Extracted technique"],
+                            "manipulation_score": score
+                        }
+            
+            # No valid JSON found, create a fallback structure
+            self.logger.warning("No valid JSON found in LLM response, creating fallback structure")
+            
+            # Extract manipulation score if possible
+            score_match = re.search(r'manipulation_score["\s:]+(\d+)', result, re.IGNORECASE)
+            score = int(score_match.group(1)) if score_match else 5
+    
+            return {
+                "main_topics": ["Unspecified topic"],
+                "frames": ["Unspecified frame"],
+                "emotional_triggers": ["Unspecified trigger"],
+                "divisive_elements": ["Unspecified element"],
+                "manipulation_techniques": ["Unspecified technique"],
+                "manipulation_score": score
+            }
         except Exception as e:
             self.logger.error(f"Error parsing extracted elements: {str(e)}")
             self.logger.debug(f"Raw LLM response: {result}")
-
+    
             # Return a fallback structure
             return {
                 "main_topics": ["Unspecified topic"],
@@ -235,23 +258,23 @@ class ContentAnalyzer(Agent):
     def extract_authoritarian_elements(self, analysis: str) -> Dict[str, Any]:
         """
         Extract structured authoritarian elements from an analysis.
-
+    
         Args:
             analysis: Authoritarian analysis text to extract from
-
+    
         Returns:
             Dict with structured authoritarian elements
         """
         # Ensure analysis is preprocessed
         analysis = self.preprocess_llm_output(analysis)
-
+    
         prompt = f"""
-        Extract the key authoritarian indicators from this analysis in a structured format.
-
+        Extract the key authoritarian indicators from this analysis into a JSON format.
+    
         ANALYSIS:
         {analysis}
-
-        Extract and return ONLY the following in JSON format:
+    
+        Return ONLY the following JSON object with no extra text or explanation:
         {{
             "institutional_undermining": {{"present": true/false, "examples": ["example1", "example2"]}},
             "democratic_norm_violations": {{"present": true/false, "examples": ["example1", "example2"]}},
@@ -264,67 +287,67 @@ class ContentAnalyzer(Agent):
             "rule_of_law_undermining": {{"present": true/false, "examples": ["example1", "example2"]}},
             "authoritarian_score": 0-10
         }}
-
-        For each indicator, set "present" to true only if there is clear evidence in the analysis.
-        Include specific examples as short phrases or sentences.
-        Provide only valid JSON with no explanations or extra text.
         """
-
+    
         result = self._call_llm(prompt, max_tokens=1000, temperature=0.1)
         result = self.preprocess_llm_output(result)
-
+    
         try:
-            # Find the JSON part (in case there's extra text)
+            # Find the JSON part
             json_match = re.search(r'\{.*\}', result, re.DOTALL)
             if json_match:
-                result = json_match.group(0)
-                return json.loads(result)
+                json_str = json_match.group(0)
+                
+                # Clean up potential format issues
+                json_str = re.sub(r':\s*true\b', ': true', json_str)  # Normalize true
+                json_str = re.sub(r':\s*false\b', ': false', json_str)  # Normalize false
+                
+                # Fix common quotes/apostrophes issues
+                json_str = json_str.replace("'", '"')
+                
+                try:
+                    return json.loads(json_str)
+                except json.JSONDecodeError:
+                    # If still can't parse JSON, try a simplified approach
+                    self.logger.warning("Initial JSON parsing failed, trying simplified approach")
+                    
+                    # Extract authoritarian score if available
+                    score_match = re.search(r'"authoritarian_score":\s*(\d+)', json_str)
+                    auth_score = int(score_match.group(1)) if score_match else 3
+                    
+                    # Create a basic structure with just the score
+                    return self._create_default_auth_structure(auth_score)
             else:
                 # No JSON found, create a fallback structure
-                self.logger.warning(f"No JSON found in LLM response, creating fallback structure")
-
-                # Extract authoritarian score if possible
-                score_match = re.search(r'authoritarian_score["\s:]+(\d+)', result, re.IGNORECASE)
-                score = int(score_match.group(1)) if score_match else 3
-
-                # Create default structure for all indicators
-                default_indicator = {"present": False, "examples": []}
-
-                return {
-                    "institutional_undermining": default_indicator.copy(),
-                    "democratic_norm_violations": default_indicator.copy(),
-                    "media_delegitimization": default_indicator.copy(),
-                    "opposition_targeting": default_indicator.copy(),
-                    "power_concentration": default_indicator.copy(),
-                    "accountability_evasion": default_indicator.copy(),
-                    "threat_exaggeration": default_indicator.copy(),
-                    "authoritarian_rhetoric": default_indicator.copy(),
-                    "rule_of_law_undermining": default_indicator.copy(),
-                    "authoritarian_score": score
-                }
+                self.logger.warning("No valid JSON found in LLM response, creating fallback structure")
+                
+                # Create default structure
+                return self._create_default_auth_structure(3)
+                
         except Exception as e:
             self.logger.error(f"Error parsing extracted authoritarian elements: {str(e)}")
             self.logger.debug(f"Raw LLM response: {result}")
-
-            # Create default structure for all indicators
-            default_indicator = {"present": False, "examples": []}
-
+            
             # Return a fallback structure
-            return {
-                "institutional_undermining": default_indicator.copy(),
-                "democratic_norm_violations": default_indicator.copy(),
-                "media_delegitimization": default_indicator.copy(),
-                "opposition_targeting": default_indicator.copy(),
-                "power_concentration": default_indicator.copy(),
-                "accountability_evasion": default_indicator.copy(),
-                "threat_exaggeration": default_indicator.copy(),
-                "authoritarian_rhetoric": default_indicator.copy(),
-                "rule_of_law_undermining": default_indicator.copy(),
-                "authoritarian_score": 3,
-                "error": f"Failed to extract authoritarian elements: {str(e)}",
-                "raw_result": result[:200]  # Include first 200 chars of raw result for debugging
-            }
-
+            return self._create_default_auth_structure(3)
+    
+    def _create_default_auth_structure(self, score: int = 3) -> Dict[str, Any]:
+        """Create default structure for authoritarian indicators"""
+        default_indicator = {"present": False, "examples": []}
+        
+        return {
+            "institutional_undermining": default_indicator.copy(),
+            "democratic_norm_violations": default_indicator.copy(),
+            "media_delegitimization": default_indicator.copy(),
+            "opposition_targeting": default_indicator.copy(),
+            "power_concentration": default_indicator.copy(),
+            "accountability_evasion": default_indicator.copy(),
+            "threat_exaggeration": default_indicator.copy(),
+            "authoritarian_rhetoric": default_indicator.copy(),
+            "rule_of_law_undermining": default_indicator.copy(),
+            "authoritarian_score": score
+        }
+    
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process articles for analysis including both standard and authoritarian pattern analyses.
