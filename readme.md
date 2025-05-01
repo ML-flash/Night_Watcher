@@ -68,4 +68,40 @@ To customize, edit the generated `config.json` file:
 
 After running, you'll find the following in your output directory:
 
-- `data/collected/
+- `data/collected/` - Raw article data
+- `data/analyzed/` - Analysis results with manipulation scoring
+- `data/analysis/` - Pattern analysis and intelligence outputs
+- `data/memory/` - System memory for tracking patterns over time
+- `logs/` - Execution logs
+
+## Intelligence Gathering Capabilities
+
+The Night_watcher system provides several key intelligence gathering capabilities:
+
+1. **Content Collection**: Gathers politically-focused content from various RSS feeds with filtering
+2. **Content Analysis**: Identifies manipulation techniques and authoritarian patterns in content
+3. **Entity Extraction**: Extracts key political entities and their relationships from content
+4. **Pattern Recognition**: Identifies recurring topics, authoritarian trends, and actor patterns
+5. **Knowledge Graph**: Maps relationships between entities to track patterns over time
+6. **Memory System**: Maintains a vector database for tracking historical patterns
+
+## Security Considerations
+
+- The framework runs locally with no external API calls except to specified news sources
+- All LLM interactions happen locally through LM Studio (or optionally via Anthropic API)
+- No data is sent to external servers unless using Anthropic API
+
+## Extensions
+
+Night_watcher is designed as an intelligence gathering foundation. It can be extended with additional toolkit modules for:
+
+- Strategic response generation
+- Counter-narrative development
+- Distribution planning
+- Reporting systems
+
+These extension modules are kept separate from the core intelligence gathering system to maintain focus and modularity.
+
+## License
+
+This project is released into the public domain - see the [LICENSE](LICENSE) file for details.
