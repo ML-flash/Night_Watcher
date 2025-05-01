@@ -1,6 +1,6 @@
 """
 Knowledge Graph Integration
-Functions to integrate knowledge graph and entity extraction with the Night_watcher workflow.
+Functions to integrate knowledge graph and entity extraction with the Night_watcher intelligence gathering system.
 """
 
 import os
@@ -270,20 +270,20 @@ class KnowledgeGraphManager:
             "timestamp": timestamp
         }
         
-    def generate_intelligence_report(self, lookback_days: int = 30) -> Dict[str, Any]:
+    def generate_intelligence_summary(self, lookback_days: int = 30) -> Dict[str, Any]:
         """
-        Generate intelligence report based on knowledge graph
+        Generate intelligence summary based on knowledge graph
         
         Args:
             lookback_days: Number of days to look back
             
         Returns:
-            Intelligence report data
+            Intelligence summary data
         """
         # Create results directory
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        report_dir = os.path.join(self.output_dir, "reports", timestamp)
-        os.makedirs(report_dir, exist_ok=True)
+        summary_dir = os.path.join(self.output_dir, "analysis", timestamp)
+        os.makedirs(summary_dir, exist_ok=True)
         
         # Get democratic erosion analysis
         erosion_analysis = self.knowledge_graph.analyze_democratic_erosion(lookback_days)
@@ -294,8 +294,8 @@ class KnowledgeGraphManager:
         # Get authoritarian trends
         authoritarian_trends = self.knowledge_graph.get_authoritarian_trends(lookback_days)
         
-        # Create intelligence report
-        report = {
+        # Create intelligence summary
+        summary = {
             "timestamp": timestamp,
             "lookback_days": lookback_days,
             "democratic_erosion": erosion_analysis,
@@ -314,7 +314,7 @@ class KnowledgeGraphManager:
             # Add institution types at risk
             for inst_type, data in erosion_analysis.get("affected_institution_types", {}).items():
                 if data.get("total_weight", 0) > 5:
-                    report["risk_assessment"]["key_concerns"].append({
+                    summary["risk_assessment"]["key_concerns"].append({
                         "concern_type": "institution_type",
                         "name": inst_type,
                         "severity": min(10, data.get("total_weight", 0) / 2),
@@ -323,116 +323,17 @@ class KnowledgeGraphManager:
                     
             # Add coordination patterns
             for pattern in erosion_analysis.get("coordination_patterns", []):
-                report["risk_assessment"]["key_concerns"].append({
+                summary["risk_assessment"]["key_concerns"].append({
                     "concern_type": "coordination",
                     "target": pattern.get("target_entity", {}).get("name", ""),
                     "actors": [a.get("name", "") for a in pattern.get("actors", [])],
                     "severity": 7.0  # Coordination is a high severity concern
                 })
         
-        # Save report
-        save_to_file(report, os.path.join(report_dir, "intelligence_report.json"))
-        
-        # Generate text report using LLM
-        text_report = self._generate_text_report(report)
-        save_to_file(text_report, os.path.join(report_dir, "intelligence_report.txt"))
+        # Save summary
+        save_to_file(summary, os.path.join(summary_dir, "intelligence_summary.json"))
         
         return {
-            "report": report,
-            "text_report": text_report,
+            "summary": summary,
             "timestamp": timestamp
         }
-        
-    def _generate_text_report(self, report: Dict[str, Any]) -> str:
-        """
-        Generate text version of intelligence report using LLM
-        
-        Args:
-            report: Intelligence report data
-            
-        Returns:
-            Text version of report
-        """
-        # Create prompt for report generation
-        risk_level = report.get("risk_assessment", {}).get("risk_level", "Low")
-        risk_score = report.get("risk_assessment", {}).get("overall_risk", 0)
-        timestamp = report.get("timestamp", "")
-        lookback_days = report.get("lookback_days", 30)
-        
-        # Extract key concerns
-        concerns = report.get("risk_assessment", {}).get("key_concerns", [])
-        concerns_text = ""
-        
-        for i, concern in enumerate(concerns):
-            if concern.get("concern_type") == "institution_type":
-                concerns_text += f"{i+1}. Institutional undermining of {concern.get('name', '')} institutions"
-                if concern.get("institutions"):
-                    concerns_text += f": {', '.join(concern.get('institutions', []))}"
-                concerns_text += f" (Severity: {concern.get('severity', 0):.1f}/10)\n"
-            elif concern.get("concern_type") == "coordination":
-                concerns_text += f"{i+1}. Coordination pattern targeting {concern.get('target', '')}"
-                if concern.get("actors"):
-                    concerns_text += f" by {', '.join(concern.get('actors', []))}"
-                concerns_text += f" (Severity: {concern.get('severity', 0):.1f}/10)\n"
-        
-        # Extract influential actors
-        actors = report.get("influential_actors", [])
-        actors_text = ""
-        
-        for i, actor in enumerate(actors[:5]):  # Top 5
-            actor_name = actor.get("name", "")
-            influence = actor.get("influence_score", 0)
-            actors_text += f"{i+1}. {actor_name} (Influence: {influence:.2f})\n"
-        
-        # Extract affected institutions
-        institutions = report.get("authoritarian_trends", {}).get("affected_institutions", [])
-        institutions_text = ""
-        
-        for i, inst in enumerate(institutions[:5]):  # Top 5
-            inst_name = inst.get("institution", {}).get("name", "")
-            impact = inst.get("total_weight", 0)
-            institutions_text += f"{i+1}. {inst_name} (Impact: {impact:.1f})\n"
-        
-        # Create prompt
-        prompt = f"""
-        Generate a comprehensive intelligence report on authoritarian trends based on this data:
-        
-        RISK ASSESSMENT:
-        - Overall Risk Level: {risk_level} ({risk_score:.1f}/10)
-        - Analysis Period: Last {lookback_days} days
-        - Report Date: {timestamp}
-        
-        KEY CONCERNS:
-        {concerns_text}
-        
-        TOP INFLUENTIAL ACTORS:
-        {actors_text}
-        
-        MOST AFFECTED INSTITUTIONS:
-        {institutions_text}
-        
-        Create a professional intelligence report with these sections:
-        1. EXECUTIVE SUMMARY: Brief overview of key findings and risk assessment
-        2. KEY CONCERN ANALYSIS: Detailed analysis of each key concern
-        3. ACTOR ASSESSMENT: Analysis of key actors and their patterns
-        4. INSTITUTIONAL IMPACT: Analysis of institutional undermining
-        5. RECOMMENDATIONS: Suggested actions to monitor and respond
-        
-        Focus on factual analysis with a clear, professional tone. Avoid political bias and speculative claims.
-        """
-        
-        try:
-            # Call LLM
-            response = self.llm_provider.complete(
-                prompt=prompt,
-                max_tokens=2000,
-                temperature=0.3
-            )
-            
-            # Extract text
-            text_report = response.get("choices", [{}])[0].get("text", "").strip()
-            return text_report
-            
-        except Exception as e:
-            self.logger.error(f"Error generating text report: {str(e)}")
-            return f"Error generating report: {str(e)}"
