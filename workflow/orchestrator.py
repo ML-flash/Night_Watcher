@@ -1,6 +1,6 @@
 """
-Night_watcher Workflow Orchestrator
-Manages the Night_watcher workflow with focus on authoritarian pattern detection and democratic resilience.
+Night_watcher Intelligence Gathering System
+Manages the Night_watcher workflow with focus on intelligence gathering and analysis.
 """
 
 import os
@@ -11,9 +11,6 @@ from typing import Dict, List, Any, Optional
 from agents.base import LLMProvider
 from agents.collector import ContentCollector
 from agents.analyzer import ContentAnalyzer
-from agents.counter_narrative import CounterNarrativeGenerator
-from agents.distribution import DistributionPlanner
-from agents.strategic import StrategicMessaging
 from memory.system import MemorySystem
 from utils.io import save_to_file
 from utils.text import create_slug
@@ -22,7 +19,7 @@ from analysis.patterns import PatternRecognition
 
 
 class NightWatcherWorkflow:
-    """Manages the enhanced Night_watcher workflow focused on democratic resilience"""
+    """Manages the Night_watcher workflow focused on intelligence gathering and analysis"""
 
     def __init__(self, llm_provider: LLMProvider, memory_system: Optional[MemorySystem] = None,
                  output_dir: str = "data"):
@@ -37,24 +34,12 @@ class NightWatcherWorkflow:
         # Initialize memory system if not provided
         self.memory = memory_system or MemorySystem()
 
-        # Initialize agents
+        # Initialize agents (only collector and analyzer)
         self.collector = ContentCollector(llm_provider)
         self.analyzer = ContentAnalyzer(llm_provider)
-        self.counter_narrative_gen = CounterNarrativeGenerator(llm_provider)
-        self.distribution_planner = DistributionPlanner(llm_provider)
-        self.strategic_messaging = StrategicMessaging(llm_provider)
 
         # Add pattern recognition
         self.pattern_recognition = PatternRecognition(self.memory)
-
-        # Add report generator if available
-        self.has_report_generator = False
-        try:
-            from agents.report_generator import DemocraticResilienceReportGenerator
-            self.report_generator = DemocraticResilienceReportGenerator(llm_provider, self.memory)
-            self.has_report_generator = True
-        except ImportError:
-            self.logger.warning("DemocraticResilienceReportGenerator not available")
 
         # Ensure output directories exist
         self._ensure_data_dirs()
@@ -64,37 +49,27 @@ class NightWatcherWorkflow:
         directories = [
             f"{self.output_dir}/collected",
             f"{self.output_dir}/analyzed",
-            f"{self.output_dir}/counter_narratives",
-            f"{self.output_dir}/reports",
             f"{self.output_dir}/analysis"
         ]
         for directory in directories:
             os.makedirs(directory, exist_ok=True)
 
-        self.narrative_dir = f"{self.output_dir}/counter_narratives/{self.timestamp}"
-        self.report_dir = f"{self.output_dir}/reports/{self.timestamp}"
         self.analysis_dir = f"{self.output_dir}/analysis/{self.timestamp}"
-
-        os.makedirs(self.narrative_dir, exist_ok=True)
-        os.makedirs(self.report_dir, exist_ok=True)
         os.makedirs(self.analysis_dir, exist_ok=True)
 
     def run(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Run the enhanced Night_watcher workflow"""
+        """Run the Night_watcher intelligence gathering workflow"""
         if config is None:
             config = {}
 
         article_limit = config.get("article_limit", 5)
-        manipulation_threshold = config.get("manipulation_threshold", 6)
-        authoritarian_threshold = config.get("authoritarian_threshold", 5)
         sources = config.get("sources", None)
-        generate_reports = config.get("generate_reports", True)
         pattern_analysis_days = config.get("pattern_analysis_days", 30)
         start_date = config.get("start_date", None)
         end_date = config.get("end_date", None)
         llm_provider_available = config.get("llm_provider_available", True)
 
-        self.logger.info(f"Starting Night_watcher workflow with timestamp {self.timestamp}")
+        self.logger.info(f"Starting Night_watcher intelligence gathering workflow with timestamp {self.timestamp}")
 
         # 1. Collect articles with date range if specified
         self.logger.info("Collecting articles with focus on government/political content...")
@@ -124,13 +99,12 @@ class NightWatcherWorkflow:
                 "output_dir": self.output_dir,
                 "articles_collected": len(articles),
                 "articles_analyzed": 0,
-                "counter_narratives_generated": 0,
                 "pattern_analyses_generated": 0,
                 "articles": articles
             }
 
         # 2. Analyze content for both divisive elements and authoritarian patterns
-        self.logger.info("Analyzing articles for divisive content and authoritarian patterns...")
+        self.logger.info("Analyzing articles for content and authoritarian patterns...")
         analysis_result = self.analyzer.process({"articles": articles})
         analyses = analysis_result.get("analyses", [])
         auth_analyses = analysis_result.get("authoritarian_analyses", [])
@@ -150,26 +124,7 @@ class NightWatcherWorkflow:
                     save_to_file(auth_analysis,
                                  f"{self.output_dir}/analyzed/auth_analysis_{article_slug}_{self.timestamp}.json")
 
-        # 3. Generate counter-narratives with enhanced focus on democratic resilience
-        self.logger.info("Generating counter-narratives for divisive and authoritarian content...")
-        counter_narrative_result = self.counter_narrative_gen.process({
-            "analyses": analyses,
-            "authoritarian_analyses": auth_analyses,
-            "manipulation_threshold": manipulation_threshold,
-            "authoritarian_threshold": authoritarian_threshold
-        })
-
-        narratives = counter_narrative_result.get("counter_narratives", [])
-
-        # Process counter-narratives
-        for narrative in narratives:
-            article_title = narrative.get("article_title", "untitled")
-            article_slug = create_slug(article_title)
-
-            # Save the full narrative result
-            save_to_file(narrative, f"{self.narrative_dir}/{article_slug}_counter_narratives.json")
-
-        # 4. Run pattern analysis to identify authoritarian trends
+        # 3. Run pattern analysis to identify authoritarian trends
         self.logger.info(f"Running pattern analysis over the last {pattern_analysis_days} days...")
 
         # Authoritarian trend analysis
@@ -193,13 +148,16 @@ class NightWatcherWorkflow:
             f"{self.analysis_dir}/actor_analysis_{self.timestamp}.json"
         )
 
+        # Update date tracking - save the current end date for next run
+        if end_date:
+            save_run_date(self.output_dir, end_date)
+
         # Return results
         return {
             "timestamp": self.timestamp,
             "output_dir": self.output_dir,
             "articles_collected": len(articles),
             "articles_analyzed": len(analyses),
-            "counter_narratives_generated": len(narratives),
             "pattern_analyses_generated": 3,  # Auth trends, topics, actors
             "analyses": analyses,
             "auth_analyses": auth_analyses
