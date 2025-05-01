@@ -28,31 +28,6 @@ DEFAULT_CONFIG = {
     "content_analysis": {
         "manipulation_threshold": 6
     },
-    "counter_narratives": {
-        "demographics": [
-            {
-                "id": "progressive",
-                "values": ["equality", "social justice", "collective welfare", "change", "diversity", "inclusion"]
-            },
-            {
-                "id": "moderate_left",
-                "values": ["pragmatism", "incremental progress", "compromise", "institutions", "reform", "balance"]
-            },
-            {
-                "id": "moderate_right",
-                "values": ["tradition", "individual liberty", "fiscal responsibility", "stability", "order",
-                          "meritocracy"]
-            },
-            {
-                "id": "conservative",
-                "values": ["tradition", "faith", "patriotism", "security", "family values", "individualism"]
-            },
-            {
-                "id": "libertarian", 
-                "values": ["individual freedom", "limited government", "self-reliance", "markets",
-                          "personal responsibility"]}
-        ]
-    },
     "memory": {
         "store_type": "simple",
         "file_path": "data/memory/night_watcher_memory.pkl",
@@ -61,9 +36,7 @@ DEFAULT_CONFIG = {
     "output": {
         "base_dir": "data",
         "save_collected": True,
-        "save_analyses": True,
-        "save_counter_narratives": True,
-        "save_strategic_messages": True
+        "save_analyses": True
     },
     "logging": {
         "level": "INFO",
