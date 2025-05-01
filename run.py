@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Night_watcher - Intelligence Analysis System
+Night_watcher - Intelligence Gathering System
 Starts the Night_watcher framework focused on intelligence gathering and analysis.
 """
 
@@ -100,10 +100,10 @@ def initialize_llm_provider(config, logger) -> LLMProvider:
 
 def run_workflow(config_path, llm_host=None, article_limit=50, output_dir=None, 
                  reset_date=False, use_repository=False):
-    """Run the Night_watcher intelligence analysis workflow with the given configuration."""
+    """Run the Night_watcher intelligence gathering workflow with the given configuration."""
     # Set up logging
     logger = setup_logging()
-    logger.info("Starting Night_watcher intelligence analysis workflow")
+    logger.info("Starting Night_watcher intelligence gathering workflow")
 
     # Load configuration
     if not os.path.exists(config_path):
@@ -275,9 +275,9 @@ def ensure_directories(base_dir="."):
 
 
 def main():
-    """Main entry point for Night_watcher intelligence analysis system."""
+    """Main entry point for Night_watcher intelligence gathering system."""
     parser = argparse.ArgumentParser(
-        description="Night_watcher - Intelligence Analysis System"
+        description="Night_watcher - Intelligence Gathering System"
     )
 
     parser.add_argument("--config", default="config.json",
@@ -335,7 +335,7 @@ if __name__ == "__main__":
     print("""
     ╔═══════════════════════════════════════════════════════════╗
     ║                                                           ║
-    ║  Night_watcher Intelligence Analysis System               ║
+    ║  Night_watcher Intelligence Gathering System              ║
     ║                                                           ║
     ║  Monitoring and analyzing authoritarian patterns          ║
     ║                                                           ║
