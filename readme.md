@@ -1,6 +1,6 @@
-# Night_watcher Framework
+# Night_watcher Intelligence Gathering System
 
-A system for analyzing news, identifying divisive content, and generating counter-narratives with memory capabilities.
+A system for analyzing news and identifying authoritarian patterns with enhanced memory capabilities.
 
 ## Quick Start
 
@@ -20,7 +20,7 @@ That's it! The script will automatically:
 - Generate a default configuration file if needed
 - Connect to LM Studio at localhost:1234
 - Collect and analyze articles
-- Generate counter-narratives
+- Identify authoritarian patterns
 - Save all results in the current directory
 
 ## Requirements
@@ -46,6 +46,9 @@ Options:
 - `--llm-host URL` - LLM provider URL (default: http://localhost:1234)
 - `--article-limit N` - Maximum articles to collect per source (default: 50)
 - `--output-dir PATH` - Output directory (default: current directory)
+- `--reset-date` - Reset date tracking to start from inauguration day (Jan 20, 2025)
+- `--use-anthropic` - Force using Anthropic API instead of LM Studio
+- `--use-repository` - Use repository-based architecture for data provenance
 
 Example:
 ```bash
@@ -60,24 +63,9 @@ To customize, edit the generated `config.json` file:
 - **LLM Provider**: Connection settings for your local LLM
 - **Content Sources**: RSS feeds to monitor
 - **Manipulation Threshold**: Sensitivity for detecting divisive content
-- **Demographics**: Target audiences for counter-narratives
 
 ## Output Structure
 
 After running, you'll find the following in your output directory:
 
-- `data/collected/` - Raw article data
-- `data/analyzed/` - Analysis results with manipulation scoring
-- `data/counter_narratives/` - Generated counter-narratives
-- `data/memory/` - System memory for tracking patterns over time
-- `logs/` - Execution logs
-
-## Security Considerations
-
-- The framework runs locally with no external API calls except to specified news sources
-- All LLM interactions happen locally through LM Studio
-- No data is sent to external servers
-
-## License
-
-This project is released into the public domain - see the [LICENSE](LICENSE) file for details.
+- `data/collected/
