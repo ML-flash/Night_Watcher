@@ -13,6 +13,9 @@ from typing import Dict, List, Any, Optional, Union, Tuple, Set
 
 import numpy as np
 
+# Import knowledge graph implementation
+from knowledge_graph import KnowledgeGraph
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -200,6 +203,9 @@ class MemorySystem:
         # Create memory store
         self.store = self._create_memory_store(store_type, self.embedding_provider)
 
+        # Initialize knowledge graph
+        self.knowledge_graph = KnowledgeGraph(use_networkx=config.get("use_networkx", True))
+
         # Track last analysis time for temporal queries
         self.last_update_time = datetime.now()
 
@@ -217,7 +223,7 @@ class MemorySystem:
 
     def store_article_analysis(self, analysis_result: Dict[str, Any]) -> str:
         """
-        Store an article analysis in the memory system.
+        Store an article analysis in the memory system and update the knowledge graph.
 
         Args:
             analysis_result: Analysis result dict
@@ -262,6 +268,13 @@ class MemorySystem:
 
         # Store in vector store
         success = self.store.add_item(item_id, text, metadata)
+        
+        # Update knowledge graph if structured elements are available
+        if "structured_elements" in analysis_result:
+            # Add article ID to the article data for reference
+            article["id"] = item_id
+            self.knowledge_graph.process_article_analysis(article, analysis_result)
+        
         if success:
             self.last_update_time = datetime.now()
             return item_id
@@ -337,6 +350,42 @@ class MemorySystem:
             self.logger.error(f"Error getting recent analyses: {str(e)}")
             return []
 
+    def get_authoritarian_trends(self, days: int = 90) -> Dict[str, Any]:
+        """
+        Get authoritarian trends from the knowledge graph.
+        
+        Args:
+            days: Number of days to look back
+            
+        Returns:
+            Dict with trend analysis results
+        """
+        return self.knowledge_graph.get_authoritarian_trends(days)
+    
+    def get_influential_actors(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """
+        Get the most influential actors from the knowledge graph.
+        
+        Args:
+            limit: Maximum number of actors to return
+            
+        Returns:
+            List of influential actors with their scores
+        """
+        return self.knowledge_graph.get_influential_actors(limit)
+    
+    def analyze_democratic_erosion(self, days: int = 90) -> Dict[str, Any]:
+        """
+        Get comprehensive analysis of democratic erosion patterns.
+        
+        Args:
+            days: Number of days to look back
+            
+        Returns:
+            Dict with democratic erosion analysis
+        """
+        return self.knowledge_graph.analyze_democratic_erosion(days)
+
     def save(self, path: str) -> bool:
         """
         Save the memory system to disk.
@@ -347,7 +396,14 @@ class MemorySystem:
         Returns:
             True if save was successful
         """
-        return self.store.save(path)
+        # Save the memory store
+        store_saved = self.store.save(path)
+        
+        # Save the knowledge graph
+        kg_path = os.path.join(os.path.dirname(path), "knowledge_graph.pkl")
+        kg_saved = self.knowledge_graph.save(kg_path)
+        
+        return store_saved and kg_saved
 
     def load(self, path: str) -> bool:
         """
@@ -359,367 +415,14 @@ class MemorySystem:
         Returns:
             True if load was successful
         """
-        return self.store.load(path)
-
-# ==========================================
-# Knowledge Graph
-# ==========================================
-
-class Entity:
-    """Base class for entities in the knowledge graph"""
-
-    def __init__(self, entity_id: str = None, entity_type: str = "entity",
-                 name: str = "", attributes: Dict[str, Any] = None):
-        """Initialize entity with ID and attributes"""
-        self.id = entity_id or f"{entity_type}_{uuid.uuid4().hex[:8]}"
-        self.type = entity_type
-        self.name = name
-        self.attributes = attributes or {}
-        self.created_at = datetime.now().isoformat()
-        self.updated_at = self.created_at
+        # Load the memory store
+        store_loaded = self.store.load(path)
         
-        # Track evidence sources
-        self.evidence_sources = set()
-
-    def update(self, attributes: Dict[str, Any]) -> None:
-        """Update entity attributes"""
-        self.attributes.update(attributes)
-        self.updated_at = datetime.now().isoformat()
-
-    def add_evidence(self, source_id: str) -> None:
-        """Add evidence source for this entity"""
-        self.evidence_sources.add(source_id)
-
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for serialization"""
-        return {
-            "id": self.id,
-            "type": self.type,
-            "name": self.name,
-            "attributes": self.attributes,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at,
-            "evidence_sources": list(self.evidence_sources)  # Convert set to list for serialization
-        }
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Entity':
-        """Create from dictionary"""
-        entity = cls(
-            entity_id=data.get("id"),
-            entity_type=data.get("type", "entity"),
-            name=data.get("name", ""),
-            attributes=data.get("attributes", {})
-        )
-        entity.created_at = data.get("created_at", entity.created_at)
-        entity.updated_at = data.get("updated_at", entity.updated_at)
-        
-        # Restore evidence sources
-        evidence_sources = data.get("evidence_sources", [])
-        entity.evidence_sources = set(evidence_sources)
-            
-        return entity
-
-class Relationship:
-    """Represents a relationship between entities in the knowledge graph"""
-
-    def __init__(self, source_id: str, target_id: str, relation_type: str,
-                 relation_id: str = None, weight: float = 1.0,
-                 attributes: Dict[str, Any] = None):
-        """Initialize relationship with source, target, and attributes"""
-        self.id = relation_id or f"rel_{uuid.uuid4().hex[:8]}"
-        self.source_id = source_id
-        self.target_id = target_id
-        self.type = relation_type
-        self.weight = weight
-        self.attributes = attributes or {}
-        self.created_at = datetime.now().isoformat()
-        self.updated_at = self.created_at
-        
-        # Track evidence
-        self.evidence = []
-        self.confidence = "low"  # Default confidence level
-
-    def update(self, weight: float = None, attributes: Dict[str, Any] = None) -> None:
-        """Update relationship weight and/or attributes"""
-        if weight is not None:
-            self.weight = weight
-
-        if attributes:
-            self.attributes.update(attributes)
-
-        self.updated_at = datetime.now().isoformat()
-
-    def add_evidence(self, evidence_text: str, source_id: str) -> None:
-        """Add evidence supporting this relationship"""
-        self.evidence.append({
-            "text": evidence_text,
-            "source": source_id,
-            "timestamp": datetime.now().isoformat()
-        })
-        
-        # Update confidence based on evidence quantity
-        if len(self.evidence) >= 3:
-            self.confidence = "high"
-        elif len(self.evidence) >= 1:
-            self.confidence = "medium"
-
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for serialization"""
-        return {
-            "id": self.id,
-            "source_id": self.source_id,
-            "target_id": self.target_id,
-            "type": self.type,
-            "weight": self.weight,
-            "attributes": self.attributes,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at,
-            "evidence": self.evidence,
-            "confidence": self.confidence
-        }
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Relationship':
-        """Create from dictionary"""
-        rel = cls(
-            source_id=data.get("source_id", ""),
-            target_id=data.get("target_id", ""),
-            relation_type=data.get("type", ""),
-            relation_id=data.get("id"),
-            weight=data.get("weight", 1.0),
-            attributes=data.get("attributes", {})
-        )
-        rel.created_at = data.get("created_at", rel.created_at)
-        rel.updated_at = data.get("updated_at", rel.updated_at)
-        
-        # Restore evidence data
-        rel.evidence = data.get("evidence", [])
-        rel.confidence = data.get("confidence", "low")
-            
-        return rel
-
-class KnowledgeGraph:
-    """Knowledge graph for tracking authoritarian patterns and actors"""
-
-    # Entity types
-    ACTOR = "actor"
-    INSTITUTION = "institution"
-    EVENT = "event"
-    ACTION = "action"
-    ARTIFACT = "artifact"
-    NARRATIVE = "narrative"
-    INDICATOR = "indicator"
-    TOPIC = "topic"
-    
-    # Relationship types
-    CONTROLS = "controls"
-    INFLUENCES = "influences"
-    UNDERMINES = "undermines"
-    PERFORMS = "performs"
-    TARGETS = "targets"
-    PARTICIPATES_IN = "participates_in"
-    DEMONSTRATES = "demonstrates"
-
-    def __init__(self):
-        """Initialize the knowledge graph"""
-        self.entities = {}  # id -> Entity
-        self.relationships = {}  # id -> Relationship
-        self.source_relations = {}  # source_id -> [relation_ids]
-        self.target_relations = {}  # target_id -> [relation_ids]
-        self.entity_types = {}  # type -> [entity_ids]
-        self.relation_types = {}  # type -> [relation_ids]
-        
-        # Track creation date
-        self.creation_date = datetime.now().isoformat()
-        self.last_update = self.creation_date
-        
-        # Cache
-        self._entity_cache = {}
-        self._entity_cache_size = 100
-        
-        self.logger = logging.getLogger("KnowledgeGraph")
-
-    def add_entity(self, entity_type: str, name: str, attributes: Dict[str, Any] = None) -> str:
-        """Add an entity to the graph"""
-        entity = Entity(entity_type=entity_type, name=name, attributes=attributes or {})
-        entity_id = entity.id
-
-        # Add to entities
-        self.entities[entity_id] = entity
-
-        # Index by type
-        if entity.type not in self.entity_types:
-            self.entity_types[entity.type] = []
-        self.entity_types[entity.type].append(entity_id)
-        
-        # Update last modified time
-        self.last_update = datetime.now().isoformat()
-
-        return entity_id
-
-    def add_relationship(self, source_id: str, target_id: str, relation_type: str,
-                        weight: float = 1.0, attributes: Dict[str, Any] = None) -> str:
-        """Add a relationship between entities"""
-        relationship = Relationship(
-            source_id=source_id,
-            target_id=target_id,
-            relation_type=relation_type,
-            weight=weight,
-            attributes=attributes or {}
-        )
-        
-        relation_id = relationship.id
-
-        # Add to relationships
-        self.relationships[relation_id] = relationship
-
-        # Index by source and target
-        if source_id not in self.source_relations:
-            self.source_relations[source_id] = []
-        self.source_relations[source_id].append(relation_id)
-
-        if target_id not in self.target_relations:
-            self.target_relations[target_id] = []
-        self.target_relations[target_id].append(relation_id)
-
-        # Index by type
-        if relation_type not in self.relation_types:
-            self.relation_types[relation_type] = []
-        self.relation_types[relation_type].append(relation_id)
-        
-        # Update last modified time
-        self.last_update = datetime.now().isoformat()
-
-        return relation_id
-
-    def get_entity(self, entity_id: str) -> Optional[Entity]:
-        """Get an entity by ID with caching"""
-        if entity_id in self._entity_cache:
-            return self._entity_cache[entity_id]
-
-        entity = self.entities.get(entity_id)
-
-        if entity:
-            # Add to cache, removing oldest if needed
-            if len(self._entity_cache) >= self._entity_cache_size:
-                self._entity_cache.pop(next(iter(self._entity_cache)))
-            self._entity_cache[entity_id] = entity
-
-        return entity
-
-    def find_entity_by_name(self, name: str, entity_type: Optional[str] = None) -> Optional[Entity]:
-        """Find an entity by name, optionally filtering by type"""
-        for entity_id, entity in self.entities.items():
-            if entity.name.lower() == name.lower():
-                if entity_type is None or entity.type == entity_type:
-                    return entity
-        return None
-
-    def find_or_create_entity(self, name: str, entity_type: str,
-                           attributes: Dict[str, Any] = None) -> str:
-        """Find an entity by name and type or create if not exists"""
-        entity = self.find_entity_by_name(name, entity_type)
-        if entity:
-            # Update attributes if provided
-            if attributes:
-                entity.update(attributes)
-            return entity.id
+        # Load the knowledge graph
+        kg_path = os.path.join(os.path.dirname(path), "knowledge_graph.pkl")
+        if os.path.exists(kg_path):
+            kg_loaded = self.knowledge_graph.load(kg_path)
         else:
-            # Create new entity
-            return self.add_entity(entity_type, name, attributes)
-
-    def find_or_create_actor(self, name: str, attributes: Dict[str, Any] = None) -> str:
-        """Find an actor by name or create if not exists"""
-        return self.find_or_create_entity(name, self.ACTOR, attributes)
-
-    def save(self, path: str) -> bool:
-        """Save the knowledge graph to disk"""
-        try:
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-
-            data = {
-                "entities": {eid: entity.to_dict() for eid, entity in self.entities.items()},
-                "relationships": {rid: rel.to_dict() for rid, rel in self.relationships.items()},
-                "metadata": {
-                    "version": "1.0",
-                    "creation_date": self.creation_date,
-                    "last_update": self.last_update,
-                    "entity_count": len(self.entities),
-                    "relationship_count": len(self.relationships),
-                    "entity_types": {t: len(ids) for t, ids in self.entity_types.items()},
-                    "relation_types": {t: len(ids) for t, ids in self.relation_types.items()},
-                    "timestamp": datetime.now().isoformat()
-                }
-            }
-
-            with open(path, 'wb') as f:
-                pickle.dump(data, f)
-
-            self.logger.info(f"Saved knowledge graph to {path}")
-            return True
-        except Exception as e:
-            self.logger.error(f"Error saving knowledge graph: {str(e)}")
-            return False
-
-    def load(self, path: str) -> bool:
-        """Load the knowledge graph from disk"""
-        if not os.path.exists(path):
-            self.logger.warning(f"Knowledge graph file not found: {path}")
-            return False
-
-        try:
-            with open(path, 'rb') as f:
-                data = pickle.load(f)
-
-            # Clear existing data
-            self.entities = {}
-            self.relationships = {}
-            self.source_relations = {}
-            self.target_relations = {}
-            self.entity_types = {}
-            self.relation_types = {}
-            self._entity_cache.clear()
-
-            # Load entities
-            for entity_id, entity_data in data.get("entities", {}).items():
-                entity = Entity.from_dict(entity_data)
-                self.entities[entity_id] = entity
-                
-                # Index by type
-                if entity.type not in self.entity_types:
-                    self.entity_types[entity.type] = []
-                self.entity_types[entity.type].append(entity_id)
-
-            # Load relationships
-            for rel_id, rel_data in data.get("relationships", {}).items():
-                rel = Relationship.from_dict(rel_data)
-                self.relationships[rel_id] = rel
-                
-                # Index by source and target
-                source_id = rel.source_id
-                target_id = rel.target_id
-                
-                if source_id not in self.source_relations:
-                    self.source_relations[source_id] = []
-                self.source_relations[source_id].append(rel_id)
-                
-                if target_id not in self.target_relations:
-                    self.target_relations[target_id] = []
-                self.target_relations[target_id].append(rel_id)
-                
-                # Index by type
-                if rel.type not in self.relation_types:
-                    self.relation_types[rel.type] = []
-                self.relation_types[rel.type].append(rel_id)
-                
-            # Load metadata
-            metadata = data.get("metadata", {})
-            self.creation_date = metadata.get("creation_date", self.creation_date)
-            self.last_update = metadata.get("last_update", self.last_update)
-
-            self.logger.info(f"Loaded knowledge graph with {len(self.entities)} entities and {len(self.relationships)} relationships")
-            return True
-        except Exception as e:
-            self.logger.error(f"Error loading knowledge graph: {str(e)}")
-            return False
+            kg_loaded = True  # Not an error if KG doesn't exist yet
+        
+        return store_loaded and kg_loaded
