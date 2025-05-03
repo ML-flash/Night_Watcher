@@ -1,6 +1,6 @@
 """
 Night_watcher Content Analyzer
-Module for analyzing articles for divisive content and authoritarian patterns.
+Module for analyzing articles for authoritarian patterns in political media and governance.
 """
 
 import re
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 # ==========================================
 
 class ContentAnalyzer:
-    """Analyzer for articles and content to identify divisive content and authoritarian patterns"""
+    """Analyzer for articles and content to identify authoritarian patterns in governance"""
 
     def __init__(self, llm_provider: LLMProvider):
         """Initialize with LLM provider"""
@@ -45,12 +45,13 @@ class ContentAnalyzer:
         text = re.sub(r'<sep>.*?$', '', text, flags=re.DOTALL)
         # Remove any other model-specific artifacts
         text = re.sub(r'human:', '', text)
+        text = re.sub(r'assistant:', '', text)
 
         return text.strip()
 
     def analyze_article(self, article_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Analyze a single article for divisive content.
+        Analyze a single article for key political content and framing.
 
         Args:
             article_data: Article data to analyze
@@ -62,44 +63,37 @@ class ContentAnalyzer:
         content = article_data.get('content', '')
         content = self._truncate_text(content, max_length=6000)
 
+        # New open-ended approach as specified in the roadmap
         prompt = f"""
-        Analyze this news article for potential divisive framing, propaganda techniques, or misleading information.
+        You are a political analyst with expertise in democratic systems, governance structures, and the historical patterns of democratic backsliding.
+
+        Analyze the following political content. Think carefully about any concerning patterns, power dynamics, institutional relationships, and rhetorical strategies evident in the text.
 
         TITLE: {article_data['title']}
         SOURCE: {article_data['source']} (Bias: {article_data.get('bias_label', 'Unknown')})
         CONTENT:
         {content}
 
-        Provide a detailed analysis with the following sections:
+        Provide a thoughtful analysis with the following sections:
 
-        1. MAIN TOPICS: What are the key topics of this article?
+        1. MAIN TOPICS: What are the key topics, events, or issues discussed in this content?
 
-        2. FRAMING: How is the issue framed? What perspective is emphasized? Identify specific framing techniques used.
+        2. GOVERNANCE DYNAMICS: Analyze the power dynamics, institutional relationships, or governance patterns evident in this content. What does this reveal about how power is being exercised?
 
-        3. EMOTIONAL TRIGGERS: What emotions does this article attempt to evoke? Identify specific words or phrases designed to trigger emotional responses.
+        3. HISTORICAL PARALLELS: Does this content remind you of any historical patterns or trends from other political contexts? Explain any parallels you notice.
 
-        4. DIVISIVE ELEMENTS: Are there elements that could increase political/social division? How does this content potentially polarize readers?
+        4. CONCERNING ELEMENTS: What aspects of this content, if any, raise concerns about democratic health? Think broadly about both obvious and subtle patterns.
 
-        5. MISSING CONTEXT: What important context is omitted that would give readers a more complete understanding?
+        5. INSTITUTIONAL IMPACTS: How might the actions or rhetoric described affect key democratic institutions or norms?
 
-        6. MANIPULATION TECHNIQUES: Identify any of these techniques if present:
-           - Appeal to fear or outrage
-           - False equivalence
-           - Cherry-picking of facts
-           - Ad hominem attacks
-           - Straw man arguments
-           - Bandwagon appeal
-           - Black-and-white fallacy
-
-        7. MANIPULATION SCORE: Rate from 1-10 how manipulative this content appears to be, with 1 being objective reporting and 10 being highly manipulative propaganda.
-           Explain your rating.
+        6. MANIPULATION ASSESSMENT: To what extent does this content appear to manipulate information, emotions, or perceptions? Rate from 1-10 with 1 being objective reporting and 10 being highly manipulative.
         """
 
         # Store article ID for context tracking
         article_id = article_data.get("id", f"article_{hash(article_data.get('title', ''))}")
         
         self.logger.info(f"Analyzing article: {article_data['title']}")
-        analysis = self._call_llm(prompt, max_tokens=1000, temperature=0.1, stop=["User:", "\n\n\n"])
+        analysis = self._call_llm(prompt, max_tokens=1500, temperature=0.1)
 
         # Preprocess the analysis to remove any reasoning tags
         analysis = self.preprocess_llm_output(analysis)
@@ -117,7 +111,7 @@ class ContentAnalyzer:
 
     def analyze_authoritarian_patterns(self, article_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Analyze article for specific authoritarian governance patterns with structured output.
+        Analyze article for authoritarian governance patterns with open-ended approach.
 
         Args:
             article_data: Article data to analyze
@@ -136,16 +130,18 @@ class ContentAnalyzer:
         previous_context = ""
         if article_id in self.context_history and "standard_analysis" in self.context_history[article_id]:
             previous_context = f"""
-            PREVIOUS ANALYSIS:
+            I've already analyzed this content once. Here's my previous analysis:
+            
             {self.context_history[article_id]["standard_analysis"]}
             
-            Take the previous analysis into account but focus on authoritarian patterns in your new analysis.
+            Now I'd like to go deeper and focus specifically on patterns that may signal democratic backsliding.
             """
 
+        # New open-ended approach based on the roadmap
         prompt = f"""
-        You are an intelligence analyst specializing in detecting authoritarian governance patterns and democratic backsliding.
+        You are an expert on democratic institutions and historical patterns of democratic backsliding and authoritarian governance.
         
-        Analyze this political/governmental content for specific indicators of authoritarian governance.
+        Analyze this political content for potential authoritarian indicators. What aspects concern you the most and why? Think about both obvious and subtle patterns that may signal democratic backsliding.
         
         TITLE: {article_data['title']}
         SOURCE: {article_data['source']} (Bias: {article_data.get('bias_label', 'Unknown')})
@@ -155,69 +151,39 @@ class ContentAnalyzer:
         
         {previous_context}
         
-        Provide your analysis in two parts:
-        
-        PART 1: NARRATIVE ANALYSIS
+        First, provide your open analysis in NARRATIVE ANALYSIS format. Don't use predefined categories - instead, share your genuine concerns based on your knowledge of historical authoritarian patterns.
 
-        Analyze the content for the following authoritarian indicators, providing specific examples from the text:
-        
-        1. INSTITUTIONAL UNDERMINING: Evidence of undermining independent institutions (courts, agencies, media)
-        2. DEMOCRATIC NORM VIOLATIONS: Violations of democratic norms, traditions, and precedents
-        3. MEDIA DELEGITIMIZATION: Attempts to delegitimize independent media or factual information
-        4. OPPOSITION TARGETING: Targeting political opposition as illegitimate enemies rather than legitimate opponents
-        5. POWER CONCENTRATION: Moves to concentrate power or avoid checks and balances
-        6. ACCOUNTABILITY EVASION: Attempts to evade accountability or oversight
-        7. THREAT EXAGGERATION: Exaggeration of threats to justify exceptional measures
-        8. AUTHORITARIAN RHETORIC: Language that glorifies strength, personal loyalty, or punishment of dissent
-        9. RULE OF LAW UNDERMINING: Actions that weaken rule of law or suggest laws apply differently to different people
-        
-        AUTHORITARIAN SCORE: Rate from 1-10 how strongly this content indicates authoritarian governance trends.
-        Explain your rating using specific examples from the text.
-        
-        PART 2: STRUCTURED DATA EXTRACTION
-        
-        Extract the following information into a structured JSON format. Be precise and include only entities/relationships that are explicitly mentioned in the content:
-        
+        Second, extract the following information in STRUCTURED DATA format:
+
         ```json
         {{
-          "actors": [
-            {{"name": "Full Actor Name", "title": "President/Senator/etc", "authoritarian_actions": ["Description of action"]}}
+          "key_actors": [
+            {{"name": "Actor Name", "role": "Position/Role", "actions": ["Specific action described"], "concern_level": "high/medium/low"}}
           ],
-          "institutions": [
-            {{"name": "Institution Name", "type": "governmental/judicial/media/etc", "role": "Description of role"}}
+          "key_institutions": [
+            {{"name": "Institution Name", "type": "Type of institution", "how_affected": "How this institution is being affected"}}
           ],
-          "events": [
-            {{"name": "Event Description", "date": "YYYY-MM-DD if mentioned, otherwise null", "significance": "Why event matters"}}
+          "key_events": [
+            {{"description": "Brief description of event", "significance": "Why this event matters for democratic health"}}
           ],
           "authoritarian_indicators": [
             {{
-              "type": "institutional_undermining",
-              "present": true/false,
-              "examples": ["Exact quote or specific example from text"],
-              "actors_involved": ["Actor Name"],
-              "institutions_targeted": ["Institution Name"],
-              "severity": 1-10
-            }},
-            {{
-              "type": "democratic_norm_violations",
-              "present": true/false,
-              "examples": ["Exact quote or specific example from text"],
-              "actors_involved": ["Actor Name"],
-              "norms_violated": ["Description of norm"],
+              "indicator": "Describe the specific indicator of concern",
+              "evidence": ["Specific examples from the text"],
+              "historical_parallels": "Any historical patterns this resembles",
               "severity": 1-10
             }}
-            // Include other indicator types with same structure if present
           ],
-          "relationships": [
-            {{"source": "Actor/Institution Name", "relationship": "undermines/controls/targets/etc", "target": "Actor/Institution Name", "evidence": "Specific evidence of relationship"}}
+          "key_relationships": [
+            {{"source": "Actor/Institution", "relationship": "Nature of relationship", "target": "Actor/Institution", "democratic_impact": "How this relationship impacts democratic functioning"}}
           ],
-          "authoritarian_score": 0-10
+          "overall_assessment": {{
+            "concern_level": 1-10,
+            "main_concerns": ["List of primary concerns"],
+            "historical_context": "Brief historical context for these patterns"
+          }}
         }}
         ```
-        
-        Include ONLY indicators that are clearly present in the article with explicit evidence.
-        For each relationship, provide clear evidence from the text.
-        Be precise and factual rather than speculative.
         """
 
         self.logger.info(f"Analyzing authoritarian patterns in: {article_data['title']}")
@@ -256,16 +222,23 @@ class ContentAnalyzer:
         previous_context = ""
         if article_id in self.context_history and "structured_data" in self.context_history[article_id]:
             previous_context = f"""
-            PREVIOUS STRUCTURED DATA:
+            I've already extracted some structured data from this content. Here it is:
             ```json
             {json.dumps(self.context_history[article_id]["structured_data"], indent=2)}
             ```
             
-            Enhance and refine the previous entity extraction, adding any new entities and enhancing entity attributes.
+            Now I want to focus specifically on identifying all named entities in a more comprehensive way.
             """
         
+        # Improved entity extraction prompt
         prompt = f"""
-        Extract all named entities from the following article, focusing on political actors, institutions, and events.
+        From the political analysis of this content, identify and extract:
+        
+        1. Key political actors (people, organizations, institutions)
+        2. Actions they're taking
+        3. Justifications provided for these actions
+        4. Targets of these actions
+        5. Historical parallels you notice
         
         TITLE: {article_data['title']}
         SOURCE: {article_data['source']} (Bias: {article_data.get('bias_label', 'Unknown')})
@@ -274,27 +247,53 @@ class ContentAnalyzer:
         
         {previous_context}
         
-        Return a valid JSON object with this structure:
-        
+        Return your analysis as structured data with the following format:
+
         ```json
         {{
           "actors": [
-            {{"name": "Full Name", "title": "Position/Role", "political_affiliation": "Party/Ideology if mentioned", "significance": "Why this actor matters"}}
+            {{
+              "name": "Full Name", 
+              "type": "individual/organization/institution", 
+              "role": "Position/Role", 
+              "political_affiliation": "Party/Ideology if known", 
+              "significance": "Why this actor matters in this context",
+              "actions": ["Action 1", "Action 2"]
+            }}
           ],
           "institutions": [
-            {{"name": "Institution Name", "type": "governmental/judicial/legislative/etc", "jurisdiction": "federal/state/local/etc if mentioned", "significance": "Why this institution matters"}}
+            {{
+              "name": "Institution Name", 
+              "type": "governmental/judicial/legislative/etc", 
+              "jurisdiction": "federal/state/local/etc if applicable", 
+              "function": "Primary function in democratic system",
+              "how_affected": "How this institution is being affected"
+            }}
           ],
           "events": [
-            {{"name": "Event Description", "date": "Date if mentioned, otherwise null", "location": "Location if mentioned", "significance": "Why this event matters"}}
+            {{
+              "name": "Event Description", 
+              "date": "Date if mentioned", 
+              "location": "Location if mentioned", 
+              "actors_involved": ["Actor 1", "Actor 2"],
+              "significance": "Why this event matters"
+            }}
+          ],
+          "relationships": [
+            {{
+              "source": "Actor/Institution name",
+              "relationship_type": "controls/influences/undermines/etc",
+              "target": "Actor/Institution name",
+              "evidence": "Specific evidence from the text"
+            }}
           ]
         }}
         ```
         
-        Only include entities that are explicitly mentioned in the text. Do not include generic references.
-        Be thorough in identifying all relevant political actors, institutions, and events.
+        Only include entities that are explicitly mentioned in the text. Be thorough and precise in your extraction.
         """
         
-        result = self._call_llm(prompt, max_tokens=1500, temperature=0.1)
+        result = self._call_llm(prompt, max_tokens=2000, temperature=0.1)
         result = self.preprocess_llm_output(result)
         
         # Process the result to extract JSON
@@ -336,7 +335,7 @@ class ContentAnalyzer:
                     return extracted_entities
                 
             # If no valid JSON found
-            default_result = {"actors": [], "institutions": [], "events": []}
+            default_result = {"actors": [], "institutions": [], "events": [], "relationships": []}
             
             # Store default in context history
             if article_id not in self.context_history:
@@ -346,7 +345,7 @@ class ContentAnalyzer:
             return default_result
         except Exception as e:
             self.logger.error(f"Error extracting entities: {str(e)}")
-            default_result = {"actors": [], "institutions": [], "events": []}
+            default_result = {"actors": [], "institutions": [], "events": [], "relationships": []}
             
             # Store default in context history
             if article_id not in self.context_history:
@@ -373,8 +372,8 @@ class ContentAnalyzer:
                 entities = self.extract_named_entities(article_data)
         
         # Format entities for the prompt
-        actors = [e["name"] for e in entities.get("actors", [])]
-        institutions = [e["name"] for e in entities.get("institutions", [])]
+        actors = [e.get("name", "") for e in entities.get("actors", [])]
+        institutions = [e.get("name", "") for e in entities.get("institutions", [])]
         
         actors_list = ", ".join(actors)
         institutions_list = ", ".join(institutions)
@@ -383,50 +382,51 @@ class ContentAnalyzer:
         previous_context = ""
         if article_id in self.context_history and "relationships" in self.context_history[article_id]:
             previous_context = f"""
-            PREVIOUS RELATIONSHIPS:
+            I've already identified some relationships from this content. Here they are:
             ```json
             {json.dumps(self.context_history[article_id]["relationships"], indent=2)}
             ```
             
-            Enhance and refine the previous relationship extraction, adding any new relationships and providing more evidence.
+            Now I want to identify any additional relationships or refine the existing ones with better evidence.
             """
         
+        # Improved relationship extraction prompt
         prompt = f"""
-        Analyze the following article to identify relationships between the listed entities.
+        Analyze the relationships between political actors and institutions in this content. Focus on power dynamics, influence patterns, and institutional relationships that might impact democratic functioning.
         
         TITLE: {article_data['title']}
         SOURCE: {article_data['source']} (Bias: {article_data.get('bias_label', 'Unknown')})
         CONTENT:
         {content}
         
-        ACTORS: {actors_list}
-        INSTITUTIONS: {institutions_list}
+        KEY ACTORS: {actors_list}
+        KEY INSTITUTIONS: {institutions_list}
         
         {previous_context}
         
-        For each relationship you identify, return a JSON array of objects with this structure:
-        
+        Return your analysis as a JSON array of relationship objects:
+
         ```json
         [
           {{
             "source": "Entity Name (actor or institution)",
-            "relationship": "undermines/controls/targets/supports/opposes/etc",
+            "relationship_type": "undermines/controls/targets/supports/opposes/delegates_to/benefits_from/etc",
             "target": "Entity Name (actor or institution)",
-            "evidence": "Exact quote or specific example from text that demonstrates this relationship",
+            "evidence": "Specific evidence from the text that demonstrates this relationship",
+            "democratic_impact": "How this relationship potentially impacts democratic functioning",
             "confidence": "high/medium/low based on how explicit the evidence is"
           }}
         ]
         ```
         
-        Only include relationships that are clearly supported by evidence in the text.
-        Include all possible relationships between the identified actors and institutions.
-        Focus especially on relationships that suggest authoritarian tendencies, such as:
-        - Undermining democratic institutions
-        - Targeting opposition
-        - Consolidating power
-        - Delegitimizing media
+        Focus especially on relationships that reveal power dynamics and institutional impacts. Look for:
+
+        1. Who is influencing, controlling, or undermining which institutions
+        2. Which actors are forming alliances or opposing each other
+        3. How power is being concentrated, delegated, or balanced
+        4. Which institutions are being strengthened or weakened
         
-        If no relationships are found, return an empty array.
+        Only include relationships clearly supported by evidence in the text. Be precise and thorough.
         """
         
         result = self._call_llm(prompt, max_tokens=2000, temperature=0.1)
@@ -490,7 +490,7 @@ class ContentAnalyzer:
             return default_result
 
     def extract_authoritarian_indicators(self, article_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Extract specific authoritarian indicators with evidence."""
+        """Extract potential authoritarian indicators using a more open approach."""
         
         # Trim content if it's too long
         content = article_data.get('content', '')
@@ -503,16 +503,17 @@ class ContentAnalyzer:
         previous_context = ""
         if article_id in self.context_history and "indicators" in self.context_history[article_id]:
             previous_context = f"""
-            PREVIOUS INDICATOR ANALYSIS:
+            I've already identified some authoritarian indicators in this content. Here they are:
             ```json
             {json.dumps(self.context_history[article_id]["indicators"], indent=2)}
             ```
             
-            Enhance and refine the previous indicator analysis, adding more specific evidence and improving severity assessments.
+            Now I want to reassess this content with a fresh perspective, focusing on patterns that might signal democratic backsliding.
             """
         
+        # Improved open-ended authoritarian indicator extraction
         prompt = f"""
-        As an expert in democratic backsliding and authoritarian trends, analyze the following article for specific authoritarian indicators.
+        Analyze this political content for potential authoritarian indicators. What aspects concern you the most and why? Think about both obvious and subtle patterns that may signal democratic backsliding.
         
         TITLE: {article_data['title']}
         SOURCE: {article_data['source']} (Bias: {article_data.get('bias_label', 'Unknown')})
@@ -521,40 +522,37 @@ class ContentAnalyzer:
         
         {previous_context}
         
-        For each of these authoritarian indicators, determine if it's present in the text and provide evidence:
+        Based on your historical knowledge of how democracies have backslid into authoritarianism, identify specific patterns of concern in this content. Rather than using pre-defined categories, describe the specific indicators you see and explain why they concern you.
         
-        1. Institutional undermining
-        2. Democratic norm violations
-        3. Media delegitimization
-        4. Opposition targeting
-        5. Power concentration
-        6. Accountability evasion
-        7. Threat exaggeration
-        8. Authoritarian rhetoric
-        9. Rule of law undermining
-        
-        Return only a valid JSON object with this structure:
-        
+        Return your analysis as a JSON object with this structure:
+
         ```json
         {{
-          "authoritarian_indicators": [
+          "democratic_concerns": [
             {{
-              "type": "institutional_undermining",
-              "present": true/false,
-              "examples": ["Exact quote or specific example from text"],
-              "severity": 1-10,
-              "explanation": "Brief explanation of why this qualifies as the indicator"
-            }},
-            // Repeat for each indicator type
+              "concern": "Describe the specific pattern or action that concerns you",
+              "evidence": ["Provide specific examples from the text"],
+              "historical_context": "Explain similar patterns from historical examples of democratic backsliding",
+              "potential_impact": "Describe how this could impact democratic functioning if continued or expanded",
+              "severity": 1-10
+            }}
           ],
-          "authoritarian_score": 0-10,
-          "score_explanation": "Brief explanation of the overall score"
+          "affected_democratic_elements": [
+            {{
+              "element": "The democratic institution, norm, or process being affected",
+              "how_affected": "How this element is being undermined, weakened, or co-opted",
+              "evidence": ["Specific evidence from the text"]
+            }}
+          ],
+          "overall_assessment": {{
+            "concern_level": 1-10,
+            "main_concerns": ["List of primary concerns"],
+            "historical_parallels": ["Similar historical situations or patterns"]
+          }}
         }}
         ```
         
-        Only mark an indicator as present if there is clear evidence in the text.
-        Be precise and factual rather than speculative.
-        For each present indicator, provide multiple examples if available.
+        Be detailed and specific in your analysis. Focus on the evidence in the text rather than speculation, but use your historical knowledge to provide context for the patterns you identify.
         """
         
         result = self._call_llm(prompt, max_tokens=2500, temperature=0.1)
@@ -599,7 +597,7 @@ class ContentAnalyzer:
                     return extracted_indicators
                 
             # If no valid JSON found
-            default_result = {"authoritarian_indicators": [], "authoritarian_score": 0}
+            default_result = {"democratic_concerns": [], "affected_democratic_elements": [], "overall_assessment": {"concern_level": 0, "main_concerns": [], "historical_parallels": []}}
             
             # Store default in context history
             if article_id not in self.context_history:
@@ -609,7 +607,7 @@ class ContentAnalyzer:
             return default_result
         except Exception as e:
             self.logger.error(f"Error extracting authoritarian indicators: {str(e)}")
-            default_result = {"authoritarian_indicators": [], "authoritarian_score": 0}
+            default_result = {"democratic_concerns": [], "affected_democratic_elements": [], "overall_assessment": {"concern_level": 0, "main_concerns": [], "historical_parallels": []}}
             
             # Store default in context history
             if article_id not in self.context_history:
@@ -619,7 +617,7 @@ class ContentAnalyzer:
             return default_result
 
     def analyze_content_for_knowledge_graph(self, article_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Comprehensive analysis for knowledge graph integration."""
+        """Comprehensive analysis for knowledge graph integration using the improved approach."""
         
         # Get article ID for context tracking
         article_id = article_data.get("id", f"article_{hash(article_data.get('title', ''))}")
@@ -632,19 +630,19 @@ class ContentAnalyzer:
         # Step 2: Extract relationships between entities
         relationships = self.extract_entity_relationships(article_data, entities)
         
-        # Step 3: Extract authoritarian indicators
+        # Step 3: Extract authoritarian indicators with the new approach
         indicators = self.extract_authoritarian_indicators(article_data)
         
-        # Step 4: Perform comprehensive authoritarian analysis
+        # Step 4: Perform comprehensive authoritarian analysis with the new approach
         auth_analysis = self.analyze_authoritarian_patterns(article_data)
         
         # Step 5: Merge and structure the data for knowledge graph
         structured_data = {
             "entities": entities,
             "relationships": relationships,
-            "authoritarian_indicators": indicators.get("authoritarian_indicators", []),
-            "authoritarian_score": indicators.get("authoritarian_score", 0),
-            "score_explanation": indicators.get("score_explanation", ""),
+            "democratic_concerns": indicators.get("democratic_concerns", []),
+            "affected_democratic_elements": indicators.get("affected_democratic_elements", []),
+            "overall_assessment": indicators.get("overall_assessment", {"concern_level": 0}),
             "narrative_analysis": auth_analysis.get("authoritarian_analysis", ""),
             "article_metadata": {
                 "title": article_data.get("title", ""),
@@ -682,12 +680,12 @@ class ContentAnalyzer:
         
         if not match:
             # Try other patterns
-            json_pattern = r'PART 2:.*?(\{.*?\})'
+            json_pattern = r'STRUCTURED DATA[\s\S]*?(\{[\s\S]*?\})'
             match = re.search(json_pattern, analysis, re.DOTALL)
             
         if not match:
             # Try to find any JSON-like structure
-            json_pattern = r'(\{[\s\S]*"authoritarian_score"[\s\S]*\})'
+            json_pattern = r'(\{[\s\S]*"overall_assessment"[\s\S]*\})'
             match = re.search(json_pattern, analysis, re.DOTALL)
         
         if match:
@@ -709,220 +707,72 @@ class ContentAnalyzer:
                     "raw_json": match.group(1)[:200] + "..." if len(match.group(1)) > 200 else match.group(1)
                 }
         
-        # If no JSON found, extract traditional structured elements
-        return self.extract_authoritarian_elements(analysis)
+        # If no JSON found, extract parts manually
+        return self._extract_authoritarian_elements_manually(analysis)
 
-    def extract_authoritarian_elements(self, analysis: str) -> Dict[str, Any]:
+    def _extract_authoritarian_elements_manually(self, analysis: str) -> Dict[str, Any]:
         """
-        Extract structured authoritarian elements from an analysis.
-    
-        Args:
-            analysis: Authoritarian analysis text to extract from
-    
-        Returns:
-            Dict with structured authoritarian elements
-        """
-        # Ensure analysis is preprocessed
-        analysis = self.preprocess_llm_output(analysis)
-    
-        prompt = f"""
-        Extract the key authoritarian indicators from this analysis into a JSON format.
-    
-        ANALYSIS:
-        {analysis}
-    
-        Return ONLY the following JSON object with no extra text or explanation:
-        {{
-            "institutional_undermining": {{"present": true/false, "examples": ["example1", "example2"]}},
-            "democratic_norm_violations": {{"present": true/false, "examples": ["example1", "example2"]}},
-            "media_delegitimization": {{"present": true/false, "examples": ["example1", "example2"]}},
-            "opposition_targeting": {{"present": true/false, "examples": ["example1", "example2"]}},
-            "power_concentration": {{"present": true/false, "examples": ["example1", "example2"]}},
-            "accountability_evasion": {{"present": true/false, "examples": ["example1", "example2"]}},
-            "threat_exaggeration": {{"present": true/false, "examples": ["example1", "example2"]}},
-            "authoritarian_rhetoric": {{"present": true/false, "examples": ["example1", "example2"]}},
-            "rule_of_law_undermining": {{"present": true/false, "examples": ["example1", "example2"]}},
-            "authoritarian_score": 0-10
-        }}
-        """
-    
-        result = self._call_llm(prompt, max_tokens=1000, temperature=0.1)
-        result = self.preprocess_llm_output(result)
-    
-        try:
-            # Find the JSON part
-            json_match = re.search(r'\{.*\}', result, re.DOTALL)
-            if json_match:
-                json_str = json_match.group(0)
-                
-                # Clean up potential format issues
-                json_str = re.sub(r':\s*true\b', ': true', json_str)  # Normalize true
-                json_str = re.sub(r':\s*false\b', ': false', json_str)  # Normalize false
-                
-                # Fix common quotes/apostrophes issues
-                json_str = json_str.replace("'", '"')
-                
-                try:
-                    return json.loads(json_str)
-                except json.JSONDecodeError:
-                    # If still can't parse JSON, try a simplified approach
-                    self.logger.warning("Initial JSON parsing failed, trying simplified approach")
-                    
-                    # Extract authoritarian score if available
-                    score_match = re.search(r'"authoritarian_score":\s*(\d+)', json_str)
-                    auth_score = int(score_match.group(1)) if score_match else 3
-                    
-                    # Create a basic structure with just the score
-                    return self._create_default_auth_structure(auth_score)
-            else:
-                # No JSON found, create a fallback structure
-                self.logger.warning("No valid JSON found in LLM response, creating fallback structure")
-                
-                # Create default structure
-                return self._create_default_auth_structure(3)
-                
-        except Exception as e:
-            self.logger.error(f"Error parsing extracted authoritarian elements: {str(e)}")
-            self.logger.debug(f"Raw LLM response: {result}")
-            
-            # Return a fallback structure
-            return self._create_default_auth_structure(3)
-    
-    def _create_default_auth_structure(self, score: int = 3) -> Dict[str, Any]:
-        """Create default structure for authoritarian indicators"""
-        default_indicator = {"present": False, "examples": []}
+        Manually extract structured elements from analysis text when JSON extraction fails.
         
-        return {
-            "institutional_undermining": default_indicator.copy(),
-            "democratic_norm_violations": default_indicator.copy(),
-            "media_delegitimization": default_indicator.copy(),
-            "opposition_targeting": default_indicator.copy(),
-            "power_concentration": default_indicator.copy(),
-            "accountability_evasion": default_indicator.copy(),
-            "threat_exaggeration": default_indicator.copy(),
-            "authoritarian_rhetoric": default_indicator.copy(),
-            "rule_of_law_undermining": default_indicator.copy(),
-            "authoritarian_score": score
-        }
-
-    def extract_key_elements(self, analysis: str) -> Dict[str, Any]:
-        """
-        Extract structured key elements from an analysis.
-    
         Args:
             analysis: Analysis text to extract from
-    
+            
         Returns:
             Dict with structured elements
         """
-        # Ensure analysis is preprocessed
-        analysis = self.preprocess_llm_output(analysis)
-    
-        # Create a more direct prompt with a clear example
-        prompt = f"""
-        Extract the key elements from this article analysis into a JSON format.
+        result = {}
         
-        ANALYSIS:
-        {analysis}
-    
-        Return a JSON object with EXACTLY this structure:
-        {{
-            "main_topics": ["topic1", "topic2", "topic3"],
-            "frames": ["frame1", "frame2"],
-            "emotional_triggers": ["emotion1", "emotion2"],
-            "divisive_elements": ["element1", "element2"],
-            "manipulation_techniques": ["technique1", "technique2"],
-            "manipulation_score": 7
-        }}
-        
-        In the above example:
-        - The arrays contain strings extracted from the analysis
-        - The manipulation_score is a number from 0-10
-        - There are NO other fields, comments, or explanations
-    
-        Replace the example values with actual content from the analysis.
-        Your response must be VALID JSON with no other text.
-        """
-    
-        # Call LLM with lower temperature to get more consistent output
-        result = self._call_llm(prompt, max_tokens=800, temperature=0.1)
-        result = self.preprocess_llm_output(result)
-    
-        try:
-            # Find the JSON part (in case there's extra text)
-            json_match = re.search(r'\{.*\}', result, re.DOTALL)
-            if json_match:
-                json_str = json_match.group(0)
-                
-                # Try direct parsing first
-                try:
-                    return json.loads(json_str)
-                except json.JSONDecodeError:
-                    # Apply more aggressive cleaning
-                    self.logger.warning("Initial JSON parsing failed, applying cleanup")
-                    
-                    # Replace single quotes with double quotes
-                    json_str = json_str.replace("'", '"')
-                    
-                    # Fix common issues with quotes in arrays
-                    json_str = re.sub(r'"\s*,\s*"', '", "', json_str)
-                    
-                    # Remove trailing commas before closing brackets
-                    json_str = re.sub(r',\s*}', '}', json_str)
-                    json_str = re.sub(r',\s*]', ']', json_str)
-                    
-                    try:
-                        return json.loads(json_str)
-                    except json.JSONDecodeError:
-                        self.logger.warning("Advanced cleanup failed, extracting components manually")
-                        
-                        # Extract score first
-                        score_match = re.search(r'"manipulation_score":\s*(\d+)', json_str)
-                        score = int(score_match.group(1)) if score_match else 5
-                        
-                        # Extract arrays using regex
-                        result = {
-                            "main_topics": self._extract_array(json_str, "main_topics"),
-                            "frames": self._extract_array(json_str, "frames"),
-                            "emotional_triggers": self._extract_array(json_str, "emotional_triggers"),
-                            "divisive_elements": self._extract_array(json_str, "divisive_elements"),
-                            "manipulation_techniques": self._extract_array(json_str, "manipulation_techniques"),
-                            "manipulation_score": score
-                        }
-                        
-                        return result
+        # Extract key actors if present
+        actors_pattern = r'key_actors.*?:\s*\[(.*?)\]'
+        actors_match = re.search(actors_pattern, analysis, re.DOTALL)
+        if actors_match:
+            actors_text = actors_match.group(1)
+            # Try to parse this section
+            result["key_actors"] = []
             
-            # No valid JSON found, extract using regex
-            self.logger.warning("No valid JSON found, using fallback extraction")
+        # Extract key institutions if present
+        institutions_pattern = r'key_institutions.*?:\s*\[(.*?)\]'
+        institutions_match = re.search(institutions_pattern, analysis, re.DOTALL)
+        if institutions_match:
+            institutions_text = institutions_match.group(1)
+            # Try to parse this section
+            result["key_institutions"] = []
             
-            # Extract manipulation score
-            score_match = re.search(r'manipulation_score["\s:]+(\d+)', result, re.IGNORECASE)
-            score = int(score_match.group(1)) if score_match else 5
+        # Extract authoritarian indicators if present
+        indicators_pattern = r'authoritarian_indicators.*?:\s*\[(.*?)\]'
+        indicators_match = re.search(indicators_pattern, analysis, re.DOTALL)
+        if indicators_match:
+            indicators_text = indicators_match.group(1)
+            # Try to parse this section
+            result["authoritarian_indicators"] = []
             
-            # Create result with fallback values
-            return {
-                "main_topics": self._extract_array(result, "main_topics") or ["Unspecified topic"],
-                "frames": self._extract_array(result, "frames") or ["Unspecified frame"],
-                "emotional_triggers": self._extract_array(result, "emotional_triggers") or ["Unspecified trigger"],
-                "divisive_elements": self._extract_array(result, "divisive_elements") or ["Unspecified element"],
-                "manipulation_techniques": self._extract_array(result, "manipulation_techniques") or ["Unspecified technique"],
-                "manipulation_score": score
+        # Extract overall assessment if present
+        assessment_pattern = r'overall_assessment.*?:\s*\{(.*?)\}'
+        assessment_match = re.search(assessment_pattern, analysis, re.DOTALL)
+        if assessment_match:
+            assessment_text = assessment_match.group(1)
+            # Try to parse assessment section
+            try:
+                concern_level_match = re.search(r'concern_level["\s:]+(\d+)', assessment_text)
+                concern_level = int(concern_level_match.group(1)) if concern_level_match else 3
+                result["overall_assessment"] = {
+                    "concern_level": concern_level,
+                    "main_concerns": []
+                }
+            except Exception as e:
+                self.logger.error(f"Error parsing assessment: {str(e)}")
+                result["overall_assessment"] = {"concern_level": 3, "main_concerns": []}
+            
+        # If no structured content was successfully extracted, create minimal structure
+        if not result:
+            result = {
+                "key_actors": [],
+                "key_institutions": [],
+                "authoritarian_indicators": [],
+                "overall_assessment": {"concern_level": 3, "main_concerns": []}
             }
-        except Exception as e:
-            self.logger.error(f"Error parsing extracted elements: {str(e)}")
-            self.logger.debug(f"Raw LLM response: {result}")
-    
-            # Return a fallback structure
-            return {
-                "main_topics": ["Unspecified topic"],
-                "frames": ["Unspecified frame"],
-                "emotional_triggers": ["Unspecified trigger"],
-                "divisive_elements": ["Unspecified element"],
-                "manipulation_techniques": ["Unspecified technique"],
-                "manipulation_score": 5,
-                "error": f"Failed to extract elements: {str(e)}",
-                "raw_result": result[:200]  # Include first 200 chars of raw result for debugging
-            }
+            
+        return result
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -945,20 +795,15 @@ class ContentAnalyzer:
                 article["id"] = f"article_{hash(article.get('title', ''))}"
             
             try:
-                # Perform standard divisive content analysis
+                # Perform standard content analysis with the new approach
                 analysis = self.analyze_article(article)
                 standard_results.append(analysis)
     
-                # Perform authoritarian pattern analysis
+                # Perform authoritarian pattern analysis with the new approach
                 auth_analysis = self.analyze_authoritarian_patterns(article)
                 auth_results.append(auth_analysis)
     
-                # Extract structured elements from standard analysis
-                if "analysis" in analysis:
-                    elements = self.extract_key_elements(analysis["analysis"])
-                    analysis["structured_elements"] = elements
-                
-                # Perform comprehensive knowledge graph analysis
+                # Perform comprehensive knowledge graph analysis with the new approach
                 kg_analysis = self.analyze_content_for_knowledge_graph(article)
                 kg_results.append(kg_analysis)
                 
@@ -990,27 +835,6 @@ class ContentAnalyzer:
             self.logger.error(f"Error extracting text from LLM response: {str(e)}")
             return f"Error extracting response: {str(e)}"
             
-    def _extract_array(self, text: str, field_name: str) -> List[str]:
-        """Helper method to extract array values using regex"""
-        pattern = fr'"{field_name}"\s*:\s*\[\s*(.*?)\s*\]'
-        match = re.search(pattern, text, re.DOTALL)
-        
-        if not match:
-            return []
-        
-        items_str = match.group(1)
-        
-        # Extract quoted strings
-        items = re.findall(r'"([^"]*)"', items_str)
-        
-        # If no quoted strings found, try extracting without quotes
-        if not items:
-            # Split by commas and clean
-            items = [item.strip().strip('"').strip("'") for item in items_str.split(',')]
-            items = [item for item in items if item]  # Remove empty items
-        
-        return items if items else []
-        
     def _truncate_text(self, text: str, max_length: int = 5000, suffix: str = "...") -> str:
         """
         Truncate text to a maximum length.
