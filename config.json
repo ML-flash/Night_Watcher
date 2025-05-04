@@ -1,0 +1,44 @@
+{
+  "llm_provider": {
+    "type": "lm_studio",
+    "host": "http://localhost:1234",
+    "model": "default"
+  },
+  "content_collection": {
+    "article_limit": 5,
+    "sources": [
+      {
+        "url": "https://www.reuters.com/rss/topNews",
+        "type": "rss",
+        "bias": "center"
+      },
+      {
+        "url": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+        "type": "rss",
+        "bias": "center-left"
+      },
+      {
+        "url": "https://feeds.foxnews.com/foxnews/politics",
+        "type": "rss",
+        "bias": "right"
+      }
+    ]
+  },
+  "content_analysis": {
+    "manipulation_threshold": 6
+  },
+  "memory": {
+    "store_type": "simple",
+    "file_path": "data/memory/night_watcher_memory.pkl",
+    "embedding_provider": "simple"
+  },
+  "output": {
+    "base_dir": "data",
+    "save_collected": true,
+    "save_analyses": true
+  },
+  "logging": {
+    "level": "INFO",
+    "log_dir": "logs"
+  }
+}

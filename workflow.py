@@ -156,32 +156,36 @@ class NightWatcherWorkflow:
             if recent_analyses:
                 # Get authoritarian trends from knowledge graph
                 auth_trends = self.knowledge_graph.get_authoritarian_trends(pattern_analysis_days)
-                save_to_file(
-                    auth_trends,
-                    f"{self.analysis_dir}/authoritarian_trends_{self.timestamp}.json"
-                )
-                
+                trends_filename = f"{self.analysis_dir}/authoritarian_trends_{self.timestamp}.json"
+                save_to_file(auth_trends, trends_filename)
+
+                # Display a summary of the authoritarian trends
+                self._display_summary(auth_trends, "Authoritarian Trends")
+
                 # Get influential actors
                 influential_actors = self.knowledge_graph.get_influential_actors(10)
-                save_to_file(
-                    influential_actors,
-                    f"{self.analysis_dir}/influential_actors_{self.timestamp}.json"
-                )
-                
+                actors_filename = f"{self.analysis_dir}/influential_actors_{self.timestamp}.json"
+                save_to_file(influential_actors, actors_filename)
+
+                # Display a summary of influential actors
+                self._display_summary(influential_actors, "Influential Actors")
+
                 # Get comprehensive democratic erosion analysis
                 democratic_erosion = self.knowledge_graph.analyze_democratic_erosion(pattern_analysis_days)
-                save_to_file(
-                    democratic_erosion,
-                    f"{self.analysis_dir}/democratic_erosion_{self.timestamp}.json"
-                )
-                
+                erosion_filename = f"{self.analysis_dir}/democratic_erosion_{self.timestamp}.json"
+                save_to_file(democratic_erosion, erosion_filename)
+
+                # Display a summary of democratic erosion
+                self._display_summary(democratic_erosion, "Democratic Erosion Analysis")
+
                 # Get actor coordination patterns
                 coordination_patterns = self.knowledge_graph.detect_coordination_patterns(pattern_analysis_days)
-                save_to_file(
-                    coordination_patterns,
-                    f"{self.analysis_dir}/coordination_patterns_{self.timestamp}.json"
-                )
-                
+                patterns_filename = f"{self.analysis_dir}/coordination_patterns_{self.timestamp}.json"
+                save_to_file(coordination_patterns, patterns_filename)
+
+                # Display a summary of coordination patterns
+                self._display_summary(coordination_patterns, "Coordination Patterns")
+
                 # Generate comprehensive intelligence report
                 intel_report = self._generate_intelligence_report(
                     democratic_erosion,
@@ -189,16 +193,28 @@ class NightWatcherWorkflow:
                     coordination_patterns,
                     pattern_analysis_days
                 )
-                save_to_file(
-                    intel_report,
-                    f"{self.analysis_dir}/intelligence_report_{self.timestamp}.json"
-                )
-                
+                report_filename = f"{self.analysis_dir}/intelligence_report_{self.timestamp}.json"
+                save_to_file(intel_report, report_filename)
+
+                # Display a summary of the intelligence report
+                self._display_summary(intel_report, "Intelligence Report")
+
                 patterns_generated = 5
+
+                # Print a more detailed summary
+                print("\n=== Pattern Analysis Results ===")
+                print(f"Time period analyzed: Last {pattern_analysis_days} days")
+                print(f"Authoritarian Trends Score: {auth_trends.get('trend_score', 'N/A')}/10")
+                print(f"Democratic Erosion Score: {democratic_erosion.get('erosion_score', 'N/A')}/10")
+                print(f"Risk Level: {democratic_erosion.get('risk_level', 'N/A')}")
+                print(f"Affected Institutions: {len(auth_trends.get('affected_institutions', []))}")
+                print(f"Coordination Patterns: {len(coordination_patterns)}")
+                print(f"Top Actors: {', '.join([actor.get('name', 'Unknown') for actor in influential_actors[:3]])}")
+                print(f"\nAll analysis files saved to: {self.analysis_dir}")
             else:
                 self.logger.warning("No recent analyses found for pattern recognition")
                 patterns_generated = 0
-                
+
             return {
                 "articles_collected": len(articles),
                 "articles_analyzed": len(analyses),
@@ -213,40 +229,65 @@ class NightWatcherWorkflow:
                 "pattern_analyses_generated": 0
             }
 
+    def _display_summary(self, data: Dict[str, Any], title: str) -> None:
+        """Display a summary of analysis results"""
+        self.logger.info(f"Generated {title}")
+
+        # Extract key information based on the analysis type
+        if title == "Authoritarian Trends":
+            self.logger.info(f"Trend Score: {data.get('trend_score', 'N/A')}/10")
+            self.logger.info(f"Affected Institutions: {len(data.get('affected_institutions', []))}")
+
+        elif title == "Influential Actors":
+            for i, actor in enumerate(data[:3], 1):
+                self.logger.info(f"{i}. {actor.get('name', 'Unknown')} - Influence: {actor.get('influence_score', 'N/A')}")
+
+        elif title == "Democratic Erosion Analysis":
+            self.logger.info(f"Erosion Score: {data.get('erosion_score', 'N/A')}/10")
+            self.logger.info(f"Risk Level: {data.get('risk_level', 'N/A')}")
+
+        elif title == "Coordination Patterns":
+            self.logger.info(f"Patterns Detected: {len(data)}")
+
+        elif title == "Intelligence Report":
+            self.logger.info(f"Report Generated: {data.get('title', 'Untitled')}")
+            if "recommendations" in data and data["recommendations"]:
+                self.logger.info(f"Top Recommendation: {data['recommendations'][0]}")
+
     def _analyze_recurring_topics(self, recent_analyses: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Analyze recurring topics across analyses.
-        
+
         Args:
             recent_analyses: List of recent analyses
-            
+
         Returns:
             Dict with topic analysis results
         """
         # This is a legacy method - delegate to knowledge graph for more advanced analysis
         # Get list of topics from analyses
         topics = {}
-        
+
         for analysis in recent_analyses:
             metadata = analysis.get("metadata", {})
-            
+
             # Extract topics from metadata or embedded structured elements
             if "structured_elements" in metadata:
                 analysis_topics = metadata["structured_elements"].get("main_topics", [])
-                
+
                 for topic in analysis_topics:
                     if topic in topics:
                         topics[topic] += 1
                     else:
                         topics[topic] = 1
-        
+
         # Sort topics by frequency
         sorted_topics = sorted(
             [(topic, count) for topic, count in topics.items()],
             key=lambda x: x[1],
             reverse=True
         )
-        
+
         return {
             "topics": sorted_topics,
             "analysis_count": len(recent_analyses),
@@ -259,13 +300,13 @@ class NightWatcherWorkflow:
                                     lookback_days: int) -> Dict[str, Any]:
         """
         Generate a comprehensive intelligence report.
-        
+
         Args:
             democratic_erosion: Democratic erosion analysis
             influential_actors: List of influential actors
             coordination_patterns: List of coordination patterns
             lookback_days: Number of days in the analysis period
-            
+
         Returns:
             Dict with intelligence report
         """
@@ -282,14 +323,14 @@ class NightWatcherWorkflow:
                 "coordination_patterns_detected": len(coordination_patterns)
             },
             "democratic_erosion": democratic_erosion,
-            "influential_actors": influential_actors,
+            "influential_actors": influential_actors[:5],  # Limit to top 5 for readability
             "coordination_patterns": coordination_patterns,
             "recommendations": []
         }
-        
+
         # Generate recommendations based on erosion score
         erosion_score = democratic_erosion.get("erosion_score", 0)
-        
+
         if erosion_score >= 7:
             report["recommendations"] = [
                 "URGENT: Multiple clear indicators of authoritarian governance detected",
@@ -322,5 +363,5 @@ class NightWatcherWorkflow:
                 "Monitor for early signs of norm erosion",
                 "Maintain baseline monitoring of key political actors"
             ]
-        
+
         return report
