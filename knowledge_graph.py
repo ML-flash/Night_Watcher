@@ -1672,169 +1672,71 @@ class KnowledgeGraph:
         }
 
     def process_article_analysis(self, article_data: Dict[str, Any], analysis: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Process an article analysis to extract entities and relationships for the knowledge graph.
+    """
+    Turn the analyzer’s structured_facts into proper KG entities & edges,
+    without ad-hoc string parsing.
+    """
+    results = {"entities_created": 0, "relationships_created": 0}
+    src_id = article_data["id"]
 
-        Args:
-            article_data: The source article data
-            analysis: The analysis data containing authoritarian indicators
-
-        Returns:
-            Dict with processing results
-        """
-        results = {
-            "entities_created": 0,
-            "relationships_created": 0,
-            "entity_ids": [],
-            "relationship_ids": []
+    # 1) Ensure we have a topic node for this article
+    topic_id = self.find_or_create_topic(
+        article_data.get("title", "Untitled"),
+        attributes={
+            "source": article_data.get("source"),
+            "url": article_data.get("url"),
+            "published": article_data.get("published")
         }
+    )
+    results["entities_created"] += 1
 
-        # Extract source info for evidence
-        source_id = article_data.get("id", f"article_{uuid.uuid4().hex[:8]}")
+    sf = analysis.get("structured_facts", {})
 
-        # Create a topic entity for the article
-        title = article_data.get("title", "Untitled Article")
-        topic_id = self.find_or_create_topic(
-            title,
-            attributes={
-                "source": article_data.get("source", "Unknown"),
-                "url": article_data.get("url", ""),
-                "published": article_data.get("published", ""),
-                "processed_date": datetime.now().isoformat()
-            }
+    # 2) Events → Event nodes + participates_in edges
+    for ev in sf.get("events", []):
+        ev_id = self.find_or_create_event(
+            ev["name"],
+            attributes={"description": ev["description"], "date": ev["date"]}
         )
-        results["entity_ids"].append(topic_id)
         results["entities_created"] += 1
 
-        # Process authoritarian indicators if available
-        structured_data = analysis.get("structured_elements", {})
+        # article “reports” or “participates_in” event
+        rel = self.add_relationship_with_evidence(
+            topic_id, ev_id, self.PARTICIPATES_IN,
+            evidence_text=ev["description"],
+            source_content_id=src_id
+        )
+        results["relationships_created"] += 1
 
-        # Extract actor entities from the analysis
-        actors = []
+    # 3) Facts → Fact nodes + describes edges
+    for fact in sf.get("facts", []):
+        fact_id = self.find_or_create_entity(
+            fact, self.ARTIFACT, attributes={"text": fact}
+        )
+        results["entities_created"] += 1
 
-        # Look for actors in the article title and analysis
-        import re
-        actor_pattern = r'\b(?:President|Senator|Congressman|Congresswoman|Rep\.|Sen\.|Governor|Secretary|Attorney General|Speaker|Majority Leader|Minister|Judge|Justice)\s+([A-Z][a-z]+\s+[A-Z][a-z]+)\b'
+        rel = self.add_relationship_with_evidence(
+            topic_id, fact_id, self.DISTRACTS_FROM,
+            evidence_text=fact,
+            source_content_id=src_id
+        )
+        results["relationships_created"] += 1
 
-        # Extract from title
-        for match in re.finditer(actor_pattern, title):
-            actor_name = match.group(1)
-            actor_id = self.find_or_create_actor(actor_name)
-            if actor_id not in actors:
-                actors.append(actor_id)
-                results["entity_ids"].append(actor_id)
-                results["entities_created"] += 1
+    # 4) Direct Quotes → Quote nodes + cites edges
+    for quote in sf.get("direct_quotes", []):
+        q_id = self.find_or_create_entity(
+            quote, self.ARTIFACT, attributes={"quote": quote}
+        )
+        results["entities_created"] += 1
 
-        # Extract from analysis text
-        analysis_text = analysis.get("analysis", "")
-        for match in re.finditer(actor_pattern, analysis_text):
-            actor_name = match.group(1)
-            actor_id = self.find_or_create_actor(actor_name)
-            if actor_id not in actors:
-                actors.append(actor_id)
-                results["entity_ids"].append(actor_id)
-                results["entities_created"] += 1
+        rel = self.add_relationship_with_evidence(
+            q_id, topic_id, self.PART_OF,
+            evidence_text=quote,
+            source_content_id=src_id
+        )
+        results["relationships_created"] += 1
 
-        # Try to identify specific authoritarian indicators and create the appropriate entities/relationships
-        for indicator_key, indicator_data in structured_data.items():
-            if isinstance(indicator_data, dict) and indicator_data.get("present", False):
-                # Get examples for evidence
-                examples = indicator_data.get("examples", [])
-                evidence_text = examples[0] if examples else f"Indicator '{indicator_key}' detected in article"
-
-                # Map indicator to relationship type
-                relationship_type = "demonstrates"  # Default
-
-                if indicator_key == "institutional_undermining":
-                    relationship_type = "undermines"
-                    # Create an institution entity if we can identify one
-                    institutions = extract_institutions(analysis_text)
-
-                    for institution_name in institutions:
-                        # Create institution entity
-                        institution_id = self.find_or_create_institution(institution_name)
-                        results["entity_ids"].append(institution_id)
-                        results["entities_created"] += 1
-
-                        # Create relationship for each actor
-                        for actor_id in actors:
-                            rel_id = self.add_relationship_with_evidence(
-                                actor_id, institution_id, "undermines",
-                                evidence_text, source_id,
-                                weight=1.5
-                            )
-                            results["relationship_ids"].append(rel_id)
-                            results["relationships_created"] += 1
-
-                elif indicator_key == "democratic_norm_violations":
-                    # Create a norm indicator entity
-                    norm_name = f"Democratic norm: {evidence_text[:30]}..."
-                    norm_id = self.find_or_create_entity("indicator", norm_name, {
-                        "type": "democratic_norm",
-                        "description": evidence_text
-                    })
-                    results["entity_ids"].append(norm_id)
-                    results["entities_created"] += 1
-
-                    # Connect actors to this norm violation
-                    for actor_id in actors:
-                        rel_id = self.add_relationship_with_evidence(
-                            actor_id, norm_id, "violates",
-                            evidence_text, source_id,
-                            weight=1.5
-                        )
-                        results["relationship_ids"].append(rel_id)
-                        results["relationships_created"] += 1
-
-                elif indicator_key == "media_delegitimization":
-                    # Create media entity
-                    media_id = self.find_or_create_entity("institution", "Independent Media", {
-                        "institution_type": "media",
-                        "description": "Independent news media and journalists"
-                    })
-                    results["entity_ids"].append(media_id)
-                    results["entities_created"] += 1
-
-                    # Connect actors to media delegitimization
-                    for actor_id in actors:
-                        rel_id = self.add_relationship_with_evidence(
-                            actor_id, media_id, "undermines",
-                            evidence_text, source_id,
-                            weight=1.7
-                        )
-                        results["relationship_ids"].append(rel_id)
-                        results["relationships_created"] += 1
-
-                # Add more indicator-specific processing as needed...
-
-                # Create a generic indicator entity for any other indicators
-                indicator_id = self.find_or_create_entity("indicator", f"Indicator: {indicator_key}", {
-                    "type": indicator_key,
-                    "description": evidence_text
-                })
-                results["entity_ids"].append(indicator_id)
-                results["entities_created"] += 1
-
-                # Connect topic to indicator
-                topic_indicator_rel = self.add_relationship_with_evidence(
-                    topic_id, indicator_id, "demonstrates",
-                    evidence_text, source_id,
-                    weight=1.0
-                )
-                results["relationship_ids"].append(topic_indicator_rel)
-                results["relationships_created"] += 1
-
-        # Connect actors to the topic
-        for actor_id in actors:
-            actor_topic_rel = self.add_relationship(
-                actor_id, topic_id, "relates_to",
-                weight=1.0,
-                attributes={"source": article_data.get("source", "Unknown")}
-            )
-            results["relationship_ids"].append(actor_topic_rel)
-            results["relationships_created"] += 1
-
-        return results
+    return results
 
     def save(self, path: str) -> bool:
         """Save the knowledge graph to disk"""
