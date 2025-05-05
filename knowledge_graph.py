@@ -1151,6 +1151,29 @@ class KnowledgeGraph:
         # Track creation date
         self.creation_date = datetime.now().isoformat()
         self.last_update = self.creation_date
+    
+    def save(self, path: str) -> bool:
+        """Save the knowledge graph to disk"""
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+
+            data = self.graph.to_dict()
+            data["metadata"] = {
+                "version": "1.0",
+                "use_networkx": self.use_networkx,
+                "creation_date": self.creation_date,
+                "last_update": self.last_update,
+                "timestamp": datetime.now().isoformat()
+            }
+
+            with open(path, 'wb') as f:
+                pickle.dump(data, f)
+
+            logger.info(f"Saved knowledge graph to {path}")
+            return True
+        except Exception as e:
+            logger.error(f"Error saving knowledge graph: {str(e)}")
+            return False
 
     def add_entity(self, entity_type: str, name: str, attributes: Dict[str, Any] = None) -> str:
         """Add an entity to the graph"""
@@ -1672,94 +1695,94 @@ class KnowledgeGraph:
         }
 
     def process_article_analysis(self, article_data: Dict[str, Any], analysis: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Turn the analyzer’s structured_facts into proper KG entities & edges,
-    without ad-hoc string parsing.
-    """
-    results = {"entities_created": 0, "relationships_created": 0}
-    src_id = article_data["id"]
+        """
+        Turn the analyzer’s structured_facts into proper KG entities & edges,
+        without ad-hoc string parsing.
+        """
+        results = {"entities_created": 0, "relationships_created": 0}
+        src_id = article_data["id"]
 
-    # 1) Ensure we have a topic node for this article
-    topic_id = self.find_or_create_topic(
-        article_data.get("title", "Untitled"),
-        attributes={
-            "source": article_data.get("source"),
-            "url": article_data.get("url"),
-            "published": article_data.get("published")
-        }
-    )
-    results["entities_created"] += 1
-
-    sf = analysis.get("structured_facts", {})
-
-    # 2) Events → Event nodes + participates_in edges
-    for ev in sf.get("events", []):
-        ev_id = self.find_or_create_event(
-            ev["name"],
-            attributes={"description": ev["description"], "date": ev["date"]}
-        )
-        results["entities_created"] += 1
-
-        # article “reports” or “participates_in” event
-        rel = self.add_relationship_with_evidence(
-            topic_id, ev_id, self.PARTICIPATES_IN,
-            evidence_text=ev["description"],
-            source_content_id=src_id
-        )
-        results["relationships_created"] += 1
-
-    # 3) Facts → Fact nodes + describes edges
-    for fact in sf.get("facts", []):
-        fact_id = self.find_or_create_entity(
-            fact, self.ARTIFACT, attributes={"text": fact}
-        )
-        results["entities_created"] += 1
-
-        rel = self.add_relationship_with_evidence(
-            topic_id, fact_id, self.DISTRACTS_FROM,
-            evidence_text=fact,
-            source_content_id=src_id
-        )
-        results["relationships_created"] += 1
-
-    # 4) Direct Quotes → Quote nodes + cites edges
-    for quote in sf.get("direct_quotes", []):
-        q_id = self.find_or_create_entity(
-            quote, self.ARTIFACT, attributes={"quote": quote}
-        )
-        results["entities_created"] += 1
-
-        rel = self.add_relationship_with_evidence(
-            q_id, topic_id, self.PART_OF,
-            evidence_text=quote,
-            source_content_id=src_id
-        )
-        results["relationships_created"] += 1
-
-    return results
-
-    def save(self, path: str) -> bool:
-        """Save the knowledge graph to disk"""
-        try:
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-
-            data = self.graph.to_dict()
-            data["metadata"] = {
-                "version": "1.0",
-                "use_networkx": self.use_networkx,
-                "creation_date": self.creation_date,
-                "last_update": self.last_update,
-                "timestamp": datetime.now().isoformat()
+        # 1) Ensure we have a topic node for this article
+        topic_id = self.find_or_create_topic(
+            article_data.get("title", "Untitled"),
+            attributes={
+                "source": article_data.get("source"),
+                "url": article_data.get("url"),
+                "published": article_data.get("published")
             }
+        )
+        results["entities_created"] += 1
 
-            with open(path, 'wb') as f:
-                pickle.dump(data, f)
+        sf = analysis.get("structured_facts", {})
 
-            logger.info(f"Saved knowledge graph to {path}")
-            return True
-        except Exception as e:
-            logger.error(f"Error saving knowledge graph: {str(e)}")
-            return False
+        # 2) Events → Event nodes + participates_in edges
+        for ev in sf.get("events", []):
+            ev_id = self.find_or_create_event(
+                ev["name"],
+                attributes={"description": ev["description"], "date": ev["date"]}
+            )
+            results["entities_created"] += 1
+
+            # article “reports” or “participates_in” event
+            rel = self.add_relationship_with_evidence(
+                topic_id, ev_id, self.PARTICIPATES_IN,
+                evidence_text=ev["description"],
+                source_content_id=src_id
+            )
+            results["relationships_created"] += 1
+
+        # 3) Facts → Fact nodes + describes edges
+        for fact in sf.get("facts", []):
+            fact_id = self.find_or_create_entity(
+                fact, self.ARTIFACT, attributes={"text": fact}
+            )
+            results["entities_created"] += 1
+
+            rel = self.add_relationship_with_evidence(
+                topic_id, fact_id, self.DISTRACTS_FROM,
+                evidence_text=fact,
+                source_content_id=src_id
+            )
+            results["relationships_created"] += 1
+
+        # 4) Direct Quotes → Quote nodes + cites edges
+        for quote in sf.get("direct_quotes", []):
+            q_id = self.find_or_create_entity(
+                quote, self.ARTIFACT, attributes={"quote": quote}
+            )
+            results["entities_created"] += 1
+
+            rel = self.add_relationship_with_evidence(
+                q_id, topic_id, self.PART_OF,
+                evidence_text=quote,
+                source_content_id=src_id
+            )
+            results["relationships_created"] += 1
+
+        return results
+
+        def save(self, path: str) -> bool:
+            """Save the knowledge graph to disk"""
+            try:
+                os.makedirs(os.path.dirname(path), exist_ok=True)
+
+                data = self.graph.to_dict()
+                data["metadata"] = {
+                    "version": "1.0",
+                    "use_networkx": self.use_networkx,
+                    "creation_date": self.creation_date,
+                    "last_update": self.last_update,
+                    "timestamp": datetime.now().isoformat()
+                }
+
+                with open(path, 'wb') as f:
+                    pickle.dump(data, f)
+
+                logger.info(f"Saved knowledge graph to {path}")
+                return True
+            except Exception as e:
+                logger.error(f"Error saving knowledge graph: {str(e)}")
+                return False
 
     def load(self, path: str) -> bool:
         """Load the knowledge graph from disk"""

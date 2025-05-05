@@ -85,6 +85,19 @@ def create_default_config(config_path: str) -> bool:
         logging.error(f"Error saving default config to {config_path}: {str(e)}")
         return False
 
+def get_anthropic_credentials():
+    """
+    Prompt the user to paste in their Anthropic API key (and optional model).
+    Returns (api_key, model_name), or ('','') if none provided.
+    """
+    api_key = input("LM Studio is unavailable. Enter your Anthropic API key (or leave blank to skip): ").strip()
+    if not api_key:
+        print("No Anthropic key provided; continuing without LLM.")
+        return "", ""
+    model = input("Enter Anthropic model (default: claude-3-haiku-20240307): ").strip() \
+            or "claude-3-haiku-20240307"
+    return api_key, model
+
 # ==========================================
 # Execution Logic
 # ==========================================
