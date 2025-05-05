@@ -1894,6 +1894,45 @@ class KnowledgeGraph:
             logger.error(f"Error loading knowledge graph: {str(e)}")
             return False
 
+    def summarize(self, top_n: int = 10) -> Dict[str, Any]:
+        """Return a summary of the current knowledge graph"""
+        summary = {
+            "total_entities": len(self.graph.entities),
+            "total_relationships": len(self.graph.relationships),
+            "entity_type_breakdown": {k: len(v) for k, v in self.graph.entity_types.items()},
+            "relationship_type_breakdown": {k: len(v) for k, v in self.graph.relation_types.items()}
+        }
+
+        if self.use_networkx:
+            try:
+                centrality = self.graph.calculate_centrality("pagerank")
+                top_nodes = sorted(centrality.items(), key=lambda x: x[1], reverse=True)[:top_n]
+                summary["top_entities_by_pagerank"] = [
+                    {
+                        "entity": self.get_entity(ent_id).to_dict() if self.get_entity(ent_id) else {"id": ent_id},
+                        "pagerank_score": score
+                    } for ent_id, score in top_nodes
+                ]
+            except Exception as e:
+                logger.warning(f"Centrality calculation failed: {e}")
+        else:
+            degrees = []
+            for eid in self.graph.entities:
+                in_deg = len(self.graph.get_relationships_to(eid))
+                out_deg = len(self.graph.get_relationships_from(eid))
+                total_deg = in_deg + out_deg
+                degrees.append((eid, total_deg))
+
+            top_degrees = sorted(degrees, key=lambda x: x[1], reverse=True)[:top_n]
+            summary["top_entities_by_degree"] = [
+                {
+                    "entity": self.get_entity(eid).to_dict() if self.get_entity(eid) else {"id": eid},
+                    "connection_count": deg
+                } for eid, deg in top_degrees
+            ]
+
+        return summary
+
 
 # Helper functions for entity extraction
 def extract_institutions(text: str) -> List[str]:
