@@ -23,7 +23,7 @@ DEFAULT_CONFIG = {
         "model": "default"
     },
     "content_collection": {
-        "article_limit": 2,
+        "article_limit": 1,
         "sources": [
             {"url": "https://www.reuters.com/rss/topNews", "type": "rss", "bias": "center"},
             {"url": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", "type": "rss", "bias": "center-left"},
@@ -261,8 +261,8 @@ def main() -> int:
 if __name__ == "__main__":
     print("""
     ╔═══════════════════════════════════════════════════╗
-    ║           Night_watcher Intelligence            ║
-    ║      Multi-Round Prompting Version               ║
+    ║           Night_watcher Intelligence              ║
+    ║      Multi-Round Prompting Version                ║
     ╚═══════════════════════════════════════════════════╝
     """)
     sys.exit(main())
