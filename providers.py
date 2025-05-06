@@ -1,11 +1,11 @@
 """
-Night_watcher LLM Providers
+Night_watcher LLM Providers (Simplified)
 Implementations of LLM providers for the Night_watcher system.
 """
 
 import logging
-from typing import Dict, List, Any, Optional
 import requests
+from typing import Dict, List, Any, Optional
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -108,8 +108,20 @@ class AnthropicProvider(LLMProvider):
             
             if anthropic_version >= "0.5.0":
                 # For newer versions of the SDK (claude-3 API)
+                # Make sure to use the full model name, not just '3'
+                # The logs show "model: 3" is causing a 404 error
+                
+                # Ensure proper model name format
+                if self.model == "3" or not self.model.startswith("claude-"):
+                    self.logger.warning(f"Invalid model name: {self.model}, using claude-3-haiku-20240307 instead")
+                    model_name = "claude-3-haiku-20240307"
+                else:
+                    model_name = self.model
+                
+                self.logger.info(f"Using Anthropic model: {model_name}")
+                
                 params = {
-                    "model": self.model,
+                    "model": model_name,
                     "max_tokens": max_tokens,
                     "temperature": temperature
                 }
@@ -199,6 +211,11 @@ def initialize_llm_provider(config) -> Optional[LLMProvider]:
                     # Get credentials from user
                     from night_watcher import get_anthropic_credentials
                     api_key, model = get_anthropic_credentials()
+                    
+                    # Ensure proper model name format
+                    if model == "3" or (model and not model.startswith("claude-")):
+                        logger.warning(f"Invalid model name: {model}, using claude-3-haiku-20240307 instead")
+                        model = "claude-3-haiku-20240307"
                     
                     logger.info(f"Using Anthropic provider with model {model}")
                     return AnthropicProvider(api_key=api_key, model=model)

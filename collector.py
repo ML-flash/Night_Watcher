@@ -1,5 +1,5 @@
 """
-Night_watcher Content Collector
+Night_watcher Content Collector (Enhanced for Full Article Content)
 Module for collecting articles from various sources with focus on governmental content.
 """
 
@@ -8,7 +8,7 @@ import random
 import logging
 import re
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Union
+from typing import Dict, List, Any, Optional
 from urllib.parse import urlparse
 import requests
 
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 # ==========================================
 
 class ContentCollector:
-    """Collector for gathering articles from various sources with focus on governmental content"""
+    """Collector for gathering full article content from various sources"""
 
     def __init__(self, limit: int = 5):
         """
@@ -38,10 +38,18 @@ class ContentCollector:
             "trump", "biden", "election", "democracy", "constitution", "amendment"
         ]
         self.logger = logging.getLogger("ContentCollector")
+        
+        # Used to track and log article content size for debugging
+        self.content_stats = {
+            "total_articles": 0,
+            "total_content_size": 0,
+            "min_content_size": float('inf'),
+            "max_content_size": 0
+        }
 
     def _load_default_sources(self) -> List[Dict[str, str]]:
         """
-        Load default news sources configuration with enhanced focus on government sources.
+        Load default news sources configuration.
 
         Returns:
             List of source dictionaries
@@ -52,16 +60,12 @@ class ContentCollector:
             {"url": "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml", "type": "rss", "bias": "center-left"},
             {"url": "https://feeds.foxnews.com/foxnews/politics", "type": "rss", "bias": "right"},
             {"url": "https://www.huffpost.com/section/politics/feed", "type": "rss", "bias": "left"},
-            {"url": "https://thehill.com/homenews/feed/", "type": "rss", "bias": "center"},
-
-            # Government-Focused Sources
-            {"url": "https://www.govexec.com/rss/", "type": "rss", "bias": "center"},
-            {"url": "https://www.whitehouse.gov/feed/", "type": "rss", "bias": "government"}
+            {"url": "https://thehill.com/homenews/feed/", "type": "rss", "bias": "center"}
         ]
 
     def _fetch_article_content(self, url: str) -> str:
         """
-        Fetch the full content of an article from its URL with enhanced error handling.
+        Fetch the full content of an article from its URL with enhanced error handling and content verification.
     
         Args:
             url: The article URL
@@ -79,34 +83,87 @@ class ContentCollector:
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0'
             ]
     
+            # Configure and download article
             article = Article(url)
-            # Set a random user agent to avoid being blocked
             article.config.browser_user_agent = random.choice(user_agents)
-            article.download()
-            article.parse()
-    
-            content = article.text
+            article.config.fetch_images = False  # Skip image downloading for speed
+            article.config.request_timeout = 10  # Set timeout to avoid hanging
             
-            # If content is empty or too short, try a fallback method
-            if not content or len(content) < 200:
-                # Try extracting from summary
-                article.nlp()
-                if article.summary and len(article.summary) > len(content):
-                    content = article.summary
+            # Attempt to download with retry logic
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    article.download()
+                    break
+                except Exception as e:
+                    if attempt < max_retries - 1:
+                        self.logger.warning(f"Download attempt {attempt+1} failed: {str(e)}. Retrying...")
+                        time.sleep(2)  # Wait between retries
+                    else:
+                        raise
+            
+            # Parse the article
+            article.parse()
+            
+            # Get the content and check its length
+            content = article.text
+            content_length = len(content)
+            
+            # Log content statistics for debugging
+            self.logger.debug(f"Article content length: {content_length} characters")
+            
+            # If content is too short or empty, try additional methods
+            if not content or content_length < 300:
+                self.logger.warning(f"Article content too short ({content_length} chars). Trying alternate methods.")
                 
-                # If still empty, try using RSS summary if available
-                if (not content or len(content) < 100) and hasattr(article, 'meta_description'):
+                # Method 1: Try NLP summarization
+                try:
+                    article.nlp()
+                    if article.summary and len(article.summary) > len(content):
+                        content = article.summary
+                        self.logger.debug(f"Using NLP summary instead. Length: {len(content)}")
+                except Exception as nlp_error:
+                    self.logger.warning(f"NLP summarization failed: {str(nlp_error)}")
+                
+                # Method 2: Try metadata description
+                if (not content or len(content) < 200) and hasattr(article, 'meta_description'):
                     if article.meta_description:
                         content = article.meta_description
+                        self.logger.debug(f"Using meta description. Length: {len(content)}")
+                
+                # Method 3: Try direct requests with different parser
+                if not content or len(content) < 200:
+                    try:
+                        import bs4
+                        response = requests.get(url, headers={'User-Agent': random.choice(user_agents)}, timeout=10)
+                        soup = bs4.BeautifulSoup(response.text, 'html.parser')
+                        
+                        # Try to find article content in common containers
+                        article_content = soup.find('article') or soup.find(class_=['article-content', 'content', 'story-body'])
+                        if article_content:
+                            text_content = article_content.get_text(separator='\n', strip=True)
+                            if text_content and len(text_content) > len(content):
+                                content = text_content
+                                self.logger.debug(f"Using BeautifulSoup parser. Length: {len(content)}")
+                    except Exception as bs_error:
+                        self.logger.warning(f"BeautifulSoup parsing failed: {str(bs_error)}")
             
-            # Add small delay to prevent hammering servers
+            # Add a small delay to prevent hammering servers
             time.sleep(random.uniform(1.0, 2.0))
+            
+            # Update content statistics
+            if content:
+                content_length = len(content)
+                self.content_stats["total_articles"] += 1
+                self.content_stats["total_content_size"] += content_length
+                self.content_stats["min_content_size"] = min(self.content_stats["min_content_size"], content_length)
+                self.content_stats["max_content_size"] = max(self.content_stats["max_content_size"], content_length)
             
             return content
         except Exception as e:
-            self.logger.warning(f"Error fetching article content: {str(e)}")
-            # Return empty string on failure
-            return ""
+            self.logger.error(f"Error fetching article content: {str(e)}")
+            # Return placeholder text on failure to indicate the error
+            return f"[Failed to retrieve full article content: {str(e)}]"
 
     def _is_government_related(self, title: str, content: str) -> bool:
         """
@@ -119,8 +176,8 @@ class ContentCollector:
         Returns:
             True if government related, False otherwise
         """
-        # Check title and first 1000 chars of content for governmental keywords
-        text_to_check = (title + " " + content[:1000]).lower()
+        # Check title and first 2000 chars of content for governmental keywords
+        text_to_check = (title + " " + content[:2000]).lower()
 
         for keyword in self.govt_keywords:
             if keyword.lower() in text_to_check:
@@ -132,7 +189,7 @@ class ContentCollector:
                          start_date: Optional[datetime] = None,
                          end_date: Optional[datetime] = None) -> List[Dict[str, Any]]:
         """
-        Collect articles from an RSS feed with government content filtering and date range filtering.
+        Collect articles from an RSS feed with enhanced content fetching.
 
         Args:
             source: Source configuration
@@ -141,7 +198,7 @@ class ContentCollector:
             end_date: Optional end date for filtering articles
 
         Returns:
-            List of collected articles
+            List of collected articles with full content
         """
         import feedparser
 
@@ -192,11 +249,18 @@ class ContentCollector:
                         self.logger.debug(f"Skipping article after end date: {entry.get('title', '')}")
                         continue
 
+                # Log article found
+                self.logger.info(f"Fetching article: {entry.get('title', '')} from {article_url}")
+
                 # Fetch the full article content
                 content = self._fetch_article_content(article_url)
 
+                # Log content size
+                self.logger.debug(f"Content size: {len(content)} characters")
+
                 # If content is empty or too short, try to use summary from feed
                 if not content or len(content) < 200:
+                    self.logger.warning(f"Content too short for: {entry.get('title', '')}. Using feed summary.")
                     content = entry.get("summary", "")
 
                     # Clean up HTML
@@ -207,9 +271,8 @@ class ContentCollector:
                     self.logger.warning(f"No content for: {article_url}")
                     continue
 
-                # Filter for government-related content (unless from a government source)
-                is_govt_source = source.get("bias") in ["government", "legal"]
-                if not is_govt_source and not self._is_government_related(entry.get("title", ""), content):
+                # Filter for government-related content
+                if not self._is_government_related(entry.get("title", ""), content):
                     self.logger.info(f"Skipping non-governmental article: {entry.get('title', '')}")
                     continue
 
@@ -225,11 +288,16 @@ class ContentCollector:
                 }
 
                 articles.append(article_data)
-                self.logger.info(f"Collected: {article_data['title']}")
+                self.logger.info(f"Collected: {article_data['title']} ({len(content)} characters)")
 
                 # Check if we've reached the limit
                 if len(articles) >= limit:
                     break
+            
+            # Log content statistics
+            if articles:
+                avg_content_size = self.content_stats["total_content_size"] / self.content_stats["total_articles"] if self.content_stats["total_articles"] > 0 else 0
+                self.logger.info(f"Content statistics: min={self.content_stats['min_content_size']}, max={self.content_stats['max_content_size']}, avg={avg_content_size:.2f}")
 
             return articles
 
@@ -245,7 +313,7 @@ class ContentCollector:
             input_data: Dict with optional 'sources', 'limit', 'start_date', and 'end_date' keys
 
         Returns:
-            Dict with 'articles' key containing collected articles
+            Dict with 'articles' key containing collected articles with full content
         """
         # Get sources from input or use defaults
         sources = input_data.get("sources", self.sources)
@@ -289,13 +357,17 @@ class ContentCollector:
         # Validate all articles
         valid_articles = [a for a in all_articles if self._validate_article_data(a)]
 
+        # Log article content statistics
         self.logger.info(f"Collection complete. Collected {len(valid_articles)} valid articles.")
+        for i, article in enumerate(valid_articles):
+            content_length = len(article.get("content", ""))
+            self.logger.info(f"Article {i+1}: '{article.get('title', 'Untitled')}' - {content_length} characters")
 
         return {"articles": valid_articles}
         
     def _validate_article_data(self, article: Dict[str, Any]) -> bool:
         """
-        Validate article data has the required fields.
+        Validate article data has the required fields and minimum content length.
 
         Args:
             article: Article data to validate
@@ -304,4 +376,20 @@ class ContentCollector:
             True if valid, False otherwise
         """
         required_fields = ['title', 'content', 'source']
-        return all(field in article for field in required_fields)
+        has_required_fields = all(field in article for field in required_fields)
+        
+        if not has_required_fields:
+            missing = [field for field in required_fields if field not in article]
+            self.logger.warning(f"Article missing required fields: {missing}")
+            return False
+        
+        # Check for minimum content length
+        min_content_length = 200  # Minimum characters to consider valid
+        content_length = len(article.get('content', ''))
+        
+        if content_length < min_content_length:
+            self.logger.warning(f"Article content too short: {content_length} characters (minimum: {min_content_length})")
+            return False
+            
+        return True
+        
