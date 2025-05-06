@@ -1,6 +1,7 @@
+# analyzer.py
 """
-Night_watcher Content Analyzer with Multi-Round Prompting
-Module for analyzing political content through multiple rounds of prompting.
+Night_watcher Content Analyzer with Multi-Round Prompting and KG Pipeline
+Module for analyzing political content and populating a knowledge graph schema.
 """
 
 import logging
@@ -8,193 +9,139 @@ import json
 import re
 from datetime import datetime
 from typing import Dict, List, Any, Optional
-from prompts import FACT_EXTRACTION_PROMPT, ARTICLE_ANALYSIS_PROMPT, RELATIONSHIP_EXTRACTION_PROMPT
+from prompts import (
+    FACT_EXTRACTION_PROMPT,
+    ARTICLE_ANALYSIS_PROMPT,
+    NODE_EXTRACTION_PROMPT,
+    NODE_DEDUPLICATION_PROMPT,
+    EDGE_EXTRACTION_PROMPT,
+    EDGE_ENRICHMENT_PROMPT,
+    PACKAGE_INGESTION_PROMPT
+)
 
-# Configure logging
 logger = logging.getLogger(__name__)
 
-# ==========================================
-# Content Analyzer
-# ==========================================
-
 class ContentAnalyzer:
-    """Analyzer for political content with multi-round prompting"""
+    """Analyzer for political content with multi-round prompting and KG node/edge extraction"""
 
     def __init__(self, llm_provider):
-        """Initialize with LLM provider"""
+        """Initialize with an LLM provider"""
         self.llm_provider = llm_provider
         self.logger = logging.getLogger("ContentAnalyzer")
-        self.analysis_count = 0
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Process articles for analysis.
-
-        Args:
-            input_data: Dict with 'articles' key containing articles to analyze
-
-        Returns:
-            Dict with 'analyses' key containing analysis results
+        Process a batch of articles, returning analyses and KG payloads.
         """
         articles = input_data.get("articles", [])
-        
         if not articles:
             self.logger.warning("No articles provided for analysis")
             return {"analyses": []}
-            
-        self.logger.info(f"Starting analysis of {len(articles)} articles")
-        
-        analyses = []
-        for article in articles:
-            analysis = self.analyze_content_multi_round(article)
-            analyses.append(analysis)
-            
-        self.analysis_count += len(analyses)
-        self.logger.info(f"Completed analysis of {len(articles)} articles")
-        
-        return {
-            "analyses": analyses
-        }
 
-    def analyze_content_multi_round(self, article_data: Dict[str, Any]) -> Dict[str, Any]:
+        self.logger.info(f"Starting analysis of {len(articles)} articles")
+        analyses: List[Dict[str, Any]] = []
+        for article in articles:
+            analyses.append(self._analyze_content_multi_round(article))
+
+        return {"analyses": analyses}
+
+    def _analyze_content_multi_round(self, article: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Analyze article content through multiple rounds of prompting.
-        
-        Args:
-            article_data: Article data dict with 'title', 'content', etc.
-            
-        Returns:
-            Dict with article data, analysis results for each round, and timestamp
+        Perform multi-round LLM prompts including KG extraction.
         """
-        title = article_data.get("title", "Untitled")
-        content = article_data.get("content", "")
-        source = article_data.get("source", "Unknown")
-        bias_label = article_data.get("bias_label", "Unknown")
-        
-        # Truncate content if too long (most models have context limits)
-        max_content_length = 6000
-        if len(content) > max_content_length:
-            content = content[:max_content_length] + "..."
-        
-        self.logger.info(f"Starting multi-round analysis for article: {title}")
-        
-        # Store all rounds of prompting and responses
-        prompt_chain = []
-        
+        title = article.get("title", "Untitled")
+        content = article.get("content", "")
+        if len(content) > 6000:
+            content = content[:6000] + "..."
+
+        self.logger.info(f"Analyzing article: {title}")
+        prompt_chain: List[Dict[str, Any]] = []
+
         # Round 1: Fact Extraction
-        try:
-            round1_prompt = FACT_EXTRACTION_PROMPT.format(article_content=content)
-            round1_response = self._get_llm_response(round1_prompt)
-            
-            prompt_chain.append({
-                "round": 1,
-                "name": "Fact Extraction",
-                "prompt": round1_prompt,
-                "response": round1_response
-            })
-            
-            # Try to parse JSON from the response
-            structured_facts = self._extract_json_from_text(round1_response)
-            
-            # Round 2: Article Analysis
-            round2_prompt = ARTICLE_ANALYSIS_PROMPT.format(article_content=content)
-            round2_response = self._get_llm_response(round2_prompt)
-            
-            prompt_chain.append({
-                "round": 2,
-                "name": "Article Analysis",
-                "prompt": round2_prompt,
-                "response": round2_response
-            })
-            
-            # Round 3: Relationship Extraction (only if we have structured facts)
-            if structured_facts:
-                structured_data_str = json.dumps(structured_facts, indent=2)
-                round3_prompt = RELATIONSHIP_EXTRACTION_PROMPT.format(structured_data=structured_data_str)
-                round3_response = self._get_llm_response(round3_prompt)
-                
-                prompt_chain.append({
-                    "round": 3,
-                    "name": "Relationship Extraction",
-                    "prompt": round3_prompt,
-                    "response": round3_response
-                })
-                
-                # Try to parse relationships JSON
-                relationships = self._extract_json_from_text(round3_response)
-                if relationships:
-                    # Add relationships to the structured data
-                    structured_facts["relationships"] = relationships
-            
-            # Compile the complete analysis
-            complete_analysis = {
-                "article": article_data,
-                "prompt_chain": prompt_chain,
-                "structured_facts": structured_facts if structured_facts else {},
-                "framing_analysis": round2_response,
-                "timestamp": datetime.now().isoformat()
-            }
-            
-            return complete_analysis
-            
-        except Exception as e:
-            self.logger.error(f"Error in multi-round analysis: {str(e)}")
-            return {
-                "article": article_data,
-                "prompt_chain": prompt_chain,  # Include whatever we have so far
-                "error": f"Analysis error: {str(e)}",
-                "timestamp": datetime.now().isoformat()
-            }
+        r1p = FACT_EXTRACTION_PROMPT.format(article_content=content)
+        r1r = self._get_llm_response(r1p)
+        prompt_chain.append({"round":1, "name":"Fact Extraction", "prompt":r1p, "response":r1r})
+        facts = self._extract_json(r1r) or {}
+
+        # Round 2: Article Analysis
+        r2p = ARTICLE_ANALYSIS_PROMPT.format(article_content=content)
+        r2r = self._get_llm_response(r2p)
+        prompt_chain.append({"round":2, "name":"Article Analysis", "prompt":r2p, "response":r2r})
+
+        # Prepare KG JSON strings
+        facts_json = json.dumps(facts, indent=2)
+
+        # Round 3: Node Extraction
+        r3p = f"{NODE_EXTRACTION_PROMPT}\nCONTENT:\n{content}"
+        r3r = self._get_llm_response(r3p)
+        prompt_chain.append({"round":3, "name":"Node Extraction", "prompt":r3p, "response":r3r})
+        nodes = self._extract_json(r3r) or []
+        nodes_json = json.dumps(nodes, indent=2)
+
+        # Round 4: Node Deduplication
+        r4p = f"{NODE_DEDUPLICATION_PROMPT}\nNODES:\n{nodes_json}"
+        r4r = self._get_llm_response(r4p)
+        prompt_chain.append({"round":4, "name":"Node Deduplication", "prompt":r4p, "response":r4r})
+        unique_nodes = self._extract_json(r4r) or []
+        unique_nodes_json = json.dumps(unique_nodes, indent=2)
+
+        # Round 5: Edge Extraction
+        r5p = (f"{EDGE_EXTRACTION_PROMPT}\nNODES:\n{unique_nodes_json}\nFACTS:\n{facts_json}")
+        r5r = self._get_llm_response(r5p)
+        prompt_chain.append({"round":5, "name":"Edge Extraction", "prompt":r5p, "response":r5r})
+        edges = self._extract_json(r5r) or []
+        edges_json = json.dumps(edges, indent=2)
+
+        # Round 6: Edge Enrichment
+        r6p = f"{EDGE_ENRICHMENT_PROMPT}\nEDGES:\n{edges_json}"
+        r6r = self._get_llm_response(r6p)
+        prompt_chain.append({"round":6, "name":"Edge Enrichment", "prompt":r6p, "response":r6r})
+        enriched_edges = self._extract_json(r6r) or []
+        enriched_edges_json = json.dumps(enriched_edges, indent=2)
+
+        # Round 7: Package for Ingestion
+        r7p = (f"{PACKAGE_INGESTION_PROMPT}\nNODES:\n{unique_nodes_json}\nEDGES:\n{enriched_edges_json}")
+        r7r = self._get_llm_response(r7p)
+        prompt_chain.append({"round":7, "name":"Package Ingestion", "prompt":r7p, "response":r7r})
+        package = self._extract_json(r7r) or {"nodes": unique_nodes, "edges": enriched_edges}
+
+        return {
+            "article": article,
+            "structured_facts": facts,
+            "article_analysis": r2r,
+            "prompt_chain": prompt_chain,
+            "kg_payload": package,
+            "timestamp": datetime.now().isoformat()
+        }
 
     def _get_llm_response(self, prompt: str) -> str:
         """
-        Get response from LLM with proper error handling.
-        
-        Args:
-            prompt: The prompt to send to the LLM
-            
-        Returns:
-            Response text from LLM
+        Send prompt to LLM provider and return the text response.
         """
         try:
-            response = self.llm_provider.complete(
+            resp = self.llm_provider.complete(
                 prompt=prompt,
-                max_tokens=3000,
-                temperature=0.3
+                max_tokens=2000,
+                temperature=0.2
             )
-            
-            response_text = response.get("choices", [{}])[0].get("text", "")
-            
-            # Check if we have an error response
-            if not response_text and "error" in response:
-                error_message = response.get("error", "Unknown error")
-                self.logger.error(f"LLM error: {error_message}")
-                return f"ERROR: {error_message}"
-            
-            return response_text
+            text = resp.get("choices", [{}])[0].get("text", "")
+            if not text and "error" in resp:
+                logger.error(f"LLM error: {resp['error']}")
+                return f"ERROR: {resp['error']}"
+            return text
         except Exception as e:
-            self.logger.error(f"Error getting LLM response: {str(e)}")
-            return f"ERROR: {str(e)}"
+            logger.error(f"Error calling LLM: {e}")
+            return f"ERROR: {e}"
 
-    def _extract_json_from_text(self, text: str) -> Optional[Any]:
+    def _extract_json(self, text: str) -> Optional[Any]:
         """
-        Extract and parse JSON from text, handling various formats.
-        
-        Args:
-            text: Text that may contain JSON
-            
-        Returns:
-            Parsed JSON object or None if parsing fails
+        Extract JSON object/array from the response text.
         """
         try:
-            # Try to find JSON using regex
-            json_match = re.search(r'(\{|\[).*(\}|\])', text, re.DOTALL)
-            if json_match:
-                json_str = json_match.group(0)
-                return json.loads(json_str)
-            
-            # If no match, try direct parsing (in case the entire text is valid JSON)
+            match = re.search(r'(?s)(\[.*\]|\{.*\})', text)
+            if match:
+                return json.loads(match.group(0))
             return json.loads(text)
         except Exception as e:
-            self.logger.warning(f"Failed to extract JSON from response: {str(e)}")
+            logger.warning(f"JSON parsing failed: {e}")
             return None
