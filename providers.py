@@ -1,10 +1,12 @@
 """
-Night_watcher LLM Providers (Simplified)
-Implementations of LLM providers for the Night_watcher system.
+Night_watcher LLM Providers (Enhanced)
+Implementations of LLM providers for the Night_watcher system with LM Studio SDK support.
 """
 
 import logging
 import requests
+import json
+import os
 from typing import Dict, List, Any, Optional
 
 # Configure logging
@@ -27,32 +29,100 @@ class LLMProvider:
 # ==========================================
 
 class LMStudioProvider(LLMProvider):
-    """LM Studio implementation of LLM provider"""
+    """LM Studio implementation of LLM provider with support for both HTTP API and Python SDK"""
 
-    def __init__(self, host: str = "http://localhost:1234"):
-        """Initialize LM Studio client"""
+    def __init__(self, host: str = "http://localhost:1234", model: str = None, use_sdk: bool = True):
+        """Initialize LM Studio client with both HTTP and SDK options"""
         self.host = host
-        self.client = self._initialize_client()
+        self.model = model
+        self.use_sdk = use_sdk
+        
+        # Try to use SDK first if available
+        self.sdk_client = None
+        if use_sdk:
+            self.sdk_client = self._initialize_sdk()
+            
+        # Fallback to HTTP client if SDK not available/usable
+        self.http_client = self._initialize_http_client()
         self.logger = logging.getLogger("LMStudioProvider")
+        
+        if self.sdk_client:
+            self.logger.info(f"Using LM Studio SDK with model: {self.model or 'default'}")
+        else:
+            self.logger.info(f"Using LM Studio HTTP API at: {self.host}")
 
-    def _initialize_client(self):
+    def _initialize_sdk(self):
+        """Initialize the LM Studio Python SDK client"""
+        try:
+            import lmstudio as lms
+            
+            # Create the client - if model is specified, load it
+            if self.model:
+                try:
+                    return lms.llm(self.model)
+                except Exception as e:
+                    self.logger.warning(f"Failed to load specified model '{self.model}' with SDK: {e}")
+                    # Try with default model
+                    try:
+                        return lms.llm()
+                    except:
+                        self.logger.warning("Failed to initialize LM Studio SDK with default model")
+                        return None
+            else:
+                try:
+                    # Use default model
+                    return lms.llm()
+                except Exception as e:
+                    self.logger.warning(f"Failed to initialize LM Studio SDK: {e}")
+                    return None
+                    
+        except ImportError:
+            self.logger.warning("LM Studio SDK not installed. Install with: pip install lmstudio")
+            return None
+
+    def _initialize_http_client(self):
         """Initialize the HTTP client for LM Studio"""
         return requests.Session()
 
     def complete(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7,
                  stop: Optional[List[str]] = None) -> Dict[str, Any]:
-        """Execute a completion request to LM Studio"""
-        payload = {
-            "prompt": prompt,
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-        }
-
-        if stop:
-            payload["stop"] = stop
-
+        """Execute a completion request to LM Studio using SDK if available, fallback to HTTP"""
+        
+        # Try to use SDK if available
+        if self.sdk_client:
+            try:
+                # Set up parameters
+                kwargs = {"max_tokens": max_tokens, "temperature": temperature}
+                if stop:
+                    kwargs["stop"] = stop
+                
+                # Call the model using the SDK
+                response = self.sdk_client.respond(prompt, **kwargs)
+                
+                # Format response to match the expected structure
+                return {
+                    "choices": [
+                        {
+                            "text": response
+                        }
+                    ]
+                }
+            except Exception as e:
+                self.logger.warning(f"LM Studio SDK call failed, falling back to HTTP API: {e}")
+                # If SDK fails, fall back to HTTP API
+        
+        # HTTP API fallback
         try:
-            response = self.client.post(
+            payload = {
+                "prompt": prompt,
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+            }
+
+            if stop:
+                payload["stop"] = stop
+
+            response = self.http_client.post(
                 f"{self.host}/v1/completions",
                 json=payload
             )
@@ -108,8 +178,6 @@ class AnthropicProvider(LLMProvider):
             
             if anthropic_version >= "0.5.0":
                 # For newer versions of the SDK (claude-3 API)
-                # Make sure to use the full model name, not just '3'
-                # The logs show "model: 3" is causing a 404 error
                 
                 # Ensure proper model name format
                 if self.model == "3" or not self.model.startswith("claude-"):
@@ -198,6 +266,8 @@ def initialize_llm_provider(config) -> Optional[LLMProvider]:
     else:
         # Default to LM Studio
         host = config["llm_provider"].get("host", "http://localhost:1234")
+        model = config["llm_provider"].get("model", None)
+        use_sdk = config["llm_provider"].get("use_sdk", True)
         
         # Check if LM Studio is running
         if not check_lm_studio_connection(host):
@@ -211,6 +281,10 @@ def initialize_llm_provider(config) -> Optional[LLMProvider]:
                     # Get credentials from user
                     from night_watcher import get_anthropic_credentials
                     api_key, model = get_anthropic_credentials()
+                    
+                    if not api_key:
+                        logger.warning("No Anthropic API key provided. Continuing without LLM capabilities.")
+                        return None
                     
                     # Ensure proper model name format
                     if model == "3" or (model and not model.startswith("claude-")):
@@ -227,14 +301,29 @@ def initialize_llm_provider(config) -> Optional[LLMProvider]:
                 return None
         
         logger.info(f"Using LM Studio provider at {host}")
-        return LMStudioProvider(host=host)
+        return LMStudioProvider(host=host, model=model, use_sdk=use_sdk)
 
 def check_lm_studio_connection(host: str) -> bool:
     """Check if LM Studio is running and accessible"""
     try:
+        # First try SDK check
+        try:
+            import lmstudio as lms
+            try:
+                # Just initialize the client to check if it's available
+                client = lms.llm()
+                if client:
+                    return True
+            except:
+                pass
+        except ImportError:
+            pass
+            
+        # Fall back to HTTP check
         response = requests.get(f"{host}/v1/models", timeout=5)
         return response.status_code == 200
-    except Exception:
+    except Exception as e:
+        logger.warning(f"LM Studio connection check failed: {e}")
         return False
 
 def use_anthropic_api() -> bool:
