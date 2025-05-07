@@ -1,78 +1,245 @@
-# providers.py — LM Studio + Anthropic fallback
+"""
+Night_watcher LLM Providers (Simplified)
+Implementations of LLM providers for the Night_watcher system.
+"""
+
 import logging
-from typing import Optional
+import requests
+from typing import Dict, List, Any, Optional
 
-from lmstudio import LMStudio
-
+# Configure logging
 logger = logging.getLogger(__name__)
 
-# LM Studio wrapper for a single model
-class LMStudioModelWrapper:
-    def __init__(self, client: LMStudio, model_id: str):
-        self.client = client
-        self.model_id = model_id
+# ==========================================
+# Base LLM Provider
+# ==========================================
 
-    def complete(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.3, stop=None) -> dict:
+class LLMProvider:
+    """Abstract base class for LLM provider implementations"""
+
+    def complete(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7,
+                 stop: Optional[List[str]] = None) -> Dict[str, Any]:
+        """Execute a completion request to the LLM"""
+        raise NotImplementedError("Subclasses must implement complete")
+
+# ==========================================
+# LM Studio Provider
+# ==========================================
+
+class LMStudioProvider(LLMProvider):
+    """LM Studio implementation of LLM provider"""
+
+    def __init__(self, host: str = "http://localhost:1234"):
+        """Initialize LM Studio client"""
+        self.host = host
+        self.client = self._initialize_client()
+        self.logger = logging.getLogger("LMStudioProvider")
+
+    def _initialize_client(self):
+        """Initialize the HTTP client for LM Studio"""
+        return requests.Session()
+
+    def complete(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7,
+                 stop: Optional[List[str]] = None) -> Dict[str, Any]:
+        """Execute a completion request to LM Studio"""
+        payload = {
+            "prompt": prompt,
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+        }
+
+        if stop:
+            payload["stop"] = stop
+
         try:
-            response = self.client.complete(
-                prompt=prompt,
-                model=self.model_id,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                stop=stop
+            response = self.client.post(
+                f"{self.host}/v1/completions",
+                json=payload
             )
-            return {"choices": [{"text": response.text}]}
-        except Exception as e:
-            logger.error(f"LMStudio model '{self.model_id}' completion error: {str(e)}")
-            return {"error": str(e)}
 
-# Anthropic fallback
-class AnthropicProvider:
+            if response.status_code == 200:
+                return response.json()
+            else:
+                self.logger.error(f"LM Studio API error: {response.status_code} - {response.text}")
+                return {"error": f"Failed to complete: {response.status_code}"}
+
+        except Exception as e:
+            self.logger.error(f"LM Studio completion error: {str(e)}")
+            return {"error": f"Completion error: {str(e)}"}
+
+# ==========================================
+# Anthropic Provider
+# ==========================================
+
+class AnthropicProvider(LLMProvider):
+    """Anthropic implementation of LLM provider"""
+
     def __init__(self, api_key: str, model: str = "claude-3-haiku-20240307"):
-        import anthropic
-        self.client = anthropic.Anthropic(api_key=api_key)
+        """Initialize Anthropic client"""
+        self.api_key = api_key
         self.model = model
+        self.client = self._initialize_client()
+        self.logger = logging.getLogger("AnthropicProvider")
 
-    def complete(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.3, stop=None) -> dict:
+    def _initialize_client(self):
+        """Initialize the Anthropic client"""
         try:
-            messages = [{"role": "user", "content": prompt}]
-            response = self.client.messages.create(
-                model=self.model,
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=temperature,
-                stop_sequences=stop if stop else None
-            )
-            for block in response.content:
-                if block.type == "text":
-                    return {"choices": [{"text": block.text}]}
-            return {"error": "No valid text in response"}
+            import anthropic
+            return anthropic.Anthropic(api_key=self.api_key)
+        except ImportError:
+            self.logger.error("Anthropic SDK not installed. Install with: pip install anthropic")
+            raise ImportError("Anthropic SDK not installed. Install with: pip install anthropic")
+
+    def complete(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7,
+             stop: Optional[List[str]] = None) -> Dict[str, Any]:
+        """Execute a completion request to Anthropic"""
+        try:
+            # Filter out empty or whitespace-only stop sequences
+            filtered_stop = None
+            if stop:
+                filtered_stop = [s for s in stop if s and s.strip()]
+                if not filtered_stop:
+                    filtered_stop = None
+    
+            # Check the Anthropic SDK version and use appropriate API
+            import anthropic
+            import pkg_resources
+            anthropic_version = pkg_resources.get_distribution("anthropic").version
+            
+            if anthropic_version >= "0.5.0":
+                # For newer versions of the SDK (claude-3 API)
+                # Make sure to use the full model name, not just '3'
+                # The logs show "model: 3" is causing a 404 error
+                
+                # Ensure proper model name format
+                if self.model == "3" or not self.model.startswith("claude-"):
+                    self.logger.warning(f"Invalid model name: {self.model}, using claude-3-haiku-20240307 instead")
+                    model_name = "claude-3-haiku-20240307"
+                else:
+                    model_name = self.model
+                
+                self.logger.info(f"Using Anthropic model: {model_name}")
+                
+                params = {
+                    "model": model_name,
+                    "max_tokens": max_tokens,
+                    "temperature": temperature
+                }
+                
+                if filtered_stop:
+                    params["stop_sequences"] = filtered_stop
+                
+                response = self.client.messages.create(
+                    messages=[{"role": "user", "content": prompt}],
+                    **params
+                )
+                
+                # Extract the text content from the response
+                text_content = ""
+                for content_block in response.content:
+                    if content_block.type == "text":
+                        text_content = content_block.text
+                        break
+                
+                # Convert Anthropic response to format expected by Night_watcher
+                return {
+                    "choices": [
+                        {
+                            "text": text_content
+                        }
+                    ]
+                }
+            else:
+                # For older versions (claude-2 API)
+                response = self.client.completion(
+                    prompt=f"{anthropic.HUMAN_PROMPT} {prompt} {anthropic.AI_PROMPT}",
+                    max_tokens_to_sample=max_tokens,
+                    temperature=temperature,
+                    stop_sequences=filtered_stop if filtered_stop else None
+                )
+                
+                # Convert Anthropic response to format expected by Night_watcher
+                return {
+                    "choices": [
+                        {
+                            "text": response["completion"]
+                        }
+                    ]
+                }
         except Exception as e:
-            logger.error(f"Anthropic completion error: {str(e)}")
-            return {"error": str(e)}
+            self.logger.error(f"Anthropic API error: {str(e)}")
+            return {"error": f"Failed to complete: {str(e)}"}
 
-# Initialization
+# ==========================================
+# Provider Initialization
+# ==========================================
 
-def initialize_dual_llms(primary_id: str, secondary_id: str, fallback_api_key: Optional[str] = None, fallback_model: str = "claude-3-haiku-20240307"):
+def initialize_llm_provider(config) -> Optional[LLMProvider]:
+    """Initialize LLM provider based on configuration"""
+    provider_type = config["llm_provider"].get("type", "lm_studio")
+    
+    if provider_type == "anthropic":
+        # Check for Anthropic SDK
+        try:
+            import anthropic
+            
+            api_key = config["llm_provider"].get("api_key", "")
+            model = config["llm_provider"].get("model", "claude-3-haiku-20240307")
+            
+            if not api_key:
+                logger.error("Anthropic API key is required but not provided")
+                return None
+                
+            logger.info(f"Using Anthropic provider with model {model}")
+            return AnthropicProvider(api_key=api_key, model=model)
+        except ImportError:
+            logger.error("Anthropic SDK not installed. Install with: pip install anthropic")
+            return None
+    else:
+        # Default to LM Studio
+        host = config["llm_provider"].get("host", "http://localhost:1234")
+        
+        # Check if LM Studio is running
+        if not check_lm_studio_connection(host):
+            logger.warning(f"Could not connect to LM Studio at {host}")
+            
+            # Try to use Anthropic as fallback
+            if use_anthropic_api():
+                try:
+                    import anthropic
+                    
+                    # Get credentials from user
+                    from night_watcher import get_anthropic_credentials
+                    api_key, model = get_anthropic_credentials()
+                    
+                    # Ensure proper model name format
+                    if model == "3" or (model and not model.startswith("claude-")):
+                        logger.warning(f"Invalid model name: {model}, using claude-3-haiku-20240307 instead")
+                        model = "claude-3-haiku-20240307"
+                    
+                    logger.info(f"Using Anthropic provider with model {model}")
+                    return AnthropicProvider(api_key=api_key, model=model)
+                except ImportError:
+                    logger.error("Anthropic SDK not installed. Install with: pip install anthropic")
+                    return None
+            else:
+                logger.warning("Continuing without LLM capabilities")
+                return None
+        
+        logger.info(f"Using LM Studio provider at {host}")
+        return LMStudioProvider(host=host)
+
+def check_lm_studio_connection(host: str) -> bool:
+    """Check if LM Studio is running and accessible"""
     try:
-        client = LMStudio()
-        models = [m.id for m in client.list_local_models()]
+        response = requests.get(f"{host}/v1/models", timeout=5)
+        return response.status_code == 200
+    except Exception:
+        return False
 
-        if primary_id not in models:
-            raise ValueError(f"Primary model '{primary_id}' not loaded in LM Studio")
-        if secondary_id not in models:
-            raise ValueError(f"Secondary model '{secondary_id}' not loaded in LM Studio")
-
-        primary_llm = LMStudioModelWrapper(client, primary_id)
-        secondary_llm = LMStudioModelWrapper(client, secondary_id)
-        return primary_llm, secondary_llm
-
-    except Exception as lm_error:
-        logger.warning(f"LM Studio error: {lm_error}. Falling back to Anthropic.")
-
-        if fallback_api_key:
-            logger.info(f"Using Anthropic fallback model: {fallback_model}")
-            fallback = AnthropicProvider(api_key=fallback_api_key, model=fallback_model)
-            return fallback, fallback
-        else:
-            raise RuntimeError("No LLMs available and no Anthropic key provided.")
+def use_anthropic_api() -> bool:
+    """Ask user if they want to use the Anthropic API"""
+    print("\nLM Studio server is not available.")
+    print("Would you like to use the Anthropic API instead? (requires API key)")
+    response = input("Use Anthropic API? (y/n): ").strip().lower()
+    return response == 'y' or response == 'yes'
