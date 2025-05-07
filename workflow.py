@@ -6,14 +6,16 @@ Manages the workflow for intelligence gathering and analysis.
 import os
 import logging
 import json
+import hashlib
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Union
+from typing import Dict, List, Any, Optional, Union, Set
 
 from providers import LLMProvider
 from memory import MemorySystem
 from collector import ContentCollector
 from analyzer import ContentAnalyzer
 from knowledge_graph import KnowledgeGraph
+from document_repository import DocumentRepository
 from utils import save_to_file
 
 # Configure logging
@@ -38,6 +40,9 @@ class NightWatcherWorkflow:
 
         # Get knowledge graph from memory system
         self.knowledge_graph = self.memory.knowledge_graph
+        
+        # Initialize document repository
+        self.doc_repo = DocumentRepository(base_dir=os.path.join(output_dir, "documents"))
 
         # Initialize agents
         self.collector = ContentCollector()
@@ -87,12 +92,34 @@ class NightWatcherWorkflow:
         collection_result = self.collector.process(collection_input)
         articles = collection_result.get("articles", [])
         
-        # Save collected articles
-        for i, article in enumerate(articles):
-            filename = f"article_{i+1}_{self.timestamp}.json"
+        # Store collected articles in document repository
+        doc_ids = []
+        for article in articles:
+            # Extract content and metadata
+            content = article.get("content", "")
+            metadata = {
+                "title": article.get("title", "Untitled"),
+                "url": article.get("url", ""),
+                "source": article.get("source", "Unknown"),
+                "bias_label": article.get("bias_label", "unknown"),
+                "published": article.get("published"),
+                "tags": article.get("tags", []),
+                "collected_at": article.get("collected_at", datetime.now().isoformat()),
+                "collection_method": "rss"
+            }
+            
+            # Store in document repository
+            doc_id = self.doc_repo.store_document(content, metadata)
+            doc_ids.append(doc_id)
+            
+            # Add document ID to article for reference
+            article["document_id"] = doc_id
+            
+            # Also save collected articles in the traditional way for backwards compatibility
+            filename = f"article_{doc_id[:8]}_{self.timestamp}.json"
             save_to_file(article, os.path.join(self.collected_dir, filename))
             
-        self.logger.info(f"Collected {len(articles)} articles")
+        self.logger.info(f"Collected and stored {len(articles)} articles with document IDs")
         
         # Skip analysis if no LLM available
         if not llm_available:
@@ -100,7 +127,8 @@ class NightWatcherWorkflow:
             return {
                 "articles_collected": len(articles),
                 "articles_analyzed": 0,
-                "pattern_analyses_generated": 0
+                "pattern_analyses_generated": 0,
+                "document_ids": doc_ids
             }
             
         # 2. Content Analysis
@@ -115,22 +143,52 @@ class NightWatcherWorkflow:
             auth_analyses = analysis_results.get("authoritarian_analyses", [])
             kg_analyses = analysis_results.get("kg_analyses", [])
             
-            # Save analysis results
+            # Save analysis results and update with document provenance
             for i, analysis in enumerate(analyses):
-                filename = f"analysis_{i+1}_{self.timestamp}.json"
+                # Add document ID references if not already present
+                if "article" in analysis and "document_id" not in analysis["article"]:
+                    if i < len(doc_ids):
+                        analysis["article"]["document_id"] = doc_ids[i]
+                
+                # Add document citation
+                doc_id = analysis["article"].get("document_id")
+                if doc_id:
+                    analysis["document_citation"] = self.doc_repo.get_document_citation(doc_id)
+                
+                # Save to file
+                filename = f"analysis_{doc_id[:8] if doc_id else i+1}_{self.timestamp}.json"
                 save_to_file(analysis, os.path.join(self.analyzed_dir, filename))
                 
+            # Similarly update authoritarian analyses with document references
             for i, auth_analysis in enumerate(auth_analyses):
-                filename = f"auth_analysis_{i+1}_{self.timestamp}.json"
+                doc_id = None
+                if i < len(doc_ids):
+                    doc_id = doc_ids[i]
+                    auth_analysis["document_id"] = doc_id
+                    auth_analysis["document_citation"] = self.doc_repo.get_document_citation(doc_id)
+                
+                filename = f"auth_analysis_{doc_id[:8] if doc_id else i+1}_{self.timestamp}.json"
                 save_to_file(auth_analysis, os.path.join(self.analyzed_dir, filename))
                 
+            # Update KG analyses with document references
             for i, kg_analysis in enumerate(kg_analyses):
-                filename = f"kg_analysis_{i+1}_{self.timestamp}.json"
+                doc_id = None
+                if "article" in kg_analysis and i < len(doc_ids):
+                    doc_id = doc_ids[i]
+                    kg_analysis["article"]["document_id"] = doc_id
+                
+                filename = f"kg_analysis_{doc_id[:8] if doc_id else i+1}_{self.timestamp}.json"
                 save_to_file(kg_analysis, os.path.join(self.analyzed_dir, filename))
             
             # Store in memory system
             stored_analyses = []
             for analysis in analyses:
+                # Always include document ID reference
+                if "article" in analysis and "document_id" in analysis["article"]:
+                    if "metadata" not in analysis:
+                        analysis["metadata"] = {}
+                    analysis["metadata"]["document_id"] = analysis["article"]["document_id"]
+                
                 analysis_id = self.memory.store_article_analysis(analysis)
                 if analysis_id:
                     stored_analyses.append(analysis_id)
@@ -140,7 +198,7 @@ class NightWatcherWorkflow:
                 # Add article ID if not present
                 article = kg_analysis["article"]
                 if "id" not in article:
-                    article["id"] = f"article_{hash(article.get('title', ''))}"
+                    article["id"] = article.get("document_id") or f"article_{hash(article.get('title', ''))}"
                 
                 # Process structured data for knowledge graph
                 self.knowledge_graph.process_article_analysis(article, kg_analysis)
@@ -193,6 +251,15 @@ class NightWatcherWorkflow:
                     coordination_patterns,
                     pattern_analysis_days
                 )
+                
+                # Add document provenance to intelligence report
+                intel_report["document_sources"] = []
+                for doc_id in doc_ids:
+                    intel_report["document_sources"].append({
+                        "document_id": doc_id,
+                        "citation": self.doc_repo.get_document_citation(doc_id)
+                    })
+                
                 report_filename = f"{self.analysis_dir}/intelligence_report_{self.timestamp}.json"
                 save_to_file(intel_report, report_filename)
 
@@ -211,6 +278,8 @@ class NightWatcherWorkflow:
                 print(f"Coordination Patterns: {len(coordination_patterns)}")
                 print(f"Top Actors: {', '.join([actor.get('name', 'Unknown') for actor in influential_actors[:3]])}")
                 print(f"\nAll analysis files saved to: {self.analysis_dir}")
+                print(f"Document repository: {self.doc_repo.base_dir}")
+                print(f"Document IDs: {', '.join([doc_id[:8] + '...' for doc_id in doc_ids])}")
             else:
                 self.logger.warning("No recent analyses found for pattern recognition")
                 patterns_generated = 0
@@ -219,14 +288,16 @@ class NightWatcherWorkflow:
                 "articles_collected": len(articles),
                 "articles_analyzed": len(analyses),
                 "knowledge_graph_analyses": len(kg_analyses),
-                "pattern_analyses_generated": patterns_generated
+                "pattern_analyses_generated": patterns_generated,
+                "document_ids": doc_ids
             }
         else:
             self.logger.warning("No articles collected, skipping analysis")
             return {
                 "articles_collected": 0,
                 "articles_analyzed": 0,
-                "pattern_analyses_generated": 0
+                "pattern_analyses_generated": 0,
+                "document_ids": []
             }
 
     def _display_summary(self, data: Dict[str, Any], title: str) -> None:
@@ -253,115 +324,7 @@ class NightWatcherWorkflow:
             self.logger.info(f"Report Generated: {data.get('title', 'Untitled')}")
             if "recommendations" in data and data["recommendations"]:
                 self.logger.info(f"Top Recommendation: {data['recommendations'][0]}")
-
-    def _analyze_recurring_topics(self, recent_analyses: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Analyze recurring topics across analyses.
-
-        Args:
-            recent_analyses: List of recent analyses
-
-        Returns:
-            Dict with topic analysis results
-        """
-        # This is a legacy method - delegate to knowledge graph for more advanced analysis
-        # Get list of topics from analyses
-        topics = {}
-
-        for analysis in recent_analyses:
-            metadata = analysis.get("metadata", {})
-
-            # Extract topics from metadata or embedded structured elements
-            if "structured_elements" in metadata:
-                analysis_topics = metadata["structured_elements"].get("main_topics", [])
-
-                for topic in analysis_topics:
-                    if topic in topics:
-                        topics[topic] += 1
-                    else:
-                        topics[topic] = 1
-
-        # Sort topics by frequency
-        sorted_topics = sorted(
-            [(topic, count) for topic, count in topics.items()],
-            key=lambda x: x[1],
-            reverse=True
-        )
-
-        return {
-            "topics": sorted_topics,
-            "analysis_count": len(recent_analyses),
-            "timestamp": datetime.now().isoformat()
-        }
-
-    def _generate_intelligence_report(self, democratic_erosion: Dict[str, Any],
-                                    influential_actors: List[Dict[str, Any]],
-                                    coordination_patterns: List[Dict[str, Any]],
-                                    lookback_days: int) -> Dict[str, Any]:
-        """
-        Generate a comprehensive intelligence report.
-
-        Args:
-            democratic_erosion: Democratic erosion analysis
-            influential_actors: List of influential actors
-            coordination_patterns: List of coordination patterns
-            lookback_days: Number of days in the analysis period
-
-        Returns:
-            Dict with intelligence report
-        """
-        # Prepare intelligence report
-        report = {
-            "title": f"Intelligence Report on Authoritarian Indicators - {datetime.now().strftime('%Y-%m-%d')}",
-            "analysis_period": f"Last {lookback_days} days",
-            "generated_at": datetime.now().isoformat(),
-            "summary": {
-                "erosion_score": democratic_erosion.get("erosion_score", 0),
-                "risk_level": democratic_erosion.get("risk_level", "Low"),
-                "key_institutions_affected": len(democratic_erosion.get("affected_institutions", [])),
-                "top_actors": [actor.get("name", "") for actor in influential_actors[:3]],
-                "coordination_patterns_detected": len(coordination_patterns)
-            },
-            "democratic_erosion": democratic_erosion,
-            "influential_actors": influential_actors[:5],  # Limit to top 5 for readability
-            "coordination_patterns": coordination_patterns,
-            "recommendations": []
-        }
-
-        # Generate recommendations based on erosion score
-        erosion_score = democratic_erosion.get("erosion_score", 0)
-
-        if erosion_score >= 7:
-            report["recommendations"] = [
-                "URGENT: Multiple clear indicators of authoritarian governance detected",
-                "Focus monitoring on institutional undermining patterns",
-                "Track coordination between powerful actors",
-                "Monitor legislative attempts to reduce checks and balances",
-                "Prepare response strategies for further democratic backsliding"
-            ]
-        elif erosion_score >= 5:
-            report["recommendations"] = [
-                "HIGH CONCERN: Significant authoritarian patterns detected",
-                "Increase monitoring of key institutions under pressure",
-                "Track rhetorical attacks on democratic processes",
-                "Monitor normalization of anti-democratic narratives",
-                "Identify key resistance points within democratic institutions"
-            ]
-        elif erosion_score >= 3:
-            report["recommendations"] = [
-                "MODERATE CONCERN: Early authoritarian indicators present",
-                "Monitor rhetoric around institutional legitimacy",
-                "Track attempts to delegitimize opposition",
-                "Document norm violations for pattern analysis",
-                "Identify key actors promoting authoritarian narratives"
-            ]
-        else:
-            report["recommendations"] = [
-                "LOW CONCERN: Minimal authoritarian indicators detected",
-                "Continue monitoring key democratic institutions",
-                "Track emerging narratives around governmental authority",
-                "Monitor for early signs of norm erosion",
-                "Maintain baseline monitoring of key political actors"
-            ]
-
-        return report
+            if "document_sources" in data:
+                self.logger.info(f"Sources: {len(data['document_sources'])} documents")
+                for i, source in enumerate(data['document_sources'][:3], 1):
+                    self.logger.info(f"  {i}. {source.get('citation', 'Unknown source')}")
