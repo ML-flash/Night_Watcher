@@ -8,18 +8,18 @@ Extract only the objective facts, direct actions, dates, and explicit statements
 Avoid speculation, bias, or inferred motives. Do not summarize. Your goal is to build a dataset of observable, verifiable facts.
 
 Your response MUST be a valid, parseable JSON object in exactly this format:
-{
+{{
   "publication_date": "YYYY-MM-DD",
   "facts": ["Fact 1", "Fact 2", "Fact 3"],
   "events": [
-    {
+    {{
       "name": "Event name",
       "date": "YYYY-MM-DD",
       "description": "Short factual description"
-    }
+    }}
   ],
   "direct_quotes": ["Quote from source text", "Another quote"]
-}
+}}
 
 Do not include any text before or after the JSON. Use "N/A" for any unknown dates. Include at least one item in each array.
 
@@ -55,26 +55,26 @@ Your ENTIRE response must be ONLY a valid JSON array of these node objects. Do n
 
 Example format:
 [
-  {
+  {{
     "node_type": "event",
     "name": "Arrest of Judge Dugan",
-    "attributes": {
+    "attributes": {{
       "location": "Washington DC",
       "type": "judicial action"
-    },
+    }},
     "timestamp": "2019-04-01",
     "source_sentence": "Judge Dugan was arrested on April 1, 2019."
-  },
-  {
+  }},
+  {{
     "node_type": "actor",
     "name": "John Smith",
-    "attributes": {
+    "attributes": {{
       "role": "Senator",
       "party": "Republican"
-    },
+    }},
     "timestamp": "N/A",
     "source_sentence": "Senator John Smith criticized the decision."
-  }
+  }}
 ]
 
 Do not include explanatory text before or after the JSON array. Ensure valid JSON with no trailing commas.
@@ -93,16 +93,16 @@ You are given a JSON array of node objects and a publication_date.
 
 Your ENTIRE response must be ONLY a valid JSON array of objects with this format:
 [
-  {
+  {{
     "id": 1,
     "node_type": "event",
     "name": "Arrest of Judge Dugan",
-    "attributes": {
+    "attributes": {{
       "location": "Washington DC",
       "type": "judicial action"
-    },
+    }},
     "timestamp": "2019-04-01"
-  }
+  }}
 ]
 
 Do not include any text before or after the JSON array. Ensure valid JSON with no trailing commas.
@@ -131,13 +131,13 @@ Identify all relations among node IDs using ONLY these types:
 
 Your ENTIRE response must be ONLY a valid JSON array with edges in this format:
 [
-  {
+  {{
     "source_id": 3,
     "relation": "intimidates",
     "target_id": 1,
     "timestamp": "2019-04-01",
     "evidence_quote": "...intimidate...the judiciary..."
-  }
+  }}
 ]
 
 Do not include any text before or after the JSON array. Ensure valid JSON with no trailing commas. 
@@ -162,7 +162,7 @@ If edge timestamp was "N/A", use the publication_date for assessment.
 
 Your ENTIRE response must be ONLY a valid JSON array with edges in this format:
 [
-  {
+  {{
     "source_id": 3,
     "relation": "intimidates",
     "target_id": 1,
@@ -171,7 +171,7 @@ Your ENTIRE response must be ONLY a valid JSON array with edges in this format:
     "severity": 0.9,
     "is_decayable": false,
     "reasoning": "This action severely undermines judicial independence and has lasting effects"
-  }
+  }}
 ]
 
 Do not include any text before or after the JSON array. Ensure valid JSON with no trailing commas.
@@ -191,10 +191,10 @@ Given:
 - the enriched edge array
 
 Create a single JSON object with this exact structure:
-{
+{{
   "nodes": [ ... ],
   "edges": [ ... ]
-}
+}}
 
 Your ENTIRE response must be ONLY this valid JSON object. Do not include any text before or after the JSON.
 
