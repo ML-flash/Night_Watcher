@@ -1,0 +1,4 @@
+2025-05-09 13:10:05,949 - DocumentRepository - INFO - Document repository initialized at data\documents
+2025-05-09 13:10:08,008 - providers - INFO - Using LM Studio provider at http://localhost:1234
+2025-05-09 13:10:08,008 - LMStudioProvider - INFO - Using LM Studio HTTP API at: http://localhost:1234
+2025-05-09 13:10:08,008 - root - INFO - No documents to analyze

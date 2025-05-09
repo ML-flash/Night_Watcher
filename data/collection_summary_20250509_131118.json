@@ -1,0 +1,22 @@
+{
+  "timestamp": "20250509_131118",
+  "articles_collected": 6,
+  "documents_stored": 6,
+  "start_date": "2025-01-20T00:00:00",
+  "end_date": "2025-05-09T13:11:18.277487",
+  "next_start_date": "2025-05-09T12:39:36",
+  "document_ids": [
+    "f8ac0921c0117319_1746814280",
+    "dff4c898d30d9a40_1746814310",
+    "29aefff0f5f79b9a_1746814310",
+    "4b3bc76e2099ac9b_1746814310",
+    "e4138815ff74efad_1746814310",
+    "a113fc9df7cfee60_1746814310"
+  ],
+  "status": {
+    "successful_sources": 6,
+    "failed_sources": 0,
+    "articles_collected": 6,
+    "timestamp": "2025-05-09T13:11:51.430138"
+  }
+}
