@@ -1,6 +1,53 @@
 # prompts.py
 # Centralized prompt templates for Night_watcher Knowledge Graph population and analysis phases
 
+# Manipulation Score Analysis
+MANIPULATION_SCORE_PROMPT = """
+Analyze the following political article for manipulation techniques.
+
+Focus specifically on:
+1. Framing: How the story is presented and what perspective is centered
+2. Language: Use of emotionally charged language, loaded terms, or persuasive devices
+3. Omissions: What relevant context or counterpoints are excluded
+4. Attribution: Whether claims are properly sourced and attributed
+5. Fact/Opinion Blending: How facts are mixed with analysis or opinion
+
+First provide a detailed analysis of these aspects. Then, end with:
+
+MANIPULATION SCORE: [1-10]
+
+Where 1 = highly objective news with minimal manipulation
+And 10 = extreme manipulation with significant distortion of facts
+
+CONTENT:
+{article_content}
+"""
+
+# Authoritarian Analysis
+AUTHORITARIAN_ANALYSIS_PROMPT = """
+Analyze the following political content for potential authoritarian indicators.
+
+Your task is to identify any patterns that may signal democratic erosion or authoritarian tendencies, such as:
+- Attempts to undermine separation of powers
+- Delegitimization of opposition, media, or institutions
+- Expansion of executive authority
+- Limitations on civil liberties or rights
+- Erosion of electoral integrity
+- Centralization of power
+- Use of state resources for partisan advantage
+- Degradation of factual discourse
+- Promotion of us-vs-them narratives
+
+Be balanced and objective. Do not overinterpret ambiguous statements, but don't overlook concerning patterns.
+
+End your analysis with:
+AUTHORITARIAN INDICATORS: [List the specific indicators found, or "None detected" if none]
+CONCERN LEVEL: [None, Low, Moderate, High, Very High]
+
+CONTENT:
+{article_content}
+"""
+
 # Round 1: Fact Extraction
 FACT_EXTRACTION_PROMPT = """
 Extract only the objective facts, direct actions, dates, and explicit statements from the following article.
