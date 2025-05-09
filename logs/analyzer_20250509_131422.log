@@ -1,6 +1,0 @@
-2025-05-09 13:14:22,028 - DocumentRepository - INFO - Document repository initialized at data\documents
-2025-05-09 13:14:24,104 - providers - INFO - Using LM Studio provider at http://localhost:1234
-2025-05-09 13:14:24,105 - LMStudioProvider - INFO - Using LM Studio HTTP API at: http://localhost:1234
-2025-05-09 13:14:24,106 - root - INFO - Starting analysis at 20250509_131424 for 6 documents
-2025-05-09 13:14:24,106 - ContentAnalyzer - INFO - Analyzing: Trump calls election of first American pope a 'great honour'
-2025-05-09 13:16:44,247 - ContentAnalyzer - INFO - Successfully extracted facts for: Trump calls election of first American pope a 'great honour'
