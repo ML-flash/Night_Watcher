@@ -1,0 +1,62 @@
+{
+  "content_collection": {
+    "article_limit": 5,
+    "sources": [
+      {
+        "url": "https://apnews.com/rss",
+        "type": "rss",
+        "bias": "center"
+      },
+      {
+        "url": "https://feeds.npr.org/1001/rss.xml",
+        "type": "rss",
+        "bias": "center-left"
+      },
+      {
+        "url": "https://thehill.com/rss/feed/",
+        "type": "rss",
+        "bias": "center"
+      },
+      {
+        "url": "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml",
+        "type": "rss",
+        "bias": "center"
+      },
+      {
+        "url": "https://www.whitehouse.gov/feed/",
+        "type": "rss",
+        "bias": "official-government"
+      },
+      {
+        "url": "https://www.federalregister.gov/presidential-documents.rss",
+        "type": "rss",
+        "bias": "official-government"
+      }
+    ],
+    "govt_keywords": [
+      "executive order",
+      "administration",
+      "white house",
+      "congress",
+      "senate",
+      "house of representatives",
+      "supreme court",
+      "federal",
+      "president",
+      "department of",
+      "agency",
+      "regulation",
+      "policy",
+      "law",
+      "legislation",
+      "election",
+      "democracy",
+      "constitution",
+      "amendment"
+    ]
+  },
+  "output": {
+    "base_dir": "data",
+    "save_collected": true
+  }
+}
