@@ -1,4 +1,61 @@
-#!/usr/bin/env python3
+def main() -> int:
+    """
+    Main entry point.
+    """
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description="Night_watcher Collector")
+    parser.add_argument("--config", default="config.json", help="Path to config file")
+    parser.add_argument("--article-limit", type=int, help="Max articles per source")
+    parser.add_argument("--output-dir", help="Output directory")
+    parser.add_argument("--reset-date", action="store_true", help="Reset date to inauguration day")
+    parser.add_argument("--days", type=int, help="Collect articles from the last N days")
+    parser.add_argument("--verbose", action="store_true", help="Verbose logging")
+    
+    args = parser.parse_args()
+    
+    # Create necessary directories
+    log_dir = "logs"
+    data_dir = args.output_dir or "data"
+    collected_dir = os.path.join(data_dir, "collected")
+    document_dir = os.path.join(data_dir, "documents")
+    
+    os.makedirs(log_dir, exist_ok=True)
+    os.makedirs(collected_dir, exist_ok=True)
+    os.makedirs(os.path.join(document_dir, "content"), exist_ok=True)
+    os.makedirs(os.path.join(document_dir, "metadata"), exist_ok=True)
+    
+    # Set up logging
+    log_level = logging.DEBUG if args.verbose else logging.INFO
+    log_file = os.path.join(log_dir, f"collector_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+    
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()
+        ]
+    )
+    
+    # Load configuration
+    config = load_config(args.config)
+    
+    # Create default config if it doesn't exist
+    if not os.path.exists(args.config):
+        save_config(DEFAULT_CONFIG, args.config)
+        logging.info(f"Created default configuration at {args.config}")
+    
+    print("""
+    ╔═══════════════════════════════════════════════════╗
+    ║      Night_watcher Collector Component            ║
+    ╚═══════════════════════════════════════════════════╝
+    """)
+    
+    # Run the collector
+    return run_collector(config, args)
+
+if __name__ == "__main__":
+    sys.exit(main())#!/usr/bin/env python3
 """
 Night_watcher Collector
 Script to run the collector component of the Night_watcher framework.
@@ -10,7 +67,7 @@ import logging
 import argparse
 import json
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 
 # Import local modules
 from collector import ContentCollector
@@ -263,62 +320,3 @@ def run_collector(config: Dict[str, Any], args: argparse.Namespace) -> int:
     print(f"Summary saved to: {summary_file}")
     
     return 0
-
-def main() -> int:
-    """
-    Main entry point.
-    """
-    # Set up argument parser
-    parser = argparse.ArgumentParser(description="Night_watcher Collector")
-    parser.add_argument("--config", default="config.json", help="Path to config file")
-    parser.add_argument("--article-limit", type=int, help="Max articles per source")
-    parser.add_argument("--output-dir", help="Output directory")
-    parser.add_argument("--reset-date", action="store_true", help="Reset date to inauguration day")
-    parser.add_argument("--days", type=int, help="Collect articles from the last N days")
-    parser.add_argument("--verbose", action="store_true", help="Verbose logging")
-    
-    args = parser.parse_args()
-    
-    # Create necessary directories
-    log_dir = "logs"
-    data_dir = args.output_dir or "data"
-    collected_dir = os.path.join(data_dir, "collected")
-    document_dir = os.path.join(data_dir, "documents")
-    
-    os.makedirs(log_dir, exist_ok=True)
-    os.makedirs(collected_dir, exist_ok=True)
-    os.makedirs(os.path.join(document_dir, "content"), exist_ok=True)
-    os.makedirs(os.path.join(document_dir, "metadata"), exist_ok=True)
-    
-    # Set up logging
-    log_level = logging.DEBUG if args.verbose else logging.INFO
-    log_file = os.path.join(log_dir, f"collector_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
-    
-    logging.basicConfig(
-        level=log_level,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler(log_file),
-            logging.StreamHandler()
-        ]
-    )
-    
-    # Load configuration
-    config = load_config(args.config)
-    
-    # Create default config if it doesn't exist
-    if not os.path.exists(args.config):
-        save_config(DEFAULT_CONFIG, args.config)
-        logging.info(f"Created default configuration at {args.config}")
-    
-    print("""
-    ╔═══════════════════════════════════════════════════╗
-    ║      Night_watcher Collector Component            ║
-    ╚═══════════════════════════════════════════════════╝
-    """)
-    
-    # Run the collector
-    return run_collector(config, args)
-
-if __name__ == "__main__":
-    sys.exit(main())
