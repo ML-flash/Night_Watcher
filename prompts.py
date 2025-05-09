@@ -42,14 +42,19 @@ CONTENT:
 {article_content}
 """
 
-# Round 3: Node Extraction
+# Round 3: Node Extraction (Updated with new node types)
 NODE_EXTRACTION_PROMPT = """
 Extract every discrete fact, action, entity, or event from the following content. For each, produce a JSON object with:
-- node_type: one of [actor, institution, policy, event, media_outlet, civil_society]
+- node_type: one of [actor, institution, policy, event, media_outlet, civil_society, narrative, legal_framework, procedural_norm]
 - name: the precise name or title
 - attributes: a key/value object with any additional details (e.g. role, party, branch, description)
 - timestamp: the YYYY-MM-DD date associated (if none, use "N/A")
 - source_sentence: the exact sentence containing this information
+
+Pay special attention to identifying:
+- narratives: recurring propaganda themes, framing techniques (e.g., "deep state", "enemy of the people")
+- legal_frameworks: changes to laws and regulations (e.g., "Emergency Powers Act", "Anti-Protest Bill")
+- procedural_norms: changes to governmental procedures (e.g., "Senate Confirmation Process", "Executive Oversight")
 
 Your ENTIRE response must be ONLY a valid JSON array of these node objects. Do not include any text outside the JSON array.
 
@@ -66,14 +71,14 @@ Example format:
     "source_sentence": "Judge Dugan was arrested on April 1, 2019."
   }},
   {{
-    "node_type": "actor",
-    "name": "John Smith",
+    "node_type": "narrative",
+    "name": "Judicial Obstruction",
     "attributes": {{
-      "role": "Senator",
-      "party": "Republican"
+      "theme": "opposition to executive",
+      "origin": "administration"
     }},
     "timestamp": "N/A",
-    "source_sentence": "Senator John Smith criticized the decision."
+    "source_sentence": "The administration has repeatedly characterized judges as obstructing the legitimate functions of government."
   }}
 ]
 
@@ -114,7 +119,7 @@ PUBLICATION_DATE:
 {publication_date}
 """
 
-# Round 5: Edge Extraction with Enhanced Relation Types
+# Round 5: Edge Extraction with Enhanced Relation Types (Updated with new relation types)
 EDGE_EXTRACTION_PROMPT = """
 Given:
 - the array of unique nodes (with id, node_type, name)
@@ -123,11 +128,16 @@ Given:
 Identify all relations among node IDs using ONLY these types:
 [part_of, influences, opposes, supports, restricts, undermines, authorizes,
  co-opts, purges, criminalizes, censors, intimidates, delegitimizes,
- backs_with_force, context_of, analogous_to]
+ backs_with_force, justifies, expands_power, normalizes, diverts_attention, targets]
 
-- Use 'supports' only when the text explicitly indicates endorsement.
-- Use 'analogous_to' to link nodes representing similar policies/events without direct backing.
-- If timestamp is missing or "N/A", default to the publication_date from the facts JSON.
+Important notes on relation types:
+- Use 'justifies' when one node (often a narrative) is used to rationalize an action
+- Use 'expands_power' when an action increases an actor's authority beyond normal bounds
+- Use 'normalizes' when an action serves to make previously unacceptable behavior appear routine
+- Use 'diverts_attention' when one event is used to distract from another
+- Use 'targets' when specific groups or institutions are directly targeted
+
+Note: Do NOT add 'precedes' or 'follows' relations - these will be inferred automatically from timestamps.
 
 Your ENTIRE response must be ONLY a valid JSON array with edges in this format:
 [
@@ -157,6 +167,9 @@ For each edge, add:
 - severity: float 0.0–1.0 representing impact (0.0 is minimal, 1.0 is severe)
 - is_decayable: true if this edge's effect naturally fades over time, false if permanent
 - reasoning: a brief explanation for your severity and decayable assessments
+
+For authoritarian relations (undermines, co-opts, purges, criminalizes, censors, intimidates, delegitimizes, 
+restricts, targets), carefully assess the severity based on democratic norms.
 
 If edge timestamp was "N/A", use the publication_date for assessment.
 
@@ -203,51 +216,4 @@ NODES:
 
 EDGES:
 {edges}
-"""
-
-# Manipulation Score Analysis
-MANIPULATION_SCORE_PROMPT = """
-Analyze the following political article for manipulation techniques.
-
-Focus specifically on:
-1. Framing: How the story is presented and what perspective is centered
-2. Language: Use of emotionally charged language, loaded terms, or persuasive devices
-3. Omissions: What relevant context or counterpoints are excluded
-4. Attribution: Whether claims are properly sourced and attributed
-5. Fact/Opinion Blending: How facts are mixed with analysis or opinion
-
-First provide a detailed analysis of these aspects. Then, end with:
-
-MANIPULATION SCORE: [1-10]
-
-Where 1 = highly objective news with minimal manipulation
-And 10 = extreme manipulation with significant distortion of facts
-
-CONTENT:
-{article_content}
-"""
-
-# Authoritarian Analysis
-AUTHORITARIAN_ANALYSIS_PROMPT = """
-Analyze the following political content for potential authoritarian indicators.
-
-Your task is to identify any patterns that may signal democratic erosion or authoritarian tendencies, such as:
-- Attempts to undermine separation of powers
-- Delegitimization of opposition, media, or institutions
-- Expansion of executive authority
-- Limitations on civil liberties or rights
-- Erosion of electoral integrity
-- Centralization of power
-- Use of state resources for partisan advantage
-- Degradation of factual discourse
-- Promotion of us-vs-them narratives
-
-Be balanced and objective. Do not overinterpret ambiguous statements, but don't overlook concerning patterns.
-
-End your analysis with:
-AUTHORITARIAN INDICATORS: [List the specific indicators found, or "None detected" if none]
-CONCERN LEVEL: [None, Low, Moderate, High, Very High]
-
-CONTENT:
-{article_content}
 """
