@@ -1,6 +1,6 @@
 # Night_watcher Framework
 
-An intelligence gathering system that monitors information flows to protect democratic principles.
+
 
 ## Installation
 
