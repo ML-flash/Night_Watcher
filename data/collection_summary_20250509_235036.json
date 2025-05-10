@@ -1,0 +1,26 @@
+{
+  "timestamp": "20250509_235036",
+  "articles_collected": 10,
+  "documents_stored": 10,
+  "start_date": "2025-01-20T00:00:00",
+  "end_date": "2025-05-09T23:50:36.190773",
+  "next_start_date": "2025-05-09T23:05:14",
+  "document_ids": [
+    "1134c614eea05ba4_1746834646",
+    "c76a69a3f8fa44c5_1746834646",
+    "46b7ded2793e0b61_1746834646",
+    "145a4c708b0bce20_1746834646",
+    "79a386d8c50c4229_1746834646",
+    "caa0701b6f5a286f_1746834661",
+    "edff4f0b26cb96e8_1746834661",
+    "c54bc67afdad7fa8_1746834661",
+    "b7f85c29693ce5f6_1746834661",
+    "49e6291ae31fb31b_1746834661"
+  ],
+  "status": {
+    "successful_sources": 6,
+    "failed_sources": 0,
+    "articles_collected": 10,
+    "timestamp": "2025-05-09T23:51:01.483838"
+  }
+}

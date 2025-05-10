@@ -1,6 +1,6 @@
 """
 Night_watcher Knowledge Graph
-Manages the knowledge graph for storing entities, events, relationships, and authoritarian patterns.
+Manages the knowledge graph for storing entities, events, and relationships.
 """
 
 import os
@@ -8,38 +8,38 @@ import json
 import logging
 import csv
 import re
-import datetime
+from datetime import datetime
 from typing import Dict, List, Any, Optional, Set, Union, Tuple
 import networkx as nx
-from datetime import datetime, timedelta
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
 class KnowledgeGraph:
     """
-    Knowledge graph for storing entities, events, relationships, and patterns.
+    Knowledge graph for storing entities, events, and relationships.
     Implements a graph-based data structure using NetworkX with JSON serialization.
     """
 
-    def __init__(self, base_dir: str = "data/knowledge_graph", taxonomy_path: str = "KG_Taxonomy.csv"):
+    def __init__(self, base_dir: str = "data/knowledge_graph", taxonomy_path: str = "KG_Taxonomy.csv", 
+                 graph_file: str = None, taxonomy_file: str = None):
         """
         Initialize the knowledge graph.
         
         Args:
             base_dir: Base directory for knowledge graph storage
-            taxonomy_path: Path to taxonomy CSV file
+            taxonomy_path: Path to taxonomy CSV file (deprecated, use taxonomy_file)
+            graph_file: Path to graph file for initialization
+            taxonomy_file: Path to taxonomy CSV file
         """
         self.base_dir = base_dir
         self.nodes_dir = os.path.join(base_dir, "nodes")
         self.edges_dir = os.path.join(base_dir, "edges")
         self.snapshots_dir = os.path.join(base_dir, "snapshots")
-        self.taxonomy_path = taxonomy_path
         
-        # Create directories if they don't exist
-        os.makedirs(self.nodes_dir, exist_ok=True)
-        os.makedirs(self.edges_dir, exist_ok=True)
-        os.makedirs(self.snapshots_dir, exist_ok=True)
+        # Support for both initialization methods (backward compatibility)
+        self.taxonomy_path = taxonomy_file if taxonomy_file else taxonomy_path
+        self.graph_file = graph_file
         
         # Initialize NetworkX graph
         self.graph = nx.DiGraph()
@@ -51,12 +51,18 @@ class KnowledgeGraph:
         self._node_counter = 0
         self._edge_counter = 0
         
-        # Load existing graph if available
-        self._load_graph()
-        
+        # Setup logging
         self.logger = logging.getLogger("KnowledgeGraph")
-        self.logger.info(f"Knowledge graph initialized at {base_dir}")
-        self.logger.info(f"Current graph: {len(self.graph.nodes)} nodes, {len(self.graph.edges)} edges")
+        
+        # Load existing graph if available
+        if graph_file and os.path.exists(graph_file):
+            self._load_graph_from_file(graph_file)
+            self.logger.info(f"Loaded knowledge graph from {graph_file}")
+        else:
+            self._load_graph()
+            self.logger.info(f"Loaded knowledge graph from directory structure at {base_dir}")
+            
+        self.logger.info(f"Knowledge graph initialized: {len(self.graph.nodes)} nodes, {len(self.graph.edges)} edges")
 
     def _load_taxonomy(self) -> Dict[str, Any]:
         """
@@ -130,60 +136,114 @@ class KnowledgeGraph:
 
     def _load_graph(self) -> None:
         """
-        Load the existing graph from the node and edge files.
+        Load the existing graph from the node and edge files in the directory structure.
         """
+        # Create directories if they don't exist
+        os.makedirs(self.nodes_dir, exist_ok=True)
+        os.makedirs(self.edges_dir, exist_ok=True)
+        os.makedirs(self.snapshots_dir, exist_ok=True)
+        
         # Load nodes
         node_count = 0
-        for filename in os.listdir(self.nodes_dir):
-            if filename.endswith(".json"):
-                node_id = filename[:-5]  # Remove .json extension
-                filepath = os.path.join(self.nodes_dir, filename)
-                
-                try:
-                    with open(filepath, 'r', encoding='utf-8') as f:
-                        node_data = json.load(f)
-                        
-                    # Add node to graph
-                    self.graph.add_node(node_id, **node_data)
+        if os.path.exists(self.nodes_dir):
+            for filename in os.listdir(self.nodes_dir):
+                if filename.endswith(".json"):
+                    node_id = filename[:-5]  # Remove .json extension
+                    filepath = os.path.join(self.nodes_dir, filename)
                     
-                    # Update node counter
-                    numeric_id = self._extract_numeric_id(node_id)
-                    if numeric_id > self._node_counter:
-                        self._node_counter = numeric_id
+                    try:
+                        with open(filepath, 'r', encoding='utf-8') as f:
+                            node_data = json.load(f)
+                            
+                        # Add node to graph
+                        self.graph.add_node(node_id, **node_data)
                         
-                    node_count += 1
-                except Exception as e:
-                    self.logger.error(f"Error loading node {node_id}: {e}")
+                        # Update node counter
+                        numeric_id = self._extract_numeric_id(node_id)
+                        if numeric_id > self._node_counter:
+                            self._node_counter = numeric_id
+                            
+                        node_count += 1
+                    except Exception as e:
+                        self.logger.error(f"Error loading node {node_id}: {e}")
         
         # Load edges
         edge_count = 0
-        for filename in os.listdir(self.edges_dir):
-            if filename.endswith(".json"):
-                edge_id = filename[:-5]  # Remove .json extension
-                filepath = os.path.join(self.edges_dir, filename)
-                
-                try:
-                    with open(filepath, 'r', encoding='utf-8') as f:
-                        edge_data = json.load(f)
-                        
-                    # Extract source and target
-                    source_id = edge_data.get("source_id")
-                    target_id = edge_data.get("target_id")
+        if os.path.exists(self.edges_dir):
+            for filename in os.listdir(self.edges_dir):
+                if filename.endswith(".json"):
+                    edge_id = filename[:-5]  # Remove .json extension
+                    filepath = os.path.join(self.edges_dir, filename)
                     
-                    if source_id and target_id:
-                        # Add edge to graph
-                        self.graph.add_edge(source_id, target_id, id=edge_id, **edge_data)
+                    try:
+                        with open(filepath, 'r', encoding='utf-8') as f:
+                            edge_data = json.load(f)
+                            
+                        # Extract source and target
+                        source_id = edge_data.get("source_id")
+                        target_id = edge_data.get("target_id")
                         
-                        # Update edge counter
-                        numeric_id = self._extract_numeric_id(edge_id)
+                        if source_id and target_id:
+                            # Add edge to graph
+                            self.graph.add_edge(source_id, target_id, id=edge_id, **edge_data)
+                            
+                            # Update edge counter
+                            numeric_id = self._extract_numeric_id(edge_id)
+                            if numeric_id > self._edge_counter:
+                                self._edge_counter = numeric_id
+                                
+                            edge_count += 1
+                    except Exception as e:
+                        self.logger.error(f"Error loading edge {edge_id}: {e}")
+        
+        self.logger.info(f"Loaded {node_count} nodes and {edge_count} edges from directory structure")
+        
+    def _load_graph_from_file(self, graph_file: str) -> None:
+        """
+        Load the graph from a single JSON file.
+        
+        Args:
+            graph_file: Path to the graph JSON file
+        """
+        try:
+            with open(graph_file, 'r', encoding='utf-8') as f:
+                graph_data = json.load(f)
+            
+            # Clear existing graph
+            self.graph.clear()
+            
+            # Load nodes
+            nodes = graph_data.get("nodes", {})
+            for node_id, node_data in nodes.items():
+                self.graph.add_node(node_id, **node_data)
+                
+                # Update node counter
+                numeric_id = self._extract_numeric_id(node_id)
+                if numeric_id > self._node_counter:
+                    self._node_counter = numeric_id
+            
+            # Load edges
+            edges = graph_data.get("edges", [])
+            for edge_data in edges:
+                source_id = edge_data.get("source")
+                target_id = edge_data.get("target")
+                
+                if source_id and target_id:
+                    # Remove source and target from edge data to avoid duplication
+                    edge_attrs = {k: v for k, v in edge_data.items() if k not in ["source", "target"]}
+                    self.graph.add_edge(source_id, target_id, **edge_attrs)
+                    
+                    # Update edge counter if id is present
+                    if "id" in edge_data:
+                        numeric_id = self._extract_numeric_id(edge_data["id"])
                         if numeric_id > self._edge_counter:
                             self._edge_counter = numeric_id
-                            
-                        edge_count += 1
-                except Exception as e:
-                    self.logger.error(f"Error loading edge {edge_id}: {e}")
-        
-        self.logger.info(f"Loaded {node_count} nodes and {edge_count} edges from disk")
+            
+            self.logger.info(f"Loaded graph from file: {len(self.graph.nodes)} nodes, {len(self.graph.edges)} edges")
+        except Exception as e:
+            self.logger.error(f"Error loading graph from file {graph_file}: {e}")
+            # Initialize empty graph
+            self.graph.clear()
 
     def _extract_numeric_id(self, id_str: str) -> int:
         """
@@ -718,11 +778,7 @@ class KnowledgeGraph:
                     timestamp=edge.get("timestamp", publication_date),
                     evidence_quote=edge.get("evidence_quote"),
                     source_document_id=document_id,
-                    attributes={
-                        "severity": edge.get("severity", 0.5),
-                        "is_decayable": edge.get("is_decayable", True),
-                        "reasoning": edge.get("reasoning", "")
-                    }
+                    attributes=edge.get("attributes", {})
                 )
             
             self.logger.info(f"Processed article analysis: {article.get('title')} - added {len(nodes)} nodes, {len(edges)} edges")
@@ -732,391 +788,72 @@ class KnowledgeGraph:
             self.logger.error(f"Error processing article analysis: {e}")
             return False
 
-    def get_authoritarian_trends(self, days: int = 30) -> Dict[str, Any]:
+    def export_graph(self, format: str = "json", filepath: str = None) -> str:
         """
-        Get authoritarian trends from the knowledge graph for the specified time period.
+        Export the knowledge graph to a file.
         
         Args:
-            days: Number of days to look back
+            format: Export format (json or gexf)
+            filepath: Path to save the file (optional)
             
         Returns:
-            Dictionary with authoritarian trend data
+            Path to the exported file
         """
-        # Calculate date threshold
-        threshold_date = (datetime.now() - timedelta(days=days)).isoformat()
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
-        # Initialize result
-        result = {
-            "trend_score": 0.0,
-            "affected_institutions": [],
-            "primary_actors": [],
-            "trends": [],
-            "period_days": days,
-            "timestamp": datetime.now().isoformat()
-        }
+        # Use provided filepath or generate one
+        if not filepath:
+            if format.lower() == "gexf":
+                filepath = os.path.join(self.base_dir, f"knowledge_graph_{timestamp}.gexf")
+            else:
+                filepath = os.path.join(self.base_dir, f"knowledge_graph_{timestamp}.json")
         
-        # Get authoritarian relation types
-        auth_relations = [
-            "undermines", "restricts", "co-opts", "purges", 
-            "criminalizes", "censors", "intimidates", "delegitimizes"
-        ]
-        
-        # Count occurrences of authoritarian relations
-        relation_counts = {rel: 0 for rel in auth_relations}
-        institutions_affected = set()
-        actors_involved = set()
-        
-        # Gather affected institutions and primary actors
-        for source, target, data in self.graph.edges(data=True):
-            # Check if edge is recent enough
-            edge_timestamp = data.get("timestamp", "")
-            if edge_timestamp < threshold_date:
-                continue
-            
-            # Check if this is an authoritarian relation
-            relation = data.get("relation", "")
-            if relation in auth_relations:
-                relation_counts[relation] += 1
-                
-                # Get node types
-                source_data = self.graph.nodes[source]
-                target_data = self.graph.nodes[target]
-                
-                # Track affected institutions
-                if target_data.get("type") == "institution":
-                    institutions_affected.add(target)
-                
-                # Track primary actors
-                if source_data.get("type") == "actor" or source_data.get("type") == "institution":
-                    actors_involved.add(source)
-        
-        # Calculate trend score (0-10)
-        total_auth_edges = sum(relation_counts.values())
-        if total_auth_edges > 0:
-            # Base score from 0-7 based on number of edges
-            base_score = min(7, total_auth_edges / 3)
-            
-            # Add up to 3 points based on number of institutions affected
-            institution_score = min(3, len(institutions_affected) / 2)
-            
-            result["trend_score"] = round(base_score + institution_score, 1)
-        
-        # Get affected institutions
-        for inst_id in institutions_affected:
-            inst_data = self.graph.nodes[inst_id]
-            result["affected_institutions"].append({
-                "id": inst_id,
-                "name": inst_data.get("name", "Unknown"),
-                "attributes": inst_data.get("attributes", {})
-            })
-        
-        # Get primary actors
-        for actor_id in actors_involved:
-            actor_data = self.graph.nodes[actor_id]
-            result["primary_actors"].append({
-                "id": actor_id,
-                "name": actor_data.get("name", "Unknown"),
-                "type": actor_data.get("type", "actor"),
-                "attributes": actor_data.get("attributes", {})
-            })
-        
-        # Create trend insights
-        for relation, count in relation_counts.items():
-            if count > 0:
-                result["trends"].append({
-                    "relation": relation,
-                    "count": count,
-                    "description": self._get_relation_description(relation)
-                })
-        
-        # Sort trends by count (descending)
-        result["trends"].sort(key=lambda x: x["count"], reverse=True)
-        
-        return result
-
-    def _get_relation_description(self, relation: str) -> str:
-        """
-        Get a description of a relation type.
-        
-        Args:
-            relation: Relation type
-            
-        Returns:
-            Description of the relation
-        """
-        descriptions = {
-            "undermines": "Actions that weaken or erode the effectiveness or legitimacy of institutions",
-            "restricts": "Placing limits on powers, jurisdiction, or independence",
-            "co-opts": "Taking control of an institution through appointments or other mechanisms",
-            "purges": "Removing individuals who don't align with a specific agenda",
-            "criminalizes": "Making certain actions or expressions illegal or subject to punishment",
-            "censors": "Suppressing speech, media content, or information flow",
-            "intimidates": "Using fear or threats to influence behavior or decisions",
-            "delegitimizes": "Attacking the credibility, authority, or legitimacy of an entity"
-        }
-        
-        return descriptions.get(relation, f"Relation of type {relation}")
-
-    def get_influential_actors(self, limit: int = 10) -> List[Dict[str, Any]]:
-        """
-        Get the most influential actors in the knowledge graph based on centrality.
-        
-        Args:
-            limit: Maximum number of actors to return
-            
-        Returns:
-            List of actor data dictionaries with influence scores
-        """
-        # Calculate centrality
-        centrality = nx.degree_centrality(self.graph)
-        
-        # Get all actor nodes
-        actors = []
-        for node_id, data in self.graph.nodes(data=True):
-            if data.get("type") == "actor" or data.get("type") == "institution":
-                # Calculate influence score (0-10)
-                influence = centrality.get(node_id, 0) * 10
-                
-                # Create actor data
-                actor_data = {
-                    "id": node_id,
-                    "name": data.get("name", "Unknown"),
-                    "type": data.get("type"),
-                    "influence_score": round(influence, 2),
-                    "attributes": data.get("attributes", {})
-                }
-                
-                # Count authoritarian relation types
-                auth_relations = {
-                    "undermines": 0, "restricts": 0, "co-opts": 0, 
-                    "purges": 0, "criminalizes": 0, "censors": 0, 
-                    "intimidates": 0, "delegitimizes": 0
-                }
-                
-                for _, target, edge_data in self.graph.out_edges(node_id, data=True):
-                    relation = edge_data.get("relation", "")
-                    if relation in auth_relations:
-                        auth_relations[relation] += 1
-                
-                actor_data["auth_relations"] = auth_relations
-                actor_data["auth_count"] = sum(auth_relations.values())
-                
-                # Add to list if it has any connections
-                if centrality.get(node_id, 0) > 0:
-                    actors.append(actor_data)
-        
-        # Sort by influence score (descending)
-        actors.sort(key=lambda x: (x["influence_score"], x["auth_count"]), reverse=True)
-        
-        # Limit results
-        return actors[:limit]
-
-    def analyze_democratic_erosion(self, days: int = 30) -> Dict[str, Any]:
-        """
-        Analyze democratic erosion patterns in the knowledge graph.
-        
-        Args:
-            days: Number of days to look back
-            
-        Returns:
-            Dictionary with democratic erosion analysis
-        """
-        # Get authoritarian trends
-        trends = self.get_authoritarian_trends(days)
-        
-        # Calculate date threshold
-        threshold_date = (datetime.now() - timedelta(days=days)).isoformat()
-        
-        # Initialize result
-        result = {
-            "erosion_score": trends.get("trend_score", 0),
-            "risk_level": "Low",
-            "affected_branches": {
-                "executive": [],
-                "legislative": [],
-                "judicial": []
-            },
-            "patterns": [],
-            "period_days": days,
-            "timestamp": datetime.now().isoformat()
-        }
-        
-        # Set risk level based on erosion score
-        score = trends.get("trend_score", 0)
-        if score < 3:
-            result["risk_level"] = "Low"
-        elif score < 6:
-            result["risk_level"] = "Moderate"
-        elif score < 8:
-            result["risk_level"] = "High"
+        if format.lower() == "gexf":
+            # Export as GEXF (for visualization in Gephi)
+            nx.write_gexf(self.graph, filepath)
+            self.logger.info(f"Exported graph as GEXF to {filepath}")
+            return filepath
         else:
-            result["risk_level"] = "Severe"
-        
-        # Collect affected institutions by branch
-        for institution in trends.get("affected_institutions", []):
-            attrs = institution.get("attributes", {})
-            branch = attrs.get("branch", "unknown").lower()
+            # Export as JSON (default)
+            # Prepare graph data
+            graph_data = {
+                "nodes": {},
+                "edges": []
+            }
             
-            if branch in result["affected_branches"]:
-                result["affected_branches"][branch].append({
-                    "id": institution.get("id"),
-                    "name": institution.get("name"),
-                    "attributes": attrs
-                })
-        
-        # Identify common patterns
-        # 1. Judicial interference
-        judicial_count = len(result["affected_branches"]["judicial"])
-        if judicial_count > 0:
-            result["patterns"].append({
-                "name": "Judicial Interference",
-                "severity": min(10, judicial_count * 2),
-                "description": f"Detected {judicial_count} instances of interference with judicial institutions",
-                "indicator": "Pattern of undermining independence of courts or judges"
-            })
-        
-        # 2. Media control
-        media_nodes = self.get_nodes_by_type("media_outlet")
-        censored_media = []
-        
-        for media in media_nodes:
-            # Check if this media outlet is being censored or delegitimized
-            for _, target, data in self.graph.in_edges(media.get("id"), data=True):
-                if data.get("relation") in ["censors", "delegitimizes"]:
-                    edge_timestamp = data.get("timestamp", "")
-                    if edge_timestamp >= threshold_date:
-                        censored_media.append(media)
-                        break
-        
-        if censored_media:
-            result["patterns"].append({
-                "name": "Media Control",
-                "severity": min(10, len(censored_media) * 2),
-                "description": f"Detected {len(censored_media)} instances of media censorship or delegitimization",
-                "indicator": "Pattern of controlling or silencing media outlets"
-            })
-        
-        # 3. Opposition targeting
-        opposition_targeting = []
-        
-        for source, target, data in self.graph.edges(data=True):
-            if data.get("relation") in ["criminalizes", "intimidates", "purges"]:
-                edge_timestamp = data.get("timestamp", "")
-                if edge_timestamp >= threshold_date:
-                    source_data = self.graph.nodes[source]
-                    target_data = self.graph.nodes[target]
-                    
-                    # Check if target is opposition or civil society
-                    if target_data.get("type") in ["actor", "civil_society"]:
-                        opposition_targeting.append({
-                            "source": source_data.get("name"),
-                            "target": target_data.get("name"),
-                            "relation": data.get("relation"),
-                            "evidence": data.get("evidence_quote", "")
-                        })
-        
-        if opposition_targeting:
-            result["patterns"].append({
-                "name": "Opposition Targeting",
-                "severity": min(10, len(opposition_targeting) * 2),
-                "description": f"Detected {len(opposition_targeting)} instances of targeting opposition or civil society",
-                "indicator": "Pattern of criminalizing, intimidating, or purging opposition voices"
-            })
-        
-        # 4. Institutional capture
-        institutional_capture = []
-        
-        for source, target, data in self.graph.edges(data=True):
-            if data.get("relation") in ["co-opts", "restricts"]:
-                edge_timestamp = data.get("timestamp", "")
-                if edge_timestamp >= threshold_date:
-                    target_data = self.graph.nodes[target]
-                    
-                    # Check if target is an institution
-                    if target_data.get("type") == "institution":
-                        institutional_capture.append({
-                            "institution": target_data.get("name"),
-                            "relation": data.get("relation"),
-                            "evidence": data.get("evidence_quote", "")
-                        })
-        
-        if institutional_capture:
-            result["patterns"].append({
-                "name": "Institutional Capture",
-                "severity": min(10, len(institutional_capture) * 2),
-                "description": f"Detected {len(institutional_capture)} instances of institutional capture or restriction",
-                "indicator": "Pattern of co-opting or restricting the independence of institutions"
-            })
-        
-        # Sort patterns by severity
-        result["patterns"].sort(key=lambda x: x["severity"], reverse=True)
-        
-        return result
-
-    def detect_coordination_patterns(self, days: int = 30) -> List[Dict[str, Any]]:
+            # Add nodes
+            for node_id, data in self.graph.nodes(data=True):
+                graph_data["nodes"][node_id] = data
+            
+            # Add edges
+            for source, target, data in self.graph.edges(data=True):
+                edge_data = data.copy()
+                edge_data["source"] = source
+                edge_data["target"] = target
+                graph_data["edges"].append(edge_data)
+            
+            # Write to file
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(graph_data, f, indent=2, ensure_ascii=False)
+            
+            self.logger.info(f"Exported graph as JSON to {filepath}")
+            return filepath
+            
+    def save_graph(self, filepath: str = None) -> str:
         """
-        Detect coordination patterns between actors in the knowledge graph.
+        Save the current graph to a JSON file.
         
         Args:
-            days: Number of days to look back
+            filepath: Path to save the file (optional)
             
         Returns:
-            List of coordination pattern dictionaries
+            Path to the saved file
         """
-        # Calculate date threshold
-        threshold_date = (datetime.now() - timedelta(days=days)).isoformat()
-        
-        # Get all actor nodes
-        actors = self.get_nodes_by_type("actor")
-        
-        # Create a subgraph of only recent edges
-        recent_edges = []
-        for source, target, data in self.graph.edges(data=True):
-            edge_timestamp = data.get("timestamp", "")
-            if edge_timestamp >= threshold_date:
-                recent_edges.append((source, target, data))
-        
-        # Build action-target map
-        action_map = {}
-        for source, target, data in recent_edges:
-            source_data = self.graph.nodes.get(source, {})
-            if source_data.get("type") != "actor":
-                continue
-                
-            source_name = source_data.get("name", "Unknown")
+        # Use provided filepath or default
+        if not filepath:
+            filepath = os.path.join(self.base_dir, "graph.json")
             
-            # Group by relation and target
-            relation = data.get("relation", "unknown")
-            target_data = self.graph.nodes.get(target, {})
-            target_name = target_data.get("name", "Unknown")
-            
-            key = f"{relation}:{target}"
-            if key not in action_map:
-                action_map[key] = {
-                    "relation": relation,
-                    "target": target_name,
-                    "actors": []
-                }
-            
-            action_map[key]["actors"].append(source_name)
-        
-        # Find coordinated actions (multiple actors targeting same entity with same relation)
-        coordination_patterns = []
-        
-        for key, data in action_map.items():
-            if len(data["actors"]) >= 2:
-                coordination_patterns.append({
-                    "actors": data["actors"],
-                    "relation": data["relation"],
-                    "target": data["target"],
-                    "actor_count": len(data["actors"]),
-                    "timestamp": datetime.now().isoformat()
-                })
-        
-        # Sort by actor count (descending)
-        coordination_patterns.sort(key=lambda x: x["actor_count"], reverse=True)
-        
-        return coordination_patterns
+        return self.export_graph(format="json", filepath=filepath)
 
     def get_entity_network(self, entity_id: str, depth: int = 2) -> Dict[str, Any]:
         """
@@ -1235,53 +972,9 @@ class KnowledgeGraph:
         
         return results[:limit]
 
-    def export_graph(self, format: str = "json") -> str:
+    def get_basic_statistics(self) -> Dict[str, Any]:
         """
-        Export the knowledge graph to a file.
-        
-        Args:
-            format: Export format (json or gexf)
-            
-        Returns:
-            Path to the exported file
-        """
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
-        if format.lower() == "gexf":
-            # Export as GEXF (for visualization in Gephi)
-            filepath = os.path.join(self.base_dir, f"knowledge_graph_{timestamp}.gexf")
-            nx.write_gexf(self.graph, filepath)
-            return filepath
-        else:
-            # Export as JSON (default)
-            filepath = os.path.join(self.base_dir, f"knowledge_graph_{timestamp}.json")
-            
-            # Prepare graph data
-            graph_data = {
-                "nodes": {},
-                "edges": []
-            }
-            
-            # Add nodes
-            for node_id, data in self.graph.nodes(data=True):
-                graph_data["nodes"][node_id] = data
-            
-            # Add edges
-            for source, target, data in self.graph.edges(data=True):
-                edge_data = data.copy()
-                edge_data["source"] = source
-                edge_data["target"] = target
-                graph_data["edges"].append(edge_data)
-            
-            # Write to file
-            with open(filepath, 'w', encoding='utf-8') as f:
-                json.dump(graph_data, f, indent=2, ensure_ascii=False)
-            
-            return filepath
-
-    def get_statistics(self) -> Dict[str, Any]:
-        """
-        Get statistics about the knowledge graph.
+        Get basic statistics about the knowledge graph.
         
         Returns:
             Dictionary with statistics
@@ -1299,21 +992,10 @@ class KnowledgeGraph:
             relation_types[relation] = relation_types.get(relation, 0) + 1
         
         # Get graph metrics
-        density = nx.density(self.graph)
-        
-        # Get most connected nodes
-        degree_centrality = nx.degree_centrality(self.graph)
-        sorted_centrality = sorted(degree_centrality.items(), key=lambda x: x[1], reverse=True)
-        top_nodes = []
-        
-        for node_id, score in sorted_centrality[:5]:
-            node_data = self.graph.nodes[node_id]
-            top_nodes.append({
-                "id": node_id,
-                "name": node_data.get("name", "Unknown"),
-                "type": node_data.get("type", "unknown"),
-                "centrality": round(score, 3)
-            })
+        try:
+            density = nx.density(self.graph)
+        except:
+            density = 0
         
         return {
             "node_count": len(self.graph.nodes),
@@ -1321,6 +1003,4 @@ class KnowledgeGraph:
             "node_types": node_types,
             "relation_types": relation_types,
             "graph_density": density,
-            "top_connected_nodes": top_nodes,
-            "timestamp": datetime.now().isoformat()
-        }
+            "timestamp": datetime.now().isoformat()}

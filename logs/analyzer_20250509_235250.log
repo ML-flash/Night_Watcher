@@ -1,0 +1,217 @@
+2025-05-09 23:52:50,161 - DocumentRepository - INFO - Document repository initialized at data/documents
+2025-05-09 23:52:50,164 - providers - WARNING - LM Studio connection check failed: HTTPConnectionPool(host='localhost', port=1234): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7430b0811010>: Failed to establish a new connection: [Errno 111] Connection refused'))
+2025-05-09 23:52:50,164 - providers - WARNING - Could not connect to LM Studio at http://localhost:1234
+2025-05-09 23:57:54,720 - providers - INFO - Using Anthropic provider with model claude-3-haiku-20240307
+2025-05-09 23:57:54,746 - root - INFO - Starting analysis at 20250509_235754 for 10 documents
+2025-05-09 23:57:54,746 - ContentAnalyzer - INFO - Analyzing: South Africa criticises US plan to accept white Afrikaners as refugees
+2025-05-09 23:57:54,893 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:58:01,923 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:58:01,931 - ContentAnalyzer - INFO - Successfully extracted facts for: South Africa criticises US plan to accept white Afrikaners as refugees
+2025-05-09 23:58:01,932 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:58:06,038 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:58:06,039 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:58:09,995 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:58:09,999 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:58:12,110 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:58:12,112 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:58:24,595 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:58:24,596 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:58:34,002 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:58:34,003 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:58:39,025 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:58:39,026 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:58:47,381 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:58:47,382 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:59:03,600 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:59:03,601 - ContentAnalyzer - INFO - Analyzing: The US and China are finally talking. Why now?
+2025-05-09 23:59:03,602 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:59:07,522 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:59:07,523 - ContentAnalyzer - INFO - Successfully extracted facts for: The US and China are finally talking. Why now?
+2025-05-09 23:59:07,524 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:59:11,001 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:59:11,005 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:59:14,172 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:59:14,173 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:59:16,211 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:59:16,212 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:59:26,802 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:59:26,803 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:59:34,813 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:59:34,814 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:59:40,614 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:59:40,616 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-09 23:59:51,021 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-09 23:59:51,023 - ContentAnalyzer - INFO - Attempting to repair malformed JSON with LLM
+2025-05-09 23:59:51,023 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:00:01,853 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:00:01,854 - ContentAnalyzer - WARNING - Failed to extract enriched edges from round 8. Enriching edges manually.
+2025-05-10 00:00:01,855 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:00:17,877 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:00:17,878 - ContentAnalyzer - INFO - Analyzing: USDA, DOGE demand states hand over personal data about food stamp recipients
+2025-05-10 00:00:17,878 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:00:23,201 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:00:23,202 - ContentAnalyzer - INFO - Successfully extracted facts for: USDA, DOGE demand states hand over personal data about food stamp recipients
+2025-05-10 00:00:23,203 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:00:26,784 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:00:26,794 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:00:29,906 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:00:29,910 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:00:33,616 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:00:33,617 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:00:51,860 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:00:51,862 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:01:05,428 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:01:05,429 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:01:10,908 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:01:10,915 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:01:21,423 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:01:21,425 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:01:42,519 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:01:42,523 - ContentAnalyzer - INFO - Analyzing: Librarian of Congress firing is latest move in upheaval of U.S. cultural institutions
+2025-05-10 00:01:42,523 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:01:49,088 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:01:49,089 - ContentAnalyzer - INFO - Successfully extracted facts for: Librarian of Congress firing is latest move in upheaval of U.S. cultural institutions
+2025-05-10 00:01:49,089 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:01:52,009 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:01:52,010 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:01:55,487 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:01:55,488 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:01:57,796 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:01:57,797 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:02:09,739 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:02:09,745 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:02:18,380 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:02:18,381 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:02:22,407 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:02:22,408 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:02:28,590 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:02:28,595 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:02:44,269 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:02:44,270 - ContentAnalyzer - INFO - Analyzing: Turkish Tufts University student released from immigration facility
+2025-05-10 00:02:44,271 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:02:47,849 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:02:47,850 - ContentAnalyzer - INFO - Successfully extracted facts for: Turkish Tufts University student released from immigration facility
+2025-05-10 00:02:47,850 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:02:50,821 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:02:50,822 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:02:53,880 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:02:53,884 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:02:56,101 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:02:56,102 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:03:03,729 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:03:03,731 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:03:09,920 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:03:09,922 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:03:13,243 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:03:13,245 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:03:18,661 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:03:18,662 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:03:30,718 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:03:30,719 - ContentAnalyzer - INFO - Analyzing: Federal judge appears likely to temporarily halt Trump's sweeping government overhaul
+2025-05-10 00:03:30,719 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:03:35,652 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:03:35,653 - ContentAnalyzer - INFO - Successfully extracted facts for: Federal judge appears likely to temporarily halt Trump's sweeping government overhaul
+2025-05-10 00:03:35,654 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:03:38,794 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:03:38,796 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:03:43,043 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:03:43,044 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:03:45,357 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:03:45,358 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:04:04,835 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:04:04,837 - ContentAnalyzer - INFO - Attempting to repair malformed JSON with LLM
+2025-05-10 00:04:04,837 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:04:27,426 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:04:27,427 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:04:40,956 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:04:40,960 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:04:48,120 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:04:48,121 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:04:59,182 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:04:59,183 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:05:19,318 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:05:19,320 - ContentAnalyzer - INFO - Analyzing: New Jersey mayor arrested for protesting at migrant centre
+2025-05-10 00:05:19,321 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:05:24,068 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:05:24,069 - ContentAnalyzer - INFO - Successfully extracted facts for: New Jersey mayor arrested for protesting at migrant centre
+2025-05-10 00:05:24,070 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:05:28,177 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:05:28,178 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:05:32,578 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:05:32,586 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:05:35,267 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:05:35,268 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:05:47,281 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:05:47,283 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:05:55,179 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:05:55,180 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:05:59,314 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:05:59,316 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:06:05,683 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:06:05,684 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:06:20,306 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:06:20,307 - ContentAnalyzer - INFO - Analyzing: Cities aiming to thwart immigrant detention centers wield a secret weapon: local laws
+2025-05-10 00:06:20,307 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:06:26,072 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:06:26,078 - ContentAnalyzer - INFO - Successfully extracted facts for: Cities aiming to thwart immigrant detention centers wield a secret weapon: local laws
+2025-05-10 00:06:26,078 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:06:29,426 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:06:29,428 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:06:32,763 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:06:32,764 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:06:34,658 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:06:34,659 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:06:52,825 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:06:52,830 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:07:04,736 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:07:04,737 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:07:12,549 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:07:12,550 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:07:27,225 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:07:27,227 - ContentAnalyzer - INFO - Attempting to repair malformed JSON with LLM
+2025-05-10 00:07:27,227 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:07:41,854 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:07:41,860 - ContentAnalyzer - WARNING - Failed to extract enriched edges from round 8. Enriching edges manually.
+2025-05-10 00:07:41,862 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:08:02,255 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:08:02,256 - ContentAnalyzer - INFO - Analyzing: Maga says Pope Leo may be American, but he's not 'America first'
+2025-05-10 00:08:02,256 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:08:05,843 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:08:05,844 - ContentAnalyzer - INFO - Successfully extracted facts for: Maga says Pope Leo may be American, but he's not 'America first'
+2025-05-10 00:08:05,845 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:08:09,943 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:08:09,944 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:08:13,159 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:08:13,160 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:08:16,111 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:08:16,115 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:08:26,024 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:08:26,026 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:08:33,444 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:08:33,445 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:08:43,629 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:08:43,635 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:08:59,062 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:08:59,063 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:09:22,228 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:09:22,230 - ContentAnalyzer - INFO - Analyzing: Chicago celebrates cultural victory with native son, Pope Leo XIV
+2025-05-10 00:09:22,230 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:09:24,274 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:09:24,275 - ContentAnalyzer - INFO - Successfully extracted facts for: Chicago celebrates cultural victory with native son, Pope Leo XIV
+2025-05-10 00:09:24,276 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:09:27,316 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:09:27,321 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:09:30,273 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:09:30,274 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:09:32,444 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:09:32,448 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:09:39,108 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:09:39,110 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:09:43,539 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:09:43,540 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:09:47,520 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:09:47,521 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:09:54,535 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:09:54,536 - AnthropicProvider - INFO - Using Anthropic model: claude-3-haiku-20240307
+2025-05-10 00:10:06,086 - httpx - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-05-10 00:10:06,087 - ContentAnalyzer - INFO - Completed analysis of 10 articles
