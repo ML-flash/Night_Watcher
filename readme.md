@@ -1,107 +1,96 @@
-# Night_watcher Intelligence Gathering System
+# Night_watcher Framework
 
-A system for analyzing news and identifying authoritarian patterns with enhanced memory capabilities.
+An intelligence gathering system that monitors information flows to protect democratic principles.
 
-## Quick Start
+## Installation
 
-1. Extract the Night_watcher files to any directory
-2. Make sure you have Python 3.8+ installed
+1. Ensure Python 3.8+ is installed
+2. Set up a virtual environment (recommended):
+   ```bash
+   python -m venv env
+   source env/bin/activate  # Linux/Mac
+   env\Scripts\activate  # Windows
+   ```
 3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-4. Run the framework:
-   ```bash
-   python run.py
-   ```
 
-That's it! The script will automatically:
-- Create necessary directories
-- Generate a default configuration file if needed
-- Connect to LM Studio at localhost:1234
-- Collect and analyze articles
-- Identify authoritarian patterns
-- Save all results in the current directory
-
-## Requirements
-
-- Python 3.8+
-- Local LLM server via [LM Studio](https://lmstudio.ai/) running on http://localhost:1234
-- Required Python packages (see requirements.txt):
-  - requests
-  - feedparser
-  - newspaper3k
-  - numpy
-
-## Command Line Options
-
-The `run.py` script accepts several optional parameters:
+## Basic Usage
 
 ```bash
-python run.py [OPTIONS]
-```
+# Run with default settings
+python night_watcher.py
 
-Options:
-- `--config PATH` - Path to configuration file (default: config.json)
-- `--llm-host URL` - LLM provider URL (default: http://localhost:1234)
-- `--article-limit N` - Maximum articles to collect per source (default: 50)
-- `--output-dir PATH` - Output directory (default: current directory)
-- `--reset-date` - Reset date tracking to start from inauguration day (Jan 20, 2025)
-- `--use-anthropic` - Force using Anthropic API instead of LM Studio
-- `--use-repository` - Use repository-based architecture for data provenance
+# Run with custom config
+python night_watcher.py --config my_config.json
 
-Example:
-```bash
-python run.py --llm-host http://192.168.1.100:1234 --article-limit 20 --output-dir ./outputs
+# Run with Anthropic API
+python night_watcher.py --use-anthropic --anthropic-key YOUR_API_KEY
+
+# Reset date tracking to start fresh
+python night_watcher.py --reset-date
+
+# Run with debug logging
+python night_watcher.py --verbose
 ```
 
 ## Configuration
 
-The default configuration will be created automatically on first run. 
-To customize, edit the generated `config.json` file:
+The default configuration will be generated automatically. You can modify `config.json` to:
+- Add news sources
+- Adjust analysis parameters
+- Configure output locations
+- Set up LLM preferences
 
-- **LLM Provider**: Connection settings for your local LLM
-- **Content Sources**: RSS feeds to monitor
-- **Manipulation Threshold**: Sensitivity for detecting divisive content
+Example config:
+```json
+{
+  "llm_provider": {
+    "type": "lm_studio",
+    "host": "http://localhost:1234",
+    "model": "default"
+  },
+  "content_collection": {
+    "article_limit": 5,
+    "sources": [
+      {"url": "https://www.reuters.com/rss/topNews", "type": "rss", "bias": "center"}
+    ]
+  },
+  "output": {
+    "base_dir": "data"
+  }
+}
+```
+
+## LLM Setup Options
+
+1. **Local LLM via LM Studio** (recommended):
+   - Download [LM Studio](https://lmstudio.ai/)
+   - Load a suitable model (32B+ recommended)
+   - Start local server on port 1234
+   
+2. **Cloud API (Claude)**:
+   - Obtain Anthropic API key
+   - Run with `--use-anthropic --anthropic-key YOUR_API_KEY`
 
 ## Output Structure
 
-After running, you'll find the following in your output directory:
+All outputs are saved in the configured data directory:
+- `collected/`: Raw article data
+- `analyzed/`: Analysis results
+- `memory/`: System memory and vector database
+- `documents/`: Source document repository with provenance tracking
 
-- `data/collected/` - Raw article data
-- `data/analyzed/` - Analysis results with manipulation scoring
-- `data/analysis/` - Pattern analysis and intelligence outputs
-- `data/memory/` - System memory for tracking patterns over time
-- `logs/` - Execution logs
+## Command Line Options
 
-## Intelligence Gathering Capabilities
-
-The Night_watcher system provides several key intelligence gathering capabilities:
-
-1. **Content Collection**: Gathers politically-focused content from various RSS feeds with filtering
-2. **Content Analysis**: Identifies manipulation techniques and authoritarian patterns in content
-3. **Entity Extraction**: Extracts key political entities and their relationships from content
-4. **Pattern Recognition**: Identifies recurring topics, authoritarian trends, and actor patterns
-5. **Knowledge Graph**: Maps relationships between entities to track patterns over time
-6. **Memory System**: Maintains a vector database for tracking historical patterns
-
-## Security Considerations
-
-- The framework runs locally with no external API calls except to specified news sources
-- All LLM interactions happen locally through LM Studio (or optionally via Anthropic API)
-- No data is sent to external servers unless using Anthropic API
-
-## Extensions
-
-Night_watcher is designed as an intelligence gathering foundation. It can be extended with additional toolkit modules for:
-
-- Strategic response generation
-- Counter-narrative development
-- Distribution planning
-- Reporting systems
-
-These extension modules are kept separate from the core intelligence gathering system to maintain focus and modularity.
-
-## License
-
-This project is released into the public domain - see the [LICENSE](LICENSE) file for details.
+```
+--config PATH          Path to configuration file
+--llm-host URL         LLM provider URL
+--article-limit N      Maximum articles per source
+--output-dir PATH      Output directory
+--reset-date           Reset date tracking
+--use-anthropic        Use Anthropic API
+--anthropic-key KEY    Anthropic API key
+--verbose              Enable verbose logging
+```
