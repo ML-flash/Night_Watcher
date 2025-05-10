@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """
 Night_watcher Knowledge Graph Builder
-Stand-alone tool to build and maintain the knowledge graph from analysis outputs.
+Builds and updates the knowledge graph from analyzed articles.
 """
 
 import os
 import sys
-import glob
 import json
 import logging
-import argparse
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Set, Tuple, Union
+import glob
+import re
+from datetime import datetime
+
+# Ensure knowledge_graph module can be found
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from knowledge_graph import KnowledgeGraph
 
@@ -22,182 +24,151 @@ logging.basicConfig(
 )
 logger = logging.getLogger("build_knowledge_graph")
 
-def load_analyzed_files(analyzed_dir: str, pattern: str = "kg_analysis_*.json") -> List[Dict[str, Any]]:
+def load_and_process_analyses(kg: KnowledgeGraph, analyses_dir: str, pattern: str = "analysis_*.json") -> int:
     """
-    Load KG analysis files from the analyzed directory.
+    Load analysis files and add nodes and edges to the knowledge graph.
     
     Args:
-        analyzed_dir: Directory containing analysis outputs
+        kg: Knowledge graph instance
+        analyses_dir: Directory containing analysis files
         pattern: File pattern to match
         
     Returns:
-        List of loaded analysis data
+        Number of analyses processed
     """
-    analyses = []
+    if not os.path.exists(analyses_dir):
+        logger.error(f"Analyses directory not found: {analyses_dir}")
+        return 0
     
-    # Find matching files
-    file_pattern = os.path.join(analyzed_dir, pattern)
-    matching_files = glob.glob(file_pattern)
+    # Find all analysis files
+    file_pattern = os.path.join(analyses_dir, pattern)
+    files = glob.glob(file_pattern)
     
-    logger.info(f"Found {len(matching_files)} analysis files matching pattern {pattern}")
+    logger.info(f"Found {len(files)} analysis files matching pattern {pattern}")
     
-    # Load each file
-    for filepath in matching_files:
+    if not files:
+        logger.warning("No analyses found")
+        return 0
+    
+    processed_count = 0
+    
+    for file_path in files:
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(file_path, 'r', encoding='utf-8') as f:
                 analysis = json.load(f)
-                analyses.append(analysis)
-                logger.debug(f"Loaded analysis from {filepath}")
+            
+            # Check if this is a kg_analysis or a regular analysis
+            # KG analysis has kg_payload directly
+            # Regular analysis might have it nested under structured_facts and analysis
+            kg_payload = None
+            
+            if "kg_payload" in analysis:
+                # Direct KG payload
+                kg_payload = analysis["kg_payload"]
+            elif "prompt_chain" in analysis:
+                # Extract KG payload from prompt chain
+                # Look for Node Extraction, Edge Extraction rounds
+                nodes = []
+                edges = []
+                
+                for round_data in analysis.get("prompt_chain", []):
+                    round_name = round_data.get("name", "")
+                    
+                    if "Node Extraction" in round_name or "Edge Extraction" in round_name:
+                        # Try to extract JSON from the response
+                        response = round_data.get("response", "")
+                        
+                        # Look for JSON arrays in the response
+                        json_matches = re.findall(r'\[\s*{.*}\s*\]', response, re.DOTALL)
+                        
+                        if json_matches:
+                            for json_str in json_matches:
+                                try:
+                                    parsed_data = json.loads(json_str)
+                                    
+                                    # Determine if this is nodes or edges
+                                    if isinstance(parsed_data, list) and parsed_data:
+                                        if "node_type" in parsed_data[0]:
+                                            nodes.extend(parsed_data)
+                                        elif "relation" in parsed_data[0]:
+                                            edges.extend(parsed_data)
+                                except json.JSONDecodeError:
+                                    continue
+                
+                if nodes or edges:
+                    kg_payload = {
+                        "nodes": nodes,
+                        "edges": edges
+                    }
+            
+            # Skip if no KG payload found
+            if not kg_payload:
+                logger.warning(f"No knowledge graph payload found in {file_path}")
+                continue
+            
+            # Process the article info
+            article = analysis.get("article", {})
+            
+            # Process the knowledge graph payload
+            success = kg.process_article_analysis(article, {"kg_payload": kg_payload})
+            
+            if success:
+                processed_count += 1
+                logger.info(f"Processed analysis from {os.path.basename(file_path)}")
+            else:
+                logger.warning(f"Failed to process analysis from {os.path.basename(file_path)}")
+                
         except Exception as e:
-            logger.error(f"Error loading {filepath}: {e}")
-            
-    return analyses
+            logger.error(f"Error processing {file_path}: {e}")
+    
+    return processed_count
 
-def process_analyses(kg: KnowledgeGraph, analyses: List[Dict[str, Any]]) -> Dict[str, int]:
-    """
-    Process analyses and add to knowledge graph.
-    
-    Args:
-        kg: Knowledge graph instance
-        analyses: List of analysis data
-        
-    Returns:
-        Dictionary with processing stats
-    """
-    total_nodes = 0
-    total_edges = 0
-    total_articles = 0
-    
-    for analysis in analyses:
-        article = analysis.get("article", {})
-        kg_payload = analysis.get("kg_payload", {})
-        
-        if not article or not kg_payload:
-            logger.warning("Analysis missing article or KG payload")
-            continue
-            
-        # Process analysis
-        result = kg.process_article_analysis(article, analysis)
-        
-        # Update counts
-        total_nodes += result.get("nodes_added", 0)
-        total_edges += result.get("edges_added", 0)
-        total_articles += 1
-        
-        logger.info(f"Processed article: {article.get('title', 'Unknown')} - Added {result.get('nodes_added', 0)} nodes, {result.get('edges_added', 0)} edges")
-        
-    # Infer temporal relationships
-    temporal_relations = kg.infer_temporal_relationships()
-    logger.info(f"Inferred {temporal_relations} temporal relationships")
-    
-    return {
-        "articles_processed": total_articles,
-        "nodes_added": total_nodes,
-        "edges_added": total_edges,
-        "temporal_relations": temporal_relations
-    }
-
-def generate_intelligence_reports(kg: KnowledgeGraph, output_dir: str) -> None:
-    """
-    Generate intelligence reports from the knowledge graph.
-    
-    Args:
-        kg: Knowledge graph instance
-        output_dir: Directory to save reports
-    """
-    # Make sure output directory exists
-    os.makedirs(output_dir, exist_ok=True)
-    
-    # Generate timestamp for filenames
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    
-    # Generate full intelligence report
-    intel_report = kg.generate_intelligence_report()
-    intel_report_path = os.path.join(output_dir, f"intelligence_report_{timestamp}.json")
-    
-    with open(intel_report_path, 'w', encoding='utf-8') as f:
-        json.dump(intel_report, f, indent=2, ensure_ascii=False)
-        
-    logger.info(f"Generated intelligence report: {intel_report_path}")
-    
-    # Generate authoritarian trends report
-    auth_trends = kg.get_authoritarian_trends(days=90)
-    auth_trends_path = os.path.join(output_dir, f"authoritarian_trends_{timestamp}.json")
-    
-    with open(auth_trends_path, 'w', encoding='utf-8') as f:
-        json.dump(auth_trends, f, indent=2, ensure_ascii=False)
-        
-    logger.info(f"Generated authoritarian trends report: {auth_trends_path}")
-    
-    # Generate democratic erosion report
-    erosion = kg.analyze_democratic_erosion(days=90)
-    erosion_path = os.path.join(output_dir, f"democratic_erosion_{timestamp}.json")
-    
-    with open(erosion_path, 'w', encoding='utf-8') as f:
-        json.dump(erosion, f, indent=2, ensure_ascii=False)
-        
-    logger.info(f"Generated democratic erosion report: {erosion_path}")
-    
-    # Generate network visualization data
-    viz_data = kg.visualize_network(
-        output_file=os.path.join(output_dir, f"network_visualization_{timestamp}.json")
-    )
-    
-    logger.info(f"Generated network visualization data: {len(viz_data['nodes'])} nodes, {len(viz_data['edges'])} edges")
-
-def main() -> int:
-    parser = argparse.ArgumentParser(description="Night_watcher Knowledge Graph Builder")
-    parser.add_argument("--kg-file", default="data/knowledge_graph/graph.json",
-                        help="Knowledge graph file (JSON format)")
-    parser.add_argument("--taxonomy-file", default="KG_Taxonomy.csv",
-                        help="Taxonomy file (CSV format)")
-    parser.add_argument("--analyzed-dir", default="data/analyzed",
-                        help="Directory containing analysis outputs")
-    parser.add_argument("--output-dir", default="data/analysis",
-                        help="Output directory for reports")
-    parser.add_argument("--file-pattern", default="kg_analysis_*.json",
-                        help="Pattern to match analysis files")
-    parser.add_argument("--skip-reports", action="store_true",
-                        help="Skip generating reports")
-    parser.add_argument("--verbose", action="store_true",
-                        help="Enable verbose logging")
-    
-    args = parser.parse_args()
-    
-    # Set log level
-    if args.verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
+def main():
+    """Main entry point"""
+    # Configuration
+    graph_file = "data/knowledge_graph/graph.json"
+    taxonomy_file = "KG_Taxonomy.csv"
+    analyses_dir = "data/analyzed"
     
     # Initialize knowledge graph
-    logger.info(f"Initializing knowledge graph from {args.kg_file}")
-    kg = KnowledgeGraph(graph_file=args.kg_file, taxonomy_file=args.taxonomy_file)
+    logger.info(f"Initializing knowledge graph from {graph_file}")
+    kg = KnowledgeGraph(graph_file=graph_file, taxonomy_file=taxonomy_file)
     
     # Load analyses
-    logger.info(f"Loading analyses from {args.analyzed_dir}")
-    analyses = load_analyzed_files(args.analyzed_dir, args.file_pattern)
+    logger.info(f"Loading analyses from {analyses_dir}")
     
-    if not analyses:
-        logger.warning("No analyses found")
-        return 1
+    # Try multiple patterns to find analyses
+    patterns = [
+        "kg_analysis_*.json",  # Custom KG analyses
+        "analysis_*.json"      # Regular analyses from analyzer.py
+    ]
+    
+    total_processed = 0
+    
+    for pattern in patterns:
+        processed = load_and_process_analyses(kg, analyses_dir, pattern)
+        total_processed += processed
         
-    # Process analyses
-    logger.info(f"Processing {len(analyses)} analyses")
-    stats = process_analyses(kg, analyses)
+        if processed > 0:
+            logger.info(f"Processed {processed} analyses with pattern {pattern}")
     
-    # Generate reports unless skipped
-    if not args.skip_reports:
-        logger.info("Generating intelligence reports")
-        generate_intelligence_reports(kg, args.output_dir)
+    if total_processed == 0:
+        logger.warning("No analyses found or processed")
+        return 1
     
-    # Print summary
-    print("\n=== Knowledge Graph Builder Summary ===")
-    print(f"Articles processed: {stats['articles_processed']}")
-    print(f"Nodes added: {stats['nodes_added']}")
-    print(f"Edges added: {stats['edges_added']}")
-    print(f"Temporal relations: {stats['temporal_relations']}")
-    print(f"Total KG size: {len(kg.graph.nodes)} nodes, {len(kg.graph.edges)} edges")
-    print(f"Knowledge graph file: {args.kg_file}")
-    print(f"Reports saved to: {args.output_dir}")
+    # Save the graph
+    kg.save_graph()
+    logger.info(f"Graph saved to: {graph_file}")
+    
+    # Save a snapshot
+    snapshot_id = kg.save_snapshot(name=f"Graph updated from {total_processed} analyses")
+    logger.info(f"Snapshot created: {snapshot_id}")
+    
+    # Get statistics
+    stats = kg.get_basic_statistics()
+    logger.info(f"Graph now contains {stats['node_count']} nodes and {stats['edge_count']} edges")
+    logger.info(f"Node types: {list(stats['node_types'].keys())}")
+    logger.info(f"Relation types: {list(stats['relation_types'].keys())}")
     
     return 0
 

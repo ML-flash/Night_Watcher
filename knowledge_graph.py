@@ -37,6 +37,9 @@ class KnowledgeGraph:
         self.edges_dir = os.path.join(base_dir, "edges")
         self.snapshots_dir = os.path.join(base_dir, "snapshots")
         
+        # Setup logging
+        self.logger = logging.getLogger("KnowledgeGraph")
+        
         # Support for both initialization methods (backward compatibility)
         self.taxonomy_path = taxonomy_file if taxonomy_file else taxonomy_path
         self.graph_file = graph_file
@@ -50,9 +53,6 @@ class KnowledgeGraph:
         # Node and edge counters for ID generation
         self._node_counter = 0
         self._edge_counter = 0
-        
-        # Setup logging
-        self.logger = logging.getLogger("KnowledgeGraph")
         
         # Load existing graph if available
         if graph_file and os.path.exists(graph_file):
@@ -391,7 +391,7 @@ class KnowledgeGraph:
             "attributes": attributes or {}
         }
         
-        # Check if a similar edge already exists
+                    # Check if a similar edge already exists
         existing_edge = self._find_similar_edge(source_id, relation, target_id)
         if existing_edge:
             self.logger.info(f"Similar edge already exists: {existing_edge}")
@@ -415,13 +415,18 @@ class KnowledgeGraph:
                     if key not in existing_data.get("attributes", {}):
                         existing_data["attributes"][key] = value
             
-            # Save updated edge
-            self._save_edge(existing_data["id"], existing_data)
+            # Extract existing edge ID
+            edge_id = existing_data.get("id", "")
             
-            return existing_data["id"]
+            # Save updated edge
+            if edge_id:
+                self._save_edge(edge_id, existing_data)
+            
+            return edge_id
         
         # Add edge to graph
-        self.graph.add_edge(source_id, target_id, id=edge_id, **edge_data)
+        edge_attrs = {k: v for k, v in edge_data.items() if k != 'id'}  # Remove id to avoid duplicate
+        self.graph.add_edge(source_id, target_id, **edge_attrs)
         
         # Save edge to disk
         self._save_edge(edge_id, edge_data)
@@ -1003,4 +1008,5 @@ class KnowledgeGraph:
             "node_types": node_types,
             "relation_types": relation_types,
             "graph_density": density,
-            "timestamp": datetime.now().isoformat()}
+            "timestamp": datetime.now().isoformat()
+        }
