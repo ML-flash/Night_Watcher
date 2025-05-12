@@ -19,7 +19,7 @@ from document_repository import DocumentRepository
 # Default configuration
 DEFAULT_CONFIG = {
     "content_collection": {
-        "article_limit": 5,
+        "article_limit": 50,
         "sources": [
             {"url": "https://apnews.com/rss", "type": "rss", "bias": "center"},
             {"url": "https://feeds.npr.org/1001/rss.xml", "type": "rss", "bias": "center-left"},

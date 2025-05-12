@@ -1,6 +1,6 @@
 {
   "content_collection": {
-    "article_limit": 5,
+    "article_limit": 50,
     "sources": [
       {
         "url": "https://apnews.com/rss",
