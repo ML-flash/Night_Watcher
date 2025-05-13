@@ -1,10 +1,22 @@
 {
+  "_documentation": {
+    "overview": "Night_watcher configuration file with provenance tracking settings",
+    "usage": "This file controls system behavior across all Night_watcher components",
+    "notes": [
+      "Fields beginning with underscore (_) are documentation only and ignored by code",
+      "All components read from this shared configuration for consistent behavior"
+    ]
+  },
+  
   "content_collection": {
+    "_description": "Settings for the content collection component",
     "article_limit": 50,
+    "_article_limit_info": "Maximum articles to collect per source",
+    
     "sources": [
       {
         "url": "https://apnews.com/rss",
-        "type": "rss",
+        "type": "rss", 
         "bias": "center"
       },
       {
@@ -33,6 +45,8 @@
         "bias": "official-government"
       }
     ],
+    "_sources_info": "List of content sources to collect from - each must have url, type, and bias fields",
+    
     "govt_keywords": [
       "executive order",
       "administration",
@@ -53,10 +67,81 @@
       "democracy",
       "constitution",
       "amendment"
-    ]
+    ],
+    "_govt_keywords_info": "Keywords used to identify politically relevant content"
   },
+  
   "output": {
+    "_description": "Output directory settings",
     "base_dir": "data",
-    "save_collected": true
+    "_base_dir_info": "Base directory for all data storage - can be overridden with --output-dir",
+    "save_collected": true,
+    "_save_collected_info": "Whether to save collected content to individual files"
+  },
+  
+  "llm_provider": {
+    "_description": "Settings for the Large Language Model provider",
+    "type": "lm_studio",
+    "_type_info": "Provider type: 'lm_studio' (local) or 'anthropic' (API)",
+    "host": "http://localhost:1234",
+    "_host_info": "Host URL for local LLM server",
+    "model": "default",
+    "_model_info": "Model name to use with provider (when available)"
+  },
+  
+  "analysis": {
+    "_description": "Content analysis settings",
+    "max_articles": 10,
+    "_max_articles_info": "Maximum articles to analyze per run - can be overridden with --max-articles",
+    "include_kg": true,
+    "_include_kg_info": "Whether to include knowledge graph generation in analysis"
+  },
+  
+  "knowledge_graph": {
+    "_description": "Knowledge graph settings",
+    "graph_file": "data/knowledge_graph/graph.json",
+    "_graph_file_info": "Path to primary knowledge graph storage file",
+    "taxonomy_file": "KG_Taxonomy.csv",
+    "_taxonomy_file_info": "Path to knowledge graph taxonomy definition"
+  },
+  
+  "input": {
+    "_description": "Input directory settings",
+    "analyzed_dir": "data/analyzed",
+    "_analyzed_dir_info": "Directory containing analyzed documents",
+    "file_pattern": "analysis_*.json",
+    "_file_pattern_info": "Pattern to match for analysis files (default: analysis_*.json)"
+  },
+  
+  "provenance": {
+    "_description": "Cryptographic provenance tracking settings",
+    "enabled": true,
+    "_enabled_info": "Whether to enable cryptographic provenance tracking system-wide",
+    "dev_mode": true,
+    "_dev_mode_info": "Development mode uses passphrase-derived keys instead of production key management",
+    "dev_passphrase": "night_watcher_development_only",
+    "_dev_passphrase_info": "Development passphrase (CHANGE this in production)",
+    "verify": true,
+    "_verify_info": "Whether to verify provenance when loading documents/analyses, and skip items that fail verification"
+  },
+  
+  "logging": {
+    "_description": "Logging settings",
+    "level": "INFO",
+    "_level_info": "Log level: DEBUG, INFO, WARNING, ERROR, or CRITICAL",
+    "log_dir": "logs",
+    "_log_dir_info": "Directory to store log files"
+  },
+  
+  "_production_notes": {
+    "provenance": [
+      "For production deployment, set dev_mode to false and implement proper key management",
+      "Ensure dev_passphrase is never used in production environments",
+      "Verification should be true to maintain strict chain of custody"
+    ],
+    "security": [
+      "In production, store this file with limited access permissions",
+      "Consider using environment variables for sensitive values"
+    ]
   }
 }
