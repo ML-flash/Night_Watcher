@@ -1,3 +1,4 @@
+# night_watcher_collector.py - Updated with provenance integration
 #!/usr/bin/env python3
 """
 Night_watcher Collector
@@ -39,6 +40,10 @@ DEFAULT_CONFIG = {
     "output": {
         "base_dir": "data",
         "save_collected": True
+    },
+    "provenance": {
+        "enabled": True,
+        "dev_mode": True
     }
 }
 
@@ -154,8 +159,20 @@ def run_collector(config: Dict[str, Any], args: argparse.Namespace) -> int:
 
     os.makedirs(collected_dir, exist_ok=True)
 
-    # Set up document repository
-    doc_repo = DocumentRepository(base_dir=document_repo_dir)
+    # Set up document repository with provenance
+    provenance_enabled = config["provenance"].get("enabled", True) and not args.disable_provenance
+    dev_passphrase = args.provenance_passphrase or os.environ.get("NIGHT_WATCHER_PASSPHRASE")
+    
+    if provenance_enabled and not dev_passphrase:
+        logging.warning("Provenance enabled but no passphrase provided. Using default passphrase.")
+        dev_passphrase = "night_watcher_development_only"
+
+    # Initialize document repository with provenance settings    
+    doc_repo = DocumentRepository(
+        base_dir=document_repo_dir,
+        dev_passphrase=dev_passphrase,
+        dev_mode=config["provenance"].get("dev_mode", True) if provenance_enabled else False
+    )
 
     # Set up collector
     collector = ContentCollector(config, doc_repo)
@@ -241,6 +258,7 @@ def run_collector(config: Dict[str, Any], args: argparse.Namespace) -> int:
         "end_date": end_date.isoformat(),
         "next_start_date": latest_article_date.isoformat() if latest_article_date else end_date.isoformat(),
         "document_ids": document_ids,
+        "provenance_enabled": provenance_enabled,
         "status": status
     }
 
@@ -254,6 +272,12 @@ def run_collector(config: Dict[str, Any], args: argparse.Namespace) -> int:
     print(f"Documents stored: {len(document_ids)}")
     print(f"Time range: {start_date.isoformat()} to {end_date.isoformat()}")
     print(f"Next start date: {latest_article_date.isoformat() if latest_article_date else end_date.isoformat()}")
+    
+    # Print provenance status
+    if provenance_enabled:
+        print(f"Provenance: ENABLED (development mode)")
+    else:
+        print(f"Provenance: DISABLED")
 
     # Print document repository stats
     repo_stats = doc_repo.get_statistics()
@@ -284,6 +308,10 @@ def main() -> int:
     parser.add_argument("--reset-date", action="store_true", help="Reset date to inauguration day")
     parser.add_argument("--days", type=int, help="Collect articles from the last N days")
     parser.add_argument("--verbose", action="store_true", help="Verbose logging")
+    
+    # Add provenance arguments
+    parser.add_argument("--provenance-passphrase", help="Passphrase for document provenance (dev mode)")
+    parser.add_argument("--disable-provenance", action="store_true", help="Disable provenance tracking")
 
     args = parser.parse_args()
 
@@ -297,6 +325,10 @@ def main() -> int:
     os.makedirs(collected_dir, exist_ok=True)
     os.makedirs(os.path.join(document_dir, "content"), exist_ok=True)
     os.makedirs(os.path.join(document_dir, "metadata"), exist_ok=True)
+    
+    # Create provenance directories
+    if not args.disable_provenance:
+        os.makedirs(os.path.join(document_dir, "provenance", "signatures"), exist_ok=True)
 
     # Set up logging
     log_level = logging.DEBUG if args.verbose else logging.INFO
