@@ -1,6 +1,3 @@
-# Updated DocumentRepository class with provenance tracking
-# This would be an update to document_repository.py
-
 from typing import Dict, Any, Optional, List, Tuple
 from datetime import datetime
 import os
@@ -147,8 +144,6 @@ class DocumentRepository:
                 self.logger.warning(f"Provenance verification failed for {doc_id}: {message}")
         
         return content, metadata, verified
-
-    # Other methods remain the same...
     
     def get_document_with_provenance(self, doc_id: str) -> Dict[str, Any]:
         """
@@ -174,6 +169,23 @@ class DocumentRepository:
             },
             "available": content is not None and metadata is not None
         }
+    
+    def list_documents(self) -> List[str]:
+        """
+        List all document IDs in the repository.
+        
+        Returns:
+            List of document IDs
+        """
+        documents = []
+        
+        if os.path.exists(self.content_dir):
+            for filename in os.listdir(self.content_dir):
+                if filename.endswith(".txt"):
+                    doc_id = filename[:-4]  # Remove .txt extension
+                    documents.append(doc_id)
+        
+        return documents
         
     def verify_all_documents(self) -> Dict[str, Any]:
         """
@@ -208,5 +220,123 @@ class DocumentRepository:
                     "document_id": doc_id,
                     "reason": "Provenance verification failed"
                 })
+        
+        return results
+    
+    def get_statistics(self) -> Dict[str, Any]:
+        """
+        Get repository statistics including document count, size, and source distribution.
+        
+        Returns:
+            Dictionary with repository statistics
+        """
+        # Get document list
+        documents = self.list_documents()
+        
+        # Initialize stats
+        stats = {
+            "total_documents": len(documents),
+            "content_size_bytes": 0,
+            "metadata_size_bytes": 0,
+            "sources": {},
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        # Process each document
+        for doc_id in documents:
+            # Get content file size
+            content_path = os.path.join(self.content_dir, f"{doc_id}.txt")
+            if os.path.exists(content_path):
+                stats["content_size_bytes"] += os.path.getsize(content_path)
+            
+            # Get metadata file size and source
+            metadata_path = os.path.join(self.metadata_dir, f"{doc_id}.json")
+            if os.path.exists(metadata_path):
+                stats["metadata_size_bytes"] += os.path.getsize(metadata_path)
+                
+                # Extract source from metadata
+                try:
+                    with open(metadata_path, 'r', encoding='utf-8') as f:
+                        metadata = json.load(f)
+                    
+                    source = metadata.get("source", "Unknown")
+                    stats["sources"][source] = stats["sources"].get(source, 0) + 1
+                except Exception as e:
+                    self.logger.error(f"Error reading metadata for stats {doc_id}: {e}")
+        
+        return stats
+    
+    def delete_document(self, doc_id: str) -> bool:
+        """
+        Delete a document and its associated files.
+        
+        Args:
+            doc_id: Document ID
+            
+        Returns:
+            True if deletion was successful, False otherwise
+        """
+        content_path = os.path.join(self.content_dir, f"{doc_id}.txt")
+        metadata_path = os.path.join(self.metadata_dir, f"{doc_id}.json")
+        signature_path = os.path.join(self.provenance.signatures_dir, f"{doc_id}.sig.json")
+        
+        try:
+            # Delete content file
+            if os.path.exists(content_path):
+                os.remove(content_path)
+            
+            # Delete metadata file
+            if os.path.exists(metadata_path):
+                os.remove(metadata_path)
+            
+            # Delete signature file
+            if os.path.exists(signature_path):
+                os.remove(signature_path)
+            
+            self.logger.info(f"Deleted document {doc_id}")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error deleting document {doc_id}: {e}")
+            return False
+    
+    def search_documents(self, query: str, max_results: int = 10) -> List[Dict[str, Any]]:
+        """
+        Search documents by metadata fields.
+        
+        Args:
+            query: Search query string
+            max_results: Maximum number of results to return
+            
+        Returns:
+            List of matching document metadata
+        """
+        query = query.lower()
+        results = []
+        
+        for doc_id in self.list_documents():
+            # Get metadata
+            metadata_path = os.path.join(self.metadata_dir, f"{doc_id}.json")
+            
+            if os.path.exists(metadata_path):
+                try:
+                    with open(metadata_path, 'r', encoding='utf-8') as f:
+                        metadata = json.load(f)
+                    
+                    # Check if query matches any metadata field
+                    for key, value in metadata.items():
+                        if isinstance(value, str) and query in value.lower():
+                            results.append({
+                                "document_id": doc_id,
+                                "metadata": metadata,
+                                "match_field": key
+                            })
+                            break
+                    
+                    # Limit results
+                    if len(results) >= max_results:
+                        break
+                        
+                except Exception as e:
+                    self.logger.error(f"Error searching document {doc_id}: {e}")
         
         return results

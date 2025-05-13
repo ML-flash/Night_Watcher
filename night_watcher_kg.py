@@ -29,7 +29,7 @@ DEFAULT_CONFIG = {
     },
     "input": {
         "analyzed_dir": "data/analyzed",
-        "file_pattern": "kg_analysis_*.json"
+        "file_pattern": "analysis_*.json"
     },
     "output": {
         "reports_dir": "data/analysis",
@@ -92,7 +92,7 @@ def create_default_config(config_path: str) -> bool:
 # Core Functions
 # ==========================================
 
-def load_analyzed_files(analyzed_dir: str, pattern: str = "kg_analysis_*.json") -> List[Dict[str, Any]]:
+def load_analyzed_files(analyzed_dir: str, pattern: str = "analysis_*.json") -> List[Dict[str, Any]]:
     """Load KG analysis files from the analyzed directory"""
     analyses = []
     
@@ -179,8 +179,8 @@ def process_analyses(kg: KnowledgeGraph,
     }
 
 
-def generate_reports(kg: KnowledgeGraph, output_dir: str, trend_days: int = 90, save_viz: bool = True) -> Dict[str, str]:
-    """Generate intelligence reports from the knowledge graph"""
+def generate_basic_reports(kg: KnowledgeGraph, output_dir: str, trend_days: int = 90, save_viz: bool = True) -> Dict[str, str]:
+    """Generate basic reports from the knowledge graph"""
     # Make sure output directory exists
     os.makedirs(output_dir, exist_ok=True)
     
@@ -190,60 +190,28 @@ def generate_reports(kg: KnowledgeGraph, output_dir: str, trend_days: int = 90, 
     # Track generated files
     generated_files = {}
     
-    # Generate full intelligence report
-    intel_report = kg.generate_intelligence_report()
+    # Generate graph statistics report
+    stats = kg.get_basic_statistics()
+    stats_path = os.path.join(output_dir, f"graph_statistics_{timestamp}.json")
     
-    # Add provenance information to the report
-    intel_report["provenance"] = {
-        "timestamp": datetime.now().isoformat(),
-        "framework_version": "1.0.0"
-    }
-    
-    intel_report_path = os.path.join(output_dir, f"intelligence_report_{timestamp}.json")
-    
-    with open(intel_report_path, 'w', encoding='utf-8') as f:
-        json.dump(intel_report, f, indent=2, ensure_ascii=False)
+    with open(stats_path, 'w', encoding='utf-8') as f:
+        json.dump(stats, f, indent=2, ensure_ascii=False)
         
-    logging.info(f"Generated intelligence report: {intel_report_path}")
-    generated_files["intelligence_report"] = intel_report_path
+    logging.info(f"Generated statistics report: {stats_path}")
+    generated_files["statistics"] = stats_path
     
-    # Generate authoritarian trends report
-    auth_trends = kg.get_authoritarian_trends(days=trend_days)
-    auth_trends_path = os.path.join(output_dir, f"authoritarian_trends_{timestamp}.json")
-    
-    with open(auth_trends_path, 'w', encoding='utf-8') as f:
-        json.dump(auth_trends, f, indent=2, ensure_ascii=False)
-        
-    logging.info(f"Generated authoritarian trends report: {auth_trends_path}")
-    generated_files["authoritarian_trends"] = auth_trends_path
-    
-    # Generate democratic erosion report
-    erosion = kg.analyze_democratic_erosion(days=trend_days)
-    erosion_path = os.path.join(output_dir, f"democratic_erosion_{timestamp}.json")
-    
-    with open(erosion_path, 'w', encoding='utf-8') as f:
-        json.dump(erosion, f, indent=2, ensure_ascii=False)
-        
-    logging.info(f"Generated democratic erosion report: {erosion_path}")
-    generated_files["democratic_erosion"] = erosion_path
-    
-    # Generate influential actors report
-    actors = kg.get_influential_actors(limit=10)
-    actors_path = os.path.join(output_dir, f"influential_actors_{timestamp}.json")
-    
-    with open(actors_path, 'w', encoding='utf-8') as f:
-        json.dump(actors, f, indent=2, ensure_ascii=False)
-        
-    logging.info(f"Generated influential actors report: {actors_path}")
-    generated_files["influential_actors"] = actors_path
-    
-    # Generate network visualization data if enabled
+    # Save graph to JSON (simple export)
     if save_viz:
-        viz_path = os.path.join(output_dir, f"network_visualization_{timestamp}.json")
-        viz_data = kg.visualize_network(output_file=viz_path)
-        
-        logging.info(f"Generated network visualization data: {viz_path}")
-        generated_files["network_visualization"] = viz_path
+        json_path = os.path.join(output_dir, f"graph_export_{timestamp}.json")
+        kg.save_graph(json_path)
+        generated_files["graph_json"] = json_path
+        logging.info(f"Saved graph to JSON: {json_path}")
+    
+    # Save a snapshot of the graph
+    snapshot_id = kg.save_snapshot(f"Analysis run {timestamp}")
+    if snapshot_id:
+        logging.info(f"Created graph snapshot: {snapshot_id}")
+        generated_files["graph_snapshot"] = snapshot_id
     
     return generated_files
 
@@ -330,8 +298,8 @@ def run_kg_workflow(config: Dict[str, Any], args: argparse.Namespace) -> int:
     )
     
     # Generate reports
-    logging.info("Generating intelligence reports")
-    generated_files = generate_reports(kg, reports_dir, trend_days, save_viz)
+    logging.info("Generating basic reports")
+    generated_files = generate_basic_reports(kg, reports_dir, trend_days, save_viz)
     
     # Calculate metrics
     final_nodes = len(kg.graph.nodes)
@@ -357,7 +325,7 @@ def run_kg_workflow(config: Dict[str, Any], args: argparse.Namespace) -> int:
     
     print("\nReports generated:")
     for report_name, file_path in generated_files.items():
-        print(f"- {report_name}: {os.path.basename(file_path)}")
+        print(f"- {report_name}: {os.path.basename(file_path) if isinstance(file_path, str) else file_path}")
     print(f"\nAll files saved to: {reports_dir}")
     
     return 0
