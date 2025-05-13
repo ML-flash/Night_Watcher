@@ -1,4 +1,3 @@
-# night_watcher_collector.py - Updated with provenance integration
 #!/usr/bin/env python3
 """
 Night_watcher Collector
@@ -159,20 +158,24 @@ def run_collector(config: Dict[str, Any], args: argparse.Namespace) -> int:
 
     os.makedirs(collected_dir, exist_ok=True)
 
-    # Set up document repository with provenance
-    provenance_enabled = config["provenance"].get("enabled", True) and not args.disable_provenance
-    dev_passphrase = args.provenance_passphrase or os.environ.get("NIGHT_WATCHER_PASSPHRASE")
+    # Determine if provenance is enabled
+    provenance_enabled = config.get("provenance", {}).get("enabled", True)
+    if args.disable_provenance:
+        provenance_enabled = False
     
-    if provenance_enabled and not dev_passphrase:
-        logging.warning("Provenance enabled but no passphrase provided. Using default passphrase.")
-        dev_passphrase = "night_watcher_development_only"
+    dev_mode = config.get("provenance", {}).get("dev_mode", True)
 
-    # Initialize document repository with provenance settings    
-    doc_repo = DocumentRepository(
-        base_dir=document_repo_dir,
-        dev_passphrase=dev_passphrase,
-        dev_mode=config["provenance"].get("dev_mode", True) if provenance_enabled else False
-    )
+    # Set up document repository with provenance tracking
+    if provenance_enabled:
+        logging.info("Initializing document repository with provenance tracking")
+        doc_repo = DocumentRepository(
+            base_dir=document_repo_dir,
+            dev_passphrase=args.provenance_passphrase,
+            dev_mode=dev_mode
+        )
+    else:
+        logging.info("Initializing document repository without provenance tracking")
+        doc_repo = DocumentRepository(base_dir=document_repo_dir)
 
     # Set up collector
     collector = ContentCollector(config, doc_repo)
@@ -272,12 +275,7 @@ def run_collector(config: Dict[str, Any], args: argparse.Namespace) -> int:
     print(f"Documents stored: {len(document_ids)}")
     print(f"Time range: {start_date.isoformat()} to {end_date.isoformat()}")
     print(f"Next start date: {latest_article_date.isoformat() if latest_article_date else end_date.isoformat()}")
-    
-    # Print provenance status
-    if provenance_enabled:
-        print(f"Provenance: ENABLED (development mode)")
-    else:
-        print(f"Provenance: DISABLED")
+    print(f"Provenance tracking: {'Enabled' if provenance_enabled else 'Disabled'}")
 
     # Print document repository stats
     repo_stats = doc_repo.get_statistics()
@@ -309,7 +307,7 @@ def main() -> int:
     parser.add_argument("--days", type=int, help="Collect articles from the last N days")
     parser.add_argument("--verbose", action="store_true", help="Verbose logging")
     
-    # Add provenance arguments
+    # Add provenance options
     parser.add_argument("--provenance-passphrase", help="Passphrase for document provenance (dev mode)")
     parser.add_argument("--disable-provenance", action="store_true", help="Disable provenance tracking")
 
@@ -325,10 +323,6 @@ def main() -> int:
     os.makedirs(collected_dir, exist_ok=True)
     os.makedirs(os.path.join(document_dir, "content"), exist_ok=True)
     os.makedirs(os.path.join(document_dir, "metadata"), exist_ok=True)
-    
-    # Create provenance directories
-    if not args.disable_provenance:
-        os.makedirs(os.path.join(document_dir, "provenance", "signatures"), exist_ok=True)
 
     # Set up logging
     log_level = logging.DEBUG if args.verbose else logging.INFO
@@ -356,6 +350,13 @@ def main() -> int:
     ║      Night_watcher Collector Component            ║
     ╚═══════════════════════════════════════════════════╝
     """)
+
+    # If provenance passphrase is not provided but environment variable exists, use it
+    if not args.provenance_passphrase:
+        env_passphrase = os.environ.get("NIGHT_WATCHER_PASSPHRASE")
+        if env_passphrase:
+            args.provenance_passphrase = env_passphrase
+            logging.info("Using provenance passphrase from environment variable")
 
     # Run the collector
     return run_collector(config, args)
