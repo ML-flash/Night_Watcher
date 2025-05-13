@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Night_watcher Analyzer
-Script to run the analyzer component of the Night_watcher framework.
+Night_watcher Collector
+Script to run the collector component of the Night_watcher framework.
 """
 
 import os
@@ -9,30 +9,43 @@ import sys
 import logging
 import argparse
 import json
-from datetime import datetime
-from typing import Dict, List, Any, Optional
+from datetime import datetime, timedelta
+from typing import Dict, List, Any
 
 # Import local modules
-from analyzer import ContentAnalyzer
+from collector import ContentCollector
 from document_repository import DocumentRepository
-from providers import initialize_llm_provider
 
 # Default configuration
 DEFAULT_CONFIG = {
-    "llm_provider": {
-        "type": "lm_studio",
-        "host": "http://localhost:1234",
-        "model": "default"
-    },
-    "analysis": {
-        "max_articles": 10,
-        "include_kg": True
+    "content_collection": {
+        "article_limit": 50,
+        "sources": [
+            {"url": "https://apnews.com/rss", "type": "rss", "bias": "center"},
+            {"url": "https://feeds.npr.org/1001/rss.xml", "type": "rss", "bias": "center-left"},
+            {"url": "https://thehill.com/rss/feed/", "type": "rss", "bias": "center"},
+            {"url": "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml", "type": "rss", "bias": "center"},
+            {"url": "https://www.whitehouse.gov/feed/", "type": "rss", "bias": "official-government"},
+            {"url": "https://www.federalregister.gov/presidential-documents.rss", "type": "rss",
+             "bias": "official-government"}
+        ],
+        "govt_keywords": [
+            "executive order", "administration", "white house", "congress", "senate",
+            "house of representatives", "supreme court", "federal", "president",
+            "department of", "agency", "regulation", "policy", "law", "legislation",
+            "election", "democracy", "constitution", "amendment"
+        ]
     },
     "output": {
         "base_dir": "data",
-        "save_analyses": True
+        "save_collected": True
+    },
+    "provenance": {
+        "enabled": True,
+        "dev_mode": True
     }
 }
+
 
 def load_config(config_path: str) -> Dict[str, Any]:
     """
@@ -45,22 +58,37 @@ def load_config(config_path: str) -> Dict[str, Any]:
     try:
         with open(config_path, 'r', encoding='utf-8') as f:
             user_cfg = json.load(f)
-            
+
         # Deep merge with defaults
         merged = DEFAULT_CONFIG.copy()
-        
+
         def deep_update(base: Dict[str, Any], update: Dict[str, Any]) -> None:
             for k, v in update.items():
                 if isinstance(v, dict) and k in base and isinstance(base[k], dict):
                     deep_update(base[k], v)
                 else:
                     base[k] = v
-                    
+
         deep_update(merged, user_cfg)
         return merged
     except Exception as e:
         logging.error(f"Error loading config: {e}")
         return DEFAULT_CONFIG
+
+
+def save_config(config: Dict[str, Any], config_path: str) -> bool:
+    """
+    Save configuration to file.
+    """
+    try:
+        os.makedirs(os.path.dirname(config_path) or '.', exist_ok=True)
+        with open(config_path, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception as e:
+        logging.error(f"Error saving config: {e}")
+        return False
+
 
 def save_to_file(content: Any, filepath: str) -> bool:
     """
@@ -68,220 +96,238 @@ def save_to_file(content: Any, filepath: str) -> bool:
     """
     try:
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        
+
         if isinstance(content, (dict, list)):
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump(content, f, indent=2, ensure_ascii=False)
         else:
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(str(content) if content is not None else "No content")
-                
+
         return True
     except Exception as e:
         logging.error(f"Error saving to {filepath}: {e}")
         return False
 
-def get_unanalyzed_documents(document_repo: DocumentRepository, 
-                             analyzed_dir: str,
-                             max_count: int = 10) -> List[Dict[str, Any]]:
-    """
-    Get documents that haven't been analyzed yet.
-    
-    Args:
-        document_repo: Document repository
-        analyzed_dir: Directory containing analysis results
-        max_count: Maximum number of documents to return
-        
-    Returns:
-        List of document dictionaries
-    """
-    # Get all document IDs from repository
-    all_doc_ids = document_repo.list_documents()
-    
-    # Get IDs of already analyzed documents
-    analyzed_ids = []
-    if os.path.exists(analyzed_dir):
-        for filename in os.listdir(analyzed_dir):
-            if filename.endswith(".json"):
-                try:
-                    with open(os.path.join(analyzed_dir, filename), 'r') as f:
-                        analysis = json.load(f)
-                        if analysis and "article" in analysis and "document_id" in analysis["article"]:
-                            analyzed_ids.append(analysis["article"]["document_id"])
-                except Exception as e:
-                    logging.error(f"Error reading analysis file {filename}: {e}")
-    
-    # Get IDs of documents to analyze
-    unanalyzed_ids = [doc_id for doc_id in all_doc_ids if doc_id not in analyzed_ids]
-    
-    # Limit to max_count
-    doc_ids_to_analyze = unanalyzed_ids[:max_count]
-    
-    # Get document content and metadata
-    documents = []
-    for doc_id in doc_ids_to_analyze:
-        content, metadata = document_repo.get_document(doc_id)
-        if content and metadata:
-            documents.append({
-                "content": content,
-                "document_id": doc_id,
-                "title": metadata.get("title", ""),
-                "url": metadata.get("url", ""),
-                "source": metadata.get("source", ""),
-                "published": metadata.get("published", ""),
-                "bias_label": metadata.get("bias_label", "")
-            })
-    
-    return documents
 
-def run_analyzer(config: Dict[str, Any], args: argparse.Namespace) -> int:
+def get_last_run_date(data_dir: str) -> datetime:
     """
-    Run the analyzer with given configuration and arguments.
+    Get the last run date from the date tracking file.
+    If no previous date, return Inauguration Day (January 20, 2025).
+    """
+    date_file = os.path.join(data_dir, "last_run_date.txt")
+
+    if os.path.exists(date_file):
+        try:
+            with open(date_file, 'r') as f:
+                date_str = f.read().strip()
+                return datetime.fromisoformat(date_str)
+        except Exception as e:
+            logging.error(f"Error reading last run date: {e}")
+
+    # Default to Inauguration Day if no previous date
+    logging.info("No previous run date found, using Inauguration Day (Jan 20, 2025)")
+    return datetime(2025, 1, 20)
+
+
+def save_run_date(data_dir: str, date: datetime) -> bool:
+    """
+    Save the current run date for future reference.
+    """
+    date_file = os.path.join(data_dir, "last_run_date.txt")
+
+    try:
+        os.makedirs(os.path.dirname(date_file), exist_ok=True)
+        with open(date_file, 'w') as f:
+            f.write(date.isoformat())
+        logging.info(f"Saved run date: {date.isoformat()}")
+        return True
+    except Exception as e:
+        logging.error(f"Error saving run date: {e}")
+        return False
+
+
+def run_collector(config: Dict[str, Any], args: argparse.Namespace) -> int:
+    """
+    Run the collector with given configuration and arguments.
     """
     # Set up output directories
     output_dir = args.output_dir or config["output"].get("base_dir", "data")
-    analyzed_dir = os.path.join(output_dir, "analyzed")
+    collected_dir = os.path.join(output_dir, "collected")
     document_repo_dir = os.path.join(output_dir, "documents")
+
+    os.makedirs(collected_dir, exist_ok=True)
+
+    # Determine if provenance is enabled
+    provenance_enabled = config.get("provenance", {}).get("enabled", True)
+    if args.disable_provenance:
+        provenance_enabled = False
     
-    os.makedirs(analyzed_dir, exist_ok=True)
-    
-    # Set up document repository
-    doc_repo = DocumentRepository(base_dir=document_repo_dir)
-    
-    # Initialize LLM provider
-    llm_provider = initialize_llm_provider(config)
-    if not llm_provider:
-        logging.error("Failed to initialize LLM provider. Cannot continue with analysis.")
-        return 1
-    
-    # Set up analyzer
-    analyzer = ContentAnalyzer(llm_provider)
-    
-    # Get documents to analyze
-    max_articles = args.max_articles or config["analysis"].get("max_articles", 10)
-    documents = []
-    
-    if args.document_id:
-        # Analyze specific document
-        content, metadata = doc_repo.get_document(args.document_id)
-        if content and metadata:
-            documents.append({
-                "content": content,
-                "document_id": args.document_id,
-                "title": metadata.get("title", ""),
-                "url": metadata.get("url", ""),
-                "source": metadata.get("source", ""),
-                "published": metadata.get("published", ""),
-                "bias_label": metadata.get("bias_label", "")
-            })
-        else:
-            logging.error(f"Document with ID {args.document_id} not found")
-            return 1
+    dev_mode = config.get("provenance", {}).get("dev_mode", True)
+
+    # Set up document repository with provenance tracking
+    if provenance_enabled:
+        logging.info("Initializing document repository with provenance tracking")
+        doc_repo = DocumentRepository(
+            base_dir=document_repo_dir,
+            dev_passphrase=args.provenance_passphrase,
+            dev_mode=dev_mode
+        )
     else:
-        # Get unanalyzed documents
-        documents = get_unanalyzed_documents(doc_repo, analyzed_dir, max_articles)
-    
-    if not documents:
-        logging.info("No documents to analyze")
-        return 0
-    
-    # Run analysis
+        logging.info("Initializing document repository without provenance tracking")
+        doc_repo = DocumentRepository(base_dir=document_repo_dir)
+
+    # Set up collector
+    collector = ContentCollector(config, doc_repo)
+
+    # Determine date range
+    start_date = None
+    end_date = datetime.now()
+
+    if args.reset_date:
+        # Use Inauguration Day
+        start_date = datetime(2025, 1, 20)
+        logging.info("Reset date flag used - starting from Inauguration Day")
+    elif args.days:
+        # Use specified number of days back
+        start_date = end_date - timedelta(days=args.days)
+        logging.info(f"Using start date {args.days} days ago: {start_date.isoformat()}")
+    else:
+        # Use last run date from tracking file
+        start_date = get_last_run_date(output_dir)
+        logging.info(f"Using last run date: {start_date.isoformat()}")
+
+    # Configure collection
+    collection_input = {
+        "limit": args.article_limit or config["content_collection"].get("article_limit", 5),
+        "sources": config["content_collection"]["sources"],
+        "start_date": start_date,
+        "end_date": end_date,
+        "document_repository": doc_repo,
+        "store_documents": True
+    }
+
+    # Run collection
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    logging.info(f"Starting analysis at {timestamp} for {len(documents)} documents")
-    
-    result = analyzer.process({"articles": documents})
-    
-    # Get analysis results
-    analyses = result.get("analyses", [])
-    
-    # Save analysis results
-    for i, analysis in enumerate(analyses):
-        article = analysis.get("article", {})
-        doc_id = article.get("document_id", f"unknown_{i}")
-        
-        # Save analysis to file
-        filename = f"analysis_{doc_id}_{timestamp}.json"
-        save_to_file(analysis, os.path.join(analyzed_dir, filename))
-        
-        # Save prompt chain if requested
-        if args.save_prompts:
-            prompt_chain = analysis.get("prompt_chain", [])
-            if prompt_chain:
-                chain_text = []
-                for round_data in prompt_chain:
-                    chain_text.append(f"=== ROUND {round_data.get('round')}: {round_data.get('name')} ===\n")
-                    chain_text.append("-- PROMPT --\n")
-                    chain_text.append(f"{round_data.get('prompt', '')}\n\n")
-                    chain_text.append("-- RESPONSE --\n")
-                    chain_text.append(f"{round_data.get('response', '')}\n\n")
-                
-                prompt_dir = os.path.join(output_dir, "prompts")
-                os.makedirs(prompt_dir, exist_ok=True)
-                prompt_file = os.path.join(prompt_dir, f"prompts_{doc_id}_{timestamp}.txt")
-                with open(prompt_file, 'w', encoding='utf-8') as f:
-                    f.write("".join(chain_text))
-    
+    logging.info(f"Starting collection at {timestamp}")
+
+    result = collector.process(collection_input)
+
+    # Get results
+    articles = result.get("articles", [])
+    document_ids = result.get("document_ids", [])
+    status = result.get("status", {})
+
+    # Find the most recent article date to update tracking
+    latest_article_date = None
+
+    for article in articles:
+        if article.get("published"):
+            try:
+                article_date = datetime.fromisoformat(article["published"])
+                if latest_article_date is None or article_date > latest_article_date:
+                    latest_article_date = article_date
+            except (ValueError, TypeError):
+                pass
+
+    # Save the latest article date as the next start date
+    if latest_article_date:
+        # Add a small buffer (1 second) to avoid duplicate collection
+        next_start_date = latest_article_date + timedelta(seconds=1)
+        save_run_date(output_dir, next_start_date)
+        logging.info(f"Updated next start date to: {next_start_date.isoformat()}")
+    else:
+        # If no articles found, keep the current end date as next start
+        save_run_date(output_dir, end_date)
+        logging.info(f"No articles found, updated next start date to: {end_date.isoformat()}")
+
+    # Save articles to individual files if requested
+    if config["output"].get("save_collected", True):
+        for idx, article in enumerate(articles, start=1):
+            # Use document_id if available, otherwise generate a filename
+            if "document_id" in article:
+                fname = f"article_{article['document_id'][:8]}_{timestamp}.json"
+            else:
+                fname = f"article_{idx}_{timestamp}.json"
+
+            save_to_file(article, os.path.join(collected_dir, fname))
+
+    # Save collection summary
+    summary = {
+        "timestamp": timestamp,
+        "articles_collected": len(articles),
+        "documents_stored": len(document_ids),
+        "start_date": start_date.isoformat() if start_date else None,
+        "end_date": end_date.isoformat(),
+        "next_start_date": latest_article_date.isoformat() if latest_article_date else end_date.isoformat(),
+        "document_ids": document_ids,
+        "provenance_enabled": provenance_enabled,
+        "status": status
+    }
+
+    summary_file = os.path.join(output_dir, f"collection_summary_{timestamp}.json")
+    save_to_file(summary, summary_file)
+
     # Print summary
-    print(f"\n=== Analysis Summary ===")
+    print(f"\n=== Collection Summary ===")
     print(f"Timestamp: {timestamp}")
-    print(f"Documents analyzed: {len(analyses)}")
-    
-    # Print analysis stats
-    total_nodes = 0
-    total_edges = 0
-    concern_levels = {}
-    
-    for analysis in analyses:
-        # Count nodes and edges
-        kg_payload = analysis.get("kg_payload", {})
-        nodes = kg_payload.get("nodes", [])
-        edges = kg_payload.get("edges", [])
-        total_nodes += len(nodes)
-        total_edges += len(edges)
-        
-        # Track concern levels
-        concern_level = analysis.get("concern_level", "Unknown")
-        concern_levels[concern_level] = concern_levels.get(concern_level, 0) + 1
-    
-    print(f"\n=== Knowledge Graph Statistics ===")
-    print(f"Total nodes extracted: {total_nodes}")
-    print(f"Total edges extracted: {total_edges}")
-    
-    print(f"\n=== Authoritarian Analysis ===")
-    for level, count in concern_levels.items():
-        print(f"  - {level}: {count} documents")
-    
-    print(f"\nAnalyses saved to: {analyzed_dir}")
-    
+    print(f"Articles collected: {len(articles)}")
+    print(f"Documents stored: {len(document_ids)}")
+    print(f"Time range: {start_date.isoformat()} to {end_date.isoformat()}")
+    print(f"Next start date: {latest_article_date.isoformat() if latest_article_date else end_date.isoformat()}")
+    print(f"Provenance tracking: {'Enabled' if provenance_enabled else 'Disabled'}")
+
+    # Print document repository stats
+    repo_stats = doc_repo.get_statistics()
+    print(f"\n=== Document Repository Statistics ===")
+    print(f"Total documents: {repo_stats['total_documents']}")
+    print(f"Total content size: {repo_stats['content_size_bytes'] / 1024:.1f} KB")
+
+    # Print source distribution
+    print(f"\n=== Source Distribution ===")
+    for source, count in repo_stats.get('sources', {}).items():
+        print(f"  - {source}: {count} documents")
+
+    print(f"\nOutputs saved to: {output_dir}")
+    print(f"Summary saved to: {summary_file}")
+
     return 0
+
 
 def main() -> int:
     """
     Main entry point.
     """
     # Set up argument parser
-    parser = argparse.ArgumentParser(description="Night_watcher Analyzer")
+    parser = argparse.ArgumentParser(description="Night_watcher Collector")
     parser.add_argument("--config", default="config.json", help="Path to config file")
+    parser.add_argument("--article-limit", type=int, help="Max articles per source")
     parser.add_argument("--output-dir", help="Output directory")
-    parser.add_argument("--document-id", help="Analyze a specific document by ID")
-    parser.add_argument("--max-articles", type=int, help="Maximum articles to analyze")
-    parser.add_argument("--save-prompts", action="store_true", help="Save prompt chains to files")
+    parser.add_argument("--reset-date", action="store_true", help="Reset date to inauguration day")
+    parser.add_argument("--days", type=int, help="Collect articles from the last N days")
     parser.add_argument("--verbose", action="store_true", help="Verbose logging")
     
+    # Add provenance options
+    parser.add_argument("--provenance-passphrase", help="Passphrase for document provenance (dev mode)")
+    parser.add_argument("--disable-provenance", action="store_true", help="Disable provenance tracking")
+
     args = parser.parse_args()
-    
+
     # Create necessary directories
     log_dir = "logs"
     data_dir = args.output_dir or "data"
-    analyzed_dir = os.path.join(data_dir, "analyzed")
-    
+    collected_dir = os.path.join(data_dir, "collected")
+    document_dir = os.path.join(data_dir, "documents")
+
     os.makedirs(log_dir, exist_ok=True)
-    os.makedirs(analyzed_dir, exist_ok=True)
-    
+    os.makedirs(collected_dir, exist_ok=True)
+    os.makedirs(os.path.join(document_dir, "content"), exist_ok=True)
+    os.makedirs(os.path.join(document_dir, "metadata"), exist_ok=True)
+
     # Set up logging
     log_level = logging.DEBUG if args.verbose else logging.INFO
-    log_file = os.path.join(log_dir, f"analyzer_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
-    
+    log_file = os.path.join(log_dir, f"collector_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+
     logging.basicConfig(
         level=log_level,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -290,18 +336,31 @@ def main() -> int:
             logging.StreamHandler()
         ]
     )
-    
+
     # Load configuration
     config = load_config(args.config)
-    
+
+    # Create default config if it doesn't exist
+    if not os.path.exists(args.config):
+        save_config(DEFAULT_CONFIG, args.config)
+        logging.info(f"Created default configuration at {args.config}")
+
     print("""
     ╔═══════════════════════════════════════════════════╗
-    ║      Night_watcher Analyzer Component             ║
+    ║      Night_watcher Collector Component            ║
     ╚═══════════════════════════════════════════════════╝
     """)
-    
-    # Run the analyzer
-    return run_analyzer(config, args)
+
+    # If provenance passphrase is not provided but environment variable exists, use it
+    if not args.provenance_passphrase:
+        env_passphrase = os.environ.get("NIGHT_WATCHER_PASSPHRASE")
+        if env_passphrase:
+            args.provenance_passphrase = env_passphrase
+            logging.info("Using provenance passphrase from environment variable")
+
+    # Run the collector
+    return run_collector(config, args)
+
 
 if __name__ == "__main__":
     sys.exit(main())
