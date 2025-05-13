@@ -15,6 +15,9 @@ from typing import Dict, List, Any, Optional
 
 from knowledge_graph import KnowledgeGraph
 
+# Import provenance verification
+from analysis_provenance import AnalysisProvenanceTracker
+
 # ==========================================
 # Configuration Functions
 # ==========================================
@@ -39,6 +42,11 @@ DEFAULT_CONFIG = {
     "logging": {
         "level": "INFO",
         "log_dir": "logs"
+    },
+    "provenance": {
+        "enabled": True,
+        "dev_mode": True,
+        "verify": True
     }
 }
 
@@ -107,11 +115,17 @@ def load_analyzed_files(analyzed_dir: str, pattern: str = "kg_analysis_*.json") 
     return analyses
 
 
-def process_analyses(kg: KnowledgeGraph, analyses: List[Dict[str, Any]]) -> Dict[str, int]:
-    """Process analyses and add to knowledge graph"""
+def process_analyses(kg: KnowledgeGraph, 
+                     analyses: List[Dict[str, Any]], 
+                     provenance_tracker: Optional[AnalysisProvenanceTracker] = None,
+                     verify_provenance: bool = False) -> Dict[str, int]:
+    """Process analyses and add to knowledge graph with provenance verification"""
     total_nodes = 0
     total_edges = 0
     total_articles = 0
+    verified_analyses = 0
+    unverified_analyses = 0
+    skipped_analyses = 0
     
     for analysis in analyses:
         article = analysis.get("article", {})
@@ -119,8 +133,26 @@ def process_analyses(kg: KnowledgeGraph, analyses: List[Dict[str, Any]]) -> Dict
         
         if not article or not kg_payload:
             logging.warning("Analysis missing article or KG payload")
+            skipped_analyses += 1
             continue
+        
+        # Verify provenance if enabled and tracker provided
+        if verify_provenance and provenance_tracker and "provenance_id" in analysis:
+            verification = provenance_tracker.verify_analysis_record(analysis["provenance_id"])
             
+            if verification.get("verified"):
+                verified_analyses += 1
+                logging.info(f"Verified provenance for analysis {analysis['provenance_id']}")
+            else:
+                unverified_analyses += 1
+                logging.warning(f"Provenance verification failed for analysis {analysis['provenance_id']}: {verification.get('reason')}")
+                
+                # Skip analyses with invalid provenance if verification is required
+                if verify_provenance:
+                    logging.warning(f"Skipping analysis {analysis['provenance_id']} due to failed verification")
+                    skipped_analyses += 1
+                    continue
+        
         # Process analysis
         result = kg.process_article_analysis(article, analysis)
         
@@ -139,7 +171,11 @@ def process_analyses(kg: KnowledgeGraph, analyses: List[Dict[str, Any]]) -> Dict
         "articles_processed": total_articles,
         "nodes_added": total_nodes,
         "edges_added": total_edges,
-        "temporal_relations": temporal_relations
+        "temporal_relations": temporal_relations,
+        "verified_analyses": verified_analyses,
+        "unverified_analyses": unverified_analyses,
+        "skipped_analyses": skipped_analyses,
+        "provenance_verification": verify_provenance
     }
 
 
@@ -156,6 +192,13 @@ def generate_reports(kg: KnowledgeGraph, output_dir: str, trend_days: int = 90, 
     
     # Generate full intelligence report
     intel_report = kg.generate_intelligence_report()
+    
+    # Add provenance information to the report
+    intel_report["provenance"] = {
+        "timestamp": datetime.now().isoformat(),
+        "framework_version": "1.0.0"
+    }
+    
     intel_report_path = os.path.join(output_dir, f"intelligence_report_{timestamp}.json")
     
     with open(intel_report_path, 'w', encoding='utf-8') as f:
@@ -209,13 +252,14 @@ def generate_reports(kg: KnowledgeGraph, output_dir: str, trend_days: int = 90, 
 # Main Execution Logic
 # ==========================================
 
-def run_kg_workflow(config: Dict[str, Any]) -> int:
+def run_kg_workflow(config: Dict[str, Any], args: argparse.Namespace) -> int:
     """Run the knowledge graph workflow"""
     # Extract configuration values
     kg_config = config["knowledge_graph"]
     input_config = config["input"]
     output_config = config["output"]
     analysis_config = config["analysis"]
+    provenance_config = config.get("provenance", {})
     
     graph_file = kg_config["graph_file"]
     taxonomy_file = kg_config["taxonomy_file"]
@@ -224,6 +268,40 @@ def run_kg_workflow(config: Dict[str, Any]) -> int:
     reports_dir = output_config["reports_dir"]
     save_viz = output_config["save_visualizations"]
     trend_days = analysis_config["trend_days"]
+    
+    # Override with command line args if provided
+    if args.analyzed_dir:
+        analyzed_dir = args.analyzed_dir
+    if args.reports_dir:
+        reports_dir = args.reports_dir
+    if args.file_pattern:
+        file_pattern = args.file_pattern
+    if args.trend_days:
+        trend_days = args.trend_days
+    if args.no_viz:
+        save_viz = False
+    
+    # Determine if provenance verification is enabled
+    provenance_enabled = provenance_config.get("enabled", True) and not args.disable_provenance
+    verify_provenance = provenance_config.get("verify", True) and provenance_enabled
+    dev_mode = provenance_config.get("dev_mode", True)
+    
+    # Set up provenance tracker if enabled
+    provenance_tracker = None
+    if provenance_enabled:
+        provenance_dir = os.path.join(os.path.dirname(analyzed_dir), "analysis_provenance")
+        
+        logging.info(f"Initializing analysis provenance tracking from {provenance_dir}")
+        provenance_tracker = AnalysisProvenanceTracker(
+            base_dir=provenance_dir,
+            dev_passphrase=args.provenance_passphrase,
+            dev_mode=dev_mode
+        )
+        
+        if verify_provenance:
+            logging.info("Provenance verification enabled for analysis processing")
+        else:
+            logging.info("Provenance tracking enabled but verification disabled")
     
     # Initialize knowledge graph
     logging.info(f"Initializing knowledge graph from {graph_file}")
@@ -244,7 +322,12 @@ def run_kg_workflow(config: Dict[str, Any]) -> int:
         
     # Process analyses
     logging.info(f"Processing {len(analyses)} analyses")
-    stats = process_analyses(kg, analyses)
+    stats = process_analyses(
+        kg, 
+        analyses, 
+        provenance_tracker=provenance_tracker if provenance_enabled else None,
+        verify_provenance=verify_provenance
+    )
     
     # Generate reports
     logging.info("Generating intelligence reports")
@@ -263,6 +346,15 @@ def run_kg_workflow(config: Dict[str, Any]) -> int:
     print(f"Knowledge Graph size: {final_nodes} nodes, {final_edges} edges")
     print(f"Node growth: {final_nodes - initial_nodes} nodes added")
     print(f"Edge growth: {final_edges - initial_edges} edges added")
+    
+    if provenance_enabled:
+        print("\n=== Provenance Verification ===")
+        print(f"Verification enabled: {'Yes' if verify_provenance else 'No'}")
+        print(f"Verified analyses: {stats['verified_analyses']}")
+        if verify_provenance:
+            print(f"Unverified analyses: {stats['unverified_analyses']}")
+            print(f"Skipped analyses: {stats['skipped_analyses']}")
+    
     print("\nReports generated:")
     for report_name, file_path in generated_files.items():
         print(f"- {report_name}: {os.path.basename(file_path)}")
@@ -284,6 +376,11 @@ def main() -> int:
     parser.add_argument("--no-viz", action="store_true", help="Disable visualization generation")
     parser.add_argument("--create-config", action="store_true", help="Create default config file and exit")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
+    
+    # Add provenance options
+    parser.add_argument("--provenance-passphrase", help="Passphrase for provenance verification (dev mode)")
+    parser.add_argument("--disable-provenance", action="store_true", help="Disable provenance verification")
+    parser.add_argument("--skip-verification", action="store_true", help="Skip verification but keep provenance tracking")
     
     args = parser.parse_args()
     
@@ -319,26 +416,28 @@ def main() -> int:
         config["knowledge_graph"]["graph_file"] = args.graph_file
     if args.taxonomy_file:
         config["knowledge_graph"]["taxonomy_file"] = args.taxonomy_file
-    if args.analyzed_dir:
-        config["input"]["analyzed_dir"] = args.analyzed_dir
-    if args.file_pattern:
-        config["input"]["file_pattern"] = args.file_pattern
-    if args.reports_dir:
-        config["output"]["reports_dir"] = args.reports_dir
-    if args.trend_days:
-        config["analysis"]["trend_days"] = args.trend_days
-    if args.no_viz:
-        config["output"]["save_visualizations"] = False
     
-    # Run workflow
-    return run_kg_workflow(config)
-
-
-if __name__ == "__main__":
+    # If provenance passphrase is not provided but environment variable exists, use it
+    if not args.provenance_passphrase:
+        env_passphrase = os.environ.get("NIGHT_WATCHER_PASSPHRASE")
+        if env_passphrase:
+            args.provenance_passphrase = env_passphrase
+            logging.info("Using provenance passphrase from environment variable")
+            
+    # If skip-verification is true, update config
+    if args.skip_verification:
+        config["provenance"]["verify"] = False
+    
     print("""
     ╔═══════════════════════════════════════════════════╗
     ║     Night_watcher Knowledge Graph Controller      ║
     ║     Detecting Authoritarian Patterns Over Time    ║
     ╚═══════════════════════════════════════════════════╝
     """)
+    
+    # Run workflow
+    return run_kg_workflow(config, args)
+
+
+if __name__ == "__main__":
     sys.exit(main())
