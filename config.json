@@ -10,7 +10,7 @@
   
   "content_collection": {
     "_description": "Settings for the content collection component",
-    "article_limit": 50,
+    "article_limit": 1,
     "_article_limit_info": "Maximum articles to collect per source",
     
     "sources": [
