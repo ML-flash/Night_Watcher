@@ -7,41 +7,35 @@ import logging
 # Import our new provenance module
 from provenance import ProvenanceTracker
 
-class DocumentRepository:
+def __init__(self, base_dir: str = "data/documents", 
+             passphrase: str = None,
+             master_key_id: str = "night_watcher_master"):
     """
-    Repository for storing documents with unique IDs, metadata, and cryptographic provenance.
-    Provides storage and retrieval interface for the Night_watcher framework.
+    Initialize the document repository with provenance tracking.
+    
+    Args:
+        base_dir: Base directory for document storage
+        passphrase: Passphrase for cryptographic operations
+        master_key_id: Identifier for the master signing key
     """
-
-    def __init__(self, base_dir: str = "data/documents", 
-                 dev_passphrase: str = None,
-                 dev_mode: bool = True):
-        """
-        Initialize the document repository with provenance tracking.
-        
-        Args:
-            base_dir: Base directory for document storage
-            dev_passphrase: Development passphrase for provenance (default: use system default)
-            dev_mode: Whether to use development cryptographic mode
-        """
-        self.base_dir = base_dir
-        self.content_dir = os.path.join(base_dir, "content")
-        self.metadata_dir = os.path.join(base_dir, "metadata")
-        
-        # Initialize provenance tracker
-        provenance_dir = os.path.join(base_dir, "provenance")
-        self.provenance = ProvenanceTracker(
-            base_dir=provenance_dir,
-            dev_passphrase=dev_passphrase,
-            dev_mode=dev_mode
-        )
-        
-        # Create directories if they don't exist
-        os.makedirs(self.content_dir, exist_ok=True)
-        os.makedirs(self.metadata_dir, exist_ok=True)
-        
-        self.logger = logging.getLogger("DocumentRepository")
-        self.logger.info(f"Document repository initialized at {base_dir}")
+    self.base_dir = base_dir
+    self.content_dir = os.path.join(base_dir, "content")
+    self.metadata_dir = os.path.join(base_dir, "metadata")
+    
+    # Initialize provenance tracker
+    provenance_dir = os.path.join(base_dir, "provenance")
+    self.provenance = ProvenanceTracker(
+        base_dir=provenance_dir,
+        master_key_id=master_key_id,
+        passphrase=passphrase
+    )
+    
+    # Create directories if they don't exist
+    os.makedirs(self.content_dir, exist_ok=True)
+    os.makedirs(self.metadata_dir, exist_ok=True)
+    
+    self.logger = logging.getLogger("DocumentRepository")
+    self.logger.info(f"Document repository initialized at {base_dir}")
         
         if dev_mode:
             self.logger.warning("Using DEVELOPMENT cryptographic mode - NOT FOR PRODUCTION")
