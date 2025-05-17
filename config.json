@@ -1,6 +1,6 @@
 {
   "_documentation": {
-    "overview": "Night_watcher configuration file with provenance tracking settings",
+    "overview": "Night_watcher configuration file with vector store integration",
     "usage": "This file controls system behavior across all Night_watcher components",
     "notes": [
       "Fields beginning with underscore (_) are documentation only and ignored by code",
@@ -105,6 +105,18 @@
     "_taxonomy_file_info": "Path to knowledge graph taxonomy definition"
   },
   
+  "vector_store": {
+    "_description": "Vector store settings for semantic analysis",
+    "base_dir": "data/vector_store",
+    "_base_dir_info": "Base directory for vector store data",
+    "embedding_provider": "local",
+    "_embedding_provider_info": "Embedding provider: 'local', 'openai', or 'instructor'",
+    "embedding_dim": 384,
+    "_embedding_dim_info": "Dimension of embedding vectors (384 for MiniLM, 1536 for OpenAI)",
+    "index_type": "flat",
+    "_index_type_info": "FAISS index type: 'flat' (more accurate) or 'hnsw' (faster)"
+  },
+  
   "input": {
     "_description": "Input directory settings",
     "analyzed_dir": "data/analyzed",
@@ -142,6 +154,11 @@
     "security": [
       "In production, store this file with limited access permissions",
       "Consider using environment variables for sensitive values"
+    ],
+    "vector_store": [
+      "For production deployment, consider using a dedicated vector database like Qdrant or Milvus",
+      "OpenAI embeddings provide better results but require API access and costs",
+      "Local embedding models are privacy-preserving but require additional disk space"
     ]
   }
 }
