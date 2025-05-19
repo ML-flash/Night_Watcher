@@ -1,0 +1,15 @@
+{
+  "id": "node_16",
+  "type": "actor",
+  "name": "Sean 'Diddy' Combs",
+  "attributes": {
+    "role": "rap mogul",
+    "charges": "racketeering, sex trafficking and transportation to engage in prostitution"
+  },
+  "timestamp": "2023-04-07",
+  "created_at": "2025-05-17T03:56:56.753141",
+  "source": {
+    "document_id": "9bcd2b66b4022aae_1747453997",
+    "sentence": null
+  }
+}
