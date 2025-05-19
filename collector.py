@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Night_watcher Content Collector
-Gathers political content from RSS feeds with simplified content extraction.
+Gathers political content from RSS feeds with improved content extraction using newspaper4k.
 """
 
 import time
@@ -9,14 +9,36 @@ import logging
 import hashlib
 import re
 import random
+import json
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 from urllib.parse import urlparse
+import concurrent.futures
+import traceback
 
 import requests
 import feedparser
-from newspaper import Article
 from bs4 import BeautifulSoup
+
+# Import newspaper4k instead of newspaper3k
+try:
+    import newspaper
+    from newspaper import Article
+    from newspaper.configuration import Configuration
+    # Check if we're using newspaper4k
+    if not hasattr(newspaper, "article"):
+        logging.warning("Using newspaper3k instead of newspaper4k. Consider upgrading for better extraction.")
+except ImportError:
+    logging.error("newspaper4k not installed. Run: pip install newspaper4k")
+    raise
+
+# Try to import cloudscraper for Cloudflare bypass
+try:
+    import cloudscraper
+    CLOUDSCRAPER_AVAILABLE = True
+except ImportError:
+    CLOUDSCRAPER_AVAILABLE = False
+    logging.warning("cloudscraper not installed. Cloudflare bypass not available. Install with: pip install cloudscraper")
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +58,10 @@ class ContentCollector:
         cc = config.get("content_collection", {})
         self.article_limit = cc.get("article_limit", 5)
         self.sources = cc.get("sources", [])
+        self.max_workers = cc.get("max_workers", 5)
+        self.request_timeout = cc.get("request_timeout", 15)
+        self.retry_count = cc.get("retry_count", 2)
+        self.bypass_cloudflare = cc.get("bypass_cloudflare", True) and CLOUDSCRAPER_AVAILABLE
         
         # Political/governmental keywords for filtering
         self.govt_keywords = set(kw.lower() for kw in cc.get("govt_keywords", [
@@ -47,12 +73,43 @@ class ContentCollector:
         
         # User agents for requests
         self.user_agents = [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/91.0.4472.124 Safari/537.36',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/14.1.1 Safari/605.1.15',
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0'
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/100.0.4896.127 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_4) AppleWebKit/605.1.15 Version/15.4 Safari/605.1.15',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:100.0) Gecko/20100101 Firefox/100.0',
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/100.0.1185.50 Safari/537.36'
         ]
         
+        # Initialize session objects
+        self._init_sessions()
+        
         self.logger = logging.getLogger("ContentCollector")
+    
+    def _init_sessions(self):
+        """Initialize HTTP sessions for requests and cloudscraper."""
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': random.choice(self.user_agents),
+            'Accept': 'text/html,application/xhtml+xml,application/xml',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Cache-Control': 'max-age=0',
+            'Connection': 'keep-alive'
+        })
+        
+        # Initialize cloudscraper if available
+        if self.bypass_cloudflare:
+            try:
+                self.cloudscraper_session = cloudscraper.create_scraper(
+                    browser={
+                        'browser': 'chrome',
+                        'platform': 'windows',
+                        'mobile': False
+                    }
+                )
+                self.logger.info("Cloudflare bypass initialized")
+            except Exception as e:
+                self.logger.error(f"Error initializing Cloudflare bypass: {e}")
+                self.bypass_cloudflare = False
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -74,6 +131,7 @@ class ContentCollector:
         limit = input_data.get("limit", self.article_limit)
         doc_repo = input_data.get("document_repository", self.document_repository)
         store_docs = input_data.get("store_documents", doc_repo is not None)
+        max_workers = input_data.get("max_workers", self.max_workers)
         
         # Parse date strings if provided
         start_date = input_data.get("start_date")
@@ -101,11 +159,26 @@ class ContentCollector:
         successful_sources = 0
         failed_sources = 0
         
-        # Process each source
-        for source in sources:
-            try:
-                if source.get("type", "").lower() == "rss":
-                    articles = self._collect_from_rss(source, limit, start_date, end_date)
+        # Use thread pool for parallel processing
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Create futures for each source
+            future_to_source = {
+                executor.submit(
+                    self._collect_from_rss, source, limit, start_date, end_date
+                ): source for source in sources if source.get("type", "").lower() == "rss"
+            }
+            
+            # Process completed futures
+            for future in concurrent.futures.as_completed(future_to_source):
+                source = future_to_source[future]
+                try:
+                    articles = future.result()
+                    
+                    # Skip if no articles were found
+                    if not articles:
+                        self.logger.warning(f"No articles found from source: {source.get('url')}")
+                        failed_sources += 1
+                        continue
                     
                     # Generate document IDs
                     for article in articles:
@@ -126,12 +199,10 @@ class ContentCollector:
                     
                     all_articles.extend(articles)
                     successful_sources += 1
-                else:
-                    self.logger.warning(f"Unsupported source type: {source.get('type')}")
+                except Exception as e:
+                    self.logger.error(f"Error processing source {source.get('url')}: {e}")
+                    self.logger.error(traceback.format_exc())
                     failed_sources += 1
-            except Exception as e:
-                self.logger.error(f"Error processing source {source.get('url')}: {e}")
-                failed_sources += 1
         
         # Log results
         self.logger.info(f"Collection complete: {len(all_articles)} articles collected")
@@ -198,7 +269,7 @@ class ContentCollector:
                 self.logger.info(f"Fetching article: {title}")
                 
                 # Extract content
-                content = self._extract_article_content(link)
+                content, article_data = self._extract_article_content(link, title, pub_date)
                 
                 # Skip if content extraction failed
                 if not content or not self._is_valid_content(content):
@@ -215,16 +286,16 @@ class ContentCollector:
                 source_name = feed.feed.get("title") or urlparse(url).netloc.replace("www.", "")
                 
                 # Create article data
-                article_data = {
+                article_data.update({
                     "title": title,
                     "url": link,
                     "source": source_name,
                     "bias_label": bias,
-                    "published": pub_date.isoformat() if pub_date else None,
+                    "published": pub_date.isoformat() if pub_date else article_data.get("published"),
                     "content": content,
                     "tags": [t.get("term") for t in tags if t.get("term")],
                     "collected_at": datetime.now().isoformat()
-                }
+                })
                 
                 collected.append(article_data)
                 self.logger.info(f"Collected: {title} ({len(content)} chars)")
@@ -233,44 +304,67 @@ class ContentCollector:
             
         except Exception as e:
             self.logger.error(f"Error collecting from {url}: {e}")
+            self.logger.error(traceback.format_exc())
             return []
 
-    def _extract_article_content(self, url: str) -> Optional[str]:
+    def _extract_article_content(self, url: str, title: str = None, pub_date: Optional[datetime] = None) -> Tuple[Optional[str], Dict[str, Any]]:
         """
-        Extract article content with primary and fallback methods.
+        Extract article content using newspaper4k with enhanced extraction and fallbacks.
+        
+        Returns:
+            Tuple of (content, article_data_dict)
         """
+        article_data = {
+            "authors": [],
+            "published": None,
+            "top_image": None,
+            "images": [],
+            "movies": []
+        }
+        
         try:
-            # Use Newspaper3k as primary extractor
-            content = self._extract_with_newspaper(url)
+            # Primary extraction using newspaper4k
+            content = self._extract_with_newspaper4k(url, article_data)
             
             # Check if extraction was successful
             if self._is_valid_content(content):
-                return content
+                return content, article_data
             
             # Fall back to BeautifulSoup extraction
             self.logger.info(f"Primary extraction failed for {url}, trying fallback")
             content = self._extract_with_beautifulsoup(url)
             
-            return content
+            # Update article_data with any missing info (keep what we got from newspaper)
+            if article_data.get("published") is None and pub_date:
+                article_data["published"] = pub_date.isoformat()
+                
+            if not article_data.get("authors") and title:
+                # Try to extract author from title as last resort
+                possible_author = self._extract_author_from_title(title)
+                if possible_author:
+                    article_data["authors"] = [possible_author]
+            
+            return content, article_data
             
         except Exception as e:
             self.logger.error(f"Content extraction error for {url}: {e}")
-            return None
+            self.logger.error(traceback.format_exc())
+            return None, article_data
 
-    def _extract_with_newspaper(self, url: str) -> str:
+    def _extract_with_newspaper4k(self, url: str, article_data: Dict[str, Any]) -> Optional[str]:
         """
-        Extract content using Newspaper3k with improved settings.
+        Extract content using newspaper4k with improved configuration.
+        Updates article_data with extracted metadata.
         """
-        article = Article(url)
-        
-        # Configure with better settings
-        article.config.browser_user_agent = random.choice(self.user_agents)
-        article.config.fetch_images = False
-        article.config.memoize_articles = False
-        article.config.request_timeout = 10
+        # Configure article with better settings
+        config = Configuration()
+        config.browser_user_agent = random.choice(self.user_agents)
+        config.fetch_images = True  # We want to get images
+        config.memoize_articles = False
+        config.request_timeout = self.request_timeout
         
         # Add headers for better success rate
-        article.config.headers = {
+        config.headers = {
             'User-Agent': random.choice(self.user_agents),
             'Accept': 'text/html,application/xhtml+xml,application/xml',
             'Accept-Language': 'en-US,en;q=0.9',
@@ -278,16 +372,58 @@ class ContentCollector:
             'Connection': 'keep-alive'
         }
         
-        # Download with one retry
+        # Use the convenience method from newspaper4k if available
         try:
-            article.download()
-        except Exception as e:
-            self.logger.warning(f"Download retry needed: {e}")
-            time.sleep(2)
-            article.download()
+            # First try with cloudscraper if cloudflare bypass is enabled
+            if self.bypass_cloudflare:
+                try:
+                    # Get HTML content with cloudscraper
+                    response = self.cloudscraper_session.get(url, timeout=self.request_timeout)
+                    if response.status_code == 200:
+                        # Create article and use the pre-fetched HTML
+                        article = Article(url, config=config)
+                        article.download(input_html=response.text)
+                        article.parse()
+                    else:
+                        # Fall back to regular download if cloudscraper fails
+                        raise Exception(f"Cloudscraper failed with status code {response.status_code}")
+                except Exception as e:
+                    self.logger.warning(f"Cloudflare bypass failed, using regular download: {e}")
+                    # Try using newspaper4k's article convenience function
+                    article = newspaper.article(url, config=config)
+            else:
+                # Use newspaper4k's article convenience function if available
+                article = newspaper.article(url, config=config)
+        except AttributeError:
+            # Fallback for newspaper3k (doesn't have the article convenience function)
+            article = Article(url, config=config)
             
-        article.parse()
+            # Download with retries
+            retry_count = 0
+            while retry_count < self.retry_count:
+                try:
+                    article.download()
+                    break
+                except Exception as e:
+                    retry_count += 1
+                    if retry_count >= self.retry_count:
+                        raise
+                    self.logger.warning(f"Download retry {retry_count}/{self.retry_count}: {e}")
+                    time.sleep(2)
+            
+            article.parse()
+        
+        # Extract content and metadata
         content = article.text or ""
+        
+        # Update article_data with extracted metadata
+        if article.publish_date:
+            article_data["published"] = article.publish_date.isoformat()
+        
+        article_data["authors"] = article.authors if article.authors else []
+        article_data["top_image"] = article.top_image
+        article_data["images"] = article.images if hasattr(article, "images") else []
+        article_data["movies"] = article.movies if hasattr(article, "movies") else []
         
         # Throttle requests
         time.sleep(1.5)
@@ -297,15 +433,43 @@ class ContentCollector:
     def _extract_with_beautifulsoup(self, url: str) -> str:
         """
         Extract content using BeautifulSoup targeting article containers.
+        Enhanced with better selectors and more robust extraction.
         """
-        headers = {
-            'User-Agent': random.choice(self.user_agents),
-            'Accept': 'text/html,application/xhtml+xml,application/xml',
-            'Accept-Language': 'en-US,en;q=0.9'
-        }
+        # Use cloudscraper if available and enabled
+        if self.bypass_cloudflare:
+            try:
+                response = self.cloudscraper_session.get(url, timeout=self.request_timeout)
+                if response.status_code != 200:
+                    raise Exception(f"Cloudscraper request failed with status code {response.status_code}")
+            except Exception as e:
+                self.logger.warning(f"Cloudflare bypass failed, using regular session: {e}")
+                headers = {
+                    'User-Agent': random.choice(self.user_agents),
+                    'Accept': 'text/html,application/xhtml+xml,application/xml',
+                    'Accept-Language': 'en-US,en;q=0.9'
+                }
+                response = self.session.get(url, headers=headers, timeout=self.request_timeout)
+        else:
+            headers = {
+                'User-Agent': random.choice(self.user_agents),
+                'Accept': 'text/html,application/xhtml+xml,application/xml',
+                'Accept-Language': 'en-US,en;q=0.9'
+            }
+            response = self.session.get(url, headers=headers, timeout=self.request_timeout)
         
-        response = requests.get(url, headers=headers, timeout=10)
         soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # Try to find JSON-LD structured data first (most reliable)
+        json_ld = soup.find('script', {'type': 'application/ld+json'})
+        if json_ld:
+            try:
+                data = json.loads(json_ld.string)
+                if isinstance(data, list):
+                    data = data[0]
+                if isinstance(data, dict) and data.get('@type') == 'NewsArticle' and data.get('articleBody'):
+                    return data.get('articleBody')
+            except (json.JSONDecodeError, AttributeError):
+                pass
         
         # Try common article container selectors
         selectors = [
@@ -317,7 +481,13 @@ class ContentCollector:
             '#article-body',
             '.story-content',
             '.article__content',
-            '.article-body'
+            '.article-body',
+            '.entry-content',
+            '.post-content',
+            '#content-body',
+            '.main-content',
+            '[role="main"]',
+            '.article'
         ]
         
         content = ""
@@ -327,7 +497,7 @@ class ContentCollector:
             container = soup.select_one(selector)
             if container:
                 # Remove unwanted elements
-                for unwanted in container.select('aside, .related, .social, .comments, nav, header, footer, .ad, script, style'):
+                for unwanted in container.select('aside, .related, .social, .comments, nav, .nav, header, footer, .ad, script, style, form, .subscription, .ad-container, .poll, .pullquote'):
                     unwanted.decompose()
                 
                 # Extract text with paragraph breaks
@@ -340,14 +510,37 @@ class ContentCollector:
                 if self._is_valid_content(content):
                     break
         
+        # Final fallback: just get all paragraphs if nothing else worked
+        if not self._is_valid_content(content):
+            paragraphs = soup.find_all('p')
+            if paragraphs:
+                # Filter out very short paragraphs that are likely navigation, comments, etc.
+                paragraphs = [p for p in paragraphs if len(p.get_text().strip()) > 40]
+                content = "\n\n".join(p.get_text().strip() for p in paragraphs)
+        
         # Throttle requests
         time.sleep(1.5)
         
         return content
+    
+    def _extract_author_from_title(self, title: str) -> Optional[str]:
+        """Extract possible author from title as last resort."""
+        # Look for patterns like "By Author Name" or "Author Name reports"
+        by_match = re.search(r'By\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})', title)
+        if by_match:
+            return by_match.group(1)
+        
+        # Look for patterns with common reporting verbs
+        report_match = re.search(r'([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,2})\s+(?:reports|writes|says|claims)', title)
+        if report_match:
+            return report_match.group(1)
+        
+        return None
 
     def _is_valid_content(self, content: Optional[str]) -> bool:
         """
         Check if content meets quality criteria.
+        Enhanced with better validation rules.
         """
         if not content or len(content) < 200:
             return False
@@ -359,9 +552,18 @@ class ContentCollector:
         
         # Check for sentence structure (rough approximation)
         sentences = re.findall(r'[.!?]', content)
-        if len(sentences) < 3:
+        if len(sentences) < 5:  # Need more than a few sentences
             return False
         
+        # Check for too many consecutive special characters (indicative of parsing errors)
+        if re.search(r'[^\w\s.,;:!?()\'"-]{5,}', content):
+            return False
+            
+        # Check word count (at least 100 words for a valid article)
+        word_count = len(re.findall(r'\b\w+\b', content))
+        if word_count < 100:
+            return False
+            
         return True
 
     def _is_government_related(
@@ -378,15 +580,21 @@ class ContentCollector:
             political_tags = {"politics", "government", "us politics", "policy", "election"}
             for tag in tags:
                 tag_term = tag.get("term", "").lower()
-                if tag_term in political_tags:
+                if tag_term in political_tags or any(kw in tag_term for kw in self.govt_keywords):
                     return True
         
         # 2) Check for keywords in title and content preview
-        sample_text = (title + " " + content[:1000]).lower()
+        sample_text = (title + " " + content[:2000]).lower()
         
         # Check each keyword
         for keyword in self.govt_keywords:
             if keyword in sample_text:
+                return True
+        
+        # 3) Check for current president and political figures
+        political_figures = {"trump", "biden", "harris", "president", "secretary", "senator", "representative", "governor"}
+        for figure in political_figures:
+            if figure in sample_text:
                 return True
         
         return False
@@ -414,7 +622,11 @@ class ContentCollector:
             "source": article.get("source", "Unknown"),
             "bias_label": article.get("bias_label", "unknown"),
             "published": article.get("published"),
+            "authors": article.get("authors", []),
             "tags": article.get("tags", []),
+            "top_image": article.get("top_image"),
+            "images": article.get("images", []),
+            "movies": article.get("movies", []),
             "collected_at": article.get("collected_at", datetime.now().isoformat()),
             "id": article.get("id")
         }
