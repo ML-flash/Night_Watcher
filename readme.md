@@ -1,96 +1,124 @@
-# Night_watcher Framework
+# Night_watcher Intelligence Gathering System
 
+A streamlined system for analyzing news and identifying authoritarian patterns with enhanced memory capabilities.
 
+## Overview
 
-## Installation
+Night_watcher is an intelligence gathering and analysis tool designed to monitor political content for authoritarian patterns. It collects articles from news sources, analyzes them for manipulation techniques and authoritarian indicators, and builds a knowledge base of patterns over time.
 
-1. Ensure Python 3.8+ is installed
-2. Set up a virtual environment (recommended):
-   ```bash
-   python -m venv env
-   source env/bin/activate  # Linux/Mac
-   env\Scripts\activate  # Windows
-   ```
-3. Install dependencies:
+## Quick Start
+
+1. Make sure you have Python 3.8+ installed
+2. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
+3. Run the content collection:
+   ```bash
+   python night_watcher.py
+   ```
+4. Run the knowledge graph component:
+   ```bash
+   python night_watcher_kg.py
+   ```
 
-## Basic Usage
+That's it! The system will automatically:
+- Create necessary directories
+- Generate default configuration files if needed
+- Connect to LM Studio at localhost:1234 (or use Anthropic API)
+- Collect and analyze articles
+- Identify authoritarian patterns
+- Build a comprehensive knowledge graph
+- Generate intelligence reports
+- Save all results in the output directory
+
+## Components
+
+The Night_watcher system consists of the following core components:
+
+1. **Content Collector**: Gathers politically-focused content from various RSS feeds with filtering
+2. **Content Analyzer**: Identifies manipulation techniques and authoritarian patterns in content
+3. **Knowledge Graph**: Maps relationships between entities and events to track patterns over time
+4. **Document Repository**: Stores documents with cryptographic provenance
+
+## Knowledge Graph
+
+The Knowledge Graph component is designed to track patterns of authoritarian behavior over time:
 
 ```bash
-# Run with default settings
-python night_watcher.py
+python night_watcher_kg.py [OPTIONS]
+```
 
-# Run with custom config
-python night_watcher.py --config my_config.json
+Options:
+- `--config PATH` - Path to configuration file (default: config.json)
+- `--graph-file PATH` - Override path to knowledge graph file
+- `--taxonomy-file PATH` - Override path to taxonomy file
+- `--analyzed-dir PATH` - Override path to analyzed directory
+- `--file-pattern PATTERN` - Override file pattern for analysis files
+- `--reports-dir PATH` - Override path to reports directory
+- `--trend-days DAYS` - Override number of days for trend analysis
+- `--no-viz` - Disable visualization generation
+- `--create-config` - Create default config file and exit
+- `--verbose` - Enable verbose logging
 
-# Run with Anthropic API
-python night_watcher.py --use-anthropic --anthropic-key YOUR_API_KEY
+The Knowledge Graph tracks:
+- Actors (people, institutions, media outlets)
+- Events and their causal relationships
+- Authoritarian action patterns
+- Narratives and their normalization role
+- Changes to legal frameworks and procedural norms
 
-# Reset date tracking to start fresh
-python night_watcher.py --reset-date
+It generates reports on:
+- Authoritarian trends (0-10 score)
+- Democratic erosion analysis
+- Influential actors and their relationships
+- Coordination patterns between actors
+- Temporal patterns revealing larger strategies
 
-# Run with debug logging
-python night_watcher.py --verbose
+## Command Line Options
+
+The main `night_watcher.py` script accepts several optional parameters:
+
+```bash
+python night_watcher.py [OPTIONS]
+```
+
+Options:
+- `--config PATH` - Path to configuration file (default: config.json)
+- `--llm-host URL` - LLM provider URL (default: http://localhost:1234)
+- `--article-limit N` - Maximum articles to collect per source (default: 5)
+- `--output-dir PATH` - Output directory (default: ./data)
+- `--reset-date` - Reset date tracking to start from inauguration day (Jan 20, 2025)
+- `--use-anthropic` - Force using Anthropic API instead of LM Studio
+
+Example:
+```bash
+python night_watcher.py --llm-host http://192.168.1.100:1234 --article-limit 20 --output-dir ./outputs
 ```
 
 ## Configuration
 
-The default configuration will be generated automatically. You can modify `config.json` to:
-- Add news sources
-- Adjust analysis parameters
-- Configure output locations
-- Set up LLM preferences
-
-Example config:
-```json
-{
-  "llm_provider": {
-    "type": "lm_studio",
-    "host": "http://localhost:1234",
-    "model": "default"
-  },
-  "content_collection": {
-    "article_limit": 5,
-    "sources": [
-      {"url": "https://www.reuters.com/rss/topNews", "type": "rss", "bias": "center"}
-    ]
-  },
-  "output": {
-    "base_dir": "data"
-  }
-}
-```
-
-## LLM Setup Options
-
-1. **Local LLM via LM Studio** (recommended):
-   - Download [LM Studio](https://lmstudio.ai/)
-   - Load a suitable model (32B+ recommended)
-   - Start local server on port 1234
-   
-2. **Cloud API (Claude)**:
-   - Obtain Anthropic API key
-   - Run with `--use-anthropic --anthropic-key YOUR_API_KEY`
+The default configuration will be created automatically on first run. 
+To customize, edit the generated `config.json` file.
 
 ## Output Structure
 
-All outputs are saved in the configured data directory:
-- `collected/`: Raw article data
-- `analyzed/`: Analysis results
-- `memory/`: System memory and vector database
-- `documents/`: Source document repository with provenance tracking
+After running, you'll find the following in your output directory:
 
-## Command Line Options
+- `collected/` - Raw article data
+- `analyzed/` - Analysis results with manipulation scoring
+- `analysis/` - Pattern analysis and intelligence outputs
+- `knowledge_graph/` - Entity and relationship data
+- `documents/` - Document repository with cryptographic provenance
+- `logs/` - Execution logs
 
-```
---config PATH          Path to configuration file
---llm-host URL         LLM provider URL
---article-limit N      Maximum articles per source
---output-dir PATH      Output directory
---reset-date           Reset date tracking
---use-anthropic        Use Anthropic API
---anthropic-key KEY    Anthropic API key
---verbose              Enable verbose logging
-```
+## Security Considerations
+
+- The framework runs locally with no external API calls except to specified news sources
+- All LLM interactions happen locally through LM Studio (or optionally via Anthropic API)
+- Documents are stored with cryptographic provenance to prevent tampering
+- No data is sent to external servers unless using Anthropic API
+
+## License
+
+This project is released into the public domain.
