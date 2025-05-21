@@ -1,0 +1,45 @@
+2025-05-17 03:56:56,716 - root - INFO - Initializing analysis provenance tracking from data/analysis_provenance
+2025-05-17 03:56:56,745 - root - INFO - Provenance verification enabled for analysis processing
+2025-05-17 03:56:56,745 - root - INFO - Initializing knowledge graph from data/knowledge_graph/graph.json
+2025-05-17 03:56:56,746 - KnowledgeGraph - INFO - Loaded taxonomy: 9 node types, 21 relation types
+2025-05-17 03:56:56,746 - KnowledgeGraph - INFO - Loaded 0 nodes and 0 edges from directory structure
+2025-05-17 03:56:56,746 - KnowledgeGraph - INFO - Loaded knowledge graph from directory structure at data/knowledge_graph
+2025-05-17 03:56:56,746 - root - INFO - Initial graph state: 0 nodes, 0 edges
+2025-05-17 03:56:56,747 - root - INFO - Loading analyses from data/analyzed
+2025-05-17 03:56:56,747 - root - INFO - Found 2 analysis files matching pattern analysis_*.json
+2025-05-17 03:56:56,748 - root - INFO - Processing 2 analyses
+2025-05-17 03:56:56,749 - root - INFO - Verified provenance for analysis analysis_d3f8fcf8b173a8a6_1747453988_20250517_035355
+2025-05-17 03:56:56,752 - KnowledgeGraph - INFO - Processed article analysis: Sean Combs trial: Cassie concludes four days of testimony - added 13 nodes, 7 edges
+2025-05-17 03:56:56,752 - root - INFO - Processed article: Sean Combs trial: Cassie concludes four days of testimony - Added 13 nodes, 7 edges
+2025-05-17 03:56:56,752 - root - INFO - Verified provenance for analysis analysis_9bcd2b66b4022aae_1747453997_20250517_035355
+2025-05-17 03:56:56,754 - KnowledgeGraph - INFO - Processed article analysis: Cassie Ventura tells Diddy trial she would give back $20m to undo freak-offs - added 6 nodes, 5 edges
+2025-05-17 03:56:56,754 - root - INFO - Processed article: Cassie Ventura tells Diddy trial she would give back $20m to undo freak-offs - Added 6 nodes, 5 edges
+2025-05-17 03:56:56,754 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2006'
+2025-05-17 03:56:56,754 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2006'
+2025-05-17 03:56:56,755 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2006'
+2025-05-17 03:56:56,755 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2006'
+2025-05-17 03:56:56,755 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2014'
+2025-05-17 03:56:56,755 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2014'
+2025-05-17 03:56:56,755 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2014'
+2025-05-17 03:56:56,755 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2014'
+2025-05-17 03:56:56,755 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2014'
+2025-05-17 03:56:56,755 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2014'
+2025-05-17 03:56:56,755 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2014'
+2025-05-17 03:56:56,755 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2014'
+2025-05-17 03:56:56,755 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2018'
+2025-05-17 03:56:56,755 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2018'
+2025-05-17 03:56:56,756 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2018'
+2025-05-17 03:56:56,756 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2018'
+2025-05-17 03:56:56,756 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2023'
+2025-05-17 03:56:56,756 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2023'
+2025-05-17 03:56:56,756 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2023'
+2025-05-17 03:56:56,756 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2024-09'
+2025-05-17 03:56:56,756 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2024-09'
+2025-05-17 03:56:56,756 - KnowledgeGraph - WARNING - Error inferring temporal relationships: Invalid isoformat string: '2024-09'
+2025-05-17 03:56:56,756 - root - INFO - Inferred 0 temporal relationships
+2025-05-17 03:56:56,756 - root - INFO - Generating basic reports
+2025-05-17 03:56:56,757 - root - INFO - Generated statistics report: data/analysis/graph_statistics_20250517_035656.json
+2025-05-17 03:56:56,758 - KnowledgeGraph - INFO - Saved graph to data/analysis/graph_export_20250517_035656.json
+2025-05-17 03:56:56,758 - root - INFO - Saved graph to JSON: data/analysis/graph_export_20250517_035656.json
+2025-05-17 03:56:56,759 - KnowledgeGraph - INFO - Saved snapshot snapshot_2025-05-17T03-56-56.758565: Analysis run 20250517_035656
+2025-05-17 03:56:56,759 - root - INFO - Created graph snapshot: snapshot_2025-05-17T03-56-56.758565

@@ -1,0 +1,58 @@
+{
+  "node_count": 19,
+  "edge_count": 11,
+  "node_types": {
+    "media_outlet": 2,
+    "actor": 4,
+    "event": 11,
+    "narrative": 2
+  },
+  "relation_types": {
+    "restricts": 1,
+    "part_of": 1,
+    "opposes": 1,
+    "targets": 1,
+    "justifies": 2,
+    "intimidates": 1,
+    "criminalizes": 1,
+    "supports": 1,
+    "backs_with_force": 1,
+    "undermines": 1
+  },
+  "graph_density": 0.03216374269005848,
+  "discovered_node_types": [
+    "media_outlet",
+    "event",
+    "policy",
+    "procedural_norm",
+    "actor",
+    "civil_society",
+    "narrative",
+    "legal_framework",
+    "institution"
+  ],
+  "discovered_relation_types": [
+    "censors",
+    "delegitimizes",
+    "justifies",
+    "supports",
+    "part_of",
+    "expands_power",
+    "criminalizes",
+    "opposes",
+    "targets",
+    "purges",
+    "diverts_attention",
+    "co-opts",
+    "influences",
+    "backs_with_force",
+    "authorizes",
+    "normalizes",
+    "restricts",
+    "intimidates",
+    "undermines",
+    "follows",
+    "precedes"
+  ],
+  "timestamp": "2025-05-17T03:56:56.757071"
+}

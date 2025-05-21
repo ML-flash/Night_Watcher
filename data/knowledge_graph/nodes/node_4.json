@@ -1,0 +1,22 @@
+{
+  "id": "node_4",
+  "type": "event",
+  "name": "Cassie Ventura's testimony",
+  "attributes": {
+    "description": "Testified that her relationship with Combs was marked with violence, drug use and power imbalances, and that Combs coerced her into drug-fueled, highly-orchestrated sexual performances with male escorts",
+    "duration": "4 days",
+    "content": "graphic details about her sex life with the rapper and the physical violence she allegedly endured from him"
+  },
+  "timestamp": "N/A",
+  "created_at": "2025-05-17T03:56:56.749696",
+  "source": {
+    "document_id": "d3f8fcf8b173a8a6_1747453988",
+    "sentence": null
+  },
+  "additional_sources": [
+    {
+      "document_id": "9bcd2b66b4022aae_1747453997",
+      "sentence": null
+    }
+  ]
+}

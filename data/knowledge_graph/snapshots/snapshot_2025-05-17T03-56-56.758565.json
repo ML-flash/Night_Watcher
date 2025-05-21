@@ -1,0 +1,411 @@
+{
+  "id": "snapshot_2025-05-17T03-56-56.758565",
+  "name": "Analysis run 20250517_035656",
+  "timestamp": "2025-05-17T03:56:56.758565",
+  "node_count": 19,
+  "edge_count": 11,
+  "nodes": {
+    "node_1": {
+      "id": "node_1",
+      "type": "media_outlet",
+      "name": "NPR Topics: News",
+      "attributes": {
+        "title": "Sean Combs trial: Cassie concludes four days of testimony",
+        "url": "https://www.npr.org/2025/05/16/nx-s1-5401461/sean-combs-trial-cassie-concludes-testimony",
+        "bias_label": "center-left"
+      },
+      "timestamp": "2025-05-17T02:11:07",
+      "created_at": "2025-05-17T03:56:56.749186",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      }
+    },
+    "node_2": {
+      "id": "node_2",
+      "type": "actor",
+      "name": "Sean Combs",
+      "attributes": {
+        "role": "rapper, record executive",
+        "description": "Indicted on charges of sex trafficking, transporting to engage in prostitution and racketeering conspiracy"
+      },
+      "timestamp": "N/A",
+      "created_at": "2025-05-17T03:56:56.749403",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      }
+    },
+    "node_3": {
+      "id": "node_3",
+      "type": "actor",
+      "name": "Cassie Ventura",
+      "attributes": {
+        "role": "singer",
+        "description": "Dated Combs on and off for over a decade, filed a civil lawsuit against Combs in 2023 alleging physical assault, trafficking and rape",
+        "relationship": "ex-girlfriend of Sean 'Diddy' Combs"
+      },
+      "timestamp": "N/A",
+      "created_at": "2025-05-17T03:56:56.749556",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      },
+      "additional_sources": [
+        {
+          "document_id": "9bcd2b66b4022aae_1747453997",
+          "sentence": null
+        }
+      ]
+    },
+    "node_4": {
+      "id": "node_4",
+      "type": "event",
+      "name": "Cassie Ventura's testimony",
+      "attributes": {
+        "description": "Testified that her relationship with Combs was marked with violence, drug use and power imbalances, and that Combs coerced her into drug-fueled, highly-orchestrated sexual performances with male escorts",
+        "duration": "4 days",
+        "content": "graphic details about her sex life with the rapper and the physical violence she allegedly endured from him"
+      },
+      "timestamp": "N/A",
+      "created_at": "2025-05-17T03:56:56.749696",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      },
+      "additional_sources": [
+        {
+          "document_id": "9bcd2b66b4022aae_1747453997",
+          "sentence": null
+        }
+      ]
+    },
+    "node_5": {
+      "id": "node_5",
+      "type": "event",
+      "name": "Cassie Ventura's civil lawsuit against Sean Combs",
+      "attributes": {
+        "description": "Ventura filed the first prominent civil lawsuit against Combs in 2023, alleging that the rapper and record executive had physically assaulted, trafficked and raped her. The suit was settled quickly."
+      },
+      "timestamp": "2023",
+      "created_at": "2025-05-17T03:56:56.749835",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      }
+    },
+    "node_6": {
+      "id": "node_6",
+      "type": "event",
+      "name": "Sean Combs' indictment",
+      "attributes": {
+        "description": "Combs was indicted in September 2024 on charges of sex trafficking, transporting to engage in prostitution and racketeering conspiracy. He pleaded not guilty to all charges."
+      },
+      "timestamp": "2024-09",
+      "created_at": "2025-05-17T03:56:56.749969",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      }
+    },
+    "node_7": {
+      "id": "node_7",
+      "type": "event",
+      "name": "Cassie Ventura's contract with Bad Boy Records",
+      "attributes": {
+        "description": "Ventura signed a 10-album deal with Combs' label, Bad Boy Records, in 2006 when she was 19 years old. Combs, who is 17 years older than Ventura, pursued her romantically not long after they began working together."
+      },
+      "timestamp": "2006",
+      "created_at": "2025-05-17T03:56:56.750102",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      }
+    },
+    "node_8": {
+      "id": "node_8",
+      "type": "event",
+      "name": "Cassie Ventura's difficulty leaving Bad Boy Records",
+      "attributes": {
+        "description": "When asked if Ventura was easily able to leave her contract with Bad Boy upon breaking up with Combs in 2018, Ventura responded: 'I had to fight my way out.'"
+      },
+      "timestamp": "2018",
+      "created_at": "2025-05-17T03:56:56.750239",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      }
+    },
+    "node_9": {
+      "id": "node_9",
+      "type": "event",
+      "name": "Cassie Ventura's encounter with a man hinting at a sexually explicit video",
+      "attributes": {
+        "description": "In 2014, someone Ventura was working with at an event in Atlantic City hinted he had knowledge of a sexually explicit video of Ventura. Ventura assumed it was a video of the 'freak-offs' with escorts, and she anxiously texted Combs, who responded, 'This is crazy. Do not let him out of your sight.'"
+      },
+      "timestamp": "2014",
+      "created_at": "2025-05-17T03:56:56.750368",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      }
+    },
+    "node_10": {
+      "id": "node_10",
+      "type": "event",
+      "name": "Cassie Ventura's confrontation with the man hinting at the video",
+      "attributes": {
+        "description": "Ventura said she ended up taking Combs' security with her to 'intimidate' the man. In an audio recording, Ventura can be heard repeatedly threatening to kill the man if he doesn't cooperate."
+      },
+      "timestamp": "2014",
+      "created_at": "2025-05-17T03:56:56.750516",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      }
+    },
+    "node_11": {
+      "id": "node_11",
+      "type": "event",
+      "name": "Cassie Ventura's settlement with Sean Combs",
+      "attributes": {
+        "description": "Ventura confirmed that the amount of the settlement from her civil lawsuit against Combs was $20 million. When asked whether the settlement came at a time of financial hardship for her family, Ventura denied this was the case. Ventura said she would give the money back if she never had to participate in the 'freak-offs' with escorts."
+      },
+      "timestamp": "N/A",
+      "created_at": "2025-05-17T03:56:56.750722",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      }
+    },
+    "node_12": {
+      "id": "node_12",
+      "type": "event",
+      "name": "Homeland Security Investigations agent Yasin Binda's testimony",
+      "attributes": {
+        "description": "Binda testified that she helped plan the logistics for Combs' arrest in September 2024 and carried out the search warrant on his room at the Park Hyatt Hotel in New York City. Binda testified that her role was to take photographs of the items found during the search, including multiple bottles of baby oil and lubricant, illegal substances, a lighting device that could be used for 'mood lighting' and $9,000 in cash."
+      },
+      "timestamp": "2024-09",
+      "created_at": "2025-05-17T03:56:56.750852",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      }
+    },
+    "node_13": {
+      "id": "node_13",
+      "type": "actor",
+      "name": "Dawn Richard",
+      "attributes": {
+        "role": "singer",
+        "description": "Member of the group Danity Kane, which was signed to Combs' Bad Boy Records. Filed a civil lawsuit against Combs alleging a toxic and abusive working environment, and that she witnessed Combs violently assaulting Ventura on more than one occasion."
+      },
+      "timestamp": "N/A",
+      "created_at": "2025-05-17T03:56:56.750991",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      }
+    },
+    "node_14": {
+      "id": "node_14",
+      "type": "event",
+      "name": "Dawn Richard's testimony about witnessing Combs assaulting Ventura",
+      "attributes": {
+        "description": "Richard testified that she was present at an altercation in Combs' home in which he became 'belligerent' as Ventura attempted to make him eggs. Richard testified that Combs grabbed the skillet Ventura was using and attempted to hit her over the head with it. She alleged Ventura dropped to the ground into fetal position while Combs punched and kicked her, eventually putting his arm around her neck and dragging her upstairs by her hair. 'I was scared for her,' Richard told the court. 'I had never seen anything like that before.'"
+      },
+      "timestamp": "N/A",
+      "created_at": "2025-05-17T03:56:56.751124",
+      "source": {
+        "document_id": "d3f8fcf8b173a8a6_1747453988",
+        "sentence": null
+      }
+    },
+    "node_15": {
+      "id": "node_15",
+      "type": "media_outlet",
+      "name": "BBC News",
+      "attributes": {
+        "title": "Cassie Ventura tells Diddy trial she would give back $20m to undo freak-offs",
+        "url": "https://www.bbc.com/news/articles/cj42nvrkgzno",
+        "bias_label": "center"
+      },
+      "timestamp": "2025-05-17T02:41:17",
+      "created_at": "2025-05-17T03:56:56.752706",
+      "source": {
+        "document_id": "9bcd2b66b4022aae_1747453997",
+        "sentence": null
+      }
+    },
+    "node_16": {
+      "id": "node_16",
+      "type": "actor",
+      "name": "Sean 'Diddy' Combs",
+      "attributes": {
+        "role": "rap mogul",
+        "charges": "racketeering, sex trafficking and transportation to engage in prostitution"
+      },
+      "timestamp": "2023-04-07",
+      "created_at": "2025-05-17T03:56:56.753141",
+      "source": {
+        "document_id": "9bcd2b66b4022aae_1747453997",
+        "sentence": null
+      }
+    },
+    "node_17": {
+      "id": "node_17",
+      "type": "event",
+      "name": "$20M Settlement",
+      "attributes": {
+        "details": "legal settlement from Sean 'Diddy' Combs after Cassie Ventura filed a lawsuit against him in November 2023",
+        "timing": "just one day after the filing of the legal action"
+      },
+      "timestamp": "2023-11-01",
+      "created_at": "2025-05-17T03:56:56.753483",
+      "source": {
+        "document_id": "9bcd2b66b4022aae_1747453997",
+        "sentence": null
+      }
+    },
+    "node_18": {
+      "id": "node_18",
+      "type": "narrative",
+      "name": "Financially Motivated Accusations",
+      "attributes": {
+        "theme": "defense's portrayal of Cassie Ventura's motivations"
+      },
+      "timestamp": "2023-04-07",
+      "created_at": "2025-05-17T03:56:56.753624",
+      "source": {
+        "document_id": "9bcd2b66b4022aae_1747453997",
+        "sentence": null
+      }
+    },
+    "node_19": {
+      "id": "node_19",
+      "type": "narrative",
+      "name": "Coerced Participation",
+      "attributes": {
+        "theme": "Cassie Ventura's account of being coerced into the 'freak-off' sex sessions"
+      },
+      "timestamp": "2023-04-07",
+      "created_at": "2025-05-17T03:56:56.753752",
+      "source": {
+        "document_id": "9bcd2b66b4022aae_1747453997",
+        "sentence": null
+      }
+    }
+  },
+  "edges": {
+    "node_2_node_3": {
+      "source_id": "node_2",
+      "relation": "restricts",
+      "target_id": "node_3",
+      "timestamp": "2018",
+      "created_at": "2025-05-17T03:56:56.752048",
+      "evidence_quote": "When asked if Ventura was easily able to leave her contract with Bad Boy upon breaking up with Combs in 2018, Ventura responded: 'I had to fight my way out.'",
+      "source_document_id": "d3f8fcf8b173a8a6_1747453988",
+      "attributes": {}
+    },
+    "node_3_node_7": {
+      "source_id": "node_3",
+      "relation": "part_of",
+      "target_id": "node_7",
+      "timestamp": "2006",
+      "created_at": "2025-05-17T03:56:56.751249",
+      "evidence_quote": "Ventura signed a 10-album deal with Combs' label, Bad Boy Records, in 2006 when she was 19 years old.",
+      "source_document_id": "d3f8fcf8b173a8a6_1747453988",
+      "attributes": {}
+    },
+    "node_3_node_2": {
+      "source_id": "node_3",
+      "relation": "opposes",
+      "target_id": "node_2",
+      "timestamp": "2023",
+      "created_at": "2025-05-17T03:56:56.751404",
+      "evidence_quote": "Ventura filed the first prominent civil lawsuit against Combs in 2023, alleging that the rapper and record executive had physically assaulted, trafficked and raped her.",
+      "source_document_id": "d3f8fcf8b173a8a6_1747453988",
+      "attributes": {}
+    },
+    "node_3_node_16": {
+      "source_id": "node_3",
+      "relation": "targets",
+      "target_id": "node_16",
+      "timestamp": "2023-04-07",
+      "created_at": "2025-05-17T03:56:56.753895",
+      "evidence_quote": "Cassie Ventura's testimony revealed graphic details about her sex life with the rapper and the physical violence she allegedly endured from him",
+      "source_document_id": "9bcd2b66b4022aae_1747453997",
+      "attributes": {}
+    },
+    "node_4_node_5": {
+      "source_id": "node_4",
+      "relation": "justifies",
+      "target_id": "node_5",
+      "timestamp": "N/A",
+      "created_at": "2025-05-17T03:56:56.751561",
+      "evidence_quote": "Ventura testified that Combs coerced her into drug-fueled, highly-orchestrated sexual performances with male escorts.",
+      "source_document_id": "d3f8fcf8b173a8a6_1747453988",
+      "attributes": {}
+    },
+    "node_4_node_3": {
+      "source_id": "node_4",
+      "relation": "intimidates",
+      "target_id": "node_3",
+      "timestamp": "2014",
+      "created_at": "2025-05-17T03:56:56.751696",
+      "evidence_quote": "Ventura said she ended up taking Combs' security with her to 'intimidate' the man hinting at a sexually explicit video of her.",
+      "source_document_id": "d3f8fcf8b173a8a6_1747453988",
+      "attributes": {}
+    },
+    "node_4_node_18": {
+      "source_id": "node_4",
+      "relation": "justifies",
+      "target_id": "node_18",
+      "timestamp": "2023-04-07",
+      "created_at": "2025-05-17T03:56:56.754061",
+      "evidence_quote": "the defense's portrayal of Cassie Ventura's motivations",
+      "source_document_id": "9bcd2b66b4022aae_1747453997",
+      "attributes": {}
+    },
+    "node_4_node_16": {
+      "source_id": "node_4",
+      "relation": "criminalizes",
+      "target_id": "node_16",
+      "timestamp": "2023-04-07",
+      "created_at": "2025-05-17T03:56:56.754414",
+      "evidence_quote": "Cassie Ventura's testimony revealed graphic details about her sex life with the rapper and the physical violence she allegedly endured from him",
+      "source_document_id": "9bcd2b66b4022aae_1747453997",
+      "attributes": {}
+    },
+    "node_13_node_3": {
+      "source_id": "node_13",
+      "relation": "supports",
+      "target_id": "node_3",
+      "timestamp": "N/A",
+      "created_at": "2025-05-17T03:56:56.751934",
+      "evidence_quote": "Dawn Richard, a member of the group Danity Kane which was signed to Combs' Bad Boy Records, testified that she witnessed Combs violently assaulting Ventura on more than one occasion.",
+      "source_document_id": "d3f8fcf8b173a8a6_1747453988",
+      "attributes": {}
+    },
+    "node_17_node_3": {
+      "source_id": "node_17",
+      "relation": "backs_with_force",
+      "target_id": "node_3",
+      "timestamp": "2023-11-01",
+      "created_at": "2025-05-17T03:56:56.754555",
+      "evidence_quote": "legal settlement from Sean 'Diddy' Combs after Cassie Ventura filed a lawsuit against him in November 2023",
+      "source_document_id": "9bcd2b66b4022aae_1747453997",
+      "attributes": {}
+    },
+    "node_19_node_18": {
+      "source_id": "node_19",
+      "relation": "undermines",
+      "target_id": "node_18",
+      "timestamp": "2023-04-07",
+      "created_at": "2025-05-17T03:56:56.754182",
+      "evidence_quote": "Cassie Ventura's account of being coerced into the 'freak-off' sex sessions",
+      "source_document_id": "9bcd2b66b4022aae_1747453997",
+      "attributes": {}
+    }
+  }
+}

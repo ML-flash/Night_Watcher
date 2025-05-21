@@ -1,0 +1,27 @@
+{
+  "analysis_record": {
+    "analysis_id": "analysis_d3f8fcf8b173a8a6_1747453988_20250517_035355",
+    "timestamp": "2025-05-17T03:55:59.959840",
+    "document_ids": [
+      "d3f8fcf8b173a8a6_1747453988"
+    ],
+    "analysis_type": "content_analysis",
+    "analysis_parameters": {
+      "timestamp": "20250517_035355",
+      "analyzer_version": "1.0.0"
+    },
+    "result_hash": "493f293040dec19cf2eab146433e73c0ce1930316a8ae0260969ae18dd1f2ce2",
+    "analyzer_version": "1.0.0"
+  },
+  "signature": {
+    "content_hash": "423771f842668275405c0a213c56cbb7331d4e9eda66c4756e122c8ea79ef489",
+    "metadata": {
+      "type": "analysis_record",
+      "analysis_id": "analysis_d3f8fcf8b173a8a6_1747453988_20250517_035355",
+      "timestamp": "2025-05-17T03:55:59.959840"
+    },
+    "timestamp": "2025-05-17T03:55:59.960502",
+    "signature": "0h2bT67SWmotr1rXESYTOgBVsiyOfbSUK8w+B7bX+lA=",
+    "dev_mode": true
+  }
+}

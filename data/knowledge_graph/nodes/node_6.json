@@ -1,0 +1,14 @@
+{
+  "id": "node_6",
+  "type": "event",
+  "name": "Sean Combs' indictment",
+  "attributes": {
+    "description": "Combs was indicted in September 2024 on charges of sex trafficking, transporting to engage in prostitution and racketeering conspiracy. He pleaded not guilty to all charges."
+  },
+  "timestamp": "2024-09",
+  "created_at": "2025-05-17T03:56:56.749969",
+  "source": {
+    "document_id": "d3f8fcf8b173a8a6_1747453988",
+    "sentence": null
+  }
+}
