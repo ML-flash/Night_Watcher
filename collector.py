@@ -65,10 +65,62 @@ class ContentCollector:
         
         # Political/governmental keywords for filtering
         self.govt_keywords = set(kw.lower() for kw in cc.get("govt_keywords", [
-            "executive order", "administration", "white house", "congress", "senate",
-            "house of representatives", "supreme court", "federal", "president",
-            "department of", "agency", "regulation", "policy", "law", "legislation",
-            "election", "democracy", "constitution", "amendment"
+            # Executive branch
+            "executive order", "administration", "white house", "president", "presidential",
+            "cabinet", "secretary", "department of", "federal agency", "oval office",
+            "executive action", "executive branch", "commander in chief", "veto",
+            
+            # Legislative branch
+            "congress", "congressional", "senate", "senator", "house of representatives",
+            "representative", "legislation", "bill", "law", "act", "resolution",
+            "committee", "subcommittee", "speaker of the house", "majority leader",
+            "minority leader", "filibuster", "caucus", "legislative", "lawmaker",
+            
+            # Judicial branch
+            "supreme court", "federal court", "appeals court", "district court",
+            "judge", "justice", "judicial", "ruling", "decision", "opinion",
+            "constitutional", "unconstitutional", "precedent", "litigation",
+            
+            # Elections and democracy
+            "election", "campaign", "candidate", "voter", "voting", "ballot",
+            "primary", "caucus", "electoral", "democracy", "democratic", "republic",
+            "poll", "polling", "constituency", "redistricting", "gerrymandering",
+            
+            # Policy and governance
+            "policy", "regulation", "regulatory", "federal", "government", "governance",
+            "politics", "political", "partisan", "bipartisan", "nonpartisan",
+            "public policy", "domestic policy", "foreign policy", "national security",
+            
+            # Specific agencies and departments
+            "state department", "defense department", "pentagon", "justice department",
+            "treasury", "homeland security", "education department", "energy department",
+            "fbi", "cia", "nsa", "dhs", "doj", "epa", "fda", "cdc", "fcc",
+            
+            # Political parties and movements
+            "republican", "democrat", "democratic", "gop", "conservative", "liberal",
+            "progressive", "libertarian", "independent", "tea party", "maga",
+            
+            # Key political figures (titles)
+            "governor", "mayor", "attorney general", "chief justice", "ambassador",
+            "diplomat", "lobbyist", "spokesman", "spokeswoman", "spokesperson",
+            
+            # Government actions
+            "impeachment", "nomination", "confirmation", "appointment", "investigation",
+            "hearing", "testimony", "subpoena", "executive privilege", "pardon",
+            "sanction", "treaty", "trade deal", "tariff", "embargo",
+            
+            # Constitutional terms
+            "constitution", "amendment", "bill of rights", "civil rights", "civil liberties",
+            "first amendment", "second amendment", "constitutional crisis",
+            
+            # Budget and fiscal
+            "budget", "appropriation", "spending", "deficit", "debt ceiling",
+            "government shutdown", "continuing resolution", "omnibus", "reconciliation",
+            
+            # Other relevant terms
+            "whistleblower", "classified", "declassified", "national interest",
+            "state of the union", "executive session", "recess appointment",
+            "confirmation hearing", "oversight", "accountability", "transparency"
         ]))
         
         # User agents for requests
@@ -80,10 +132,34 @@ class ContentCollector:
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/100.0.1185.50 Safari/537.36'
         ]
         
+        # URLs to skip (problematic or non-political)
+        self.skip_url_patterns = [
+            r'/entertainment/',
+            r'/music/',
+            r'/sports/',
+            r'/lifestyle/',
+            r'/style/',
+            r'/food/',
+            r'/travel/',
+            r'/celebrity/',
+            r'/culture/',
+            r'/arts/',
+            r'/movies/',
+            r'/tv/',
+            r'/gaming/',
+            r'/technology/gadgets/',
+            r'/health/personal/',
+            r'/real-estate/',
+            r'/cars/',
+            r'diddy',  # Specific pattern causing issues
+            r'sean-combs'
+        ]
+        
+        # Initialize logger first
+        self.logger = logging.getLogger("ContentCollector")
+        
         # Initialize session objects
         self._init_sessions()
-        
-        self.logger = logging.getLogger("ContentCollector")
     
     def _init_sessions(self):
         """Initialize HTTP sessions for requests and cloudscraper."""
@@ -110,6 +186,17 @@ class ContentCollector:
             except Exception as e:
                 self.logger.error(f"Error initializing Cloudflare bypass: {e}")
                 self.bypass_cloudflare = False
+
+    def _should_skip_url(self, url: str) -> bool:
+        """
+        Check if URL should be skipped based on patterns.
+        """
+        url_lower = url.lower()
+        for pattern in self.skip_url_patterns:
+            if re.search(pattern, url_lower):
+                self.logger.info(f"Skipping non-political URL pattern '{pattern}': {url}")
+                return True
+        return False
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -255,6 +342,10 @@ class ContentCollector:
                 if not link:
                     continue
                 
+                # Skip non-political URLs early
+                if self._should_skip_url(link):
+                    continue
+                
                 # Publication date filtering
                 pub_date = None
                 if entry.get("published_parsed"):
@@ -266,20 +357,32 @@ class ContentCollector:
                     if end_date and pub_date > end_date:
                         continue
                 
+                # Filter for political/government content early using title and tags
+                tags = entry.get("tags", [])
+                if not self._is_government_related(title, "", tags):
+                    self.logger.info(f"Skipping non-governmental article (pre-fetch): {title}")
+                    continue
+                
                 self.logger.info(f"Fetching article: {title}")
                 
-                # Extract content
-                content, article_data = self._extract_article_content(link, title, pub_date)
+                # Extract content with timeout protection
+                try:
+                    content, article_data = self._extract_article_content(link, title, pub_date)
+                except requests.exceptions.Timeout:
+                    self.logger.warning(f"Timeout fetching article: {title} - skipping")
+                    continue
+                except Exception as e:
+                    self.logger.warning(f"Error fetching article: {title} - {str(e)}")
+                    continue
                 
                 # Skip if content extraction failed
                 if not content or not self._is_valid_content(content):
                     self.logger.warning(f"Failed to extract valid content for: {title}")
                     continue
                 
-                # Filter for political/government content
-                tags = entry.get("tags", [])
+                # Re-check for political content with actual content
                 if not self._is_government_related(title, content, tags):
-                    self.logger.info(f"Skipping non-governmental article: {title}")
+                    self.logger.info(f"Skipping non-governmental article (post-fetch): {title}")
                     continue
                 
                 # Determine source name
@@ -377,7 +480,7 @@ class ContentCollector:
             # First try with cloudscraper if cloudflare bypass is enabled
             if self.bypass_cloudflare:
                 try:
-                    # Get HTML content with cloudscraper
+                    # Get HTML content with cloudscraper with timeout
                     response = self.cloudscraper_session.get(url, timeout=self.request_timeout)
                     if response.status_code == 200:
                         # Create article and use the pre-fetched HTML
@@ -398,12 +501,14 @@ class ContentCollector:
             # Fallback for newspaper3k (doesn't have the article convenience function)
             article = Article(url, config=config)
             
-            # Download with retries
+            # Download with retries and timeout protection
             retry_count = 0
             while retry_count < self.retry_count:
                 try:
                     article.download()
                     break
+                except requests.exceptions.Timeout:
+                    raise  # Re-raise timeout errors, don't retry
                 except Exception as e:
                     retry_count += 1
                     if retry_count >= self.retry_count:
