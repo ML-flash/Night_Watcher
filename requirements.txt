@@ -1,28 +1,20 @@
 # Core dependencies
 feedparser>=6.0.0
-requests>=2.25.0
-bs4>=0.0.1
-beautifulsoup4>=4.9.0
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
 python-dateutil>=2.8.0
-cryptography>=3.4.0
-pycryptodome>=3.10.0
 
-# XML processing
-lxml>=5.0.0  # Base lxml
-lxml_html_clean>=0.4.0   # Separate package for html cleaning
+# Cryptography for provenance
+cryptography>=41.0.0
 
-# Enhanced article extraction 
-newspaper4k>=0.9.0  # Fork of newspaper3k with better extraction and more features
+# Article extraction - using standard libraries
+newspaper3k>=0.2.8
+trafilatura>=1.6.0
 
-# Fallback HTML → text extractor
-trafilatura>=1.4.0  # Robust HTML-to-text extraction before newspaper4k
+# Optional but recommended for better extraction
+cloudscraper>=1.2.71  # For bypassing Cloudflare protection
+readability-lxml>=0.8.1  # Alternative extraction method
 
-# Optional dependencies for cloudflare bypass
-cloudscraper>=1.2.0  # For bypassing Cloudflare protection
-
-# For concurrency
-futures>=3.1.0; python_version < '3.8'
-
-# Utility dependencies
-tqdm>=4.60.0  # For progress bars
-readability-lxml
+# Standard library dependencies
+tqdm>=4.66.0  # Progress bars (if needed)
