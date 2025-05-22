@@ -23,7 +23,6 @@ DEFAULT_CONFIG = {
         "sources": [
             {"url": "https://apnews.com/rss", "type": "rss", "bias": "center"},
             {"url": "https://feeds.npr.org/1001/rss.xml", "type": "rss", "bias": "center-left"},
-            {"url": "https://thehill.com/rss/feed/", "type": "rss", "bias": "center"},
             {"url": "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml", "type": "rss", "bias": "center"},
             {"url": "https://www.whitehouse.gov/feed/", "type": "rss", "bias": "official-government"},
             {"url": "https://www.federalregister.gov/presidential-documents.rss", "type": "rss",
@@ -46,6 +45,8 @@ DEFAULT_CONFIG = {
     }
 }
 
+# Constants
+INAUGURATION_DAY = datetime(2025, 1, 20)
 
 def load_config(config_path: str) -> Dict[str, Any]:
     """
@@ -110,24 +111,68 @@ def save_to_file(content: Any, filepath: str) -> bool:
         return False
 
 
-def get_last_run_date(data_dir: str) -> datetime:
+def get_collection_date_range(data_dir: str) -> tuple[datetime, datetime, bool]:
     """
-    Get the last run date from the date tracking file.
-    If no previous date, return Inauguration Day (January 20, 2025).
+    Get the date range for collection and whether this is a first run.
+    
+    Returns:
+        (start_date, end_date, is_first_run)
     """
     date_file = os.path.join(data_dir, "last_run_date.txt")
-
+    end_date = datetime.now()
+    
     if os.path.exists(date_file):
+        # This is a subsequent run
         try:
             with open(date_file, 'r') as f:
                 date_str = f.read().strip()
-                return datetime.fromisoformat(date_str)
+                start_date = datetime.fromisoformat(date_str)
+                logging.info(f"Using last run date as start: {start_date.isoformat()}")
+                return start_date, end_date, False
         except Exception as e:
             logging.error(f"Error reading last run date: {e}")
+    
+    # This is the first run - collect everything from a wide range
+    # Set start_date to Jan 1, 2025 to capture all available content
+    # We'll filter to Inauguration Day later in post-processing
+    start_date = datetime(2025, 1, 1)  # Wide net for RSS feeds
+    logging.info("First run detected - collecting from Jan 1, 2025 to capture all available content")
+    logging.info("Articles will be filtered to Inauguration Day (Jan 20, 2025) and later")
+    return start_date, end_date, True
 
-    # Default to Inauguration Day if no previous date
-    logging.info("No previous run date found, using Inauguration Day (Jan 20, 2025)")
-    return datetime(2025, 1, 20)
+
+def filter_articles_by_inauguration_day(articles: List[Dict[str, Any]], is_first_run: bool) -> List[Dict[str, Any]]:
+    """
+    Filter articles to only include those from Inauguration Day forward on first run.
+    """
+    if not is_first_run:
+        return articles  # No filtering needed for subsequent runs
+    
+    filtered_articles = []
+    filtered_count = 0
+    
+    for article in articles:
+        article_date = None
+        
+        # Try to parse the publication date
+        if article.get("published"):
+            try:
+                article_date = datetime.fromisoformat(article["published"])
+            except (ValueError, TypeError):
+                # If we can't parse the date, include the article to be safe
+                filtered_articles.append(article)
+                continue
+        
+        # If no date or date is after Inauguration Day, include it
+        if not article_date or article_date >= INAUGURATION_DAY:
+            filtered_articles.append(article)
+        else:
+            filtered_count += 1
+    
+    if filtered_count > 0:
+        logging.info(f"Filtered out {filtered_count} articles published before Inauguration Day")
+    
+    return filtered_articles
 
 
 def save_run_date(data_dir: str, date: datetime) -> bool:
@@ -181,21 +226,21 @@ def run_collector(config: Dict[str, Any], args: argparse.Namespace) -> int:
     collector = ContentCollector(config, doc_repo)
 
     # Determine date range
-    start_date = None
-    end_date = datetime.now()
-
     if args.reset_date:
-        # Use Inauguration Day
-        start_date = datetime(2025, 1, 20)
-        logging.info("Reset date flag used - starting from Inauguration Day")
+        # Use Inauguration Day as start for reset
+        start_date = datetime(2025, 1, 1)  # Wide net for collection
+        end_date = datetime.now()
+        is_first_run = True
+        logging.info("Reset date flag used - collecting from Jan 1, 2025 (will filter to Inauguration Day)")
     elif args.days:
         # Use specified number of days back
+        end_date = datetime.now()
         start_date = end_date - timedelta(days=args.days)
+        is_first_run = False
         logging.info(f"Using start date {args.days} days ago: {start_date.isoformat()}")
     else:
-        # Use last run date from tracking file
-        start_date = get_last_run_date(output_dir)
-        logging.info(f"Using last run date: {start_date.isoformat()}")
+        # Use automatic date range detection
+        start_date, end_date, is_first_run = get_collection_date_range(output_dir)
 
     # Configure collection
     collection_input = {
@@ -204,19 +249,40 @@ def run_collector(config: Dict[str, Any], args: argparse.Namespace) -> int:
         "start_date": start_date,
         "end_date": end_date,
         "document_repository": doc_repo,
-        "store_documents": True
+        "store_documents": False  # We'll store after filtering
     }
 
     # Run collection
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     logging.info(f"Starting collection at {timestamp}")
+    logging.info(f"Collection date range: {start_date.isoformat()} to {end_date.isoformat()}")
 
     result = collector.process(collection_input)
 
-    # Get results
-    articles = result.get("articles", [])
-    document_ids = result.get("document_ids", [])
-    status = result.get("status", {})
+    # Get results and apply filtering
+    raw_articles = result.get("articles", [])
+    logging.info(f"Raw articles collected: {len(raw_articles)}")
+    
+    # Filter articles for first run (Inauguration Day and later)
+    articles = filter_articles_by_inauguration_day(raw_articles, is_first_run)
+    logging.info(f"Articles after filtering: {len(articles)}")
+
+    # Now store the filtered articles in the document repository
+    document_ids = []
+    if articles:
+        for article in articles:
+            try:
+                if not article.get("id"):
+                    article["id"] = collector._generate_document_id(article)
+                
+                doc_id = doc_repo.store_document(
+                    article["content"],
+                    collector._create_metadata(article)
+                )
+                document_ids.append(doc_id)
+                article["document_id"] = doc_id
+            except Exception as e:
+                logging.error(f"Error storing document: {e}")
 
     # Find the most recent article date to update tracking
     latest_article_date = None
@@ -230,14 +296,14 @@ def run_collector(config: Dict[str, Any], args: argparse.Namespace) -> int:
             except (ValueError, TypeError):
                 pass
 
-    # Save the latest article date as the next start date
+    # Save the run date
     if latest_article_date:
         # Add a small buffer (1 second) to avoid duplicate collection
         next_start_date = latest_article_date + timedelta(seconds=1)
         save_run_date(output_dir, next_start_date)
         logging.info(f"Updated next start date to: {next_start_date.isoformat()}")
     else:
-        # If no articles found, keep the current end date as next start
+        # If no articles found, save current end date as next start
         save_run_date(output_dir, end_date)
         logging.info(f"No articles found, updated next start date to: {end_date.isoformat()}")
 
@@ -256,13 +322,16 @@ def run_collector(config: Dict[str, Any], args: argparse.Namespace) -> int:
     summary = {
         "timestamp": timestamp,
         "articles_collected": len(articles),
+        "raw_articles_collected": len(raw_articles),
         "documents_stored": len(document_ids),
         "start_date": start_date.isoformat() if start_date else None,
         "end_date": end_date.isoformat(),
         "next_start_date": latest_article_date.isoformat() if latest_article_date else end_date.isoformat(),
         "document_ids": document_ids,
         "provenance_enabled": provenance_enabled,
-        "status": status
+        "is_first_run": is_first_run,
+        "inauguration_day_filter_applied": is_first_run,
+        "status": result.get("status", {})
     }
 
     summary_file = os.path.join(output_dir, f"collection_summary_{timestamp}.json")
@@ -271,9 +340,15 @@ def run_collector(config: Dict[str, Any], args: argparse.Namespace) -> int:
     # Print summary
     print(f"\n=== Collection Summary ===")
     print(f"Timestamp: {timestamp}")
-    print(f"Articles collected: {len(articles)}")
+    print(f"Raw articles collected: {len(raw_articles)}")
+    if is_first_run:
+        print(f"Articles after Inauguration Day filter: {len(articles)}")
+    else:
+        print(f"Articles collected: {len(articles)}")
     print(f"Documents stored: {len(document_ids)}")
-    print(f"Time range: {start_date.isoformat()} to {end_date.isoformat()}")
+    print(f"Collection range: {start_date.isoformat()} to {end_date.isoformat()}")
+    if is_first_run:
+        print(f"Filtered to: {INAUGURATION_DAY.isoformat()} and later")
     print(f"Next start date: {latest_article_date.isoformat() if latest_article_date else end_date.isoformat()}")
     print(f"Provenance tracking: {'Enabled' if provenance_enabled else 'Disabled'}")
 

@@ -7,8 +7,15 @@ python-dateutil>=2.8.0
 cryptography>=3.4.0
 pycryptodome>=3.10.0
 
+# XML processing
+lxml>=5.0.0  # Base lxml
+lxml_html_clean>=0.4.0   # Separate package for html cleaning
+
 # Enhanced article extraction 
 newspaper4k>=0.9.0  # Fork of newspaper3k with better extraction and more features
+
+# Fallback HTML → text extractor
+trafilatura>=1.4.0  # Robust HTML-to-text extraction before newspaper4k
 
 # Optional dependencies for cloudflare bypass
 cloudscraper>=1.2.0  # For bypassing Cloudflare protection
@@ -18,3 +25,4 @@ futures>=3.1.0; python_version < '3.8'
 
 # Utility dependencies
 tqdm>=4.60.0  # For progress bars
+readability-lxml
