@@ -15,71 +15,76 @@
     
     "sources": [
       {
-        "url": "https://feeds.npr.org/1001/rss.xml",
-        "type": "rss",
-        "bias": "center-left",
-        "_note": "NPR Top Stories - working RSS feed ✅"
-      },
-      {
         "url": "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml",
         "type": "rss",
         "bias": "center",
-        "_note": "BBC US & Canada news - working RSS feed ✅"
-      },
-      {
-        "url": "http://rss.cnn.com/rss/cnn_allpolitics.rss",
-        "type": "rss",
-        "bias": "center-left",
-        "_note": "CNN Politics - working RSS feed ✅"
+        "_note": "BBC US & Canada news - WORKING ✅"
       },
       {
         "url": "https://www.federalregister.gov/presidential-documents.rss",
         "type": "rss",
         "bias": "official-government",
-        "_note": "Federal Register presidential documents - working RSS feed ✅"
-      },
-      {
-        "url": "https://www.dol.gov/rss/releases.xml",
-        "type": "rss",
-        "bias": "official-government",
-        "_note": "Department of Labor releases - working RSS feed ✅"
-      },
-      {
-        "url": "https://rss.app/feeds/pGjZFI4CvUmUDMLT.xml",
-        "type": "rss",
-        "bias": "center",
-        "_note": "Alternative RSS feed for The Hill via RSS.app service"
-      },
-      {
-        "url": "https://feeds.washingtonpost.com/rss/politics",
-        "type": "rss",
-        "bias": "center-left",
-        "_note": "Washington Post Politics RSS feed"
-      },
-      {
-        "url": "https://feeds.reuters.com/reuters/politicsNews",
-        "type": "rss",
-        "bias": "center",
-        "_note": "Reuters Politics with correct URL"
+        "_note": "Federal Register presidential documents - WORKING ✅"
       },
       {
         "url": "https://feeds.foxnews.com/foxnews/politics",
         "type": "rss",
         "bias": "center-right",
-        "_note": "Fox News Politics for bias balance"
+        "_note": "Fox News Politics - WORKING ✅"
       },
       {
-        "url": "https://www.usa.gov/rss/updates.xml",
+        "url": "https://www.politico.com/rss/politicopicks.xml",
+        "type": "rss",
+        "bias": "center",
+        "_note": "Politico top picks"
+      },
+      {
+        "url": "https://rss.politico.com/congress.xml",
+        "type": "rss",
+        "bias": "center",
+        "_note": "Politico Congress coverage"
+      },
+      {
+        "url": "https://www.washingtontimes.com/rss/headlines/news/politics/",
+        "type": "rss",
+        "bias": "center-right",
+        "_note": "Washington Times Politics"
+      },
+      {
+        "url": "https://feeds.npr.org/1004/rss.xml",
+        "type": "rss",
+        "bias": "center-left",
+        "_note": "NPR Politics"
+      },
+      {
+        "url": "https://www.c-span.org/rss/?action=program&programTypeId=1",
+        "type": "rss",
+        "bias": "center",
+        "_note": "C-SPAN Recent Programs"
+      },
+      {
+        "url": "https://www.rollcall.com/feed/",
+        "type": "rss",
+        "bias": "center",
+        "_note": "Roll Call - Congressional news"
+      },
+      {
+        "url": "https://www.govinfo.gov/rss/bills.xml",
         "type": "rss",
         "bias": "official-government",
-        "_note": "USA.gov official government updates"
+        "_note": "Official Congressional Bills"
       },
       {
-        "url": "https://www.whitehouse.gov",
-        "type": "web_scrape",
-        "bias": "official-government",
-        "_note": "White House main page scraping as fallback",
-        "_disabled": true
+        "url": "https://apnews.com/apf-politics",
+        "type": "rss",
+        "bias": "center",
+        "_note": "AP News Politics"
+      },
+      {
+        "url": "https://www.realclearpolitics.com/index.xml",
+        "type": "rss",
+        "bias": "center",
+        "_note": "RealClearPolitics aggregator"
       }
     ],
     "_sources_info": "List of content sources to collect from - mix of RSS feeds and web scraping for sources that discontinued RSS",
