@@ -26,3 +26,13 @@ futures>=3.1.0; python_version < '3.8'
 # Utility dependencies
 tqdm>=4.60.0  # For progress bars
 readability-lxml
+
+# LLM navigation dependencies
+selenium>=4.15.0  # Browser automation for LLM-guided navigation
+webdriver-manager>=4.0.0  # Automatic driver management
+
+# LLM provider support  
+anthropic>=0.5.0  # For Anthropic fallback when LM Studio unavailable
+
+# Language detection
+py3langid>=0.2.2  # Language detection for trafilatura
