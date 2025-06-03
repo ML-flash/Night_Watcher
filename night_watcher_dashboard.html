@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night_watcher Control Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            padding: 1rem 2rem;
+            border-bottom: 3px solid #4a5568;
+        }
+
+        .header h1 {
+            color: #f7fafc;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #a0aec0;
+            font-size: 1rem;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            background: #2d3748;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            background: #4a5568;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #5a6578;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #3182ce;
+            border-color: #63b3ed;
+        }
+
+        .content {
+            background: #2d3748;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            color: #f7fafc;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #4a5568;
+            padding-bottom: 0.5rem;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-panel {
+            background: #4a5568;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #5a6578;
+        }
+
+        .control-panel h3 {
+            color: #e2e8f0;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #cbd5e0;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2d3748;
+            border: 1px solid #5a6578;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3182ce 0%, #2b77cb 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(49, 130, 206, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #d69e2e 0%, #b7791f 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            color: white;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .status-card {
+            background: #4a5568;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #5a6578;
+        }
+
+        .status-card h4 {
+            color: #cbd5e0;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #63b3ed;
+        }
+
+        .log-container {
+            background: #1a202c;
+            border-radius: 8px;
+            padding: 1rem;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            border: 1px solid #4a5568;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+        }
+
+        .log-entry.info {
+            color: #63b3ed;
+        }
+
+        .log-entry.success {
+            color: #68d391;
+        }
+
+        .log-entry.warning {
+            color: #fbd38d;
+        }
+
+        .log-entry.error {
+            color: #fc8181;
+        }
+
+        .collector-config {
+            background: #4a5568;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .source-item {
+            background: #2d3748;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 6px;
+            border-left: 4px solid #3182ce;
+        }
+
+        .source-item.disabled {
+            opacity: 0.6;
+            border-left-color: #718096;
+        }
+
+        .source-status {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .source-status.active {
+            background: #38a169;
+            color: white;
+        }
+
+        .source-status.error {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .source-status.pending {
+            background: #d69e2e;
+            color: white;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #2d3748;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3182ce, #63b3ed);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .metric-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #5a6578;
+        }
+
+        .metric-card h4 {
+            color: #cbd5e0;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #63b3ed;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            font-size: 0.9rem;
+            color: #68d391;
+        }
+
+        .metric-change.negative {
+            color: #fc8181;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulsing {
+            animation: pulse 2s infinite;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #3182ce;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌙 Night_watcher Control Dashboard</h1>
+        <p>Intelligence Gathering & Analysis Framework</p>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="nav-item active" onclick="showSection('collector')">
+                📡 Content Collector
+            </div>
+            <div class="nav-item" onclick="showSection('analyzer')">
+                🔍 Content Analyzer
+            </div>
+            <div class="nav-item" onclick="showSection('knowledge-graph')">
+                🕸️ Knowledge Graph
+            </div>
+            <div class="nav-item" onclick="showSection('vector-store')">
+                🧠 Vector Store
+            </div>
+            <div class="nav-item" onclick="showSection('monitoring')">
+                📊 System Monitoring
+            </div>
+            <div class="nav-item" onclick="showSection('provenance')">
+                🔐 Provenance
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Content Collector Section -->
+            <div id="collector" class="section active">
+                <h2>Content Collector</h2>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <h4>Collection Status</h4>
+                        <div class="value" id="collection-status">Idle</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Articles Today</h4>
+                        <div class="value" id="articles-today">0</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Active Sources</h4>
+                        <div class="value" id="active-sources">12</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Success Rate</h4>
+                        <div class="value" id="success-rate">87%</div>
+                    </div>
+                </div>
+
+                <div class="control-grid">
+                    <div class="control-panel">
+                        <h3>Collection Controls</h3>
+                        <div class="form-group">
+                            <label>Article Limit per Source</label>
+                            <input type="number" id="article-limit" value="10" min="1" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label>Collection Mode</label>
+                            <select id="collection-mode">
+                                <option value="incremental">Incremental (since last run)</option>
+                                <option value="full">Full Collection</option>
+                                <option value="days">Last N Days</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="days-input" style="display: none;">
+                            <label>Number of Days</label>
+                            <input type="number" id="collection-days" value="7" min="1" max="90">
+                        </div>
+                        <button class="btn btn-primary" onclick="startCollection()">Start Collection</button>
+                        <button class="btn btn-danger" onclick="stopCollection()">Stop Collection</button>
+                    </div>
+
+                    <div class="control-panel">
+                        <h3>LLM Navigation</h3>
+                        <div class="form-group">
+                            <label>LLM Fallback</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="llm-fallback" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>LLM Provider</label>
+                            <select id="llm-provider">
+                                <option value="lm_studio">LM Studio (Local)</option>
+                                <option value="anthropic">Anthropic API</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>LM Studio Host</label>
+                            <input type="text" id="lm-studio-host" value="http://localhost:1234">
+                        </div>
+                        <button class="btn btn-warning" onclick="testLLMConnection()">Test Connection</button>
+                    </div>
+
+                    <div class="control-panel">
+                        <h3>Advanced Settings</h3>
+                        <div class="form-group">
+                            <label>Request Timeout (seconds)</label>
+                            <input type="number" id="request-timeout" value="30" min="10" max="120">
+                        </div>
+                        <div class="form-group">
+                            <label>Delay Between Requests</label>
+                            <input type="number" id="request-delay" value="5" min="1" max="30" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label>Cloudflare Bypass</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="cloudflare-bypass" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveCollectorConfig()">Save Config</button>
+                    </div>
+                </div>
+
+                <div class="collector-config">
+                    <h3>Content Sources</h3>
+                    <div id="sources-list">
+                        <!-- Sources will be populated here -->
+                    </div>
+                    <button class="btn btn-success" onclick="addNewSource()">Add New Source</button>
+                    <button class="btn btn-primary" onclick="refreshSources()">Refresh Status</button>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="collection-progress"></div>
+                </div>
+
+                <div class="log-container" id="collector-log">
+                    <div class="log-entry info">[INFO] Content Collector initialized</div>
+                    <div class="log-entry success">[SUCCESS] Configuration loaded</div>
+                    <div class="log-entry info">[INFO] Ready to collect content</div>
+                </div>
+            </div>
+
+            <!-- Content Analyzer Section -->
+            <div id="analyzer" class="section">
+                <h2>Content Analyzer</h2>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <h4>Analysis Status</h4>
+                        <div class="value" id="analysis-status">Ready</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Analyzed Today</h4>
+                        <div class="value" id="analyzed-today">0</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Pending Analysis</h4>
+                        <div class="value" id="pending-analysis">3</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Avg Manipulation Score</h4>
+                        <div class="value" id="avg-manipulation">4.2</div>
+                    </div>
+                </div>
+
+                <div class="control-grid">
+                    <div class="control-panel">
+                        <h3>Analysis Controls</h3>
+                        <div class="form-group">
+                            <label>Max Articles to Analyze</label>
+                            <input type="number" id="max-analyze" value="10" min="1" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label>Include Knowledge Graph</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="include-kg" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <button class="btn btn-primary" onclick="startAnalysis()">Start Analysis</button>
+                        <button class="btn btn-danger" onclick="stopAnalysis()">Stop Analysis</button>
+                    </div>
+
+                    <div class="control-panel">
+                        <h3>Provenance Tracking</h3>
+                        <div class="form-group">
+                            <label>Enable Provenance</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enable-provenance" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Development Mode</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="dev-mode" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <button class="btn btn-warning" onclick="verifyProvenance()">Verify All</button>
+                    </div>
+                </div>
+
+                <div class="log-container" id="analyzer-log">
+                    <div class="log-entry info">[INFO] Content Analyzer ready</div>
+                    <div class="log-entry info">[INFO] Multi-round prompting enabled</div>
+                </div>
+            </div>
+
+            <!-- Knowledge Graph Section -->
+            <div id="knowledge-graph" class="section">
+                <h2>Knowledge Graph</h2>
+                
+                <div class="metric-dashboard">
+                    <div class="metric-card">
+                        <h4>Total Nodes</h4>
+                        <div class="metric-value" id="kg-nodes">1,247</div>
+                        <div class="metric-change">+23 today</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Total Edges</h4>
+                        <div class="metric-value" id="kg-edges">3,891</div>
+                        <div class="metric-change">+67 today</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Node Types</h4>
+                        <div class="metric-value" id="kg-node-types">9</div>
+                        <div class="metric-change">Complete</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Relation Types</h4>
+                        <div class="metric-value" id="kg-relations">19</div>
+                        <div class="metric-change">Complete</div>
+                    </div>
+                </div>
+
+                <div class="control-grid">
+                    <div class="control-panel">
+                        <h3>Graph Operations</h3>
+                        <button class="btn btn-primary" onclick="buildKnowledgeGraph()">Build Graph</button>
+                        <button class="btn btn-success" onclick="inferRelationships()">Infer Temporal Relations</button>
+                        <button class="btn btn-warning" onclick="saveSnapshot()">Save Snapshot</button>
+                        <button class="btn btn-primary" onclick="generateReports()">Generate Reports</button>
+                    </div>
+
+                    <div class="control-panel">
+                        <h3>Graph Statistics</h3>
+                        <div class="form-group">
+                            <label>Graph Density</label>
+                            <input type="text" id="graph-density" value="0.023" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Latest Version</label>
+                            <input type="text" id="graph-version" value="v1.247" readonly>
+                        </div>
+                        <button class="btn btn-primary" onclick="refreshKGStats()">Refresh Stats</button>
+                    </div>
+                </div>
+
+                <div class="log-container" id="kg-log">
+                    <div class="log-entry info">[INFO] Knowledge Graph system ready</div>
+                    <div class="log-entry success">[SUCCESS] Graph loaded: 1,247 nodes, 3,891 edges</div>
+                </div>
+            </div>
+
+            <!-- Vector Store Section -->
+            <div id="vector-store" class="section">
+                <h2>Vector Store</h2>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <h4>Vector Status</h4>
+                        <div class="value" id="vector-status">Synced</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Total Vectors</h4>
+                        <div class="value" id="total-vectors">1,247</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Embedding Provider</h4>
+                        <div class="value" id="embedding-provider">Local</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Index Type</h4>
+                        <div class="value" id="index-type">FAISS</div>
+                    </div>
+                </div>
+
+                <div class="control-grid">
+                    <div class="control-panel">
+                        <h3>Vector Operations</h3>
+                        <button class="btn btn-primary" onclick="syncVectorStore()">Sync with KG</button>
+                        <button class="btn btn-success" onclick="discoverRelationships()">Discover Relations</button>
+                        <button class="btn btn-warning" onclick="clusterNodes()">Cluster Analysis</button>
+                        <button class="btn btn-primary" onclick="detectPatterns()">Detect Patterns</button>
+                    </div>
+
+                    <div class="control-panel">
+                        <h3>Search Interface</h3>
+                        <div class="form-group">
+                            <label>Search Query</label>
+                            <input type="text" id="vector-search" placeholder="Enter search query...">
+                        </div>
+                        <div class="form-group">
+                            <label>Node Type Filter</label>
+                            <select id="node-type-filter">
+                                <option value="">All Types</option>
+                                <option value="actor">Actor</option>
+                                <option value="institution">Institution</option>
+                                <option value="event">Event</option>
+                                <option value="policy">Policy</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="searchVectors()">Search</button>
+                    </div>
+                </div>
+
+                <div class="log-container" id="vector-log">
+                    <div class="log-entry info">[INFO] Vector Store initialized</div>
+                    <div class="log-entry success">[SUCCESS] FAISS index loaded</div>
+                </div>
+            </div>
+
+            <!-- System Monitoring Section -->
+            <div id="monitoring" class="section">
+                <h2>System Monitoring</h2>
+                
+                <div class="metric-dashboard">
+                    <div class="metric-card">
+                        <h4>System Status</h4>
+                        <div class="metric-value" style="color: #68d391;">Online</div>
+                        <div class="metric-change">All systems operational</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Memory Usage</h4>
+                        <div class="metric-value">1.2GB</div>
+                        <div class="metric-change">+50MB from last hour</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>CPU Usage</h4>
+                        <div class="metric-value">23%</div>
+                        <div class="metric-change">Normal</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Disk Usage</h4>
+                        <div class="metric-value">847MB</div>
+                        <div class="metric-change">+12MB today</div>
+                    </div>
+                </div>
+
+                <div class="control-grid">
+                    <div class="control-panel">
+                        <h3>Component Status</h3>
+                        <div class="source-item">
+                            <strong>Content Collector</strong>
+                            <span class="source-status active">Running</span>
+                        </div>
+                        <div class="source-item">
+                            <strong>Content Analyzer</strong>
+                            <span class="source-status active">Ready</span>
+                        </div>
+                        <div class="source-item">
+                            <strong>Knowledge Graph</strong>
+                            <span class="source-status active">Loaded</span>
+                        </div>
+                        <div class="source-item">
+                            <strong>Vector Store</strong>
+                            <span class="source-status active">Synced</span>
+                        </div>
+                        <div class="source-item">
+                            <strong>LLM Provider</strong>
+                            <span class="source-status active">Connected</span>
+                        </div>
+                    </div>
+
+                    <div class="control-panel">
+                        <h3>Recent Activity</h3>
+                        <div class="log-container" style="height: 200px;">
+                            <div class="log-entry success">[15:43] Collection completed: 23 articles</div>
+                            <div class="log-entry info">[15:41] Analysis started for 5 documents</div>
+                            <div class="log-entry success">[15:39] Knowledge graph updated</div>
+                            <div class="log-entry info">[15:37] Vector store synchronized</div>
+                            <div class="log-entry warning">[15:35] LLM fallback used for 2 sources</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Provenance Section -->
+            <div id="provenance" class="section">
+                <h2>Provenance & Security</h2>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <h4>Documents Verified</h4>
+                        <div class="value" id="docs-verified">1,891</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Analyses Verified</h4>
+                        <div class="value" id="analyses-verified">456</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Integrity Status</h4>
+                        <div class="value" style="color: #68d391;">Verified</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Last Verification</h4>
+                        <div class="value" style="font-size: 1.2rem;">2 hrs ago</div>
+                    </div>
+                </div>
+
+                <div class="control-grid">
+                    <div class="control-panel">
+                        <h3>Verification Controls</h3>
+                        <button class="btn btn-primary" onclick="verifyAllDocuments()">Verify All Documents</button>
+                        <button class="btn btn-warning" onclick="verifyAllAnalyses()">Verify All Analyses</button>
+                        <button class="btn btn-success" onclick="generateIntegrityReport()">Integrity Report</button>
+                    </div>
+
+                    <div class="control-panel">
+                        <h3>Cryptographic Settings</h3>
+                        <div class="form-group">
+                            <label>Development Mode</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="crypto-dev-mode" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Auto-Verification</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="auto-verify" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveProvenanceConfig()">Save Settings</button>
+                    </div>
+                </div>
+
+                <div class="log-container" id="provenance-log">
+                    <div class="log-entry info">[INFO] Provenance system active</div>
+                    <div class="log-entry success">[SUCCESS] All signatures verified</div>
+                    <div class="log-entry info">[INFO] Development mode enabled</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let isCollecting = false;
+        let isAnalyzing = false;
+        let currentProgress = 0;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSources();
+            updateStatistics();
+            startStatusUpdates();
+            
+            // Setup event listeners
+            document.getElementById('collection-mode').addEventListener('change', function() {
+                document.getElementById('days-input').style.display = 
+                    this.value === 'days' ? 'block' : 'none';
+            });
+        });
+
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active to clicked nav item
+            event.target.classList.add('active');
+        }
+
+        // Content Collector Functions
+        function startCollection() {
+            if (isCollecting) return;
+            
+            isCollecting = true;
+            document.getElementById('collection-status').textContent = 'Running';
+            document.getElementById('collection-status').parentElement.classList.add('pulsing');
+            
+            logMessage('collector-log', 'info', 'Starting content collection...');
+            
+            // Simulate collection progress
+            simulateProgress();
+        }
+
+        function stopCollection() {
+            isCollecting = false;
+            document.getElementById('collection-status').textContent = 'Stopped';
+            document.getElementById('collection-status').parentElement.classList.remove('pulsing');
+            
+            logMessage('collector-log', 'warning', 'Collection stopped by user');
+        }
+
+        function simulateProgress() {
+            currentProgress = 0;
+            const progressBar = document.getElementById('collection-progress');
+            
+            const interval = setInterval(() => {
+                if (!isCollecting) {
+                    clearInterval(interval);
+                    progressBar.style.width = '0%';
+                    return;
+                }
+                
+                currentProgress += Math.random() * 10;
+                if (currentProgress >= 100) {
+                    currentProgress = 100;
+                    clearInterval(interval);
+                    isCollecting = false;
+                    document.getElementById('collection-status').textContent = 'Complete';
+                    document.getElementById('collection-status').parentElement.classList.remove('pulsing');
+                    logMessage('collector-log', 'success', 'Collection completed successfully');
+                }
+                
+                progressBar.style.width = currentProgress + '%';
+            }, 500);
+        }
+
+        function testLLMConnection() {
+            const provider = document.getElementById('llm-provider').value;
+            const host = document.getElementById('lm-studio-host').value;
+            
+            logMessage('collector-log', 'info', `Testing connection to ${provider}...`);
+            
+            // Simulate connection test
+            setTimeout(() => {
+                logMessage('collector-log', 'success', `✓ Connection to ${provider} successful`);
+            }, 1000);
+        }
+
+        function saveCollectorConfig() {
+            logMessage('collector-log', 'info', 'Saving collector configuration...');
+            
+            const config = {
+                articleLimit: document.getElementById('article-limit').value,
+                collectionMode: document.getElementById('collection-mode').value,
+                llmFallback: document.getElementById('llm-fallback').checked,
+                llmProvider: document.getElementById('llm-provider').value,
+                requestTimeout: document.getElementById('request-timeout').value,
+                requestDelay: document.getElementById('request-delay').value,
+                cloudflarBypass: document.getElementById('cloudflare-bypass').checked
+            };
+            
+            setTimeout(() => {
+                logMessage('collector-log', 'success', '✓ Configuration saved successfully');
+            }, 500);
+        }
+
+        function initializeSources() {
+            const sourcesList = document.getElementById('sources-list');
+            const sources = [
+                { name: 'BBC US & Canada', url: 'https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml', status: 'active', bias: 'center' },
+                { name: 'Federal Register', url: 'https://www.federalregister.gov/presidential-documents.rss', status: 'active', bias: 'official-government' },
+                { name: 'Fox News Politics', url: 'https://feeds.foxnews.com/foxnews/politics', status: 'active', bias: 'center-right' },
+                { name: 'Politico', url: 'https://www.politico.com/rss/politicopicks.xml', status: 'active', bias: 'center' },
+                { name: 'NPR Politics', url: 'https://feeds.npr.org/1004/rss.xml', status: 'error', bias: 'center-left' },
+                { name: 'C-SPAN', url: 'https://www.c-span.org/rss/?action=program', status: 'active', bias: 'center' }
+            ];
+            
+            sourcesList.innerHTML = sources.map(source => `
+                <div class="source-item ${source.status === 'error' ? 'disabled' : ''}">
+                    <strong>${source.name}</strong>
+                    <span class="source-status ${source.status}">${source.status}</span>
+                    <br>
+                    <small style="color: #a0aec0;">${source.url} (${source.bias})</small>
+                </div>
+            `).join('');
+        }
+
+        function addNewSource() {
+            const name = prompt('Source Name:');
+            const url = prompt('RSS URL:');
+            const bias = prompt('Bias Label (center/left/right):');
+            
+            if (name && url) {
+                logMessage('collector-log', 'info', `Adding new source: ${name}`);
+                logMessage('collector-log', 'success', '✓ Source added successfully');
+                refreshSources();
+            }
+        }
+
+        function refreshSources() {
+            logMessage('collector-log', 'info', 'Refreshing source status...');
+            setTimeout(() => {
+                logMessage('collector-log', 'success', '✓ Source status updated');
+                initializeSources();
+            }, 1000);
+        }
+
+        // Analysis Functions
+        function startAnalysis() {
+            if (isAnalyzing) return;
+            
+            isAnalyzing = true;
+            document.getElementById('analysis-status').textContent = 'Running';
+            document.getElementById('analysis-status').parentElement.classList.add('pulsing');
+            
+            logMessage('analyzer-log', 'info', 'Starting content analysis...');
+            logMessage('analyzer-log', 'info', 'Multi-round prompting initialized');
+            
+            // Simulate analysis
+            setTimeout(() => {
+                isAnalyzing = false;
+                document.getElementById('analysis-status').textContent = 'Complete';
+                document.getElementById('analysis-status').parentElement.classList.remove('pulsing');
+                logMessage('analyzer-log', 'success', '✓ Analysis completed');
+                updateStatistics();
+            }, 3000);
+        }
+
+        function stopAnalysis() {
+            isAnalyzing = false;
+            document.getElementById('analysis-status').textContent = 'Stopped';
+            document.getElementById('analysis-status').parentElement.classList.remove('pulsing');
+            
+            logMessage('analyzer-log', 'warning', 'Analysis stopped by user');
+        }
+
+        function verifyProvenance() {
+            logMessage('analyzer-log', 'info', 'Verifying all provenance records...');
+            setTimeout(() => {
+                logMessage('analyzer-log', 'success', '✓ All provenance records verified');
+            }, 2000);
+        }
+
+        // Knowledge Graph Functions
+        function buildKnowledgeGraph() {
+            logMessage('kg-log', 'info', 'Building knowledge graph from analyses...');
+            setTimeout(() => {
+                logMessage('kg-log', 'success', '✓ Knowledge graph updated: +23 nodes, +67 edges');
+                updateKGStatistics();
+            }, 2000);
+        }
+
+        function inferRelationships() {
+            logMessage('kg-log', 'info', 'Inferring temporal relationships...');
+            setTimeout(() => {
+                logMessage('kg-log', 'success', '✓ Added 15 temporal relationships');
+            }, 1500);
+        }
+
+        function saveSnapshot() {
+            logMessage('kg-log', 'info', 'Creating graph snapshot...');
+            setTimeout(() => {
+                logMessage('kg-log', 'success', '✓ Snapshot saved: snapshot_20250602_154721');
+            }, 1000);
+        }
+
+        function generateReports() {
+            logMessage('kg-log', 'info', 'Generating intelligence reports...');
+            setTimeout(() => {
+                logMessage('kg-log', 'success', '✓ Reports generated in data/analysis/');
+            }, 2000);
+        }
+
+        function refreshKGStats() {
+            logMessage('kg-log', 'info', 'Refreshing graph statistics...');
+            setTimeout(() => {
+                updateKGStatistics();
+                logMessage('kg-log', 'success', '✓ Statistics updated');
+            }, 1000);
+        }
+
+        // Vector Store Functions
+        function syncVectorStore() {
+            logMessage('vector-log', 'info', 'Synchronizing vector store with knowledge graph...');
+            setTimeout(() => {
+                logMessage('vector-log', 'success', '✓ Vector store synchronized: 1,247 vectors');
+                document.getElementById('vector-status').textContent = 'Synced';
+            }, 2000);
+        }
+
+        function discoverRelationships() {
+            logMessage('vector-log', 'info', 'Discovering implicit relationships...');
+            setTimeout(() => {
+                logMessage('vector-log', 'success', '✓ Discovered 12 implicit relationships');
+            }, 3000);
+        }
+
+        function clusterNodes() {
+            logMessage('vector-log', 'info', 'Performing cluster analysis...');
+            setTimeout(() => {
+                logMessage('vector-log', 'success', '✓ Created 10 semantic clusters');
+            }, 2500);
+        }
+
+        function detectPatterns() {
+            logMessage('vector-log', 'info', 'Detecting recurring patterns...');
+            setTimeout(() => {
+                logMessage('vector-log', 'success', '✓ Found 5 recurring event patterns');
+            }, 3000);
+        }
+
+        function searchVectors() {
+            const query = document.getElementById('vector-search').value;
+            const nodeType = document.getElementById('node-type-filter').value;
+            
+            if (!query) {
+                alert('Please enter a search query');
+                return;
+            }
+            
+            logMessage('vector-log', 'info', `Searching for: "${query}"${nodeType ? ` (type: ${nodeType})` : ''}`);
+            setTimeout(() => {
+                logMessage('vector-log', 'success', '✓ Found 8 similar nodes');
+            }, 1000);
+        }
+
+        // Provenance Functions
+        function verifyAllDocuments() {
+            logMessage('provenance-log', 'info', 'Verifying all document signatures...');
+            setTimeout(() => {
+                logMessage('provenance-log', 'success', '✓ All 1,891 documents verified');
+            }, 3000);
+        }
+
+        function verifyAllAnalyses() {
+            logMessage('provenance-log', 'info', 'Verifying all analysis records...');
+            setTimeout(() => {
+                logMessage('provenance-log', 'success', '✓ All 456 analyses verified');
+            }, 2500);
+        }
+
+        function generateIntegrityReport() {
+            logMessage('provenance-log', 'info', 'Generating integrity report...');
+            setTimeout(() => {
+                logMessage('provenance-log', 'success', '✓ Integrity report saved to reports/');
+            }, 2000);
+        }
+
+        function saveProvenanceConfig() {
+            logMessage('provenance-log', 'info', 'Saving provenance configuration...');
+            setTimeout(() => {
+                logMessage('provenance-log', 'success', '✓ Configuration saved');
+            }, 500);
+        }
+
+        // Utility Functions
+        function logMessage(containerId, level, message) {
+            const container = document.getElementById(containerId);
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${level}`;
+            entry.textContent = `[${timestamp}] ${message}`;
+            
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+            
+            // Keep only last 50 entries
+            while (container.children.length > 50) {
+                container.removeChild(container.firstChild);
+            }
+        }
+
+        function updateStatistics() {
+            // Update random statistics for demo
+            document.getElementById('articles-today').textContent = Math.floor(Math.random() * 50) + 20;
+            document.getElementById('analyzed-today').textContent = Math.floor(Math.random() * 20) + 5;
+            document.getElementById('pending-analysis').textContent = Math.floor(Math.random() * 10);
+            document.getElementById('avg-manipulation').textContent = (Math.random() * 3 + 3).toFixed(1);
+        }
+
+        function updateKGStatistics() {
+            const nodes = parseInt(document.getElementById('kg-nodes').textContent.replace(',', ''));
+            const edges = parseInt(document.getElementById('kg-edges').textContent.replace(',', ''));
+            
+            document.getElementById('kg-nodes').textContent = (nodes + Math.floor(Math.random() * 10)).toLocaleString();
+            document.getElementById('kg-edges').textContent = (edges + Math.floor(Math.random() * 20)).toLocaleString();
+        }
+
+        function startStatusUpdates() {
+            // Update statistics every 30 seconds
+            setInterval(updateStatistics, 30000);
+            
+            // Update system status every 10 seconds
+            setInterval(() => {
+                if (!isCollecting && !isAnalyzing) {
+                    // Occasionally add status messages
+                    if (Math.random() < 0.1) {
+                        const messages = [
+                            'System monitoring active',
+                            'All components operational',
+                            'Memory usage stable',
+                            'Background processes running'
+                        ];
+                        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                        logMessage('collector-log', 'info', `[SYSTEM] ${randomMessage}`);
+                    }
+                }
+            }, 10000);
+        }
+    </script>
+</body>
+</html>
