@@ -1,0 +1,67 @@
+{
+  "name": "standard_analysis_v1",
+  "description": "Standard 9-round analysis pipeline for political content",
+  "status": "PRODUCTION",
+  "version": "1.0",
+  "created": "2025-01-01",
+  "rounds": [
+    {
+      "name": "fact_extraction",
+      "prompt_template": "fact_extraction",
+      "max_tokens": 2500
+    },
+    {
+      "name": "article_analysis", 
+      "prompt_template": "article_analysis",
+      "max_tokens": 2500
+    },
+    {
+      "name": "manipulation_score",
+      "prompt_template": "manipulation_score", 
+      "max_tokens": 2000
+    },
+    {
+      "name": "authoritarian_analysis",
+      "prompt_template": "authoritarian_analysis",
+      "max_tokens": 2500
+    },
+    {
+      "name": "node_extraction",
+      "prompt_template": "node_extraction",
+      "max_tokens": 3000
+    },
+    {
+      "name": "node_deduplication",
+      "prompt_template": "node_deduplication", 
+      "max_tokens": 2500
+    },
+    {
+      "name": "edge_extraction",
+      "prompt_template": "edge_extraction",
+      "max_tokens": 3000
+    },
+    {
+      "name": "edge_enrichment",
+      "prompt_template": "edge_enrichment",
+      "max_tokens": 3000
+    },
+    {
+      "name": "package_ingestion",
+      "prompt_template": "package_ingestion",
+      "max_tokens": 3000
+    }
+  ],
+  "variables": {
+    "content_type": "political article",
+    "focus_area_1": "Framing: How the story is presented and what perspective is centered",
+    "focus_area_2": "Language: Use of emotionally charged language, loaded terms, or persuasive devices", 
+    "focus_area_3": "Omissions: What relevant context or counterpoints are excluded",
+    "focus_area_4": "Attribution: Whether claims are properly sourced and attributed",
+    "focus_area_5": "Fact/Opinion Blending: How facts are mixed with analysis or opinion",
+    "analysis_instruction": "Be balanced and objective. Do not overinterpret ambiguous statements, but don't overlook concerning patterns.",
+    "entity_types": "actor, institution, policy, event, media_outlet, civil_society, narrative, legal_framework, procedural_norm",
+    "relation_types": "part_of, influences, opposes, supports, restricts, undermines, authorizes, co-opts, purges, criminalizes, censors, intimidates, delegitimizes, backs_with_force, justifies, expands_power, normalizes, diverts_attention, targets",
+    "json_instruction": "Your response MUST be a valid, parseable JSON object. Do not include any text before or after the JSON.",
+    "manipulation_scale": "Where 1 = highly objective news with minimal manipulation and 10 = extreme manipulation with significant distortion of facts"
+  }
+}
