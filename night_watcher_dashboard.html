@@ -244,13 +244,6 @@
             color: #fc8181;
         }
 
-        .collector-config {
-            background: #4a5568;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
         .source-item {
             background: #2d3748;
             padding: 1rem;
@@ -302,42 +295,6 @@
             background: linear-gradient(90deg, #3182ce, #63b3ed);
             width: 0%;
             transition: width 0.3s ease;
-        }
-
-        .metric-dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .metric-card {
-            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px solid #5a6578;
-        }
-
-        .metric-card h4 {
-            color: #cbd5e0;
-            margin-bottom: 1rem;
-            font-size: 1rem;
-        }
-
-        .metric-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #63b3ed;
-            margin-bottom: 0.5rem;
-        }
-
-        .metric-change {
-            font-size: 0.9rem;
-            color: #68d391;
-        }
-
-        .metric-change.negative {
-            color: #fc8181;
         }
 
         @keyframes pulse {
@@ -418,9 +375,6 @@
             <div class="nav-item" onclick="showSection('monitoring')">
                 📊 System Monitoring
             </div>
-            <div class="nav-item" onclick="showSection('provenance')">
-                🔐 Provenance
-            </div>
         </div>
 
         <div class="content">
@@ -434,16 +388,16 @@
                         <div class="value" id="collection-status">Idle</div>
                     </div>
                     <div class="status-card">
-                        <h4>Articles Today</h4>
-                        <div class="value" id="articles-today">0</div>
+                        <h4>Total Documents</h4>
+                        <div class="value" id="total-documents">0</div>
                     </div>
                     <div class="status-card">
-                        <h4>Active Sources</h4>
-                        <div class="value" id="active-sources">12</div>
+                        <h4>Pending Analysis</h4>
+                        <div class="value" id="pending-analysis">0</div>
                     </div>
                     <div class="status-card">
-                        <h4>Success Rate</h4>
-                        <div class="value" id="success-rate">87%</div>
+                        <h4>LLM Status</h4>
+                        <div class="value" id="llm-status">Unknown</div>
                     </div>
                 </div>
 
@@ -451,86 +405,32 @@
                     <div class="control-panel">
                         <h3>Collection Controls</h3>
                         <div class="form-group">
-                            <label>Article Limit per Source</label>
-                            <input type="number" id="article-limit" value="10" min="1" max="100">
-                        </div>
-                        <div class="form-group">
                             <label>Collection Mode</label>
                             <select id="collection-mode">
-                                <option value="incremental">Incremental (since last run)</option>
-                                <option value="full">Full Collection</option>
-                                <option value="days">Last N Days</option>
+                                <option value="auto">Auto (Smart Detection)</option>
+                                <option value="incremental">Incremental (Since Last Run)</option>
+                                <option value="first_run">First Run (From Jan 2025)</option>
+                                <option value="full">Full (All Since Inauguration)</option>
                             </select>
-                        </div>
-                        <div class="form-group" id="days-input" style="display: none;">
-                            <label>Number of Days</label>
-                            <input type="number" id="collection-days" value="7" min="1" max="90">
                         </div>
                         <button class="btn btn-primary" onclick="startCollection()">Start Collection</button>
                         <button class="btn btn-danger" onclick="stopCollection()">Stop Collection</button>
                     </div>
 
                     <div class="control-panel">
-                        <h3>LLM Navigation</h3>
-                        <div class="form-group">
-                            <label>LLM Fallback</label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="llm-fallback" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label>LLM Provider</label>
-                            <select id="llm-provider">
-                                <option value="lm_studio">LM Studio (Local)</option>
-                                <option value="anthropic">Anthropic API</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>LM Studio Host</label>
-                            <input type="text" id="lm-studio-host" value="http://localhost:1234">
-                        </div>
-                        <button class="btn btn-warning" onclick="testLLMConnection()">Test Connection</button>
+                        <h3>Quick Actions</h3>
+                        <button class="btn btn-success" onclick="runFullPipeline()">Run Full Pipeline</button>
+                        <button class="btn btn-warning" onclick="testLLMConnection()">Test LLM Connection</button>
+                        <button class="btn btn-primary" onclick="refreshStatus()">Refresh Status</button>
                     </div>
-
-                    <div class="control-panel">
-                        <h3>Advanced Settings</h3>
-                        <div class="form-group">
-                            <label>Request Timeout (seconds)</label>
-                            <input type="number" id="request-timeout" value="30" min="10" max="120">
-                        </div>
-                        <div class="form-group">
-                            <label>Delay Between Requests</label>
-                            <input type="number" id="request-delay" value="5" min="1" max="30" step="0.5">
-                        </div>
-                        <div class="form-group">
-                            <label>Cloudflare Bypass</label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="cloudflare-bypass" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <button class="btn btn-primary" onclick="saveCollectorConfig()">Save Config</button>
-                    </div>
-                </div>
-
-                <div class="collector-config">
-                    <h3>Content Sources</h3>
-                    <div id="sources-list">
-                        <!-- Sources will be populated here -->
-                    </div>
-                    <button class="btn btn-success" onclick="addNewSource()">Add New Source</button>
-                    <button class="btn btn-primary" onclick="refreshSources()">Refresh Status</button>
                 </div>
 
                 <div class="progress-bar">
-                    <div class="progress-fill" id="collection-progress"></div>
+                    <div class="progress-fill" id="task-progress"></div>
                 </div>
 
-                <div class="log-container" id="collector-log">
-                    <div class="log-entry info">[INFO] Content Collector initialized</div>
-                    <div class="log-entry success">[SUCCESS] Configuration loaded</div>
-                    <div class="log-entry info">[INFO] Ready to collect content</div>
+                <div class="log-container" id="task-log">
+                    <div class="log-entry info">[INFO] Ready to start collection</div>
                 </div>
             </div>
 
@@ -544,16 +444,12 @@
                         <div class="value" id="analysis-status">Ready</div>
                     </div>
                     <div class="status-card">
-                        <h4>Analyzed Today</h4>
-                        <div class="value" id="analyzed-today">0</div>
+                        <h4>Analyzed Documents</h4>
+                        <div class="value" id="analyzed-documents">0</div>
                     </div>
                     <div class="status-card">
                         <h4>Pending Analysis</h4>
-                        <div class="value" id="pending-analysis">3</div>
-                    </div>
-                    <div class="status-card">
-                        <h4>Avg Manipulation Score</h4>
-                        <div class="value" id="avg-manipulation">4.2</div>
+                        <div class="value" id="pending-docs">0</div>
                     </div>
                 </div>
 
@@ -562,42 +458,14 @@
                         <h3>Analysis Controls</h3>
                         <div class="form-group">
                             <label>Max Articles to Analyze</label>
-                            <input type="number" id="max-analyze" value="10" min="1" max="100">
-                        </div>
-                        <div class="form-group">
-                            <label>Include Knowledge Graph</label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="include-kg" checked>
-                                <span class="slider"></span>
-                            </label>
+                            <input type="number" id="max-analyze" value="20" min="1" max="100">
                         </div>
                         <button class="btn btn-primary" onclick="startAnalysis()">Start Analysis</button>
-                        <button class="btn btn-danger" onclick="stopAnalysis()">Stop Analysis</button>
-                    </div>
-
-                    <div class="control-panel">
-                        <h3>Provenance Tracking</h3>
-                        <div class="form-group">
-                            <label>Enable Provenance</label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="enable-provenance" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label>Development Mode</label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="dev-mode" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <button class="btn btn-warning" onclick="verifyProvenance()">Verify All</button>
                     </div>
                 </div>
 
                 <div class="log-container" id="analyzer-log">
                     <div class="log-entry info">[INFO] Content Analyzer ready</div>
-                    <div class="log-entry info">[INFO] Multi-round prompting enabled</div>
                 </div>
             </div>
 
@@ -605,26 +473,14 @@
             <div id="knowledge-graph" class="section">
                 <h2>Knowledge Graph</h2>
                 
-                <div class="metric-dashboard">
-                    <div class="metric-card">
+                <div class="status-grid">
+                    <div class="status-card">
                         <h4>Total Nodes</h4>
-                        <div class="metric-value" id="kg-nodes">1,247</div>
-                        <div class="metric-change">+23 today</div>
+                        <div class="value" id="kg-nodes">0</div>
                     </div>
-                    <div class="metric-card">
+                    <div class="status-card">
                         <h4>Total Edges</h4>
-                        <div class="metric-value" id="kg-edges">3,891</div>
-                        <div class="metric-change">+67 today</div>
-                    </div>
-                    <div class="metric-card">
-                        <h4>Node Types</h4>
-                        <div class="metric-value" id="kg-node-types">9</div>
-                        <div class="metric-change">Complete</div>
-                    </div>
-                    <div class="metric-card">
-                        <h4>Relation Types</h4>
-                        <div class="metric-value" id="kg-relations">19</div>
-                        <div class="metric-change">Complete</div>
+                        <div class="value" id="kg-edges">0</div>
                     </div>
                 </div>
 
@@ -632,28 +488,12 @@
                     <div class="control-panel">
                         <h3>Graph Operations</h3>
                         <button class="btn btn-primary" onclick="buildKnowledgeGraph()">Build Graph</button>
-                        <button class="btn btn-success" onclick="inferRelationships()">Infer Temporal Relations</button>
-                        <button class="btn btn-warning" onclick="saveSnapshot()">Save Snapshot</button>
-                        <button class="btn btn-primary" onclick="generateReports()">Generate Reports</button>
-                    </div>
-
-                    <div class="control-panel">
-                        <h3>Graph Statistics</h3>
-                        <div class="form-group">
-                            <label>Graph Density</label>
-                            <input type="text" id="graph-density" value="0.023" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Latest Version</label>
-                            <input type="text" id="graph-version" value="v1.247" readonly>
-                        </div>
-                        <button class="btn btn-primary" onclick="refreshKGStats()">Refresh Stats</button>
+                        <button class="btn btn-success" onclick="syncVectors()">Sync Vectors</button>
                     </div>
                 </div>
 
                 <div class="log-container" id="kg-log">
-                    <div class="log-entry info">[INFO] Knowledge Graph system ready</div>
-                    <div class="log-entry success">[SUCCESS] Graph loaded: 1,247 nodes, 3,891 edges</div>
+                    <div class="log-entry info">[INFO] Knowledge Graph ready</div>
                 </div>
             </div>
 
@@ -663,55 +503,24 @@
                 
                 <div class="status-grid">
                     <div class="status-card">
-                        <h4>Vector Status</h4>
-                        <div class="value" id="vector-status">Synced</div>
-                    </div>
-                    <div class="status-card">
                         <h4>Total Vectors</h4>
-                        <div class="value" id="total-vectors">1,247</div>
-                    </div>
-                    <div class="status-card">
-                        <h4>Embedding Provider</h4>
-                        <div class="value" id="embedding-provider">Local</div>
-                    </div>
-                    <div class="status-card">
-                        <h4>Index Type</h4>
-                        <div class="value" id="index-type">FAISS</div>
+                        <div class="value" id="total-vectors">0</div>
                     </div>
                 </div>
 
                 <div class="control-grid">
-                    <div class="control-panel">
-                        <h3>Vector Operations</h3>
-                        <button class="btn btn-primary" onclick="syncVectorStore()">Sync with KG</button>
-                        <button class="btn btn-success" onclick="discoverRelationships()">Discover Relations</button>
-                        <button class="btn btn-warning" onclick="clusterNodes()">Cluster Analysis</button>
-                        <button class="btn btn-primary" onclick="detectPatterns()">Detect Patterns</button>
-                    </div>
-
                     <div class="control-panel">
                         <h3>Search Interface</h3>
                         <div class="form-group">
                             <label>Search Query</label>
                             <input type="text" id="vector-search" placeholder="Enter search query...">
                         </div>
-                        <div class="form-group">
-                            <label>Node Type Filter</label>
-                            <select id="node-type-filter">
-                                <option value="">All Types</option>
-                                <option value="actor">Actor</option>
-                                <option value="institution">Institution</option>
-                                <option value="event">Event</option>
-                                <option value="policy">Policy</option>
-                            </select>
-                        </div>
                         <button class="btn btn-primary" onclick="searchVectors()">Search</button>
                     </div>
                 </div>
 
                 <div class="log-container" id="vector-log">
-                    <div class="log-entry info">[INFO] Vector Store initialized</div>
-                    <div class="log-entry success">[SUCCESS] FAISS index loaded</div>
+                    <div class="log-entry info">[INFO] Vector Store ready</div>
                 </div>
             </div>
 
@@ -719,432 +528,267 @@
             <div id="monitoring" class="section">
                 <h2>System Monitoring</h2>
                 
-                <div class="metric-dashboard">
-                    <div class="metric-card">
-                        <h4>System Status</h4>
-                        <div class="metric-value" style="color: #68d391;">Online</div>
-                        <div class="metric-change">All systems operational</div>
-                    </div>
-                    <div class="metric-card">
-                        <h4>Memory Usage</h4>
-                        <div class="metric-value">1.2GB</div>
-                        <div class="metric-change">+50MB from last hour</div>
-                    </div>
-                    <div class="metric-card">
-                        <h4>CPU Usage</h4>
-                        <div class="metric-value">23%</div>
-                        <div class="metric-change">Normal</div>
-                    </div>
-                    <div class="metric-card">
-                        <h4>Disk Usage</h4>
-                        <div class="metric-value">847MB</div>
-                        <div class="metric-change">+12MB today</div>
-                    </div>
-                </div>
-
-                <div class="control-grid">
-                    <div class="control-panel">
-                        <h3>Component Status</h3>
-                        <div class="source-item">
-                            <strong>Content Collector</strong>
-                            <span class="source-status active">Running</span>
-                        </div>
-                        <div class="source-item">
-                            <strong>Content Analyzer</strong>
-                            <span class="source-status active">Ready</span>
-                        </div>
-                        <div class="source-item">
-                            <strong>Knowledge Graph</strong>
-                            <span class="source-status active">Loaded</span>
-                        </div>
-                        <div class="source-item">
-                            <strong>Vector Store</strong>
-                            <span class="source-status active">Synced</span>
-                        </div>
-                        <div class="source-item">
-                            <strong>LLM Provider</strong>
-                            <span class="source-status active">Connected</span>
-                        </div>
-                    </div>
-
-                    <div class="control-panel">
-                        <h3>Recent Activity</h3>
-                        <div class="log-container" style="height: 200px;">
-                            <div class="log-entry success">[15:43] Collection completed: 23 articles</div>
-                            <div class="log-entry info">[15:41] Analysis started for 5 documents</div>
-                            <div class="log-entry success">[15:39] Knowledge graph updated</div>
-                            <div class="log-entry info">[15:37] Vector store synchronized</div>
-                            <div class="log-entry warning">[15:35] LLM fallback used for 2 sources</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Provenance Section -->
-            <div id="provenance" class="section">
-                <h2>Provenance & Security</h2>
-                
                 <div class="status-grid">
                     <div class="status-card">
-                        <h4>Documents Verified</h4>
-                        <div class="value" id="docs-verified">1,891</div>
+                        <h4>System Status</h4>
+                        <div class="value" style="color: #68d391;">Online</div>
                     </div>
                     <div class="status-card">
-                        <h4>Analyses Verified</h4>
-                        <div class="value" id="analyses-verified">456</div>
-                    </div>
-                    <div class="status-card">
-                        <h4>Integrity Status</h4>
-                        <div class="value" style="color: #68d391;">Verified</div>
-                    </div>
-                    <div class="status-card">
-                        <h4>Last Verification</h4>
-                        <div class="value" style="font-size: 1.2rem;">2 hrs ago</div>
+                        <h4>Current Task</h4>
+                        <div class="value" id="current-task">None</div>
                     </div>
                 </div>
 
-                <div class="control-grid">
-                    <div class="control-panel">
-                        <h3>Verification Controls</h3>
-                        <button class="btn btn-primary" onclick="verifyAllDocuments()">Verify All Documents</button>
-                        <button class="btn btn-warning" onclick="verifyAllAnalyses()">Verify All Analyses</button>
-                        <button class="btn btn-success" onclick="generateIntegrityReport()">Integrity Report</button>
-                    </div>
-
-                    <div class="control-panel">
-                        <h3>Cryptographic Settings</h3>
-                        <div class="form-group">
-                            <label>Development Mode</label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="crypto-dev-mode" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label>Auto-Verification</label>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="auto-verify" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <button class="btn btn-primary" onclick="saveProvenanceConfig()">Save Settings</button>
-                    </div>
-                </div>
-
-                <div class="log-container" id="provenance-log">
-                    <div class="log-entry info">[INFO] Provenance system active</div>
-                    <div class="log-entry success">[SUCCESS] All signatures verified</div>
-                    <div class="log-entry info">[INFO] Development mode enabled</div>
+                <div class="log-container" id="system-log">
+                    <div class="log-entry info">[INFO] System monitoring active</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Global state
-        let isCollecting = false;
-        let isAnalyzing = false;
-        let currentProgress = 0;
+        // API configuration
+        const API_BASE = window.location.origin + '/api';
+        
+        // State
+        let taskInterval = null;
+        let statusInterval = null;
 
-        // Initialize dashboard
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            initializeSources();
-            updateStatistics();
-            startStatusUpdates();
-            
-            // Setup event listeners
-            document.getElementById('collection-mode').addEventListener('change', function() {
-                document.getElementById('days-input').style.display = 
-                    this.value === 'days' ? 'block' : 'none';
-            });
+            refreshStatus();
+            startStatusPolling();
         });
 
         // Navigation
         function showSection(sectionId) {
-            // Hide all sections
             document.querySelectorAll('.section').forEach(section => {
                 section.classList.remove('active');
             });
             
-            // Remove active from all nav items
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
             
-            // Show selected section
             document.getElementById(sectionId).classList.add('active');
-            
-            // Add active to clicked nav item
             event.target.classList.add('active');
         }
 
-        // Content Collector Functions
-        function startCollection() {
-            if (isCollecting) return;
-            
-            isCollecting = true;
-            document.getElementById('collection-status').textContent = 'Running';
-            document.getElementById('collection-status').parentElement.classList.add('pulsing');
-            
-            logMessage('collector-log', 'info', 'Starting content collection...');
-            
-            // Simulate collection progress
-            simulateProgress();
-        }
-
-        function stopCollection() {
-            isCollecting = false;
-            document.getElementById('collection-status').textContent = 'Stopped';
-            document.getElementById('collection-status').parentElement.classList.remove('pulsing');
-            
-            logMessage('collector-log', 'warning', 'Collection stopped by user');
-        }
-
-        function simulateProgress() {
-            currentProgress = 0;
-            const progressBar = document.getElementById('collection-progress');
-            
-            const interval = setInterval(() => {
-                if (!isCollecting) {
-                    clearInterval(interval);
-                    progressBar.style.width = '0%';
-                    return;
+        // API calls
+        async function apiCall(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    ...options
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
                 }
                 
-                currentProgress += Math.random() * 10;
-                if (currentProgress >= 100) {
-                    currentProgress = 100;
-                    clearInterval(interval);
-                    isCollecting = false;
-                    document.getElementById('collection-status').textContent = 'Complete';
-                    document.getElementById('collection-status').parentElement.classList.remove('pulsing');
-                    logMessage('collector-log', 'success', 'Collection completed successfully');
-                }
-                
-                progressBar.style.width = currentProgress + '%';
-            }, 500);
-        }
-
-        function testLLMConnection() {
-            const provider = document.getElementById('llm-provider').value;
-            const host = document.getElementById('lm-studio-host').value;
-            
-            logMessage('collector-log', 'info', `Testing connection to ${provider}...`);
-            
-            // Simulate connection test
-            setTimeout(() => {
-                logMessage('collector-log', 'success', `✓ Connection to ${provider} successful`);
-            }, 1000);
-        }
-
-        function saveCollectorConfig() {
-            logMessage('collector-log', 'info', 'Saving collector configuration...');
-            
-            const config = {
-                articleLimit: document.getElementById('article-limit').value,
-                collectionMode: document.getElementById('collection-mode').value,
-                llmFallback: document.getElementById('llm-fallback').checked,
-                llmProvider: document.getElementById('llm-provider').value,
-                requestTimeout: document.getElementById('request-timeout').value,
-                requestDelay: document.getElementById('request-delay').value,
-                cloudflarBypass: document.getElementById('cloudflare-bypass').checked
-            };
-            
-            setTimeout(() => {
-                logMessage('collector-log', 'success', '✓ Configuration saved successfully');
-            }, 500);
-        }
-
-        function initializeSources() {
-            const sourcesList = document.getElementById('sources-list');
-            const sources = [
-                { name: 'BBC US & Canada', url: 'https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml', status: 'active', bias: 'center' },
-                { name: 'Federal Register', url: 'https://www.federalregister.gov/presidential-documents.rss', status: 'active', bias: 'official-government' },
-                { name: 'Fox News Politics', url: 'https://feeds.foxnews.com/foxnews/politics', status: 'active', bias: 'center-right' },
-                { name: 'Politico', url: 'https://www.politico.com/rss/politicopicks.xml', status: 'active', bias: 'center' },
-                { name: 'NPR Politics', url: 'https://feeds.npr.org/1004/rss.xml', status: 'error', bias: 'center-left' },
-                { name: 'C-SPAN', url: 'https://www.c-span.org/rss/?action=program', status: 'active', bias: 'center' }
-            ];
-            
-            sourcesList.innerHTML = sources.map(source => `
-                <div class="source-item ${source.status === 'error' ? 'disabled' : ''}">
-                    <strong>${source.name}</strong>
-                    <span class="source-status ${source.status}">${source.status}</span>
-                    <br>
-                    <small style="color: #a0aec0;">${source.url} (${source.bias})</small>
-                </div>
-            `).join('');
-        }
-
-        function addNewSource() {
-            const name = prompt('Source Name:');
-            const url = prompt('RSS URL:');
-            const bias = prompt('Bias Label (center/left/right):');
-            
-            if (name && url) {
-                logMessage('collector-log', 'info', `Adding new source: ${name}`);
-                logMessage('collector-log', 'success', '✓ Source added successfully');
-                refreshSources();
+                return await response.json();
+            } catch (error) {
+                console.error('API call failed:', error);
+                throw error;
             }
         }
 
-        function refreshSources() {
-            logMessage('collector-log', 'info', 'Refreshing source status...');
-            setTimeout(() => {
-                logMessage('collector-log', 'success', '✓ Source status updated');
-                initializeSources();
-            }, 1000);
+        // Status updates
+        async function refreshStatus() {
+            try {
+                const status = await apiCall('/status');
+                
+                // Update UI
+                document.getElementById('total-documents').textContent = status.total_documents || 0;
+                document.getElementById('pending-analysis').textContent = status.pending_analysis || 0;
+                document.getElementById('analyzed-documents').textContent = status.analyzed_documents || 0;
+                document.getElementById('pending-docs').textContent = status.pending_analysis || 0;
+                document.getElementById('kg-nodes').textContent = status.graph_nodes || 0;
+                document.getElementById('kg-edges').textContent = status.graph_edges || 0;
+                document.getElementById('total-vectors').textContent = status.vector_count || 0;
+                
+                // LLM status
+                const llmConnected = status.system?.llm_connected;
+                document.getElementById('llm-status').textContent = llmConnected ? 'Connected' : 'Offline';
+                document.getElementById('llm-status').style.color = llmConnected ? '#68d391' : '#fc8181';
+                
+                // Task status
+                if (status.task_status?.running) {
+                    document.getElementById('collection-status').textContent = 'Running';
+                    document.getElementById('collection-status').parentElement.classList.add('pulsing');
+                    document.getElementById('current-task').textContent = status.task_status.current_task || 'Unknown';
+                    startTaskPolling();
+                } else {
+                    document.getElementById('collection-status').textContent = 'Idle';
+                    document.getElementById('collection-status').parentElement.classList.remove('pulsing');
+                    document.getElementById('current-task').textContent = 'None';
+                }
+                
+            } catch (error) {
+                logMessage('system-log', 'error', `Failed to refresh status: ${error.message}`);
+            }
         }
 
-        // Analysis Functions
-        function startAnalysis() {
-            if (isAnalyzing) return;
+        function startStatusPolling() {
+            statusInterval = setInterval(refreshStatus, 5000);
+        }
+
+        // Task monitoring
+        async function updateTaskStatus() {
+            try {
+                const taskStatus = await apiCall('/task-status');
+                
+                // Update progress
+                const progress = taskStatus.progress || 0;
+                document.getElementById('task-progress').style.width = progress + '%';
+                
+                // Update logs
+                if (taskStatus.messages && taskStatus.messages.length > 0) {
+                    const logContainer = document.getElementById('task-log');
+                    logContainer.innerHTML = '';
+                    
+                    taskStatus.messages.forEach(msg => {
+                        const entry = document.createElement('div');
+                        entry.className = `log-entry ${msg.level}`;
+                        entry.textContent = `[${msg.time}] ${msg.message}`;
+                        logContainer.appendChild(entry);
+                    });
+                    
+                    logContainer.scrollTop = logContainer.scrollHeight;
+                }
+                
+                // Stop polling if task is done
+                if (!taskStatus.running && taskInterval) {
+                    clearInterval(taskInterval);
+                    taskInterval = null;
+                    refreshStatus();
+                }
+                
+            } catch (error) {
+                console.error('Failed to update task status:', error);
+            }
+        }
+
+        function startTaskPolling() {
+            if (!taskInterval) {
+                updateTaskStatus();
+                taskInterval = setInterval(updateTaskStatus, 1000);
+            }
+        }
+
+        // Collection functions
+        async function startCollection() {
+            const mode = document.getElementById('collection-mode').value;
             
-            isAnalyzing = true;
-            document.getElementById('analysis-status').textContent = 'Running';
-            document.getElementById('analysis-status').parentElement.classList.add('pulsing');
+            try {
+                await apiCall('/collect', {
+                    method: 'POST',
+                    body: JSON.stringify({ mode })
+                });
+                
+                logMessage('task-log', 'info', 'Collection started');
+                startTaskPolling();
+                
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to start collection: ${error.message}`);
+            }
+        }
+
+        async function stopCollection() {
+            // In a real implementation, we'd have a stop endpoint
+            logMessage('task-log', 'warning', 'Stop function not implemented yet');
+        }
+
+        // Analysis functions
+        async function startAnalysis() {
+            const maxArticles = parseInt(document.getElementById('max-analyze').value);
             
-            logMessage('analyzer-log', 'info', 'Starting content analysis...');
-            logMessage('analyzer-log', 'info', 'Multi-round prompting initialized');
-            
-            // Simulate analysis
-            setTimeout(() => {
-                isAnalyzing = false;
-                document.getElementById('analysis-status').textContent = 'Complete';
-                document.getElementById('analysis-status').parentElement.classList.remove('pulsing');
-                logMessage('analyzer-log', 'success', '✓ Analysis completed');
-                updateStatistics();
-            }, 3000);
+            try {
+                await apiCall('/analyze', {
+                    method: 'POST',
+                    body: JSON.stringify({ max_articles: maxArticles })
+                });
+                
+                logMessage('analyzer-log', 'info', 'Analysis started');
+                startTaskPolling();
+                
+            } catch (error) {
+                logMessage('analyzer-log', 'error', `Failed to start analysis: ${error.message}`);
+            }
         }
 
-        function stopAnalysis() {
-            isAnalyzing = false;
-            document.getElementById('analysis-status').textContent = 'Stopped';
-            document.getElementById('analysis-status').parentElement.classList.remove('pulsing');
-            
-            logMessage('analyzer-log', 'warning', 'Analysis stopped by user');
+        // Knowledge Graph functions
+        async function buildKnowledgeGraph() {
+            try {
+                await apiCall('/build-kg', { method: 'POST' });
+                logMessage('kg-log', 'info', 'Building knowledge graph');
+                startTaskPolling();
+            } catch (error) {
+                logMessage('kg-log', 'error', `Failed to build graph: ${error.message}`);
+            }
         }
 
-        function verifyProvenance() {
-            logMessage('analyzer-log', 'info', 'Verifying all provenance records...');
-            setTimeout(() => {
-                logMessage('analyzer-log', 'success', '✓ All provenance records verified');
-            }, 2000);
+        async function syncVectors() {
+            try {
+                await apiCall('/sync-vectors', { method: 'POST' });
+                logMessage('vector-log', 'info', 'Synchronizing vectors');
+                startTaskPolling();
+            } catch (error) {
+                logMessage('vector-log', 'error', `Failed to sync vectors: ${error.message}`);
+            }
         }
 
-        // Knowledge Graph Functions
-        function buildKnowledgeGraph() {
-            logMessage('kg-log', 'info', 'Building knowledge graph from analyses...');
-            setTimeout(() => {
-                logMessage('kg-log', 'success', '✓ Knowledge graph updated: +23 nodes, +67 edges');
-                updateKGStatistics();
-            }, 2000);
+        // Full pipeline
+        async function runFullPipeline() {
+            try {
+                await apiCall('/pipeline', { method: 'POST' });
+                logMessage('task-log', 'info', 'Full pipeline started');
+                startTaskPolling();
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to start pipeline: ${error.message}`);
+            }
         }
 
-        function inferRelationships() {
-            logMessage('kg-log', 'info', 'Inferring temporal relationships...');
-            setTimeout(() => {
-                logMessage('kg-log', 'success', '✓ Added 15 temporal relationships');
-            }, 1500);
+        // LLM test
+        async function testLLMConnection() {
+            try {
+                const result = await apiCall('/test-llm', { method: 'POST' });
+                logMessage('task-log', 'success', `LLM test: ${result.response || 'Connected'}`);
+            } catch (error) {
+                logMessage('task-log', 'error', `LLM test failed: ${error.message}`);
+            }
         }
 
-        function saveSnapshot() {
-            logMessage('kg-log', 'info', 'Creating graph snapshot...');
-            setTimeout(() => {
-                logMessage('kg-log', 'success', '✓ Snapshot saved: snapshot_20250602_154721');
-            }, 1000);
-        }
-
-        function generateReports() {
-            logMessage('kg-log', 'info', 'Generating intelligence reports...');
-            setTimeout(() => {
-                logMessage('kg-log', 'success', '✓ Reports generated in data/analysis/');
-            }, 2000);
-        }
-
-        function refreshKGStats() {
-            logMessage('kg-log', 'info', 'Refreshing graph statistics...');
-            setTimeout(() => {
-                updateKGStatistics();
-                logMessage('kg-log', 'success', '✓ Statistics updated');
-            }, 1000);
-        }
-
-        // Vector Store Functions
-        function syncVectorStore() {
-            logMessage('vector-log', 'info', 'Synchronizing vector store with knowledge graph...');
-            setTimeout(() => {
-                logMessage('vector-log', 'success', '✓ Vector store synchronized: 1,247 vectors');
-                document.getElementById('vector-status').textContent = 'Synced';
-            }, 2000);
-        }
-
-        function discoverRelationships() {
-            logMessage('vector-log', 'info', 'Discovering implicit relationships...');
-            setTimeout(() => {
-                logMessage('vector-log', 'success', '✓ Discovered 12 implicit relationships');
-            }, 3000);
-        }
-
-        function clusterNodes() {
-            logMessage('vector-log', 'info', 'Performing cluster analysis...');
-            setTimeout(() => {
-                logMessage('vector-log', 'success', '✓ Created 10 semantic clusters');
-            }, 2500);
-        }
-
-        function detectPatterns() {
-            logMessage('vector-log', 'info', 'Detecting recurring patterns...');
-            setTimeout(() => {
-                logMessage('vector-log', 'success', '✓ Found 5 recurring event patterns');
-            }, 3000);
-        }
-
-        function searchVectors() {
+        // Vector search
+        async function searchVectors() {
             const query = document.getElementById('vector-search').value;
-            const nodeType = document.getElementById('node-type-filter').value;
             
             if (!query) {
                 alert('Please enter a search query');
                 return;
             }
             
-            logMessage('vector-log', 'info', `Searching for: "${query}"${nodeType ? ` (type: ${nodeType})` : ''}`);
-            setTimeout(() => {
-                logMessage('vector-log', 'success', '✓ Found 8 similar nodes');
-            }, 1000);
+            try {
+                const results = await apiCall('/search', {
+                    method: 'POST',
+                    body: JSON.stringify({ query, limit: 10 })
+                });
+                
+                logMessage('vector-log', 'success', `Found ${results.length} results`);
+                
+                // Display results
+                results.forEach(result => {
+                    logMessage('vector-log', 'info', `${result.name} (score: ${result.score.toFixed(3)})`);
+                });
+                
+            } catch (error) {
+                logMessage('vector-log', 'error', `Search failed: ${error.message}`);
+            }
         }
 
-        // Provenance Functions
-        function verifyAllDocuments() {
-            logMessage('provenance-log', 'info', 'Verifying all document signatures...');
-            setTimeout(() => {
-                logMessage('provenance-log', 'success', '✓ All 1,891 documents verified');
-            }, 3000);
-        }
-
-        function verifyAllAnalyses() {
-            logMessage('provenance-log', 'info', 'Verifying all analysis records...');
-            setTimeout(() => {
-                logMessage('provenance-log', 'success', '✓ All 456 analyses verified');
-            }, 2500);
-        }
-
-        function generateIntegrityReport() {
-            logMessage('provenance-log', 'info', 'Generating integrity report...');
-            setTimeout(() => {
-                logMessage('provenance-log', 'success', '✓ Integrity report saved to reports/');
-            }, 2000);
-        }
-
-        function saveProvenanceConfig() {
-            logMessage('provenance-log', 'info', 'Saving provenance configuration...');
-            setTimeout(() => {
-                logMessage('provenance-log', 'success', '✓ Configuration saved');
-            }, 500);
-        }
-
-        // Utility Functions
+        // Utility functions
         function logMessage(containerId, level, message) {
             const container = document.getElementById(containerId);
             const timestamp = new Date().toLocaleTimeString();
@@ -1161,43 +805,11 @@
             }
         }
 
-        function updateStatistics() {
-            // Update random statistics for demo
-            document.getElementById('articles-today').textContent = Math.floor(Math.random() * 50) + 20;
-            document.getElementById('analyzed-today').textContent = Math.floor(Math.random() * 20) + 5;
-            document.getElementById('pending-analysis').textContent = Math.floor(Math.random() * 10);
-            document.getElementById('avg-manipulation').textContent = (Math.random() * 3 + 3).toFixed(1);
-        }
-
-        function updateKGStatistics() {
-            const nodes = parseInt(document.getElementById('kg-nodes').textContent.replace(',', ''));
-            const edges = parseInt(document.getElementById('kg-edges').textContent.replace(',', ''));
-            
-            document.getElementById('kg-nodes').textContent = (nodes + Math.floor(Math.random() * 10)).toLocaleString();
-            document.getElementById('kg-edges').textContent = (edges + Math.floor(Math.random() * 20)).toLocaleString();
-        }
-
-        function startStatusUpdates() {
-            // Update statistics every 30 seconds
-            setInterval(updateStatistics, 30000);
-            
-            // Update system status every 10 seconds
-            setInterval(() => {
-                if (!isCollecting && !isAnalyzing) {
-                    // Occasionally add status messages
-                    if (Math.random() < 0.1) {
-                        const messages = [
-                            'System monitoring active',
-                            'All components operational',
-                            'Memory usage stable',
-                            'Background processes running'
-                        ];
-                        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-                        logMessage('collector-log', 'info', `[SYSTEM] ${randomMessage}`);
-                    }
-                }
-            }, 10000);
-        }
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (statusInterval) clearInterval(statusInterval);
+            if (taskInterval) clearInterval(taskInterval);
+        });
     </script>
 </body>
 </html>
