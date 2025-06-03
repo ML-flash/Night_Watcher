@@ -1,58 +1,14 @@
 # prompts.py
-# Centralized prompt templates for Night_watcher Knowledge Graph population and analysis phases
+# Template-based prompt system for Night_watcher analysis
 
-# Manipulation Score Analysis
-MANIPULATION_SCORE_PROMPT = """
-Analyze the following political article for manipulation techniques.
+# Template-based prompts with variable substitution
 
-Focus specifically on:
-1. Framing: How the story is presented and what perspective is centered
-2. Language: Use of emotionally charged language, loaded terms, or persuasive devices
-3. Omissions: What relevant context or counterpoints are excluded
-4. Attribution: Whether claims are properly sourced and attributed
-5. Fact/Opinion Blending: How facts are mixed with analysis or opinion
-
-First provide a detailed analysis of these aspects. Then, end with:
-
-MANIPULATION SCORE: [1-10]
-
-Where 1 = highly objective news with minimal manipulation
-And 10 = extreme manipulation with significant distortion of facts
-
-CONTENT:
-{article_content}
-"""
-
-# Authoritarian Analysis
-AUTHORITARIAN_ANALYSIS_PROMPT = """
-Analyze the following political content for potential authoritarian indicators.
-
-Your task is to identify any patterns that may signal democratic erosion or authoritarian tendencies, such as:
-- Attempts to undermine separation of powers
-- Delegitimization of opposition, media, or institutions
-- Expansion of executive authority
-- Limitations on civil liberties or rights
-- Erosion of electoral integrity
-- Centralization of power
-- Use of state resources for partisan advantage
-- Degradation of factual discourse
-- Promotion of us-vs-them narratives
-
-Be balanced and objective. Do not overinterpret ambiguous statements, but don't overlook concerning patterns.
-
-End your analysis with:
-AUTHORITARIAN INDICATORS: [List the specific indicators found, or "None detected" if none]
-CONCERN LEVEL: [None, Low, Moderate, High, Very High]
-
-CONTENT:
-{article_content}
-"""
-
-# Round 1: Fact Extraction
-FACT_EXTRACTION_PROMPT = """
-Extract only the objective facts, direct actions, dates, and explicit statements from the following article.
+FACT_EXTRACTION_PROMPT_TEMPLATE = """
+Extract only the objective facts, direct actions, dates, and explicit statements from the following {content_type}.
 
 Avoid speculation, bias, or inferred motives. Do not summarize. Your goal is to build a dataset of observable, verifiable facts.
+
+{json_instruction}
 
 Your response MUST be a valid, parseable JSON object in exactly this format:
 {{
@@ -74,9 +30,8 @@ CONTENT:
 {article_content}
 """
 
-# Round 2: Article Analysis
-ARTICLE_ANALYSIS_PROMPT = """
-Analyze the following political article for presentation bias, narrative framing, omitted context, and tone.
+ARTICLE_ANALYSIS_PROMPT_TEMPLATE = """
+Analyze the following {content_type} for presentation bias, narrative framing, omitted context, and tone.
 
 Break your analysis into:
 1. FRAMING: What perspectives or ideologies are amplified?
@@ -85,14 +40,59 @@ Break your analysis into:
 4. MANIPULATION: Are there rhetorical techniques that might subtly influence the reader?
 5. DEMOCRATIC CONCERNS: What, if any, patterns or implications suggest risk to democratic norms?
 
+{analysis_instruction}
+
 CONTENT:
 {article_content}
 """
 
-# Round 3: Node Extraction (Updated with new node types)
-NODE_EXTRACTION_PROMPT = """
+MANIPULATION_SCORE_PROMPT_TEMPLATE = """
+Analyze the following {content_type} for manipulation techniques.
+
+Focus specifically on:
+1. {focus_area_1}
+2. {focus_area_2}
+3. {focus_area_3}
+4. {focus_area_4}
+5. {focus_area_5}
+
+First provide a detailed analysis of these aspects. Then, end with:
+
+MANIPULATION SCORE: [1-10]
+
+{manipulation_scale}
+
+CONTENT:
+{article_content}
+"""
+
+AUTHORITARIAN_ANALYSIS_PROMPT_TEMPLATE = """
+Analyze the following {content_type} for potential authoritarian indicators.
+
+Your task is to identify any patterns that may signal democratic erosion or authoritarian tendencies, such as:
+- Attempts to undermine separation of powers
+- Delegitimization of opposition, media, or institutions
+- Expansion of executive authority
+- Limitations on civil liberties or rights
+- Erosion of electoral integrity
+- Centralization of power
+- Use of state resources for partisan advantage
+- Degradation of factual discourse
+- Promotion of us-vs-them narratives
+
+{analysis_instruction}
+
+End your analysis with:
+AUTHORITARIAN INDICATORS: [List the specific indicators found, or "None detected" if none]
+CONCERN LEVEL: [None, Low, Moderate, High, Very High]
+
+CONTENT:
+{article_content}
+"""
+
+NODE_EXTRACTION_PROMPT_TEMPLATE = """
 Extract every discrete fact, action, entity, or event from the following content. For each, produce a JSON object with:
-- node_type: one of [actor, institution, policy, event, media_outlet, civil_society, narrative, legal_framework, procedural_norm]
+- node_type: one of [{entity_types}]
 - name: the precise name or title
 - attributes: a key/value object with any additional details (e.g. role, party, branch, description)
 - timestamp: the YYYY-MM-DD date associated (if none, use "N/A")
@@ -103,7 +103,7 @@ Pay special attention to identifying:
 - legal_frameworks: changes to laws and regulations (e.g., "Emergency Powers Act", "Anti-Protest Bill")
 - procedural_norms: changes to governmental procedures (e.g., "Senate Confirmation Process", "Executive Oversight")
 
-Your ENTIRE response must be ONLY a valid JSON array of these node objects. Do not include any text outside the JSON array.
+{json_instruction}
 
 Example format:
 [
@@ -135,15 +135,15 @@ CONTENT:
 {article_content}
 """
 
-# Round 4: Node Deduplication & Normalization with Fuzzy Merge
-NODE_DEDUPLICATION_PROMPT = """
+NODE_DEDUPLICATION_PROMPT_TEMPLATE = """
 You are given a JSON array of node objects and a publication_date.
 
 1. Assign each unique (node_type, name) pair a numeric "id" (starting at 1).
 2. If multiple entries share (node_type, name) or are highly similar in name, merge their attributes (union all keys).
 3. Carry over the earliest timestamp; if missing or "N/A", default to the provided publication_date.
 
-Your ENTIRE response must be ONLY a valid JSON array of objects with this format:
+{json_instruction}
+
 [
   {{
     "id": 1,
@@ -166,16 +166,13 @@ PUBLICATION_DATE:
 {publication_date}
 """
 
-# Round 5: Edge Extraction with Enhanced Relation Types (Updated with new relation types)
-EDGE_EXTRACTION_PROMPT = """
+EDGE_EXTRACTION_PROMPT_TEMPLATE = """
 Given:
 - the array of unique nodes (with id, node_type, name)
 - the original facts JSON
 
 Identify all relations among node IDs using ONLY these types:
-[part_of, influences, opposes, supports, restricts, undermines, authorizes,
- co-opts, purges, criminalizes, censors, intimidates, delegitimizes,
- backs_with_force, justifies, expands_power, normalizes, diverts_attention, targets]
+[{relation_types}]
 
 Important notes on relation types:
 - Use 'justifies' when one node (often a narrative) is used to rationalize an action
@@ -186,7 +183,8 @@ Important notes on relation types:
 
 Note: Do NOT add 'precedes' or 'follows' relations - these will be inferred automatically from timestamps.
 
-Your ENTIRE response must be ONLY a valid JSON array with edges in this format:
+{json_instruction}
+
 [
   {{
     "source_id": 3,
@@ -207,8 +205,7 @@ FACTS:
 {facts}
 """
 
-# Round 6: Edge Enrichment with Default Timestamp Handling
-EDGE_ENRICHMENT_PROMPT = """
+EDGE_ENRICHMENT_PROMPT_TEMPLATE = """
 You are given a JSON array of edges and a publication_date.
 For each edge, add:
 - severity: float 0.0–1.0 representing impact (0.0 is minimal, 1.0 is severe)
@@ -220,7 +217,8 @@ restricts, targets), carefully assess the severity based on democratic norms.
 
 If edge timestamp was "N/A", use the publication_date for assessment.
 
-Your ENTIRE response must be ONLY a valid JSON array with edges in this format:
+{json_instruction}
+
 [
   {{
     "source_id": 3,
@@ -244,8 +242,7 @@ PUBLICATION_DATE:
 {publication_date}
 """
 
-# Round 7: Package for Ingestion
-PACKAGE_INGESTION_PROMPT = """
+PACKAGE_INGESTION_PROMPT_TEMPLATE = """
 Given:
 - the deduplicated node array with ids
 - the enriched edge array
@@ -256,7 +253,7 @@ Create a single JSON object with this exact structure:
   "edges": [ ... ]
 }}
 
-Your ENTIRE response must be ONLY this valid JSON object. Do not include any text before or after the JSON.
+{json_instruction}
 
 NODES:
 {nodes}
@@ -264,3 +261,46 @@ NODES:
 EDGES:
 {edges}
 """
+
+# Prompt template mapping
+PROMPT_TEMPLATES = {
+    "fact_extraction": FACT_EXTRACTION_PROMPT_TEMPLATE,
+    "article_analysis": ARTICLE_ANALYSIS_PROMPT_TEMPLATE,
+    "manipulation_score": MANIPULATION_SCORE_PROMPT_TEMPLATE,
+    "authoritarian_analysis": AUTHORITARIAN_ANALYSIS_PROMPT_TEMPLATE,
+    "node_extraction": NODE_EXTRACTION_PROMPT_TEMPLATE,
+    "node_deduplication": NODE_DEDUPLICATION_PROMPT_TEMPLATE,
+    "edge_extraction": EDGE_EXTRACTION_PROMPT_TEMPLATE,
+    "edge_enrichment": EDGE_ENRICHMENT_PROMPT_TEMPLATE,
+    "package_ingestion": PACKAGE_INGESTION_PROMPT_TEMPLATE
+}
+
+
+def load_template_variables(template_file: str) -> dict:
+    """Load variables from template JSON file."""
+    import json
+    import os
+    
+    if not os.path.exists(template_file):
+        raise FileNotFoundError(f"Template file not found: {template_file}")
+    
+    with open(template_file, 'r') as f:
+        template = json.load(f)
+    
+    return template.get("variables", {})
+
+
+def format_prompt(template_name: str, variables: dict, **kwargs) -> str:
+    """Format a prompt template with variables."""
+    if template_name not in PROMPT_TEMPLATES:
+        raise ValueError(f"Unknown template: {template_name}")
+    
+    template = PROMPT_TEMPLATES[template_name]
+    
+    # Merge template variables with any additional kwargs
+    format_vars = {**variables, **kwargs}
+    
+    try:
+        return template.format(**format_vars)
+    except KeyError as e:
+        raise ValueError(f"Missing variable {e} for template {template_name}")
