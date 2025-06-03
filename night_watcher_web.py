@@ -10,6 +10,7 @@ import json
 import logging
 import threading
 import time
+import glob
 from datetime import datetime
 from flask import Flask, render_template_string, jsonify, request, send_from_directory
 from flask_cors import CORS
@@ -41,6 +42,9 @@ stats_cache = {
     "data": {}
 }
 
+# Review queue storage (simple file-based)
+REVIEW_QUEUE_FILE = "data/review_queue.json"
+
 
 def init_night_watcher():
     """Initialize Night_watcher instance."""
@@ -61,6 +65,68 @@ def add_log_message(level, message):
     # Keep only last 100 messages
     if len(task_status["messages"]) > 100:
         task_status["messages"] = task_status["messages"][-100:]
+
+
+def load_review_queue():
+    """Load review queue from file."""
+    if os.path.exists(REVIEW_QUEUE_FILE):
+        try:
+            with open(REVIEW_QUEUE_FILE, 'r') as f:
+                return json.load(f)
+        except:
+            return []
+    return []
+
+
+def save_review_queue(queue):
+    """Save review queue to file."""
+    try:
+        os.makedirs(os.path.dirname(REVIEW_QUEUE_FILE), exist_ok=True)
+        with open(REVIEW_QUEUE_FILE, 'w') as f:
+            json.dump(queue, f, indent=2)
+    except Exception as e:
+        logger.error(f"Failed to save review queue: {e}")
+
+
+def scan_for_review_items():
+    """Scan analyzed directory for items needing review."""
+    review_items = []
+    analyzed_dir = "data/analyzed"
+    
+    if not os.path.exists(analyzed_dir):
+        return review_items
+    
+    for filename in os.listdir(analyzed_dir):
+        if not filename.startswith("analysis_"):
+            continue
+            
+        try:
+            filepath = os.path.join(analyzed_dir, filename)
+            with open(filepath, 'r') as f:
+                analysis = json.load(f)
+            
+            validation = analysis.get("validation", {})
+            if validation.get("status") == "REVIEW":
+                # Create review item
+                review_item = {
+                    "id": filename[:-5],  # Remove .json
+                    "filename": filename,
+                    "timestamp": analysis.get("timestamp"),
+                    "template_name": analysis.get("template_info", {}).get("name", "Unknown"),
+                    "template_status": analysis.get("template_info", {}).get("status", "Unknown"),
+                    "validation_status": validation.get("status"),
+                    "validation_reason": validation.get("reason", ""),
+                    "article": analysis.get("article", {}),
+                    "manipulation_score": analysis.get("manipulation_score", 0),
+                    "concern_level": analysis.get("concern_level", "Unknown"),
+                    "authoritarian_indicators": analysis.get("authoritarian_indicators", [])
+                }
+                review_items.append(review_item)
+                
+        except Exception as e:
+            logger.error(f"Error scanning {filename}: {e}")
+    
+    return review_items
 
 
 @app.route('/')
@@ -88,6 +154,10 @@ def api_status():
         
         status = night_watcher.status()
         
+        # Add review queue count
+        review_items = scan_for_review_items()
+        status["pending_review"] = len(review_items)
+        
         # Add task status
         status["task_status"] = {
             "running": task_status["running"],
@@ -106,6 +176,137 @@ def api_status():
         stats_cache["data"] = status
         
         return jsonify(status)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/templates')
+def api_templates():
+    """Get available analysis templates."""
+    try:
+        templates = []
+        
+        # Scan for template files
+        template_files = glob.glob("*.json")
+        template_files = [f for f in template_files if "analysis" in f.lower()]
+        
+        for filename in template_files:
+            try:
+                with open(filename, 'r') as f:
+                    template_data = json.load(f)
+                
+                templates.append({
+                    "filename": filename,
+                    "name": template_data.get("name", filename),
+                    "description": template_data.get("description", ""),
+                    "version": template_data.get("version", ""),
+                    "status": template_data.get("status", "UNKNOWN")
+                })
+            except Exception as e:
+                logger.error(f"Error reading template {filename}: {e}")
+        
+        return jsonify(templates)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/review-queue')
+def api_review_queue():
+    """Get review queue items."""
+    try:
+        review_items = scan_for_review_items()
+        return jsonify(review_items)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/review-queue/approve', methods=['POST'])
+def api_approve_analysis():
+    """Approve an analysis."""
+    try:
+        data = request.json
+        analysis_id = data.get("analysis_id")
+        notes = data.get("notes", "")
+        
+        # Load analysis file
+        filepath = f"data/analyzed/{analysis_id}.json"
+        if not os.path.exists(filepath):
+            return jsonify({"error": "Analysis not found"}), 404
+        
+        with open(filepath, 'r') as f:
+            analysis = json.load(f)
+        
+        # Update validation status
+        analysis["validation"]["status"] = "VALID"
+        analysis["validation"]["approved_by"] = "dashboard_user"
+        analysis["validation"]["approved_at"] = datetime.now().isoformat()
+        analysis["validation"]["notes"] = notes
+        
+        # Save updated analysis
+        with open(filepath, 'w') as f:
+            json.dump(analysis, f, indent=2)
+        
+        # Clear cache to force status refresh
+        stats_cache["last_update"] = None
+        
+        return jsonify({"status": "approved"})
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/review-queue/reject', methods=['POST'])
+def api_reject_analysis():
+    """Reject an analysis."""
+    try:
+        data = request.json
+        analysis_id = data.get("analysis_id")
+        notes = data.get("notes", "")
+        
+        # Load analysis file
+        filepath = f"data/analyzed/{analysis_id}.json"
+        if not os.path.exists(filepath):
+            return jsonify({"error": "Analysis not found"}), 404
+        
+        with open(filepath, 'r') as f:
+            analysis = json.load(f)
+        
+        # Update validation status
+        analysis["validation"]["status"] = "REJECTED"
+        analysis["validation"]["rejected_by"] = "dashboard_user"
+        analysis["validation"]["rejected_at"] = datetime.now().isoformat()
+        analysis["validation"]["notes"] = notes
+        
+        # Save updated analysis
+        with open(filepath, 'w') as f:
+            json.dump(analysis, f, indent=2)
+        
+        # Clear cache to force status refresh
+        stats_cache["last_update"] = None
+        
+        return jsonify({"status": "rejected"})
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/review-queue/retry', methods=['POST'])
+def api_retry_analysis():
+    """Retry a failed analysis."""
+    try:
+        data = request.json
+        analysis_id = data.get("analysis_id")
+        
+        # For now, just mark as failed - actual retry would need more work
+        filepath = f"data/analyzed/{analysis_id}.json"
+        if not os.path.exists(filepath):
+            return jsonify({"error": "Analysis not found"}), 404
+        
+        # Simple approach: just delete the file so it can be reprocessed
+        os.remove(filepath)
+        
+        return jsonify({"status": "queued_for_retry"})
+        
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -140,6 +341,8 @@ def api_collect():
         finally:
             task_status["running"] = False
             task_status["task"] = None
+            # Clear cache to update status
+            stats_cache["last_update"] = None
     
     task_thread = threading.Thread(target=run_collection)
     task_thread.start()
@@ -157,18 +360,59 @@ def api_analyze():
     
     data = request.json or {}
     max_articles = data.get("max_articles", 20)
+    template = data.get("template", "standard_analysis.json")
     
     def run_analysis():
         task_status["running"] = True
         task_status["task"] = "analysis"
         task_status["progress"] = 0
-        add_log_message("info", f"Starting analysis (max: {max_articles} articles)")
+        add_log_message("info", f"Starting analysis (max: {max_articles}, template: {template})")
         
         try:
             init_night_watcher()
-            result = night_watcher.analyze(max_articles=max_articles)
             
-            analyzed_count = result.get("analyzed", 0)
+            # Create analyzer with specific template
+            from analyzer import ContentAnalyzer
+            analyzer = ContentAnalyzer(night_watcher.llm_provider, template_file=template)
+            
+            # Get unanalyzed documents
+            all_docs = night_watcher.document_repository.list_documents()
+            analyzed = night_watcher._get_analyzed_docs()
+            unanalyzed = [d for d in all_docs if d not in analyzed][:max_articles]
+            
+            if not unanalyzed:
+                add_log_message("warning", "No new documents to analyze")
+                task_status["progress"] = 100
+                return
+            
+            # Prepare articles for analysis
+            articles = []
+            for doc_id in unanalyzed:
+                content, metadata, _ = night_watcher.document_repository.get_document(doc_id)
+                if content and metadata:
+                    articles.append({
+                        "title": metadata.get("title", ""),
+                        "content": content,
+                        "url": metadata.get("url", ""),
+                        "source": metadata.get("source", ""),
+                        "bias_label": metadata.get("bias_label", ""),
+                        "published": metadata.get("published"),
+                        "document_id": doc_id
+                    })
+            
+            # Run analysis
+            result = analyzer.process({"articles": articles, "document_ids": [a["document_id"] for a in articles]})
+            
+            # Save analyses
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            for i, analysis in enumerate(result.get("analyses", [])):
+                doc_id = articles[i]["document_id"]
+                filename = f"analysis_{doc_id}_{timestamp}.json"
+                
+                with open(f"data/analyzed/{filename}", 'w') as f:
+                    json.dump(analysis, f, indent=2)
+            
+            analyzed_count = len(result.get("analyses", []))
             add_log_message("success", f"Analysis completed: {analyzed_count} documents")
             task_status["progress"] = 100
             
@@ -177,6 +421,8 @@ def api_analyze():
         finally:
             task_status["running"] = False
             task_status["task"] = None
+            # Clear cache to update status
+            stats_cache["last_update"] = None
     
     task_thread = threading.Thread(target=run_analysis)
     task_thread.start()
@@ -212,6 +458,8 @@ def api_build_kg():
         finally:
             task_status["running"] = False
             task_status["task"] = None
+            # Clear cache to update status
+            stats_cache["last_update"] = None
     
     task_thread = threading.Thread(target=run_kg_build)
     task_thread.start()
@@ -246,6 +494,8 @@ def api_sync_vectors():
         finally:
             task_status["running"] = False
             task_status["task"] = None
+            # Clear cache to update status
+            stats_cache["last_update"] = None
     
     task_thread = threading.Thread(target=run_sync)
     task_thread.start()
@@ -420,6 +670,8 @@ def api_pipeline():
         finally:
             task_status["running"] = False
             task_status["task"] = None
+            # Clear cache to update status
+            stats_cache["last_update"] = None
     
     task_thread = threading.Thread(target=run_pipeline)
     task_thread.start()
