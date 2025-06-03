@@ -60,6 +60,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
+            position: relative;
         }
 
         .nav-item:hover {
@@ -70,6 +71,22 @@
         .nav-item.active {
             background: #3182ce;
             border-color: #63b3ed;
+        }
+
+        .nav-badge {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
         }
 
         .content {
@@ -183,6 +200,11 @@
             color: white;
         }
 
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
         .status-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -244,43 +266,6 @@
             color: #fc8181;
         }
 
-        .source-item {
-            background: #2d3748;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            border-radius: 6px;
-            border-left: 4px solid #3182ce;
-        }
-
-        .source-item.disabled {
-            opacity: 0.6;
-            border-left-color: #718096;
-        }
-
-        .source-status {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-left: 1rem;
-        }
-
-        .source-status.active {
-            background: #38a169;
-            color: white;
-        }
-
-        .source-status.error {
-            background: #e53e3e;
-            color: white;
-        }
-
-        .source-status.pending {
-            background: #d69e2e;
-            color: white;
-        }
-
         .progress-bar {
             width: 100%;
             height: 20px;
@@ -297,6 +282,88 @@
             transition: width 0.3s ease;
         }
 
+        /* Review Queue Styles */
+        .review-item {
+            background: #4a5568;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 2px solid #d69e2e;
+        }
+
+        .review-header {
+            padding: 1rem;
+            border-bottom: 1px solid #5a6578;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .review-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .article-preview {
+            background: #2d3748;
+            padding: 1rem;
+            border-radius: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .analysis-preview {
+            background: #2d3748;
+            padding: 1rem;
+            border-radius: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .review-actions {
+            padding: 1rem;
+            border-top: 1px solid #5a6578;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .template-badge {
+            background: #3182ce;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .template-badge.testing {
+            background: #d69e2e;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.review {
+            background: #d69e2e;
+            color: white;
+        }
+
+        .status-badge.valid {
+            background: #38a169;
+            color: white;
+        }
+
+        .status-badge.failed {
+            background: #e53e3e;
+            color: white;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -306,49 +373,15 @@
             animation: pulse 2s infinite;
         }
 
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #a0aec0;
         }
 
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #3182ce;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
+        .empty-state h3 {
+            margin-bottom: 1rem;
+            color: #cbd5e0;
         }
     </style>
 </head>
@@ -365,6 +398,13 @@
             </div>
             <div class="nav-item" onclick="showSection('analyzer')">
                 🔍 Content Analyzer
+            </div>
+            <div class="nav-item" onclick="showSection('review-queue')">
+                👁️ Review Queue
+                <span class="nav-badge" id="review-count" style="display: none;">0</span>
+            </div>
+            <div class="nav-item" onclick="showSection('templates')">
+                📋 Analysis Templates
             </div>
             <div class="nav-item" onclick="showSection('knowledge-graph')">
                 🕸️ Knowledge Graph
@@ -448,14 +488,20 @@
                         <div class="value" id="analyzed-documents">0</div>
                     </div>
                     <div class="status-card">
-                        <h4>Pending Analysis</h4>
-                        <div class="value" id="pending-docs">0</div>
+                        <h4>Pending Review</h4>
+                        <div class="value" id="pending-review">0</div>
                     </div>
                 </div>
 
                 <div class="control-grid">
                     <div class="control-panel">
                         <h3>Analysis Controls</h3>
+                        <div class="form-group">
+                            <label>Analysis Template</label>
+                            <select id="analysis-template">
+                                <option value="standard_analysis.json">Standard Analysis v1</option>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label>Max Articles to Analyze</label>
                             <input type="number" id="max-analyze" value="20" min="1" max="100">
@@ -466,6 +512,68 @@
 
                 <div class="log-container" id="analyzer-log">
                     <div class="log-entry info">[INFO] Content Analyzer ready</div>
+                </div>
+            </div>
+
+            <!-- Review Queue Section -->
+            <div id="review-queue" class="section">
+                <h2>Review Queue</h2>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <h4>Items Pending Review</h4>
+                        <div class="value" id="review-queue-count">0</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Approved Today</h4>
+                        <div class="value" id="approved-today">0</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Rejected Today</h4>
+                        <div class="value" id="rejected-today">0</div>
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <h3>Queue Actions</h3>
+                    <button class="btn btn-success btn-small" onclick="approveAll()">Approve All</button>
+                    <button class="btn btn-danger btn-small" onclick="rejectAll()">Reject All</button>
+                    <button class="btn btn-primary btn-small" onclick="refreshReviewQueue()">Refresh Queue</button>
+                </div>
+
+                <div id="review-queue-container">
+                    <div class="empty-state">
+                        <h3>No items in review queue</h3>
+                        <p>Run analysis with a TESTING template to generate items for review</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Templates Section -->
+            <div id="templates" class="section">
+                <h2>Analysis Templates</h2>
+                
+                <div class="control-grid">
+                    <div class="control-panel">
+                        <h3>Available Templates</h3>
+                        <div id="templates-list">
+                            <div class="template-item">
+                                <div class="template-badge">PRODUCTION</div>
+                                <strong>standard_analysis.json</strong>
+                                <p>Standard 9-round analysis pipeline</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-panel">
+                        <h3>Template Actions</h3>
+                        <button class="btn btn-primary" onclick="refreshTemplates()">Refresh Templates</button>
+                        <button class="btn btn-warning" onclick="validateTemplate()">Validate Template</button>
+                    </div>
+                </div>
+
+                <div class="log-container" id="templates-log">
+                    <div class="log-entry info">[INFO] Templates ready</div>
                 </div>
             </div>
 
@@ -553,11 +661,14 @@
         // State
         let taskInterval = null;
         let statusInterval = null;
+        let reviewQueue = [];
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             refreshStatus();
             startStatusPolling();
+            loadTemplates();
+            refreshReviewQueue();
         });
 
         // Navigation
@@ -572,6 +683,11 @@
             
             document.getElementById(sectionId).classList.add('active');
             event.target.classList.add('active');
+
+            // Auto-refresh review queue when section is opened
+            if (sectionId === 'review-queue') {
+                refreshReviewQueue();
+            }
         }
 
         // API calls
@@ -604,10 +720,21 @@
                 document.getElementById('total-documents').textContent = status.total_documents || 0;
                 document.getElementById('pending-analysis').textContent = status.pending_analysis || 0;
                 document.getElementById('analyzed-documents').textContent = status.analyzed_documents || 0;
-                document.getElementById('pending-docs').textContent = status.pending_analysis || 0;
                 document.getElementById('kg-nodes').textContent = status.graph_nodes || 0;
                 document.getElementById('kg-edges').textContent = status.graph_edges || 0;
                 document.getElementById('total-vectors').textContent = status.vector_count || 0;
+                document.getElementById('pending-review').textContent = status.pending_review || 0;
+                document.getElementById('review-queue-count').textContent = status.pending_review || 0;
+                
+                // Update review badge
+                const reviewCount = status.pending_review || 0;
+                const badge = document.getElementById('review-count');
+                if (reviewCount > 0) {
+                    badge.textContent = reviewCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
                 
                 // LLM status
                 const llmConnected = status.system?.llm_connected;
@@ -664,6 +791,7 @@
                     clearInterval(taskInterval);
                     taskInterval = null;
                     refreshStatus();
+                    refreshReviewQueue(); // Refresh review queue after task completion
                 }
                 
             } catch (error) {
@@ -697,25 +825,204 @@
         }
 
         async function stopCollection() {
-            // In a real implementation, we'd have a stop endpoint
             logMessage('task-log', 'warning', 'Stop function not implemented yet');
         }
 
         // Analysis functions
         async function startAnalysis() {
             const maxArticles = parseInt(document.getElementById('max-analyze').value);
+            const template = document.getElementById('analysis-template').value;
             
             try {
                 await apiCall('/analyze', {
                     method: 'POST',
-                    body: JSON.stringify({ max_articles: maxArticles })
+                    body: JSON.stringify({ 
+                        max_articles: maxArticles,
+                        template: template 
+                    })
                 });
                 
-                logMessage('analyzer-log', 'info', 'Analysis started');
+                logMessage('analyzer-log', 'info', `Analysis started with template: ${template}`);
                 startTaskPolling();
                 
             } catch (error) {
                 logMessage('analyzer-log', 'error', `Failed to start analysis: ${error.message}`);
+            }
+        }
+
+        // Template functions
+        async function loadTemplates() {
+            try {
+                const templates = await apiCall('/templates');
+                const selector = document.getElementById('analysis-template');
+                const list = document.getElementById('templates-list');
+                
+                selector.innerHTML = '';
+                list.innerHTML = '';
+                
+                templates.forEach(template => {
+                    // Add to selector
+                    const option = document.createElement('option');
+                    option.value = template.filename;
+                    option.textContent = `${template.name} (${template.status})`;
+                    selector.appendChild(option);
+                    
+                    // Add to list
+                    const item = document.createElement('div');
+                    item.className = 'template-item';
+                    item.style.marginBottom = '1rem';
+                    item.innerHTML = `
+                        <div class="template-badge ${template.status.toLowerCase()}">${template.status}</div>
+                        <strong>${template.filename}</strong>
+                        <p>${template.description || 'No description'}</p>
+                        <small>Version: ${template.version || 'N/A'}</small>
+                    `;
+                    list.appendChild(item);
+                });
+                
+            } catch (error) {
+                logMessage('templates-log', 'error', `Failed to load templates: ${error.message}`);
+            }
+        }
+
+        async function refreshTemplates() {
+            await loadTemplates();
+            logMessage('templates-log', 'success', 'Templates refreshed');
+        }
+
+        // Review Queue functions
+        async function refreshReviewQueue() {
+            try {
+                const queue = await apiCall('/review-queue');
+                reviewQueue = queue;
+                
+                const container = document.getElementById('review-queue-container');
+                
+                if (queue.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>No items in review queue</h3>
+                            <p>Run analysis with a TESTING template to generate items for review</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                queue.forEach((item, index) => {
+                    const reviewItem = createReviewItem(item, index);
+                    container.appendChild(reviewItem);
+                });
+                
+            } catch (error) {
+                logMessage('system-log', 'error', `Failed to refresh review queue: ${error.message}`);
+            }
+        }
+
+        function createReviewItem(item, index) {
+            const div = document.createElement('div');
+            div.className = 'review-item';
+            div.innerHTML = `
+                <div class="review-header">
+                    <div>
+                        <strong>${item.article.title}</strong>
+                        <div class="template-badge ${item.template_status.toLowerCase()}">${item.template_name}</div>
+                        <div class="status-badge ${item.validation_status.toLowerCase()}">${item.validation_status}</div>
+                    </div>
+                    <div>
+                        <small>${item.article.source} • ${new Date(item.timestamp).toLocaleString()}</small>
+                    </div>
+                </div>
+                <div class="review-content">
+                    <div class="article-preview">
+                        <h4>Article Content</h4>
+                        <p><strong>Source:</strong> ${item.article.source}</p>
+                        <p><strong>URL:</strong> <a href="${item.article.url}" target="_blank">${item.article.url}</a></p>
+                        <div style="margin-top: 1rem; max-height: 200px; overflow-y: auto;">
+                            ${item.article.content.substring(0, 500)}...
+                        </div>
+                    </div>
+                    <div class="analysis-preview">
+                        <h4>Analysis Results</h4>
+                        <p><strong>Manipulation Score:</strong> ${item.manipulation_score || 'N/A'}/10</p>
+                        <p><strong>Concern Level:</strong> ${item.concern_level || 'N/A'}</p>
+                        <p><strong>Validation Reason:</strong> ${item.validation_reason}</p>
+                        <div style="margin-top: 1rem;">
+                            <strong>Authoritarian Indicators:</strong>
+                            <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                                ${(item.authoritarian_indicators || []).map(ind => `<li>${ind}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-actions">
+                    <button class="btn btn-success btn-small" onclick="approveAnalysis(${index})">✓ Approve</button>
+                    <button class="btn btn-danger btn-small" onclick="rejectAnalysis(${index})">✗ Reject</button>
+                    <button class="btn btn-warning btn-small" onclick="retryAnalysis(${index})">🔄 Retry</button>
+                    <textarea placeholder="Optional notes..." id="notes-${index}" style="margin-left: 1rem; flex: 1;"></textarea>
+                </div>
+            `;
+            return div;
+        }
+
+        async function approveAnalysis(index) {
+            const item = reviewQueue[index];
+            const notes = document.getElementById(`notes-${index}`).value;
+            
+            try {
+                await apiCall('/review-queue/approve', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        analysis_id: item.id,
+                        notes: notes 
+                    })
+                });
+                
+                logMessage('system-log', 'success', `Approved analysis: ${item.article.title}`);
+                refreshReviewQueue();
+                refreshStatus();
+                
+            } catch (error) {
+                logMessage('system-log', 'error', `Failed to approve: ${error.message}`);
+            }
+        }
+
+        async function rejectAnalysis(index) {
+            const item = reviewQueue[index];
+            const notes = document.getElementById(`notes-${index}`).value;
+            
+            try {
+                await apiCall('/review-queue/reject', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        analysis_id: item.id,
+                        notes: notes 
+                    })
+                });
+                
+                logMessage('system-log', 'warning', `Rejected analysis: ${item.article.title}`);
+                refreshReviewQueue();
+                refreshStatus();
+                
+            } catch (error) {
+                logMessage('system-log', 'error', `Failed to reject: ${error.message}`);
+            }
+        }
+
+        async function retryAnalysis(index) {
+            const item = reviewQueue[index];
+            
+            try {
+                await apiCall('/review-queue/retry', {
+                    method: 'POST',
+                    body: JSON.stringify({ analysis_id: item.id })
+                });
+                
+                logMessage('system-log', 'info', `Retrying analysis: ${item.article.title}`);
+                refreshReviewQueue();
+                
+            } catch (error) {
+                logMessage('system-log', 'error', `Failed to retry: ${error.message}`);
             }
         }
 
