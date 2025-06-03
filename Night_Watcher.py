@@ -307,4 +307,16 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # Check if web server requested
+    if "--web" in sys.argv:
+        # Import and run web server
+        try:
+            from night_watcher_web import main as web_main
+            sys.argv.remove("--web")  # Remove to avoid argument conflicts
+            web_main()
+        except ImportError:
+            print("Error: night_watcher_web.py not found")
+            print("Make sure night_watcher_web.py is in the same directory")
+            sys.exit(1)
+    else:
+        main()
