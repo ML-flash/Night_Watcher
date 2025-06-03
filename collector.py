@@ -43,6 +43,12 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+# Import for document repository if needed
+try:
+    from document_repository import DocumentRepository
+except ImportError:
+    DocumentRepository = None
+
 
 class ContentCollector:
     """Unified collector for all Night_watcher content gathering."""
