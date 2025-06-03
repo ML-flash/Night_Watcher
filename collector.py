@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Night_watcher Content Collector
-Enhanced collector with LLM-guided navigation fallback for problematic sites
+Enhanced Night_watcher Historical Content Collector
+Specialized for collecting historical political content with advanced date handling,
+RSS pagination, archive discovery, and comprehensive fallback strategies.
 """
 
 import time
@@ -11,11 +12,12 @@ import re
 import random
 import json
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional, Tuple
-from urllib.parse import urlparse, urljoin
+from typing import Dict, Any, List, Optional, Tuple, Set
+from urllib.parse import urlparse, urljoin, parse_qs, urlunparse
 import concurrent.futures
 import traceback
 import xml.etree.ElementTree as ET
+from dataclasses import dataclass
 
 import requests
 import feedparser
@@ -23,7 +25,7 @@ from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-# Import newspaper3k (the standard version)
+# Import newspaper3k and trafilatura
 try:
     from newspaper import Article, Config
     NEWSPAPER_AVAILABLE = True
@@ -31,7 +33,6 @@ except ImportError:
     NEWSPAPER_AVAILABLE = False
     logging.error("newspaper3k not installed. Run: pip install newspaper3k")
 
-# Try to import trafilatura as a fallback
 try:
     import trafilatura
     TRAFILATURA_AVAILABLE = True
@@ -39,584 +40,121 @@ except ImportError:
     TRAFILATURA_AVAILABLE = False
     logging.warning("trafilatura not installed. Install with: pip install trafilatura")
 
-# Try to import cloudscraper for Cloudflare bypass
 try:
     import cloudscraper
     CLOUDSCRAPER_AVAILABLE = True
 except ImportError:
     CLOUDSCRAPER_AVAILABLE = False
-    logging.warning("cloudscraper not installed. Cloudflare bypass not available. Install with: pip install cloudscraper")
+    logging.warning("cloudscraper not installed. Cloudflare bypass not available.")
 
 logger = logging.getLogger(__name__)
 
+@dataclass
+class HistoricalCollectionConfig:
+    """Configuration for historical content collection"""
+    start_date: datetime
+    end_date: datetime
+    target_articles_per_day: int = 10
+    max_articles_total: int = 1000
+    enable_archive_discovery: bool = True
+    enable_pagination: bool = True
+    enable_sitemap_crawling: bool = True
+    max_pages_per_source: int = 50
+    archive_services: List[str] = None
+    
+    def __post_init__(self):
+        if self.archive_services is None:
+            self.archive_services = [
+                'web.archive.org',
+                'archive.today',
+                'webcitation.org'
+            ]
 
-class LLMWebNavigator:
+class HistoricalContentCollector:
     """
-    LLM-based web navigator that treats the LLM like a human user
-    """
-    
-    def __init__(self, llm_provider, session: requests.Session):
-        self.llm = llm_provider
-        self.session = session
-        self.logger = logging.getLogger("LLMWebNavigator")
-        self.max_navigation_steps = 3
-        self.current_url = None
-        self.navigation_history = []
-        
-    def navigate_to_rss_feed(self, failed_rss_url: str, source_info: Dict[str, Any]) -> Optional[str]:
-        """
-        Navigate to find the actual RSS feed when the provided URL fails
-        
-        Args:
-            failed_rss_url: The RSS URL that failed (might be returning HTML)
-            source_info: Information about the source (bias, type, etc.)
-            
-        Returns:
-            Working RSS feed URL or None if not found
-        """
-        self.logger.info(f"LLM navigating to find RSS feed for: {failed_rss_url}")
-        self.current_url = failed_rss_url
-        self.navigation_history = [failed_rss_url]
-        
-        for step in range(self.max_navigation_steps):
-            self.logger.info(f"Navigation step {step + 1}: {self.current_url}")
-            
-            # Fetch the current page
-            try:
-                response = self.session.get(self.current_url, timeout=30)
-                if response.status_code != 200:
-                    self.logger.warning(f"Got {response.status_code} for {self.current_url}")
-                    return None
-                    
-                page_content = response.text
-                
-            except Exception as e:
-                self.logger.error(f"Failed to fetch {self.current_url}: {e}")
-                return None
-            
-            # Check if this is actually an RSS feed now
-            if self._is_rss_content(page_content):
-                self.logger.info(f"Found working RSS feed at: {self.current_url}")
-                return self.current_url
-            
-            # Ask LLM to navigate the page
-            navigation_result = self._ask_llm_to_navigate(page_content, failed_rss_url, source_info)
-            
-            if navigation_result["action"] == "found_rss_link":
-                # LLM found a direct RSS link
-                rss_url = navigation_result["url"]
-                full_rss_url = urljoin(self.current_url, rss_url)
-                
-                self.logger.info(f"LLM found RSS link: {full_rss_url}")
-                
-                # Test the RSS link
-                if self._test_rss_url(full_rss_url):
-                    return full_rss_url
-                else:
-                    self.logger.warning(f"LLM-suggested RSS URL failed: {full_rss_url}")
-                    continue
-                    
-            elif navigation_result["action"] == "navigate_to_page":
-                # LLM wants to navigate to another page
-                next_url = navigation_result["url"]
-                full_next_url = urljoin(self.current_url, next_url)
-                
-                if full_next_url in self.navigation_history:
-                    self.logger.warning(f"Already visited {full_next_url}, avoiding loop")
-                    break
-                    
-                self.logger.info(f"LLM navigating to: {full_next_url}")
-                self.current_url = full_next_url
-                self.navigation_history.append(full_next_url)
-                continue
-                
-            elif navigation_result["action"] == "no_rss_found":
-                self.logger.info("LLM could not find RSS feed on this page")
-                break
-                
-            else:
-                self.logger.warning(f"Unknown LLM action: {navigation_result['action']}")
-                break
-        
-        self.logger.warning(f"Failed to find working RSS feed for {failed_rss_url}")
-        return None
-    
-    def find_articles_on_page(self, page_url: str, source_info: Dict[str, Any]) -> List[Dict[str, str]]:
-        """
-        Ask LLM to find political articles on a webpage
-        
-        Returns:
-            List of {"title": "...", "url": "..."} dictionaries
-        """
-        self.logger.info(f"LLM finding articles on: {page_url}")
-        
-        try:
-            response = self.session.get(page_url, timeout=30)
-            if response.status_code != 200:
-                return []
-                
-            page_content = response.text
-            
-        except Exception as e:
-            self.logger.error(f"Failed to fetch {page_url}: {e}")
-            return []
-        
-        # Ask LLM to identify articles
-        articles = self._ask_llm_to_find_articles(page_content, page_url, source_info)
-        
-        # Convert relative URLs to absolute
-        result = []
-        for article in articles:
-            full_url = urljoin(page_url, article["url"])
-            result.append({
-                "title": article["title"],
-                "url": full_url
-            })
-        
-        self.logger.info(f"LLM found {len(result)} articles on {page_url}")
-        return result
-    
-    def _is_rss_content(self, content: str) -> bool:
-        """Check if content is actually RSS/XML"""
-        content_lower = content.lower().strip()
-        return (
-            content_lower.startswith('<?xml') or
-            '<rss' in content_lower or
-            '<feed' in content_lower or
-            'application/rss+xml' in content_lower
-        )
-    
-    def _test_rss_url(self, url: str) -> bool:
-        """Test if a URL returns valid RSS content"""
-        try:
-            response = self.session.get(url, timeout=15)
-            if response.status_code == 200:
-                return self._is_rss_content(response.text)
-        except:
-            pass
-        return False
-    
-    def _ask_llm_to_navigate(self, page_content: str, original_rss_url: str, source_info: Dict[str, Any]) -> Dict[str, str]:
-        """
-        Ask LLM to analyze a webpage and decide how to navigate to find RSS feeds
-        """
-        # Simplify the page content for the LLM
-        soup = BeautifulSoup(page_content, 'html.parser')
-        
-        # Remove scripts, styles, and other noise
-        for tag in soup(["script", "style", "nav", "footer", "header"]):
-            tag.decompose()
-        
-        # Extract key links that might lead to RSS feeds
-        links = []
-        for link in soup.find_all('a', href=True)[:50]:  # Limit to 50 links
-            href = link['href']
-            text = link.get_text(strip=True)
-            
-            # Focus on links that might be RSS-related
-            if any(keyword in (href + ' ' + text).lower() for keyword in 
-                   ['rss', 'feed', 'xml', 'syndication', 'subscribe', 'news']):
-                links.append({
-                    "text": text[:100],
-                    "url": href,
-                    "title": link.get('title', '')
-                })
-        
-        # Get page title and key text
-        title = soup.find('title')
-        title_text = title.get_text() if title else "No title"
-        
-        # Get some body text for context
-        body_text = soup.get_text()[:1000] if soup.get_text() else ""
-        
-        prompt = f"""You are a web user trying to find the RSS feed for a news website.
-
-ORIGINAL RSS URL THAT FAILED: {original_rss_url}
-CURRENT PAGE: {self.current_url}
-SOURCE TYPE: {source_info.get('bias', 'unknown')} news source
-
-PAGE TITLE: {title_text}
-
-KEY LINKS FOUND:
-{json.dumps(links, indent=2)}
-
-PAGE PREVIEW:
-{body_text[:500]}...
-
-TASK: You need to find the actual RSS/XML feed for political news from this source.
-
-Look for:
-1. Direct RSS/XML feed links (usually end in .xml, .rss, or contain "feed")
-2. Links to "RSS", "Feeds", "Syndication" pages
-3. Politics/Government section links that might have their own feeds
-
-RESPOND WITH JSON:
-{{
-    "action": "found_rss_link|navigate_to_page|no_rss_found",
-    "url": "exact_url_from_links_above",
-    "reasoning": "brief explanation of why you chose this link"
-}}
-
-If you found a direct RSS link, use "found_rss_link".
-If you need to navigate to another page first, use "navigate_to_page".
-If no RSS options are visible, use "no_rss_found".
-"""
-        
-        try:
-            response = self.llm.complete(prompt, temperature=0.2, max_tokens=300)
-            
-            # Handle response format
-            if isinstance(response, dict):
-                if 'choices' in response and response['choices']:
-                    response_text = response['choices'][0].get('text', '')
-                elif 'error' in response:
-                    self.logger.error(f"LLM error: {response['error']}")
-                    return {"action": "no_rss_found", "url": "", "reasoning": "LLM error"}
-                else:
-                    response_text = str(response)
-            else:
-                response_text = str(response)
-            
-            # Extract JSON from response
-            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
-            if json_match:
-                result = json.loads(json_match.group())
-                self.logger.info(f"LLM navigation decision: {result['action']} - {result.get('reasoning', '')}")
-                return result
-            else:
-                self.logger.warning("LLM response did not contain valid JSON")
-                return {"action": "no_rss_found", "url": "", "reasoning": "Invalid response format"}
-                
-        except Exception as e:
-            self.logger.error(f"Error asking LLM to navigate: {e}")
-            return {"action": "no_rss_found", "url": "", "reasoning": f"Error: {e}"}
-    
-    def _ask_llm_to_find_articles(self, page_content: str, page_url: str, source_info: Dict[str, Any]) -> List[Dict[str, str]]:
-        """
-        Ask LLM to find political article links on a webpage
-        """
-        soup = BeautifulSoup(page_content, 'html.parser')
-        
-        # Remove noise
-        for tag in soup(["script", "style", "nav", "footer", "header", "sidebar"]):
-            tag.decompose()
-        
-        # Extract potential article links
-        article_links = []
-        for link in soup.find_all('a', href=True)[:100]:  # Limit to 100 links
-            href = link['href']
-            text = link.get_text(strip=True)
-            
-            # Filter for substantial text that could be article titles
-            if text and len(text) > 20 and len(text) < 200:
-                article_links.append({
-                    "text": text,
-                    "url": href
-                })
-        
-        if not article_links:
-            return []
-        
-        prompt = f"""You are looking for POLITICAL/GOVERNMENT news articles on this webpage.
-
-WEBPAGE: {page_url}
-SOURCE TYPE: {source_info.get('bias', 'unknown')} news source
-
-POTENTIAL ARTICLE LINKS:
-{json.dumps(article_links[:30], indent=2)}
-
-TASK: Identify which links are political/government news articles published after January 20, 2025.
-
-Look for articles about:
-- Politics, elections, campaigns
-- Government actions, policies, regulations  
-- Congress, Senate, House activities
-- Executive branch, White House, President
-- Supreme Court, federal courts
-- Political figures (Trump, Biden, etc.)
-- Government agencies (FBI, EPA, etc.)
-
-IGNORE:
-- Sports, entertainment, lifestyle articles
-- Pure business/tech news (unless government-related)
-- Opinion/editorial pieces
-- Old articles (before Jan 2025)
-
-RESPOND WITH JSON ARRAY:
-[
-    {{
-        "title": "exact_title_text",
-        "url": "exact_url_from_above",
-        "reasoning": "why this is political news"
-    }}
-]
-
-Maximum 10 articles. Only include articles you're confident are political/government news.
-"""
-        
-        try:
-            response = self.llm.complete(prompt, temperature=0.2, max_tokens=800)
-            
-            # Handle response format
-            if isinstance(response, dict):
-                if 'choices' in response and response['choices']:
-                    response_text = response['choices'][0].get('text', '')
-                else:
-                    response_text = str(response)
-            else:
-                response_text = str(response)
-            
-            # Extract JSON array from response
-            json_match = re.search(r'\[.*\]', response_text, re.DOTALL)
-            if json_match:
-                articles = json.loads(json_match.group())
-                return articles if isinstance(articles, list) else []
-            else:
-                self.logger.warning("LLM article response did not contain valid JSON array")
-                return []
-                
-        except Exception as e:
-            self.logger.error(f"Error asking LLM to find articles: {e}")
-            return []
-
-
-class ContentCollector:
-    """
-    Collector for gathering political content from RSS feeds with LLM-guided fallback
+    Enhanced collector for historical political content with advanced discovery mechanisms.
+    Supports both RSS sources and direct article links with intelligent run behavior.
     """
 
-    def __init__(self, config: Dict[str, Any], document_repository=None):
-        """
-        Initialize with configuration and optional document repository.
-        """
+    def __init__(self, config: Dict[str, Any], document_repository=None, base_dir: str = "data"):
+        """Initialize the historical content collector."""
         self.config = config
         self.document_repository = document_repository
+        self.base_dir = base_dir
         
         # Extract configuration
         cc = config.get("content_collection", {})
-        self.article_limit = cc.get("article_limit", 5)
+        self.article_limit = cc.get("article_limit", 50)
         self.sources = cc.get("sources", [])
-        self.max_workers = cc.get("max_workers", 2)
+        self.max_workers = cc.get("max_workers", 3)
         self.request_timeout = cc.get("request_timeout", 45)
         self.retry_count = cc.get("retry_count", 3)
         self.bypass_cloudflare = cc.get("bypass_cloudflare", True) and CLOUDSCRAPER_AVAILABLE
-        self.delay_between_requests = cc.get("delay_between_requests", 5.0)
+        self.delay_between_requests = cc.get("delay_between_requests", 2.0)
         self.use_llm_fallback = cc.get("use_llm_navigation_fallback", True)
+        
+        # Run state management
+        self.last_run_file = os.path.join(base_dir, "last_run_date.txt")
+        self.collection_state_file = os.path.join(base_dir, "collection_state.json")
+        self.inauguration_day = datetime(2025, 1, 20)
+        
+        # Ensure base directory exists
+        os.makedirs(base_dir, exist_ok=True)
+        
+        # Historical collection specific settings
+        hc = cc.get("historical_collection", {})
+        self.enable_archive_discovery = hc.get("enable_archive_discovery", True)
+        self.enable_pagination = hc.get("enable_pagination", True)
+        self.enable_sitemap_crawling = hc.get("enable_sitemap_crawling", True)
+        self.max_pages_per_source = hc.get("max_pages_per_source", 50)
+        self.archive_services = hc.get("archive_services", [
+            'web.archive.org',
+            'archive.today'
+        ])
         
         # Political/governmental keywords for filtering
         self.govt_keywords = set(kw.lower() for kw in cc.get("govt_keywords", [
-            # Executive branch
             "executive order", "administration", "white house", "president", "presidential",
-            "cabinet", "secretary", "department of", "federal agency", "oval office",
-            "executive action", "executive branch", "commander in chief", "veto",
-            
-            # Legislative branch
             "congress", "congressional", "senate", "senator", "house of representatives",
-            "representative", "legislation", "bill", "law", "act", "resolution",
-            "committee", "subcommittee", "speaker of the house", "majority leader",
-            "minority leader", "filibuster", "caucus", "legislative", "lawmaker",
-            
-            # Judicial branch
-            "supreme court", "federal court", "appeals court", "district court",
-            "judge", "justice", "judicial", "ruling", "decision", "opinion",
-            "constitutional", "unconstitutional", "precedent", "litigation",
-            
-            # Elections and democracy
-            "election", "campaign", "candidate", "voter", "voting", "ballot",
-            "primary", "caucus", "electoral", "democracy", "democratic", "republic",
-            "poll", "polling", "constituency", "redistricting", "gerrymandering",
-            
-            # Policy and governance
-            "policy", "regulation", "regulatory", "federal", "government", "governance",
-            "politics", "political", "partisan", "bipartisan", "nonpartisan",
-            "public policy", "domestic policy", "foreign policy", "national security",
-            
-            # Specific agencies and departments
-            "state department", "defense department", "pentagon", "justice department",
-            "treasury", "homeland security", "education department", "energy department",
-            "fbi", "cia", "nsa", "dhs", "doj", "epa", "fda", "cdc", "fcc",
-            
-            # Political parties and movements
-            "republican", "democrat", "democratic", "gop", "conservative", "liberal",
-            "progressive", "libertarian", "independent", "tea party", "maga",
-            
-            # Key political figures (titles)
-            "governor", "mayor", "attorney general", "chief justice", "ambassador",
-            "diplomat", "lobbyist", "spokesman", "spokeswoman", "spokesperson",
-            
-            # Government actions
-            "impeachment", "nomination", "confirmation", "appointment", "investigation",
-            "hearing", "testimony", "subpoena", "executive privilege", "pardon",
-            "sanction", "treaty", "trade deal", "tariff", "embargo",
-            
-            # Constitutional terms
-            "constitution", "amendment", "bill of rights", "civil rights", "civil liberties",
-            "first amendment", "second amendment", "constitutional crisis",
-            
-            # Budget and fiscal
-            "budget", "appropriation", "spending", "deficit", "debt ceiling",
-            "government shutdown", "continuing resolution", "omnibus", "reconciliation",
-            
-            # Other relevant terms
-            "whistleblower", "classified", "declassified", "national interest",
-            "state of the union", "executive session", "recess appointment",
-            "confirmation hearing", "oversight", "accountability", "transparency"
+            "supreme court", "federal court", "federal", "government", "politics", "political",
+            "election", "campaign", "democracy", "constitution", "biden", "trump", "harris"
         ]))
         
         # User agents rotation
         self.user_agents = [
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0',
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.59',
-        ]
-        
-        # URLs to skip (problematic or non-political)
-        self.skip_url_patterns = [
-            r'/entertainment/', r'/music/', r'/sports/', r'/lifestyle/',
-            r'/style/', r'/food/', r'/travel/', r'/celebrity/', r'/culture/',
-            r'/arts/', r'/movies/', r'/tv/', r'/gaming/', r'/technology/gadgets/',
-            r'/health/personal/', r'/real-estate/', r'/cars/', r'diddy', r'sean-combs'
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
         ]
         
         # Initialize logger
-        self.logger = logging.getLogger("ContentCollector")
+        self.logger = logging.getLogger("HistoricalContentCollector")
         
-        # Initialize failure tracker
-        self._failure_tracker = {}
+        # Track collection statistics
+        self.collection_stats = {
+            'total_articles': 0,
+            'articles_by_date': {},
+            'articles_by_source': {},
+            'failed_urls': [],
+            'archive_discoveries': 0,
+            'pagination_discoveries': 0,
+            'sitemap_discoveries': 0
+        }
         
-        # Initialize session objects
+        # Initialize sessions
         self._init_sessions()
         
-        # Initialize LLM navigator
+        # Initialize LLM navigator if available
         self.llm_navigator = None
-        self.llm_provider = None
-        
-        # Check for LLM availability at startup
         self._check_llm_availability()
-        
-    def _check_llm_availability(self):
-        """Check LLM availability at startup and initialize if available"""
-        if not self.use_llm_fallback:
-            self.logger.info("LLM fallback disabled in configuration")
-            return
-            
-        self.logger.info("Checking LLM availability for navigation fallback...")
-        
-        try:
-            # Try to initialize LLM provider using the existing provider system
-            llm_provider = self._initialize_llm_provider()
-            
-            if llm_provider:
-                # Test the connection
-                test_response = llm_provider.complete("Test", max_tokens=10)
-                if not test_response.get("error"):
-                    self.llm_provider = llm_provider
-                    self.llm_navigator = LLMWebNavigator(self.llm_provider, self.session)
-                    self.logger.info("✓ LLM navigation initialized successfully")
-                    return
-                else:
-                    self.logger.warning(f"LLM provider test failed: {test_response.get('error')}")
-            else:
-                self.logger.info("✗ No LLM provider available")
-        
-        except Exception as e:
-            self.logger.error(f"Error checking LLM availability: {e}")
-        
-        self.logger.warning("✗ LLM navigation not available - will use traditional methods only")
-    
-    def _initialize_llm_provider(self):
-        """Initialize LLM provider using the existing provider system"""
-        try:
-            import providers
-            
-            # Get LLM configuration
-            config = self.config.copy()
-            llm_config = config.get("llm_provider", {})
-            
-            # Check if LM Studio is available by trying to connect
-            lm_studio_host = llm_config.get("host", "http://localhost:1234")
-            self.logger.info(f"Checking LM Studio connection at {lm_studio_host}...")
-            
-            lm_studio_available = False
-            try:
-                import requests
-                response = requests.get(f"{lm_studio_host}/v1/models", timeout=5)
-                lm_studio_available = response.status_code == 200
-            except Exception as e:
-                self.logger.debug(f"LM Studio connection check failed: {e}")
-            
-            if lm_studio_available:
-                self.logger.info("✓ LM Studio available")
-            else:
-                self.logger.info("✗ LM Studio not available")
-            
-            # If no API key and LM Studio isn't available, prompt for Anthropic credentials
-            if not llm_config.get("api_key") and not lm_studio_available:
-                self.logger.info("LM Studio not available, prompting for Anthropic credentials...")
-                try:
-                    api_key, model = self._get_anthropic_credentials_secure()
-                    if api_key:
-                        # Update the config for this session
-                        config["llm_provider"]["type"] = "anthropic"
-                        config["llm_provider"]["api_key"] = api_key
-                        config["llm_provider"]["model"] = model
-                        self.logger.info("✓ Anthropic credentials provided")
-                    else:
-                        self.logger.info("✗ No credentials provided")
-                        return None
-                except Exception as e:
-                    self.logger.warning(f"Error getting credentials: {e}")
-                    return None
-            
-            # Use the existing provider initialization function
-            return providers.initialize_llm_provider(config)
-            
-        except ImportError as e:
-            self.logger.warning(f"Provider module not available: {e}")
-            return None
-        except Exception as e:
-            self.logger.error(f"Error initializing LLM provider: {e}")
-            return None
-    
-    def _get_anthropic_credentials_secure(self) -> tuple[str, str]:
-        """
-        Securely prompt the user for Anthropic API credentials.
-        Returns a tuple of (api_key, model_name)
-        """
-        import getpass
-        
-        print("\nLM Studio server is not available.")
-        print("Falling back to Anthropic API...\n")
-        
-        # Use getpass to hide the API key input
-        try:
-            api_key = getpass.getpass("Enter your Anthropic API key (input will be hidden): ").strip()
-        except KeyboardInterrupt:
-            print("\nOperation cancelled.")
-            return "", ""
-        except Exception as e:
-            print(f"Error reading API key: {e}")
-            return "", ""
-        
-        if not api_key:
-            print("No API key provided. Continuing without LLM capabilities.")
-            return "", ""
-            
-        model = input("Enter Anthropic model (default: claude-3-haiku-20240307): ").strip()
-        if not model or model == "3" or not model.startswith("claude-"):
-            model = "claude-3-haiku-20240307"
-            print(f"Using default model: {model}")
-            
-        return api_key, model
-                
+
     def _init_sessions(self):
-        """Initialize HTTP sessions for requests with enhanced stealth."""
+        """Initialize HTTP sessions for requests."""
         self.session = requests.Session()
         
         # Enhanced retry strategy
         retry_strategy = Retry(
-            total=3,
+            total=self.retry_count,
             backoff_factor=2,
             status_forcelist=[429, 500, 502, 503, 504, 522, 524],
             allowed_methods=["HEAD", "GET", "OPTIONS"]
@@ -625,29 +163,24 @@ class ContentCollector:
         self.session.mount("http://", adapter)
         self.session.mount("https://", adapter)
         
-        # Rotate user agent for each session
+        # Set default headers
         self._rotate_session_headers()
         
         # Initialize cloudscraper if available
         if self.bypass_cloudflare:
             try:
                 self.cloudscraper_session = cloudscraper.create_scraper(
-                    browser={
-                        'browser': 'firefox',
-                        'platform': 'linux',
-                        'mobile': False,
-                        'desktop': True
-                    },
-                    delay=10,
+                    browser={'browser': 'firefox', 'platform': 'linux'},
+                    delay=5,
                     debug=False
                 )
                 self.logger.info("Cloudflare bypass initialized")
             except Exception as e:
                 self.logger.error(f"Error initializing Cloudflare bypass: {e}")
                 self.bypass_cloudflare = False
-                
+
     def _rotate_session_headers(self):
-        """Rotate session headers for stealth"""
+        """Rotate session headers for stealth."""
         user_agent = random.choice(self.user_agents)
         
         self.session.headers.update({
@@ -658,133 +191,674 @@ class ContentCollector:
             'DNT': '1',
             'Connection': 'keep-alive',
             'Upgrade-Insecure-Requests': '1',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1',
-            'Cache-Control': 'max-age=0',
-            'Pragma': 'no-cache'
+            'Cache-Control': 'max-age=0'
         })
 
-    def _should_skip_url(self, url: str) -> bool:
-        """Check if URL should be skipped based on patterns."""
-        url_lower = url.lower()
-        for pattern in self.skip_url_patterns:
-            if re.search(pattern, url_lower):
-                self.logger.info(f"Skipping non-political URL pattern '{pattern}': {url}")
-                return True
-        return False
-    
-    def _track_collection_result(self, url: str, success: bool):
-        """Track success/failure rates by domain"""
-        domain = urlparse(url).netloc.lower()
-        
-        if domain not in self._failure_tracker:
-            self._failure_tracker[domain] = {'attempts': 0, 'failures': 0}
-        
-        self._failure_tracker[domain]['attempts'] += 1
-        if not success:
-            self._failure_tracker[domain]['failures'] += 1
+    def _check_llm_availability(self):
+        """Check if LLM is available for navigation fallback."""
+        # Simplified check - in real implementation, this would check providers
+        self.logger.info("LLM navigation checking skipped for historical collector")
 
-    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def add_source(self, source_data: Dict[str, Any]) -> bool:
         """
-        Main entry point: collect and process content from sources.
-        """
-        # Extract configuration from input
-        sources = input_data.get("sources", self.sources)
-        limit = input_data.get("limit", self.article_limit)
-        doc_repo = input_data.get("document_repository", self.document_repository)
-        store_docs = input_data.get("store_documents", doc_repo is not None)
+        Add a new source to the configuration.
         
-        # Parse date strings if provided
-        start_date = input_data.get("start_date")
-        end_date = input_data.get("end_date")
-        
-        if isinstance(start_date, str):
-            try:
-                start_date = datetime.fromisoformat(start_date)
-            except ValueError:
-                self.logger.warning(f"Invalid start_date format: {start_date}")
-                start_date = None
+        Args:
+            source_data: Source configuration dictionary with keys:
+                - url: RSS feed URL or direct article URL
+                - type: 'rss', 'article', or 'auto' (auto-detect)
+                - bias: bias label (center, left, right, etc.)
+                - name: optional display name
+                - enabled: whether source is active (default: True)
                 
-        if isinstance(end_date, str):
-            try:
-                end_date = datetime.fromisoformat(end_date)
-            except ValueError:
-                self.logger.warning(f"Invalid end_date format: {end_date}")
-                end_date = None
+        Returns:
+            True if source was added successfully
+        """
+        try:
+            # Validate required fields
+            if not source_data.get("url"):
+                self.logger.error("Source URL is required")
+                return False
+            
+            url = source_data["url"].strip()
+            source_type = source_data.get("type", "auto").lower()
+            
+            # Auto-detect source type if needed
+            if source_type == "auto":
+                source_type = self._detect_source_type(url)
+            
+            # Create source entry
+            new_source = {
+                "url": url,
+                "type": source_type,
+                "bias": source_data.get("bias", "unknown"),
+                "name": source_data.get("name", self._extract_source_name(url)),
+                "enabled": source_data.get("enabled", True),
+                "added_at": datetime.now().isoformat(),
+                "collection_stats": {
+                    "total_articles": 0,
+                    "last_successful_collection": None,
+                    "consecutive_failures": 0
+                }
+            }
+            
+            # Check if source already exists
+            existing_source = None
+            for i, source in enumerate(self.sources):
+                if source.get("url") == url:
+                    existing_source = i
+                    break
+            
+            if existing_source is not None:
+                # Update existing source
+                self.sources[existing_source].update(new_source)
+                self.logger.info(f"Updated existing source: {url}")
+            else:
+                # Add new source
+                self.sources.append(new_source)
+                self.logger.info(f"Added new source: {url} (type: {source_type})")
+            
+            # Save updated configuration
+            self._save_sources_config()
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Error adding source: {e}")
+            return False
+
+    def _detect_source_type(self, url: str) -> str:
+        """
+        Auto-detect whether URL is RSS feed or direct article.
         
-        self.logger.info(f"Starting collection from {len(sources)} sources, limit {limit}")
-        if self.llm_navigator:
-            self.logger.info("LLM navigation fallback available")
+        Args:
+            url: URL to analyze
+            
+        Returns:
+            'rss' or 'article'
+        """
+        url_lower = url.lower()
+        
+        # Common RSS indicators
+        rss_indicators = [
+            '/rss', '/feed', '.rss', '.xml', '/atom',
+            'feed.xml', 'rss.xml', 'atom.xml'
+        ]
+        
+        if any(indicator in url_lower for indicator in rss_indicators):
+            return "rss"
+        
+        # Try to fetch and check content type
+        try:
+            response = self.session.head(url, timeout=10)
+            content_type = response.headers.get('content-type', '').lower()
+            
+            if any(ct in content_type for ct in ['xml', 'rss', 'atom']):
+                return "rss"
+        except:
+            pass
+        
+        # Default to article if not clearly RSS
+        return "article"
+
+    def _extract_source_name(self, url: str) -> str:
+        """Extract a display name from URL."""
+        try:
+            domain = urlparse(url).netloc
+            # Remove www. and common subdomains
+            domain = re.sub(r'^(www\.|feeds\.|rss\.)', '', domain)
+            # Capitalize first letter
+            return domain.replace('.com', '').replace('.org', '').replace('.net', '').title()
+        except:
+            return "Unknown Source"
+
+    def _save_sources_config(self):
+        """Save current sources configuration."""
+        try:
+            # Update the main config
+            self.config["content_collection"]["sources"] = self.sources
+            
+            # Save to file if config has a file path
+            config_file = getattr(self, 'config_file', 'config.json')
+            if os.path.exists(config_file):
+                with open(config_file, 'w', encoding='utf-8') as f:
+                    json.dump(self.config, f, indent=2, ensure_ascii=False)
+                self.logger.info(f"Saved sources configuration to {config_file}")
+        except Exception as e:
+            self.logger.error(f"Error saving sources configuration: {e}")
+
+    def get_collection_mode(self, force_mode: Optional[str] = None) -> Tuple[str, datetime, datetime]:
+        """
+        Determine collection mode and date range based on run history.
+        
+        Args:
+            force_mode: Force specific mode ('first_run', 'incremental', 'full')
+            
+        Returns:
+            Tuple of (mode, start_date, end_date)
+        """
+        current_time = datetime.now()
+        
+        if force_mode:
+            if force_mode == 'first_run':
+                return self._get_first_run_dates(current_time)
+            elif force_mode == 'incremental':
+                return self._get_incremental_dates(current_time)
+            elif force_mode == 'full':
+                return self._get_full_collection_dates(current_time)
+        
+        # Auto-detect mode based on state
+        if self._is_first_run():
+            return self._get_first_run_dates(current_time)
         else:
-            self.logger.info("LLM navigation fallback not available")
+            return self._get_incremental_dates(current_time)
+
+    def _is_first_run(self) -> bool:
+        """Check if this is the first run of the collector."""
+        return not os.path.exists(self.last_run_file)
+
+    def _get_first_run_dates(self, current_time: datetime) -> Tuple[str, datetime, datetime]:
+        """
+        Get date range for first run - wide net approach.
+        Collects everything available, then filters to post-inauguration.
+        """
+        # Cast wide net for RSS feeds (they often have limited history)
+        start_date = datetime(2025, 1, 1)
+        end_date = current_time
         
-        # Initialize results
+        self.logger.info("FIRST RUN: Collecting wide date range, will filter to post-inauguration")
+        return ("first_run", start_date, end_date)
+
+    def _get_incremental_dates(self, current_time: datetime) -> Tuple[str, datetime, datetime]:
+        """
+        Get date range for incremental run - since last successful collection.
+        """
+        try:
+            if os.path.exists(self.last_run_file):
+                with open(self.last_run_file, 'r') as f:
+                    last_run_str = f.read().strip()
+                    last_run = datetime.fromisoformat(last_run_str)
+                    
+                    # Small overlap to avoid missing articles
+                    start_date = last_run - timedelta(hours=1)
+                    end_date = current_time
+                    
+                    self.logger.info(f"INCREMENTAL RUN: Collecting since {start_date.isoformat()}")
+                    return ("incremental", start_date, end_date)
+        except Exception as e:
+            self.logger.warning(f"Error reading last run date: {e}")
+        
+        # Fallback to last 24 hours
+        start_date = current_time - timedelta(days=1)
+        end_date = current_time
+        
+        self.logger.info("INCREMENTAL RUN (fallback): Collecting last 24 hours")
+        return ("incremental", start_date, end_date)
+
+    def _get_full_collection_dates(self, current_time: datetime) -> Tuple[str, datetime, datetime]:
+        """Get date range for full collection - everything from inauguration."""
+        start_date = self.inauguration_day
+        end_date = current_time
+        
+        self.logger.info("FULL RUN: Collecting everything since inauguration")
+        return ("full", start_date, end_date)
+
+    def filter_articles_by_inauguration(self, articles: List[Dict[str, Any]], mode: str) -> List[Dict[str, Any]]:
+        """
+        Filter articles based on inauguration day and collection mode.
+        
+        Args:
+            articles: List of collected articles
+            mode: Collection mode ('first_run', 'incremental', 'full')
+            
+        Returns:
+            Filtered articles list
+        """
+        if mode != 'first_run':
+            return articles  # No filtering needed for incremental/full runs
+        
+        filtered_articles = []
+        filtered_count = 0
+        
+        for article in articles:
+            article_date = None
+            
+            # Try to parse publication date
+            if article.get("published"):
+                try:
+                    article_date = datetime.fromisoformat(article["published"].replace('Z', '+00:00').replace('+00:00', ''))
+                except (ValueError, TypeError):
+                    # If we can't parse date, include the article to be safe
+                    filtered_articles.append(article)
+                    continue
+            
+            # Filter based on inauguration day for first run
+            if not article_date or article_date >= self.inauguration_day:
+                filtered_articles.append(article)
+            else:
+                filtered_count += 1
+        
+        if filtered_count > 0:
+            self.logger.info(f"FIRST RUN: Filtered out {filtered_count} articles before inauguration day")
+        
+        return filtered_articles
+
+    def update_collection_state(self, articles: List[Dict[str, Any]], mode: str):
+        """
+        Update collection state tracking.
+        
+        Args:
+            articles: Successfully collected articles
+            mode: Collection mode used
+        """
+        try:
+            current_time = datetime.now()
+            
+            # Find most recent article date
+            latest_article_date = None
+            for article in articles:
+                if article.get("published"):
+                    try:
+                        article_date = datetime.fromisoformat(article["published"].replace('Z', '+00:00').replace('+00:00', ''))
+                        if latest_article_date is None or article_date > latest_article_date:
+                            latest_article_date = article_date
+                    except (ValueError, TypeError):
+                        continue
+            
+            # Update last run time
+            # Use latest article date + small buffer, or current time if no articles
+            if latest_article_date:
+                next_start_time = latest_article_date + timedelta(seconds=1)
+            else:
+                next_start_time = current_time
+            
+            with open(self.last_run_file, 'w') as f:
+                f.write(next_start_time.isoformat())
+            
+            # Update collection state
+            state = {
+                "last_run": current_time.isoformat(),
+                "last_mode": mode,
+                "articles_collected": len(articles),
+                "latest_article_date": latest_article_date.isoformat() if latest_article_date else None,
+                "next_start_time": next_start_time.isoformat()
+            }
+            
+            with open(self.collection_state_file, 'w') as f:
+                json.dump(state, f, indent=2)
+            
+            self.logger.info(f"Updated collection state: next run will start from {next_start_time.isoformat()}")
+            
+        except Exception as e:
+            self.logger.error(f"Error updating collection state: {e}")
+
+    def collect_from_direct_article(self, article_url: str, source_config: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """
+        Collect content from a direct article URL.
+        
+        Args:
+            article_url: Direct URL to article
+            source_config: Source configuration
+            
+        Returns:
+            Article data or None if failed
+        """
+        try:
+            self.logger.info(f"Collecting direct article: {article_url}")
+            
+            # Extract article content
+            content, article_data = self._extract_article_content(article_url)
+            
+            if not content or not self._is_valid_content(content):
+                self.logger.warning(f"Failed to extract valid content from: {article_url}")
+                return None
+            
+            # Check if content is government-related
+            title = article_data.get("title", "")
+            if not self._is_government_related(title, content[:1000]):
+                self.logger.info(f"Article not government-related: {article_url}")
+                return None
+            
+            # Create article entry
+            article = {
+                "title": title or "Direct Article",
+                "url": article_url,
+                "source": source_config.get("name", self._extract_source_name(article_url)),
+                "bias_label": source_config.get("bias", "unknown"),
+                "published": article_data.get("published", datetime.now().isoformat()),
+                "content": content,
+                "authors": article_data.get("authors", []),
+                "top_image": article_data.get("top_image"),
+                "collection_method": "direct_article",
+                "collected_at": datetime.now().isoformat()
+            }
+            
+            return article
+            
+        except Exception as e:
+            self.logger.error(f"Error collecting direct article {article_url}: {e}")
+            return None
+
+    def collect_content(self, force_mode: Optional[str] = None, custom_date_range: Optional[Tuple[datetime, datetime]] = None) -> Dict[str, Any]:
+        """
+        Main collection method with intelligent run behavior.
+        
+        Args:
+            force_mode: Force specific collection mode
+            custom_date_range: Override date range (start_date, end_date)
+            
+        Returns:
+            Collection results
+        """
+        # Determine collection strategy
+        if custom_date_range:
+            mode = "custom"
+            start_date, end_date = custom_date_range
+            self.logger.info(f"CUSTOM RUN: Collecting from {start_date} to {end_date}")
+        else:
+            mode, start_date, end_date = self.get_collection_mode(force_mode)
+        
+        self.logger.info(f"Starting collection - Mode: {mode}, Range: {start_date} to {end_date}")
+        
+        # Reset statistics
+        self.collection_stats = {
+            'total_articles': 0,
+            'articles_by_date': {},
+            'articles_by_source': {},
+            'failed_urls': [],
+            'archive_discoveries': 0,
+            'pagination_discoveries': 0,
+            'sitemap_discoveries': 0,
+            'direct_articles': 0
+        }
+        
         all_articles = []
         document_ids = []
         successful_sources = 0
         failed_sources = 0
         
-        # Process sources sequentially with delays
-        for idx, source in enumerate(sources):
-            # Rotate headers periodically
-            if idx % 5 == 0:
-                self._rotate_session_headers()
-            
-            source_type = source.get("type", "rss").lower()
-            
-            try:
-                # Try traditional collection first
-                articles = []
+        for source in self.sources:
+            if not source.get("enabled", True):
+                self.logger.info(f"Skipping disabled source: {source.get('url')}")
+                continue
                 
-                if source_type != "rss":
+            try:
+                source_articles = []
+                source_type = source.get("type", "rss").lower()
+                
+                if source_type == "rss":
+                    # Collect from RSS feed
+                    source_articles = self._collect_from_rss_with_date_range(source, start_date, end_date)
+                    
+                elif source_type == "article":
+                    # Collect from direct article URL
+                    article = self.collect_from_direct_article(source.get("url"), source)
+                    if article:
+                        source_articles = [article]
+                        self.collection_stats['direct_articles'] += 1
+                
+                else:
                     self.logger.warning(f"Unknown source type: {source_type}")
                     continue
                 
-                articles = self._collect_from_rss(source, limit, start_date, end_date)
-                
-                # Track collection result
-                url = source.get("url", "")
-                self._track_collection_result(url, bool(articles))
+                if source_articles:
+                    successful_sources += 1
+                    self.collection_stats['articles_by_source'][source.get('name', source.get('url'))] = len(source_articles)
+                    
+                    # Apply inauguration day filtering for first run
+                    if mode == 'first_run':
+                        source_articles = self.filter_articles_by_inauguration(source_articles, mode)
+                    
+                    # Generate document IDs and store
+                    for article in source_articles:
+                        article["id"] = self._generate_document_id(article)
                         
-                # Skip if no articles were found
-                if not articles:
-                    self.logger.warning(f"No articles found from source: {source.get('url')}")
+                        # Store in document repository if available
+                        if self.document_repository:
+                            try:
+                                doc_id = self.document_repository.store_document(
+                                    article["content"],
+                                    self._create_metadata(article)
+                                )
+                                document_ids.append(doc_id)
+                                article["document_id"] = doc_id
+                            except Exception as e:
+                                self.logger.error(f"Error storing document: {e}")
+                        
+                        # Update date statistics
+                        if article.get("published"):
+                            try:
+                                pub_date = datetime.fromisoformat(article["published"].replace('Z', '+00:00').replace('+00:00', ''))
+                                date_key = pub_date.date().isoformat()
+                                self.collection_stats['articles_by_date'][date_key] = \
+                                    self.collection_stats['articles_by_date'].get(date_key, 0) + 1
+                            except:
+                                pass
+                    
+                    all_articles.extend(source_articles)
+                    self.collection_stats['total_articles'] += len(source_articles)
+                    
+                    # Update source statistics
+                    source["collection_stats"]["total_articles"] += len(source_articles)
+                    source["collection_stats"]["last_successful_collection"] = datetime.now().isoformat()
+                    source["collection_stats"]["consecutive_failures"] = 0
+                
+                else:
                     failed_sources += 1
-                    continue
+                    source["collection_stats"]["consecutive_failures"] += 1
                 
-                # Generate document IDs
-                for article in articles:
-                    article["id"] = self._generate_document_id(article)
-                
-                # Store in document repository if available
-                if store_docs and doc_repo:
-                    for article in articles:
-                        try:
-                            doc_id = doc_repo.store_document(
-                                article["content"],
-                                self._create_metadata(article)
-                            )
-                            document_ids.append(doc_id)
-                            article["document_id"] = doc_id
-                        except Exception as e:
-                            self.logger.error(f"Error storing document: {e}")
-                
-                all_articles.extend(articles)
-                successful_sources += 1
-                
-                # Random delay between sources
-                delay = random.uniform(3, 8)
-                time.sleep(delay)
+                # Add delay between sources
+                time.sleep(random.uniform(1, 3))
                 
             except Exception as e:
                 self.logger.error(f"Error processing source {source.get('url')}: {e}")
-                self.logger.error(traceback.format_exc())
+                failed_sources += 1
+                source["collection_stats"]["consecutive_failures"] += 1
+        
+        # Update collection state for next run
+        if mode != "custom":  # Don't update state for custom runs
+            self.update_collection_state(all_articles, mode)
+        
+        # Save updated source configurations
+        self._save_sources_config()
+        
+        # Log collection statistics
+        self._log_collection_stats()
+        
+        return {
+            "articles": all_articles,
+            "document_ids": document_ids,
+            "status": {
+                "successful_sources": successful_sources,
+                "failed_sources": failed_sources,
+                "articles_collected": len(all_articles),
+                "collection_mode": mode,
+                "date_range": f"{start_date.isoformat()} to {end_date.isoformat()}",
+                "timestamp": datetime.now().isoformat(),
+                "collection_stats": self.collection_stats
+            }
+        }
+
+    def _collect_from_rss_with_date_range(self, source: Dict[str, Any], start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
+        """
+        Collect from RSS source with specific date range.
+        
+        Args:
+            source: Source configuration
+            start_date: Start date for collection
+            end_date: End date for collection
+            
+        Returns:
+            List of collected articles
+        """
+        url = source.get("url", "")
+        
+        try:
+            # Parse RSS feed
+            feed = feedparser.parse(url, agent=random.choice(self.user_agents))
+            
+            if not feed.get("entries"):
+                self.logger.warning(f"No entries found in RSS feed: {url}")
+                return []
+            
+            articles = []
+            
+            for entry in feed.entries:
+                try:
+                    title = entry.get("title", "").strip()
+                    link = entry.get("link", "").strip()
+                    
+                    if not link or not title:
+                        continue
+                    
+                    # Parse publication date
+                    pub_date = None
+                    if entry.get("published_parsed"):
+                        try:
+                            pub_date = datetime.fromtimestamp(time.mktime(entry.published_parsed))
+                            
+                            # Skip if outside date range
+                            if pub_date < start_date or pub_date > end_date:
+                                continue
+                        except Exception as e:
+                            self.logger.debug(f"Error parsing date for {title}: {e}")
+                            # If we can't parse date, include for first run, skip for incremental
+                            if start_date != datetime(2025, 1, 1):  # Not first run
+                                continue
+                    
+                    # Check for political content
+                    rss_content = entry.get("summary", "")
+                    if not self._is_government_related(title, rss_content):
+                        continue
+                    
+                    # Extract full article content
+                    content, article_data = self._extract_article_content(link, title, pub_date)
+                    
+                    if content and self._is_valid_content(content):
+                        article = {
+                            "title": title,
+                            "url": link,
+                            "source": source.get("name", urlparse(url).netloc),
+                            "bias_label": source.get("bias", "unknown"),
+                            "published": pub_date.isoformat() if pub_date else None,
+                            "content": content,
+                            "authors": article_data.get("authors", []),
+                            "top_image": article_data.get("top_image"),
+                            "collection_method": "rss",
+                            "collected_at": datetime.now().isoformat()
+                        }
+                        
+                        articles.append(article)
+                        
+                        if len(articles) >= self.article_limit:
+                            break
+                    
+                    # Rate limiting
+                    time.sleep(random.uniform(0.5, 1.5))
+                    
+                except Exception as e:
+                    self.logger.debug(f"Error processing RSS entry: {e}")
+                    continue
+            
+            return articles
+            
+        except Exception as e:
+            self.logger.error(f"Error collecting from RSS {url}: {e}")
+            return []
+        """
+        Collect historical content based on configuration.
+        
+        Args:
+            historical_config: Configuration for historical collection
+            
+        Returns:
+            Dictionary with collection results
+        """
+        self.logger.info(f"Starting historical collection from {historical_config.start_date} to {historical_config.end_date}")
+        
+        # Reset statistics
+        self.collection_stats = {
+            'total_articles': 0,
+            'articles_by_date': {},
+            'articles_by_source': {},
+            'failed_urls': [],
+            'archive_discoveries': 0,
+            'pagination_discoveries': 0,
+            'sitemap_discoveries': 0
+        }
+        
+        all_articles = []
+        document_ids = []
+        successful_sources = 0
+        failed_sources = 0
+        
+        # Calculate date chunks for efficient collection
+        date_chunks = self._calculate_date_chunks(historical_config)
+        
+        for source in self.sources:
+            try:
+                self.logger.info(f"Processing source: {source.get('url')}")
+                
+                source_articles = []
+                
+                # Strategy 1: RSS feed with date filtering
+                rss_articles = self._collect_historical_rss(source, historical_config)
+                source_articles.extend(rss_articles)
+                
+                # Strategy 2: Archive discovery if enabled
+                if historical_config.enable_archive_discovery and len(source_articles) < historical_config.target_articles_per_day * len(date_chunks):
+                    archive_articles = self._discover_archived_content(source, historical_config)
+                    source_articles.extend(archive_articles)
+                
+                # Strategy 3: Pagination discovery if enabled
+                if historical_config.enable_pagination and len(source_articles) < historical_config.target_articles_per_day * len(date_chunks):
+                    paginated_articles = self._discover_paginated_content(source, historical_config)
+                    source_articles.extend(paginated_articles)
+                
+                # Strategy 4: Sitemap crawling if enabled
+                if historical_config.enable_sitemap_crawling and len(source_articles) < historical_config.target_articles_per_day * len(date_chunks):
+                    sitemap_articles = self._discover_sitemap_content(source, historical_config)
+                    source_articles.extend(sitemap_articles)
+                
+                # Deduplicate by URL
+                unique_articles = self._deduplicate_articles(source_articles)
+                
+                # Filter and limit articles
+                filtered_articles = self._filter_and_limit_articles(unique_articles, historical_config)
+                
+                if filtered_articles:
+                    successful_sources += 1
+                    self.collection_stats['articles_by_source'][source.get('url', 'unknown')] = len(filtered_articles)
+                    
+                    # Generate document IDs and store
+                    for article in filtered_articles:
+                        article["id"] = self._generate_document_id(article)
+                        
+                        # Store in document repository if available
+                        if self.document_repository:
+                            try:
+                                doc_id = self.document_repository.store_document(
+                                    article["content"],
+                                    self._create_metadata(article)
+                                )
+                                document_ids.append(doc_id)
+                                article["document_id"] = doc_id
+                            except Exception as e:
+                                self.logger.error(f"Error storing document: {e}")
+                    
+                    all_articles.extend(filtered_articles)
+                    self.collection_stats['total_articles'] += len(filtered_articles)
+                else:
+                    failed_sources += 1
+                
+                # Add delay between sources
+                time.sleep(random.uniform(2, 5))
+                
+            except Exception as e:
+                self.logger.error(f"Error processing source {source.get('url')}: {e}")
                 failed_sources += 1
         
-        # Log results
-        self.logger.info(f"Collection complete: {len(all_articles)} articles collected")
+        # Log collection statistics
+        self._log_collection_stats()
         
         return {
             "articles": all_articles,
@@ -794,773 +868,635 @@ class ContentCollector:
                 "failed_sources": failed_sources,
                 "articles_collected": len(all_articles),
                 "timestamp": datetime.now().isoformat(),
-                "llm_navigation_available": self.llm_navigator is not None
+                "historical_range": f"{historical_config.start_date.isoformat()} to {historical_config.end_date.isoformat()}",
+                "collection_stats": self.collection_stats
             }
         }
 
-    def _collect_from_rss(
-        self, 
-        source: Dict[str, Any],
-        limit: int,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None
-    ) -> List[Dict[str, Any]]:
+    def _calculate_date_chunks(self, config: HistoricalCollectionConfig) -> List[Tuple[datetime, datetime]]:
+        """Calculate date chunks for efficient historical collection."""
+        chunks = []
+        current_date = config.start_date
+        chunk_size = timedelta(days=7)  # Weekly chunks
+        
+        while current_date < config.end_date:
+            chunk_end = min(current_date + chunk_size, config.end_date)
+            chunks.append((current_date, chunk_end))
+            current_date = chunk_end
+        
+        return chunks
+
+    def _collect_historical_rss(self, source: Dict[str, Any], config: HistoricalCollectionConfig) -> List[Dict[str, Any]]:
         """
-        Collect articles from an RSS feed with date filtering.
+        Collect historical content from RSS feeds with enhanced date handling.
         """
         url = source.get("url", "")
         bias = source.get("bias", "unknown")
         
-        self.logger.info(f"Collecting from RSS: {url}")
+        self.logger.info(f"Collecting historical RSS from: {url}")
+        
+        articles = []
         
         try:
-            # Add random delay before request
-            time.sleep(random.uniform(1, 3))
-            
-            # Parse the feed with timeout
+            # Try original RSS feed
             feed = feedparser.parse(url, agent=random.choice(self.user_agents))
             
-            if feed.get("bozo", 0) == 1:
-                self.logger.warning(f"Feed parse error for {url}: {feed.get('bozo_exception')}")
-                # If RSS parsing completely fails, try fallback strategies
-                if not feed.get("entries"):
-                    self.logger.info(f"RSS completely failed for {url}, attempting fallback")
-                    return self._handle_rss_failure_with_fallback(source, limit, start_date, end_date)
+            if feed.get("entries"):
+                rss_articles = self._process_rss_entries(feed.entries, source, config)
+                articles.extend(rss_articles)
             
-            # Check if we got entries
-            entries = feed.get("entries", [])
-            if not entries:
-                self.logger.warning(f"No entries found in feed: {url}")
-                # Try fallback strategies
-                return self._handle_rss_failure_with_fallback(source, limit, start_date, end_date)
+            # Try RSS feed variations for historical content
+            historical_rss_variants = self._generate_historical_rss_variants(url)
             
-            # Sort entries by publication date (newest first)
-            entries.sort(key=lambda x: x.get("published_parsed", time.gmtime(0)), reverse=True)
-            
-            collected = []
-            
-            for entry in entries:
-                if len(collected) >= limit:
-                    break
+            for variant_url in historical_rss_variants:
+                try:
+                    time.sleep(random.uniform(1, 3))
+                    variant_feed = feedparser.parse(variant_url, agent=random.choice(self.user_agents))
+                    
+                    if variant_feed.get("entries"):
+                        variant_articles = self._process_rss_entries(variant_feed.entries, source, config)
+                        articles.extend(variant_articles)
+                        
+                        self.logger.info(f"Found {len(variant_articles)} articles from RSS variant: {variant_url}")
                 
+                except Exception as e:
+                    self.logger.debug(f"RSS variant failed {variant_url}: {e}")
+                    continue
+        
+        except Exception as e:
+            self.logger.error(f"Error collecting historical RSS from {url}: {e}")
+        
+        return articles
+
+    def _generate_historical_rss_variants(self, base_url: str) -> List[str]:
+        """Generate potential RSS feed variants that might contain historical content."""
+        variants = []
+        parsed = urlparse(base_url)
+        domain = f"{parsed.scheme}://{parsed.netloc}"
+        
+        # Common RSS archive patterns
+        archive_patterns = [
+            "/archives/feed/",
+            "/archive/rss/",
+            "/feed/archive/",
+            "/rss/archive/",
+            "/feeds/archive/",
+            "/archive.xml",
+            "/archive/",
+            "/archives/",
+            "/feed/?year=2025",
+            "/feed/?year=2024",
+            "/rss.xml?archive=true"
+        ]
+        
+        for pattern in archive_patterns:
+            variants.append(domain + pattern)
+        
+        # Date-based RSS feeds
+        for year in [2024, 2025]:
+            for month in range(1, 13):
+                variants.extend([
+                    f"{domain}/feed/?year={year}&month={month:02d}",
+                    f"{domain}/rss/?year={year}&month={month:02d}",
+                    f"{domain}/{year}/{month:02d}/feed/",
+                    f"{domain}/archives/{year}/{month:02d}/feed/"
+                ])
+        
+        return variants[:20]  # Limit to avoid excessive requests
+
+    def _discover_archived_content(self, source: Dict[str, Any], config: HistoricalCollectionConfig) -> List[Dict[str, Any]]:
+        """
+        Discover historical content using web archive services.
+        """
+        url = source.get("url", "")
+        self.logger.info(f"Discovering archived content for: {url}")
+        
+        articles = []
+        domain = urlparse(url).netloc
+        
+        # Try Internet Archive Wayback Machine
+        try:
+            wayback_articles = self._search_wayback_machine(domain, config)
+            articles.extend(wayback_articles)
+            self.collection_stats['archive_discoveries'] += len(wayback_articles)
+        except Exception as e:
+            self.logger.debug(f"Wayback Machine search failed: {e}")
+        
+        # Try Archive.today
+        try:
+            archive_today_articles = self._search_archive_today(domain, config)
+            articles.extend(archive_today_articles)
+            self.collection_stats['archive_discoveries'] += len(archive_today_articles)
+        except Exception as e:
+            self.logger.debug(f"Archive.today search failed: {e}")
+        
+        return articles
+
+    def _search_wayback_machine(self, domain: str, config: HistoricalCollectionConfig) -> List[Dict[str, Any]]:
+        """Search Wayback Machine for historical content."""
+        articles = []
+        
+        # Wayback Machine CDX API
+        cdx_url = "http://web.archive.org/cdx/search/cdx"
+        
+        params = {
+            'url': f"{domain}/*",
+            'from': config.start_date.strftime('%Y%m%d'),
+            'to': config.end_date.strftime('%Y%m%d'),
+            'output': 'json',
+            'fl': 'timestamp,original,mimetype,statuscode',
+            'filter': 'statuscode:200',
+            'filter': 'mimetype:text/html',
+            'collapse': 'urlkey',
+            'limit': 1000
+        }
+        
+        try:
+            response = self.session.get(cdx_url, params=params, timeout=30)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                for row in data[1:]:  # Skip header row
+                    timestamp, original_url, mimetype, statuscode = row
+                    
+                    # Parse timestamp
+                    try:
+                        archived_date = datetime.strptime(timestamp, '%Y%m%d%H%M%S')
+                        
+                        # Check if URL looks like a political article
+                        if self._is_political_url(original_url):
+                            wayback_url = f"http://web.archive.org/web/{timestamp}/{original_url}"
+                            
+                            # Try to extract content
+                            article_content = self._extract_archived_content(wayback_url, original_url)
+                            
+                            if article_content:
+                                articles.append({
+                                    "title": article_content.get("title", "Archived Article"),
+                                    "url": original_url,
+                                    "archived_url": wayback_url,
+                                    "source": domain,
+                                    "published": archived_date.isoformat(),
+                                    "content": article_content.get("content", ""),
+                                    "collection_method": "wayback_machine",
+                                    "collected_at": datetime.now().isoformat()
+                                })
+                            
+                            time.sleep(random.uniform(1, 2))  # Rate limiting
+                            
+                            if len(articles) >= 50:  # Limit per source
+                                break
+                
+        except Exception as e:
+            self.logger.error(f"Error searching Wayback Machine: {e}")
+        
+        return articles
+
+    def _search_archive_today(self, domain: str, config: HistoricalCollectionConfig) -> List[Dict[str, Any]]:
+        """Search Archive.today for historical content."""
+        # Archive.today doesn't have a public API, so this would be more limited
+        # This is a placeholder for the implementation
+        self.logger.info(f"Archive.today search for {domain} (placeholder)")
+        return []
+
+    def _discover_paginated_content(self, source: Dict[str, Any], config: HistoricalCollectionConfig) -> List[Dict[str, Any]]:
+        """
+        Discover historical content through pagination exploration.
+        """
+        url = source.get("url", "")
+        domain = urlparse(url).netloc
+        
+        self.logger.info(f"Discovering paginated content for: {domain}")
+        
+        articles = []
+        
+        # Common pagination patterns to explore
+        pagination_patterns = [
+            f"https://{domain}/politics/",
+            f"https://{domain}/government/",
+            f"https://{domain}/news/politics/",
+            f"https://{domain}/political/",
+            f"https://{domain}/election/",
+            f"https://{domain}/congress/",
+            f"https://{domain}/white-house/"
+        ]
+        
+        for base_url in pagination_patterns:
+            try:
+                paginated_articles = self._explore_pagination(base_url, config)
+                articles.extend(paginated_articles)
+                self.collection_stats['pagination_discoveries'] += len(paginated_articles)
+                
+                if len(articles) >= 100:  # Limit per source
+                    break
+                    
+                time.sleep(random.uniform(2, 4))
+                
+            except Exception as e:
+                self.logger.debug(f"Pagination exploration failed for {base_url}: {e}")
+                continue
+        
+        return articles
+
+    def _explore_pagination(self, base_url: str, config: HistoricalCollectionConfig) -> List[Dict[str, Any]]:
+        """Explore pagination for a given URL."""
+        articles = []
+        
+        # Try different pagination patterns
+        pagination_formats = [
+            "{base_url}?page={page}",
+            "{base_url}/page/{page}/",
+            "{base_url}?p={page}",
+            "{base_url}/page-{page}/",
+            "{base_url}?offset={offset}"
+        ]
+        
+        for format_str in pagination_formats:
+            for page in range(1, min(self.max_pages_per_source, 21)):  # Limit pages
+                try:
+                    if "offset" in format_str:
+                        page_url = format_str.format(base_url=base_url, offset=(page-1)*10)
+                    else:
+                        page_url = format_str.format(base_url=base_url, page=page)
+                    
+                    response = self.session.get(page_url, timeout=15)
+                    
+                    if response.status_code == 200:
+                        page_articles = self._extract_articles_from_page(response.text, page_url, config)
+                        
+                        if page_articles:
+                            articles.extend(page_articles)
+                        else:
+                            break  # No more articles found
+                    else:
+                        break  # Invalid page
+                    
+                    time.sleep(random.uniform(1, 2))
+                    
+                except Exception as e:
+                    self.logger.debug(f"Pagination page failed {page_url}: {e}")
+                    break
+            
+            if articles:
+                break  # Found working pagination format
+        
+        return articles
+
+    def _discover_sitemap_content(self, source: Dict[str, Any], config: HistoricalCollectionConfig) -> List[Dict[str, Any]]:
+        """
+        Discover historical content through sitemap exploration.
+        """
+        url = source.get("url", "")
+        domain = urlparse(url).netloc
+        
+        self.logger.info(f"Discovering sitemap content for: {domain}")
+        
+        articles = []
+        
+        # Common sitemap locations
+        sitemap_urls = [
+            f"https://{domain}/sitemap.xml",
+            f"https://{domain}/sitemap_index.xml",
+            f"https://{domain}/sitemaps.xml",
+            f"https://{domain}/sitemap/",
+            f"https://{domain}/robots.txt"  # May contain sitemap references
+        ]
+        
+        for sitemap_url in sitemap_urls:
+            try:
+                sitemap_articles = self._parse_sitemap(sitemap_url, config)
+                articles.extend(sitemap_articles)
+                self.collection_stats['sitemap_discoveries'] += len(sitemap_articles)
+                
+                if len(articles) >= 100:  # Limit per source
+                    break
+                    
+                time.sleep(random.uniform(1, 3))
+                
+            except Exception as e:
+                self.logger.debug(f"Sitemap parsing failed for {sitemap_url}: {e}")
+                continue
+        
+        return articles
+
+    def _parse_sitemap(self, sitemap_url: str, config: HistoricalCollectionConfig) -> List[Dict[str, Any]]:
+        """Parse a sitemap for relevant URLs."""
+        articles = []
+        
+        try:
+            response = self.session.get(sitemap_url, timeout=15)
+            
+            if response.status_code == 200:
+                # Handle robots.txt
+                if sitemap_url.endswith('robots.txt'):
+                    sitemap_refs = re.findall(r'Sitemap:\s*(.+)', response.text, re.IGNORECASE)
+                    for sitemap_ref in sitemap_refs:
+                        sub_articles = self._parse_sitemap(sitemap_ref.strip(), config)
+                        articles.extend(sub_articles)
+                    return articles
+                
+                # Parse XML sitemap
+                try:
+                    root = ET.fromstring(response.content)
+                    
+                    # Handle sitemap index
+                    if 'sitemapindex' in root.tag:
+                        for sitemap in root:
+                            loc_elem = sitemap.find('.//{http://www.sitemaps.org/schemas/sitemap/0.9}loc')
+                            if loc_elem is not None:
+                                sub_articles = self._parse_sitemap(loc_elem.text, config)
+                                articles.extend(sub_articles[:10])  # Limit sub-sitemaps
+                    
+                    # Handle regular sitemap
+                    else:
+                        for url_elem in root:
+                            loc_elem = url_elem.find('.//{http://www.sitemaps.org/schemas/sitemap/0.9}loc')
+                            lastmod_elem = url_elem.find('.//{http://www.sitemaps.org/schemas/sitemap/0.9}lastmod')
+                            
+                            if loc_elem is not None:
+                                url = loc_elem.text
+                                
+                                # Check if URL is political and within date range
+                                if self._is_political_url(url):
+                                    # Check date if available
+                                    if lastmod_elem is not None:
+                                        try:
+                                            lastmod = datetime.fromisoformat(lastmod_elem.text.replace('Z', '+00:00'))
+                                            if not (config.start_date <= lastmod <= config.end_date):
+                                                continue
+                                        except:
+                                            pass
+                                    
+                                    # Extract article content
+                                    article_content = self._extract_article_from_url(url)
+                                    
+                                    if article_content:
+                                        articles.append(article_content)
+                                    
+                                    time.sleep(random.uniform(0.5, 1))
+                                    
+                                    if len(articles) >= 50:  # Limit per sitemap
+                                        break
+                
+                except ET.ParseError:
+                    self.logger.debug(f"Failed to parse XML sitemap: {sitemap_url}")
+        
+        except Exception as e:
+            self.logger.debug(f"Error parsing sitemap {sitemap_url}: {e}")
+        
+        return articles
+
+    def _process_rss_entries(self, entries: List[Any], source: Dict[str, Any], config: HistoricalCollectionConfig) -> List[Dict[str, Any]]:
+        """Process RSS entries with historical date filtering."""
+        articles = []
+        
+        for entry in entries:
+            try:
                 title = entry.get("title", "").strip()
                 link = entry.get("link", "").strip()
                 
                 if not link or not title:
                     continue
                 
-                # Skip non-political URLs early
-                if self._should_skip_url(link):
-                    continue
-                
-                # Publication date filtering
+                # Parse publication date
                 pub_date = None
                 if entry.get("published_parsed"):
                     try:
                         pub_date = datetime.fromtimestamp(time.mktime(entry.published_parsed))
                         
                         # Skip if outside date range
-                        if start_date and pub_date < start_date:
-                            continue
-                        if end_date and pub_date > end_date:
+                        if not (config.start_date <= pub_date <= config.end_date):
                             continue
                     except Exception as e:
-                        self.logger.warning(f"Error parsing date for {title}: {e}")
-                
-                # Get content from RSS entry first (often available)
-                rss_content = self._extract_rss_content(entry)
-                
-                # Filter for political/government content early
-                tags = entry.get("tags", [])
-                if not self._is_government_related(title, rss_content or "", tags):
-                    self.logger.debug(f"Skipping non-governmental article: {title}")
-                    continue
-                
-                # If we have good RSS content, use it
-                if rss_content and self._is_valid_content(rss_content):
-                    content = rss_content
-                    article_data = {
-                        "authors": [entry.get("author")] if entry.get("author") else [],
-                        "published": pub_date.isoformat() if pub_date else None,
-                        "top_image": None,
-                        "images": [],
-                        "movies": []
-                    }
-                else:
-                    # Try to fetch full content with enhanced error handling
-                    self.logger.info(f"Fetching article: {title}")
-                    
-                    try:
-                        content, article_data = self._extract_article_content(link, title, pub_date)
-                        
-                        # Add delay after fetch
-                        time.sleep(random.uniform(2, 5))
-                        
-                    except requests.exceptions.Timeout:
-                        self.logger.warning(f"Timeout fetching article: {title}")
-                        # Use RSS content if available
-                        if rss_content:
-                            content = rss_content
-                            article_data = {"authors": [], "published": pub_date.isoformat() if pub_date else None}
-                        else:
-                            continue
-                    except Exception as e:
-                        self.logger.warning(f"Error fetching article: {title} - {str(e)}")
-                        # Use RSS content if available
-                        if rss_content:
-                            content = rss_content
-                            article_data = {"authors": [], "published": pub_date.isoformat() if pub_date else None}
-                        else:
-                            continue
-                
-                # Skip if content extraction failed
-                if not content or not self._is_valid_content(content):
-                    self.logger.warning(f"Failed to extract valid content for: {title}")
-                    continue
-                
-                # Re-check for political content with actual content
-                if not self._is_government_related(title, content, tags):
-                    self.logger.info(f"Skipping non-governmental article (post-fetch): {title}")
-                    continue
-                
-                # Determine source name
-                source_name = feed.feed.get("title") or urlparse(url).netloc.replace("www.", "")
-                
-                # Create article data
-                article_data.update({
-                    "title": title,
-                    "url": link,
-                    "source": source_name,
-                    "bias_label": bias,
-                    "published": pub_date.isoformat() if pub_date else article_data.get("published"),
-                    "content": content,
-                    "tags": [t.get("term") for t in tags if t.get("term")],
-                    "collected_at": datetime.now().isoformat()
-                })
-                
-                collected.append(article_data)
-                self.logger.info(f"Collected: {title} ({len(content)} chars)")
-            
-            return collected
-            
-        except Exception as e:
-            self.logger.error(f"Error collecting from {url}: {e}")
-            self.logger.error(traceback.format_exc())
-            # Try fallback strategies as last resort
-            return self._handle_rss_failure_with_fallback(source, limit, start_date, end_date)
-    
-    def _handle_rss_failure_with_fallback(
-        self,
-        source: Dict[str, Any],
-        limit: int,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None
-    ) -> List[Dict[str, Any]]:
-        """
-        Handle RSS feed failures using LLM-guided navigation and simple fallbacks
-        """
-        url = source.get("url", "")
-        self.logger.info(f"Attempting fallback strategies for failed RSS: {url}")
-        
-        # Strategy 1: Try LLM-guided recovery if available
-        if self.llm_navigator:
-            try:
-                self.logger.info("Trying LLM-guided RSS recovery...")
-                
-                # Try to find a working RSS feed via LLM navigation
-                working_rss = self.llm_navigator.navigate_to_rss_feed(url, source)
-                
-                if working_rss and working_rss != url:
-                    self.logger.info(f"LLM found alternative RSS feed: {working_rss}")
-                    alt_source = source.copy()
-                    alt_source["url"] = working_rss
-                    articles = self._collect_from_rss(alt_source, limit, start_date, end_date)
-                    if articles:
-                        return articles
-                
-                # If RSS navigation fails, try direct article extraction
-                self.logger.info("Trying LLM-guided article extraction...")
-                domain = urlparse(url).netloc
-                main_url = f"https://{domain}"
-                politics_urls = [f"https://{domain}/politics", main_url]
-                
-                for page_url in politics_urls:
-                    try:
-                        articles = self.llm_navigator.find_articles_on_page(page_url, source)
-                        if articles:
-                            collected = []
-                            for article in articles[:limit]:
-                                try:
-                                    content, article_data = self._extract_article_content(
-                                        article["url"], article["title"]
-                                    )
-                                    if content and self._is_valid_content(content):
-                                        article_entry = {
-                                            "title": article["title"],
-                                            "url": article["url"],
-                                            "source": domain,
-                                            "bias_label": source.get("bias", "unknown"),
-                                            "published": article_data.get('published'),
-                                            "content": content,
-                                            "tags": [],
-                                            "collected_at": datetime.now().isoformat(),
-                                            "extraction_method": "llm_guided"
-                                        }
-                                        collected.append(article_entry)
-                                        
-                                        if len(collected) >= limit:
-                                            break
-                                            
-                                        time.sleep(random.uniform(2, 4))
-                                
-                                except Exception as e:
-                                    self.logger.error(f"Error extracting LLM-suggested article: {e}")
-                                    continue
-                            
-                            if collected:
-                                self.logger.info(f"Successfully collected {len(collected)} articles via LLM guidance")
-                                return collected
-                    
-                    except Exception as e:
-                        self.logger.error(f"Error in LLM-guided article extraction from {page_url}: {e}")
+                        self.logger.debug(f"Error parsing date for {title}: {e}")
                         continue
-            
-            except Exception as e:
-                self.logger.error(f"Error in LLM-guided RSS recovery: {e}")
-        else:
-            self.logger.warning("LLM navigator not available for RSS failure recovery")
-        
-        # Strategy 2: Try simple fallback strategies
-        return self._try_simple_fallback_strategies(source, limit, start_date, end_date)
-    
-    def _try_simple_fallback_strategies(
-        self,
-        source: Dict[str, Any],
-        limit: int,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None
-    ) -> List[Dict[str, Any]]:
-        """
-        Try simple fallback strategies when LLM is not available
-        """
-        url = source.get("url", "")
-        domain = urlparse(url).netloc
-        
-        self.logger.info(f"Trying simple fallback strategies for {domain}")
-        
-        # Strategy 1: Try common alternative RSS feed URLs
-        common_rss_paths = [
-            "/feed/",
-            "/feeds/",
-            "/rss/",
-            "/rss.xml",
-            "/feed.xml",
-            "/atom.xml",
-            "/news/feed/",
-            "/politics/feed/",
-            "/news/rss/",
-            "/politics/rss/"
-        ]
-        
-        base_url = f"https://{domain}"
-        for path in common_rss_paths:
-            try:
-                # Don't append to existing RSS URLs - replace the path entirely
-                if url.endswith(('.xml', '.rss')):
-                    alt_url = base_url + path
-                else:
-                    alt_url = base_url + path
+                
+                # Filter for political content
+                if not self._is_government_related(title, entry.get("summary", "")):
+                    continue
+                
+                # Extract content
+                content, article_data = self._extract_article_content(link, title, pub_date)
+                
+                if content and self._is_valid_content(content):
+                    article = {
+                        "title": title,
+                        "url": link,
+                        "source": source.get("name", urlparse(source.get("url", "")).netloc),
+                        "bias_label": source.get("bias", "unknown"),
+                        "published": pub_date.isoformat() if pub_date else None,
+                        "content": content,
+                        "collection_method": "rss",
+                        "collected_at": datetime.now().isoformat(),
+                        **article_data
+                    }
+                    articles.append(article)
                     
-                self.logger.info(f"Trying alternative RSS: {alt_url}")
+                    # Update date statistics
+                    date_key = pub_date.date().isoformat() if pub_date else "unknown"
+                    self.collection_stats['articles_by_date'][date_key] = \
+                        self.collection_stats['articles_by_date'].get(date_key, 0) + 1
                 
-                alt_source = source.copy()
-                alt_source["url"] = alt_url
-                
-                # Quick test with minimal parsing
-                feed = feedparser.parse(alt_url, agent=random.choice(self.user_agents))
-                if feed.get("entries") and not feed.get("bozo"):
-                    articles = self._collect_from_rss(alt_source, limit, start_date, end_date)
-                    if articles:
-                        self.logger.info(f"Successfully collected from alternative RSS: {alt_url}")
-                        return articles
-                
-                time.sleep(1)  # Brief delay between attempts
+                time.sleep(random.uniform(1, 2))
                 
             except Exception as e:
-                self.logger.debug(f"Alternative RSS {alt_url} failed: {e}")
+                self.logger.debug(f"Error processing RSS entry: {e}")
                 continue
         
-        # Strategy 2: Try direct scraping of common news section URLs
-        politics_paths = [
-            "/politics/",
-            "/news/politics/",
-            "/political/",
-            "/government/",
-            "/news/",
-            "/"
+        return articles
+
+    def _is_political_url(self, url: str) -> bool:
+        """Check if a URL appears to be political content."""
+        url_lower = url.lower()
+        
+        political_indicators = [
+            '/politics/', '/political/', '/government/', '/election/', '/congress/',
+            '/senate/', '/white-house/', '/president/', '/campaign/', '/policy/',
+            '/federal/', '/supreme-court/', '/judiciary/', '/legislation/',
+            'trump', 'biden', 'harris', 'election', 'congress', 'senate'
         ]
         
-        for path in politics_paths:
-            try:
-                scrape_url = base_url + path
-                self.logger.info(f"Trying direct scraping: {scrape_url}")
-                
-                response = self.session.get(scrape_url, timeout=15)
-                if response.status_code == 200:
-                    soup = BeautifulSoup(response.text, 'html.parser')
-                    
-                    # Look for article links using simple heuristics
-                    article_links = []
-                    for link in soup.find_all('a', href=True):
-                        href = link['href']
-                        text = link.get_text(strip=True)
-                        
-                        # Make URL absolute
-                        if href.startswith('/'):
-                            href = base_url + href
-                        elif not href.startswith('http'):
-                            continue
-                        
-                        # Simple heuristics for political articles
-                        if (text and len(text) > 15 and len(text) < 200 and
-                            any(keyword in text.lower() for keyword in ['trump', 'biden', 'congress', 'senate', 'politics', 'government', 'election', 'policy'])):
-                            article_links.append((href, text))
-                    
-                    # Try to extract content from found links
-                    collected = []
-                    for article_url, title in article_links[:limit]:
-                        try:
-                            content, article_data = self._extract_article_content(article_url, title)
-                            if content and self._is_valid_content(content):
-                                article_entry = {
-                                    "title": title,
-                                    "url": article_url,
-                                    "source": domain,
-                                    "bias_label": source.get("bias", "unknown"),
-                                    "published": article_data.get('published'),
-                                    "content": content,
-                                    "tags": [],
-                                    "collected_at": datetime.now().isoformat(),
-                                    "extraction_method": "simple_fallback"
-                                }
-                                collected.append(article_entry)
-                                
-                                if len(collected) >= limit:
-                                    break
-                                    
-                                time.sleep(2)  # Delay between extractions
-                        
-                        except Exception as e:
-                            self.logger.debug(f"Failed to extract {article_url}: {e}")
-                            continue
-                    
-                    if collected:
-                        self.logger.info(f"Successfully collected {len(collected)} articles via simple scraping")
-                        return collected
-                
-                time.sleep(2)  # Delay between scraping attempts
-                
-            except Exception as e:
-                self.logger.debug(f"Simple scraping of {scrape_url} failed: {e}")
-                continue
+        return any(indicator in url_lower for indicator in political_indicators)
+
+    def _is_government_related(self, title: str, content: str) -> bool:
+        """Check if content is government/politics related."""
+        sample_text = (title + " " + content[:500]).lower()
         
-        self.logger.info(f"All fallback strategies failed for {domain}")
-        return []
-            
-    def _extract_rss_content(self, entry: Dict[str, Any]) -> Optional[str]:
-        """Extract content from RSS entry itself"""
-        # Try different content fields
-        content = None
+        # Count keyword matches
+        keyword_matches = sum(1 for keyword in self.govt_keywords if keyword in sample_text)
         
-        # Check for content:encoded (common in RSS 2.0)
-        if hasattr(entry, 'content'):
-            for c in entry.content:
-                if c.get('value'):
-                    content = c['value']
-                    break
-        
-        # Check for summary/description
-        if not content and hasattr(entry, 'summary'):
-            content = entry.summary
-            
-        if not content and hasattr(entry, 'description'):
-            content = entry.description
-        
-        # Clean HTML if present
-        if content:
-            soup = BeautifulSoup(content, 'html.parser')
-            # Remove script and style elements
-            for script in soup(["script", "style"]):
-                script.decompose()
-            # Get text
-            text = soup.get_text()
-            # Clean up whitespace
-            lines = (line.strip() for line in text.splitlines())
-            chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-            text = ' '.join(chunk for chunk in chunks if chunk)
-            
-            return text if len(text) > 100 else None
-            
-        return None
+        return keyword_matches >= 1
 
     def _extract_article_content(self, url: str, title: str = None, pub_date: Optional[datetime] = None) -> Tuple[Optional[str], Dict[str, Any]]:
-        """
-        Extract article content using multiple methods with fallbacks.
-        """
-        article_data = {
-            "authors": [],
-            "published": None,
-            "top_image": None,
-            "images": [],
-            "movies": []
-        }
+        """Extract article content using multiple methods."""
+        article_data = {"authors": [], "published": None, "top_image": None}
         
-        content = None
-        
-        # Check if this is a problematic domain
-        problematic_domains = [
-            'wsj.com', 'nytimes.com', 'washingtonpost.com', 
-            'ft.com', 'bloomberg.com', 'businessinsider.com'
-        ]
-        
-        domain = urlparse(url).netloc.lower()
-        if any(prob_domain in domain for prob_domain in problematic_domains):
-            self.logger.warning(f"Known paywall/bot-blocking domain: {domain}")
-            # For these, we'll only try if we have cloudscraper
-            if self.bypass_cloudflare and TRAFILATURA_AVAILABLE:
-                try:
+        try:
+            # Try trafilatura first
+            if TRAFILATURA_AVAILABLE:
+                if self.bypass_cloudflare:
                     response = self.cloudscraper_session.get(url, timeout=self.request_timeout)
-                    html = response.text
-                    
-                    content = trafilatura.extract(
-                        html,
-                        include_comments=False,
-                        include_tables=False,
-                        no_fallback=False,
-                        favor_precision=True,
-                        target_language='en'
-                    )
-                    
-                    if content and self._is_valid_content(content):
-                        if pub_date:
-                            article_data["published"] = pub_date.isoformat()
-                        return content, article_data
-                except Exception as e:
-                    self.logger.debug(f"Failed to extract from paywall site: {e}")
-            
-            return None, article_data
-        
-        # Method 1: Try trafilatura first (most reliable)
-        if TRAFILATURA_AVAILABLE:
-            try:
-                content = self._extract_with_trafilatura(url)
+                else:
+                    response = self.session.get(url, timeout=self.request_timeout)
+                
+                content = trafilatura.extract(response.text, favor_precision=True, target_language='en')
+                
                 if self._is_valid_content(content):
-                    self.logger.debug(f"Successfully extracted with trafilatura: {url}")
                     if pub_date:
                         article_data["published"] = pub_date.isoformat()
                     return content, article_data
-            except requests.exceptions.HTTPError as e:
-                if e.response.status_code in [403, 429]:
-                    self.logger.warning(f"{e.response.status_code} error for {url}")
-                    return None, article_data
-            except Exception as e:
-                self.logger.debug(f"Trafilatura extraction failed: {e}")
-        
-        # Method 2: Try newspaper3k
-        if NEWSPAPER_AVAILABLE:
-            try:
-                content = self._extract_with_newspaper3k(url, article_data)
+            
+            # Fall back to newspaper3k
+            if NEWSPAPER_AVAILABLE:
+                config = Config()
+                config.browser_user_agent = random.choice(self.user_agents)
+                config.request_timeout = self.request_timeout
+                
+                article = Article(url, config=config)
+                article.download()
+                article.parse()
+                
+                content = article.text
+                
                 if self._is_valid_content(content):
-                    self.logger.debug(f"Successfully extracted with newspaper3k: {url}")
+                    article_data.update({
+                        "authors": article.authors,
+                        "published": article.publish_date.isoformat() if article.publish_date else (pub_date.isoformat() if pub_date else None),
+                        "top_image": article.top_image
+                    })
                     return content, article_data
-            except Exception as e:
-                if "403" in str(e) or "429" in str(e):
-                    self.logger.warning(f"Rate limited for {url}")
-                    return None, article_data
-                self.logger.debug(f"Newspaper3k extraction failed: {e}")
         
-        # Method 3: Fall back to BeautifulSoup
-        try:
-            self.logger.info(f"Trying BeautifulSoup fallback for {url}")
-            content = self._extract_with_beautifulsoup(url)
-            
-            # Update article_data with any missing info
-            if article_data.get("published") is None and pub_date:
-                article_data["published"] = pub_date.isoformat()
-            
-            if self._is_valid_content(content):
-                self.logger.debug(f"Successfully extracted with BeautifulSoup: {url}")
-                return content, article_data
-            
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code in [403, 429]:
-                self.logger.warning(f"{e.response.status_code} error for {url}")
-                return None, article_data
-            self.logger.error(f"BeautifulSoup extraction failed: {e}")
         except Exception as e:
-            self.logger.error(f"BeautifulSoup extraction failed: {e}")
+            self.logger.debug(f"Content extraction failed for {url}: {e}")
         
-        # If all methods failed
-        self.logger.error(f"All content extraction methods failed for {url}")
         return None, article_data
 
-    def _extract_with_trafilatura(self, url: str) -> Optional[str]:
-        """Extract content using trafilatura."""
-        # Add delay before request
-        time.sleep(random.uniform(1, 2))
+    def _extract_archived_content(self, wayback_url: str, original_url: str) -> Optional[Dict[str, str]]:
+        """Extract content from archived URL."""
+        try:
+            response = self.session.get(wayback_url, timeout=30)
+            
+            if response.status_code == 200:
+                if TRAFILATURA_AVAILABLE:
+                    content = trafilatura.extract(response.text, favor_precision=True)
+                    
+                    if self._is_valid_content(content):
+                        # Extract title from HTML
+                        soup = BeautifulSoup(response.text, 'html.parser')
+                        title_elem = soup.find('title')
+                        title = title_elem.get_text().strip() if title_elem else "Archived Article"
+                        
+                        return {"title": title, "content": content}
         
-        # Fetch the page
-        if self.bypass_cloudflare:
-            try:
-                response = self.cloudscraper_session.get(url, timeout=self.request_timeout)
-                html = response.text
-            except:
-                response = self.session.get(url, timeout=self.request_timeout)
-                html = response.text
-        else:
-            response = self.session.get(url, timeout=self.request_timeout)
-            html = response.text
+        except Exception as e:
+            self.logger.debug(f"Archived content extraction failed for {wayback_url}: {e}")
         
-        # Extract with trafilatura
-        content = trafilatura.extract(
-            html,
-            include_comments=False,
-            include_tables=False,
-            no_fallback=False,
-            favor_precision=True,
-            target_language='en'
-        )
-        
-        return content
+        return None
 
-    def _extract_with_newspaper3k(self, url: str, article_data: Dict[str, Any]) -> Optional[str]:
-        """Extract content using newspaper3k."""
-        # Configure article
-        config = Config()
-        config.browser_user_agent = random.choice(self.user_agents)
-        config.request_timeout = self.request_timeout
-        config.memoize_articles = False
-        config.fetch_images = False
-        config.language = 'en'
-        
-        # Create article instance
-        article = Article(url, config=config)
-        
-        # Add delay before request
-        time.sleep(random.uniform(1, 2))
+    def _extract_articles_from_page(self, html: str, page_url: str, config: HistoricalCollectionConfig) -> List[Dict[str, Any]]:
+        """Extract article links from a page."""
+        articles = []
         
         try:
-            # First try with cloudscraper if available
-            if self.bypass_cloudflare:
-                try:
-                    response = self.cloudscraper_session.get(url, timeout=self.request_timeout)
-                    if response.status_code == 200:
-                        article.download(input_html=response.text)
-                    else:
-                        raise Exception(f"Status code {response.status_code}")
-                except:
-                    # Fall back to regular download
-                    article.download()
-            else:
-                article.download()
+            soup = BeautifulSoup(html, 'html.parser')
             
-            article.parse()
-            
-            # Extract content and metadata
-            content = article.text or ""
-            
-            # Update article_data with extracted metadata
-            if article.publish_date:
-                article_data["published"] = article.publish_date.isoformat()
-            
-            article_data["authors"] = article.authors if article.authors else []
-            article_data["top_image"] = article.top_image
-            
-            return content
-            
-        except Exception as e:
-            self.logger.debug(f"Newspaper3k download/parse error: {e}")
-            raise
-
-    def _extract_with_beautifulsoup(self, url: str) -> str:
-        """Extract content using BeautifulSoup."""
-        # Add delay before request
-        time.sleep(random.uniform(1, 2))
-        
-        # Fetch the page
-        try:
-            if self.bypass_cloudflare:
-                try:
-                    response = self.cloudscraper_session.get(url, timeout=self.request_timeout)
-                except:
-                    response = self.session.get(url, timeout=self.request_timeout)
-            else:
-                response = self.session.get(url, timeout=self.request_timeout)
-            
-            response.raise_for_status()
-            
-        except Exception as e:
-            self.logger.error(f"Failed to fetch {url}: {e}")
-            raise
-        
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # Remove script and style elements
-        for script in soup(["script", "style", "noscript"]):
-            script.decompose()
-        
-        # Try to find JSON-LD structured data first
-        json_ld_scripts = soup.find_all('script', {'type': 'application/ld+json'})
-        for script in json_ld_scripts:
-            try:
-                data = json.loads(script.string)
-                if isinstance(data, list):
-                    data = data[0]
-                if isinstance(data, dict):
-                    # Check for NewsArticle or Article type
-                    if data.get('@type') in ['NewsArticle', 'Article'] and data.get('articleBody'):
-                        return data.get('articleBody')
-            except:
-                continue
-        
-        # Enhanced selectors for article content
-        selectors = [
-            'article',
-            '[itemprop="articleBody"]',
-            '.article-content',
-            '.article-body',
-            '.story-body',
-            '.story-content',
-            '.entry-content',
-            '.post-content',
-            '.content-body',
-            '.article__body',
-            '.article-text',
-            '.story-text',
-            'div.content',
-            'div.text',
-            'main',
-            '[role="main"]',
-            '.main-content',
-            '#main-content'
-        ]
-        
-        content = ""
-        
-        for selector in selectors:
-            elements = soup.select(selector)
-            if not elements:
-                continue
+            # Look for article links
+            for link in soup.find_all('a', href=True):
+                href = link['href']
+                text = link.get_text(strip=True)
                 
-            for element in elements:
-                # Clone to avoid modifying original
-                container = element
+                # Make URL absolute
+                if href.startswith('/'):
+                    full_url = urljoin(page_url, href)
+                elif href.startswith('http'):
+                    full_url = href
+                else:
+                    continue
                 
-                # Remove unwanted elements
-                for unwanted in container.select('aside, .related, .advertisement, nav, header, footer, .comments, .social-share, .newsletter-signup'):
-                    unwanted.decompose()
-                
-                # Extract paragraphs
-                paragraphs = container.find_all('p')
-                if paragraphs:
-                    text = "\n\n".join(p.get_text().strip() for p in paragraphs if p.get_text().strip())
-                    if self._is_valid_content(text):
-                        content = text
+                # Check if it looks like a political article
+                if self._is_political_url(full_url) and text and len(text) > 20:
+                    article_content = self._extract_article_from_url(full_url)
+                    
+                    if article_content:
+                        articles.append(article_content)
+                    
+                    if len(articles) >= 10:  # Limit per page
                         break
+        
+        except Exception as e:
+            self.logger.debug(f"Error extracting articles from page: {e}")
+        
+        return articles
+
+    def _extract_article_from_url(self, url: str) -> Optional[Dict[str, Any]]:
+        """Extract a single article from URL."""
+        try:
+            content, article_data = self._extract_article_content(url)
             
-            if content:
-                break
+            if content and self._is_valid_content(content):
+                return {
+                    "title": article_data.get("title", "Article"),
+                    "url": url,
+                    "source": urlparse(url).netloc,
+                    "published": article_data.get("published"),
+                    "content": content,
+                    "collection_method": "discovery",
+                    "collected_at": datetime.now().isoformat(),
+                    **article_data
+                }
         
-        # Final fallback: get all paragraphs
-        if not content:
-            all_paragraphs = soup.find_all('p')
-            # Filter out short paragraphs
-            paragraphs = [p.get_text().strip() for p in all_paragraphs 
-                         if len(p.get_text().strip()) > 50]
-            if paragraphs:
-                content = "\n\n".join(paragraphs)
+        except Exception as e:
+            self.logger.debug(f"Article extraction failed for {url}: {e}")
         
-        return content
+        return None
 
     def _is_valid_content(self, content: Optional[str]) -> bool:
         """Check if content meets quality criteria."""
         if not content:
             return False
-            
-        # Remove extra whitespace for accurate counting
+        
         content = re.sub(r'\s+', ' ', content.strip())
         
-        # Check minimum length
-        if len(content) < 200:
-            return False
-        
-        # Check word count
-        word_count = len(content.split())
-        if word_count < 50:
-            return False
-        
-        # Check for too many special characters (parsing errors)
-        special_char_ratio = len(re.findall(r'[^\w\s.,;:!?()\'"/-]', content)) / len(content)
-        if special_char_ratio > 0.1:  # More than 10% special characters
-            return False
-        
-        # Check for repeated characters (parsing errors)
-        if re.search(r'(.)\1{10,}', content):  # Same character repeated 10+ times
-            return False
-            
-        return True
+        return (
+            len(content) >= 200 and
+            len(content.split()) >= 50 and
+            not re.search(r'(.)\1{10,}', content)
+        )
 
-    def _is_government_related(
-        self,
-        title: str,
-        content: str,
-        tags: Optional[List[Dict[str, Any]]] = None
-    ) -> bool:
-        """Check if article is related to government or politics."""
-        # 1) Check for government/politics tags
-        if tags:
-            political_tags = {"politics", "government", "us politics", "policy", "election", 
-                             "washington", "congress", "white house", "federal", "democracy"}
-            for tag in tags:
-                tag_term = tag.get("term", "").lower()
-                if tag_term in political_tags or any(kw in tag_term for kw in self.govt_keywords):
-                    return True
+    def _deduplicate_articles(self, articles: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Remove duplicate articles by URL."""
+        seen_urls = set()
+        unique_articles = []
         
-        # 2) Check for keywords in title and content preview
-        sample_text = (title + " " + content[:2000]).lower()
+        for article in articles:
+            url = article.get("url", "")
+            if url not in seen_urls:
+                seen_urls.add(url)
+                unique_articles.append(article)
         
-        # Count keyword matches
-        keyword_matches = 0
-        for keyword in self.govt_keywords:
-            if keyword in sample_text:
-                keyword_matches += 1
-                if keyword_matches >= 2:  # At least 2 keywords
-                    return True
+        return unique_articles
+
+    def _filter_and_limit_articles(self, articles: List[Dict[str, Any]], config: HistoricalCollectionConfig) -> List[Dict[str, Any]]:
+        """Filter articles and apply limits."""
+        # Sort by publication date (newest first)
+        articles.sort(key=lambda x: x.get("published", ""), reverse=True)
         
-        # 3) Check for current political figures
-        political_figures = {
-            "trump", "biden", "harris", "pence", "pelosi", "mcconnell", 
-            "schumer", "mccarthy", "johnson", "jeffries"
-        }
-        for figure in political_figures:
-            if figure in sample_text:
-                return True
+        # Apply total limit
+        if len(articles) > config.max_articles_total:
+            articles = articles[:config.max_articles_total]
         
-        return False
+        return articles
 
     def _generate_document_id(self, article: Dict[str, Any]) -> str:
-        """Generate a simple document ID based on URL and timestamp."""
+        """Generate document ID."""
         url = article.get("url", "")
-        timestamp = int(time.time() * 1000)  # Milliseconds for uniqueness
-        
-        # Create URL hash
+        timestamp = int(time.time() * 1000)
         url_hash = hashlib.md5(url.encode('utf-8')).hexdigest()[:12]
-        
-        # Combine with timestamp
         return f"{url_hash}_{timestamp}"
 
     def _create_metadata(self, article: Dict[str, Any]) -> Dict[str, Any]:
-        """Create metadata dictionary for document storage."""
+        """Create metadata for document storage."""
         return {
             "title": article.get("title", "Untitled"),
             "url": article.get("url", ""),
@@ -1568,11 +1504,300 @@ class ContentCollector:
             "bias_label": article.get("bias_label", "unknown"),
             "published": article.get("published"),
             "authors": article.get("authors", []),
-            "tags": article.get("tags", []),
-            "top_image": article.get("top_image"),
-            "images": article.get("images", []),
-            "movies": article.get("movies", []),
+            "collection_method": article.get("collection_method", "unknown"),
             "collected_at": article.get("collected_at", datetime.now().isoformat()),
-            "id": article.get("id"),
-            "extraction_method": article.get("extraction_method", "traditional")
+            "id": article.get("id")
         }
+
+    def _log_collection_stats(self):
+        """Log collection statistics."""
+        stats = self.collection_stats
+        
+        self.logger.info(f"=== Historical Collection Statistics ===")
+        self.logger.info(f"Total articles collected: {stats['total_articles']}")
+        self.logger.info(f"Archive discoveries: {stats['archive_discoveries']}")
+        self.logger.info(f"Pagination discoveries: {stats['pagination_discoveries']}")
+        self.logger.info(f"Sitemap discoveries: {stats['sitemap_discoveries']}")
+        
+        if stats['articles_by_date']:
+            self.logger.info(f"Articles by date: {dict(list(stats['articles_by_date'].items())[:5])}")
+        
+        if stats['articles_by_source']:
+            self.logger.info(f"Articles by source: {stats['articles_by_source']}")
+
+
+def create_historical_collection_config(
+    start_date: str,
+    end_date: str,
+    target_per_day: int = 10,
+    max_total: int = 1000
+) -> HistoricalCollectionConfig:
+    """
+    Helper function to create historical collection configuration.
+    
+    Args:
+        start_date: Start date in YYYY-MM-DD format
+        end_date: End date in YYYY-MM-DD format
+        target_per_day: Target articles per day
+        max_total: Maximum total articles
+        
+    Returns:
+        HistoricalCollectionConfig instance
+    """
+    return HistoricalCollectionConfig(
+        start_date=datetime.fromisoformat(start_date),
+        end_date=datetime.fromisoformat(end_date),
+        target_articles_per_day=target_per_day,
+        max_articles_total=max_total,
+        enable_archive_discovery=True,
+        enable_pagination=True,
+        enable_sitemap_crawling=True,
+        max_pages_per_source=20
+    )
+
+
+# Example usage function
+# Example usage functions
+def create_historical_collection_config(
+    start_date: str,
+    end_date: str,
+    target_per_day: int = 10,
+    max_total: int = 1000
+) -> HistoricalCollectionConfig:
+    """
+    Helper function to create historical collection configuration.
+    
+    Args:
+        start_date: Start date in YYYY-MM-DD format
+        end_date: End date in YYYY-MM-DD format
+        target_per_day: Target articles per day
+        max_total: Maximum total articles
+        
+    Returns:
+        HistoricalCollectionConfig instance
+    """
+    return HistoricalCollectionConfig(
+        start_date=datetime.fromisoformat(start_date),
+        end_date=datetime.fromisoformat(end_date),
+        target_articles_per_day=target_per_day,
+        max_articles_total=max_total,
+        enable_archive_discovery=True,
+        enable_pagination=True,
+        enable_sitemap_crawling=True,
+        max_pages_per_source=20
+    )
+
+
+def run_night_watcher_collection(config_path: str = "config.json", 
+                                force_mode: Optional[str] = None,
+                                reset_date: bool = False) -> Dict[str, Any]:
+    """
+    Main entry point for Night_watcher content collection with intelligent run behavior.
+    
+    Args:
+        config_path: Path to configuration file
+        force_mode: Force specific mode ('first_run', 'incremental', 'full')
+        reset_date: Reset to first run behavior
+        
+    Returns:
+        Collection results
+    """
+    # Load configuration
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+    
+    # Create collector
+    collector = HistoricalContentCollector(config)
+    
+    # Handle reset date
+    if reset_date:
+        if os.path.exists(collector.last_run_file):
+            os.remove(collector.last_run_file)
+            collector.logger.info("Reset date tracking - will run as first run")
+        force_mode = "first_run"
+    
+    # Run collection
+    results = collector.collect_content(force_mode=force_mode)
+    
+    return results
+
+
+def add_source_to_config(config_path: str, source_data: Dict[str, Any]) -> bool:
+    """
+    Add a new source to the configuration file.
+    
+    Args:
+        config_path: Path to configuration file
+        source_data: Source configuration data
+        
+    Returns:
+        True if successful
+    """
+    try:
+        # Load configuration
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        
+        # Create collector to use add_source method
+        collector = HistoricalContentCollector(config)
+        collector.config_file = config_path  # Track config file for saving
+        
+        # Add source
+        return collector.add_source(source_data)
+        
+    except Exception as e:
+        logging.error(f"Error adding source to config: {e}")
+        return False
+
+
+def collect_inauguration_era_content(config_path: str = "config.json") -> Dict[str, Any]:
+    """
+    Collect historical content from around Inauguration Day 2025.
+    
+    Args:
+        config_path: Path to configuration file
+        
+    Returns:
+        Collection results
+    """
+    # Load configuration
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+    
+    # Create historical collector
+    collector = HistoricalContentCollector(config)
+    
+    # Create historical collection config for inauguration era
+    historical_config = create_historical_collection_config(
+        start_date="2025-01-15",  # Week before inauguration
+        end_date="2025-02-15",    # Month after inauguration
+        target_per_day=15,
+        max_total=500
+    )
+    
+    # Collect historical content
+    results = collector.collect_historical_content(historical_config)
+    
+    return results
+
+
+if __name__ == "__main__":
+    # Example usage
+    import sys
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Enhanced Night_watcher Content Collector")
+    parser.add_argument("--config", default="config.json", help="Config file path")
+    parser.add_argument("--mode", choices=["auto", "first_run", "incremental", "full"], 
+                       default="auto", help="Collection mode")
+    parser.add_argument("--reset-date", action="store_true", help="Reset date tracking")
+    parser.add_argument("--add-source", help="Add source: 'url,type,bias,name'")
+    parser.add_argument("--add-article", help="Add direct article URL")
+    parser.add_argument("--historical", action="store_true", help="Run historical collection")
+    parser.add_argument("--start-date", help="Start date for historical (YYYY-MM-DD)")
+    parser.add_argument("--end-date", help="End date for historical (YYYY-MM-DD)")
+    
+    args = parser.parse_args()
+    
+    # Setup logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    
+    try:
+        # Handle adding sources
+        if args.add_source:
+            parts = args.add_source.split(',')
+            if len(parts) >= 2:
+                source_data = {
+                    "url": parts[0].strip(),
+                    "type": parts[1].strip() if len(parts) > 1 else "auto",
+                    "bias": parts[2].strip() if len(parts) > 2 else "unknown",
+                    "name": parts[3].strip() if len(parts) > 3 else None
+                }
+                
+                if add_source_to_config(args.config, source_data):
+                    print(f"✓ Added source: {source_data['url']}")
+                else:
+                    print(f"✗ Failed to add source: {source_data['url']}")
+                    sys.exit(1)
+            else:
+                print("Error: Source format should be 'url,type,bias,name'")
+                sys.exit(1)
+        
+        # Handle adding article
+        elif args.add_article:
+            source_data = {
+                "url": args.add_article,
+                "type": "article",
+                "bias": "unknown"
+            }
+            
+            if add_source_to_config(args.config, source_data):
+                print(f"✓ Added article: {args.add_article}")
+            else:
+                print(f"✗ Failed to add article: {args.add_article}")
+                sys.exit(1)
+        
+        # Handle historical collection
+        elif args.historical:
+            if not args.start_date or not args.end_date:
+                print("Error: Historical collection requires --start-date and --end-date")
+                sys.exit(1)
+            
+            # Load configuration
+            with open(args.config, 'r') as f:
+                config = json.load(f)
+            
+            # Create collector
+            collector = HistoricalContentCollector(config)
+            
+            # Create historical config
+            historical_config = create_historical_collection_config(
+                start_date=args.start_date,
+                end_date=args.end_date,
+                target_per_day=15,
+                max_total=1000
+            )
+            
+            # Collect content
+            results = collector.collect_historical_content(historical_config)
+            
+            # Print results
+            print(f"\n=== Historical Collection Complete ===")
+            print(f"Articles collected: {len(results['articles'])}")
+            print(f"Date range: {args.start_date} to {args.end_date}")
+            print(f"Successful sources: {results['status']['successful_sources']}")
+            print(f"Failed sources: {results['status']['failed_sources']}")
+        
+        # Regular collection
+        else:
+            force_mode = None if args.mode == "auto" else args.mode
+            results = run_night_watcher_collection(
+                config_path=args.config,
+                force_mode=force_mode,
+                reset_date=args.reset_date
+            )
+            
+            # Print results
+            print(f"\n=== Collection Complete ===")
+            print(f"Mode: {results['status']['collection_mode']}")
+            print(f"Articles collected: {len(results['articles'])}")
+            print(f"Date range: {results['status']['date_range']}")
+            print(f"Successful sources: {results['status']['successful_sources']}")
+            print(f"Failed sources: {results['status']['failed_sources']}")
+            
+            # Show collection stats
+            stats = results['status']['collection_stats']
+            if stats.get('direct_articles', 0) > 0:
+                print(f"Direct articles: {stats['direct_articles']}")
+            
+            if stats.get('articles_by_source'):
+                print("\nArticles by source:")
+                for source, count in stats['articles_by_source'].items():
+                    print(f"  - {source}: {count}")
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)
