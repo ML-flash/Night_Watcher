@@ -71,7 +71,7 @@ def load_review_queue():
     """Load review queue from file."""
     if os.path.exists(REVIEW_QUEUE_FILE):
         try:
-            with open(REVIEW_QUEUE_FILE, 'r') as f:
+            with open(REVIEW_QUEUE_FILE, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except:
             return []
@@ -82,7 +82,7 @@ def save_review_queue(queue):
     """Save review queue to file."""
     try:
         os.makedirs(os.path.dirname(REVIEW_QUEUE_FILE), exist_ok=True)
-        with open(REVIEW_QUEUE_FILE, 'w') as f:
+        with open(REVIEW_QUEUE_FILE, 'w', encoding='utf-8') as f:
             json.dump(queue, f, indent=2)
     except Exception as e:
         logger.error(f"Failed to save review queue: {e}")
@@ -102,7 +102,7 @@ def scan_for_review_items():
             
         try:
             filepath = os.path.join(analyzed_dir, filename)
-            with open(filepath, 'r') as f:
+            with open(filepath, 'r', encoding='utf-8') as f:
                 analysis = json.load(f)
             
             validation = analysis.get("validation", {})
@@ -132,10 +132,10 @@ def scan_for_review_items():
 @app.route('/')
 def dashboard():
     """Serve the dashboard HTML."""
-    # Read the dashboard HTML file
+    # Read the dashboard HTML file with UTF-8 encoding
     dashboard_path = os.path.join(os.path.dirname(__file__), 'night_watcher_dashboard.html')
     if os.path.exists(dashboard_path):
-        with open(dashboard_path, 'r') as f:
+        with open(dashboard_path, 'r', encoding='utf-8') as f:
             return f.read()
     else:
         return "<h1>Dashboard not found. Please ensure night_watcher_dashboard.html is in the same directory.</h1>"
@@ -192,7 +192,7 @@ def api_templates():
         
         for filename in template_files:
             try:
-                with open(filename, 'r') as f:
+                with open(filename, 'r', encoding='utf-8') as f:
                     template_data = json.load(f)
                 
                 templates.append({
@@ -233,7 +233,7 @@ def api_approve_analysis():
         if not os.path.exists(filepath):
             return jsonify({"error": "Analysis not found"}), 404
         
-        with open(filepath, 'r') as f:
+        with open(filepath, 'r', encoding='utf-8') as f:
             analysis = json.load(f)
         
         # Update validation status
@@ -243,7 +243,7 @@ def api_approve_analysis():
         analysis["validation"]["notes"] = notes
         
         # Save updated analysis
-        with open(filepath, 'w') as f:
+        with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(analysis, f, indent=2)
         
         # Clear cache to force status refresh
@@ -268,7 +268,7 @@ def api_reject_analysis():
         if not os.path.exists(filepath):
             return jsonify({"error": "Analysis not found"}), 404
         
-        with open(filepath, 'r') as f:
+        with open(filepath, 'r', encoding='utf-8') as f:
             analysis = json.load(f)
         
         # Update validation status
@@ -278,7 +278,7 @@ def api_reject_analysis():
         analysis["validation"]["notes"] = notes
         
         # Save updated analysis
-        with open(filepath, 'w') as f:
+        with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(analysis, f, indent=2)
         
         # Clear cache to force status refresh
@@ -409,7 +409,7 @@ def api_analyze():
                 doc_id = articles[i]["document_id"]
                 filename = f"analysis_{doc_id}_{timestamp}.json"
                 
-                with open(f"data/analyzed/{filename}", 'w') as f:
+                with open(f"data/analyzed/{filename}", 'w', encoding='utf-8') as f:
                     json.dump(analysis, f, indent=2)
             
             analyzed_count = len(result.get("analyses", []))
@@ -530,7 +530,7 @@ def api_config():
             night_watcher.config.update(new_config)
             
             # Save to file
-            with open(night_watcher.config_path, 'w') as f:
+            with open(night_watcher.config_path, 'w', encoding='utf-8') as f:
                 json.dump(night_watcher.config, f, indent=2)
             
             add_log_message("success", "Configuration updated")
@@ -557,7 +557,7 @@ def api_add_source():
         
         if night_watcher.collector.add_source(source_data):
             # Save config
-            with open(night_watcher.config_path, 'w') as f:
+            with open(night_watcher.config_path, 'w', encoding='utf-8') as f:
                 json.dump(night_watcher.config, f, indent=2)
             
             add_log_message("success", f"Added source: {source_data.get('name', source_data.get('url'))}")
