@@ -1,6 +1,6 @@
 """
 Night_watcher Document Repository with Integrated Provenance
-Simplified version combining document storage and provenance tracking.
+Consolidated version that handles both documents and analysis provenance.
 """
 
 import os
@@ -14,16 +14,17 @@ from typing import Dict, Any, Optional, List, Tuple
 
 
 class DocumentRepository:
-    """Document storage with integrated cryptographic provenance."""
+    """Unified document and analysis storage with cryptographic provenance."""
 
     def __init__(self, base_dir: str = "data/documents", dev_mode: bool = True):
         self.base_dir = base_dir
         self.content_dir = os.path.join(base_dir, "content")
         self.metadata_dir = os.path.join(base_dir, "metadata")
         self.signatures_dir = os.path.join(base_dir, "signatures")
+        self.analysis_dir = os.path.join(base_dir, "analysis_provenance")
         
         # Create directories
-        for d in [self.content_dir, self.metadata_dir, self.signatures_dir]:
+        for d in [self.content_dir, self.metadata_dir, self.signatures_dir, self.analysis_dir]:
             os.makedirs(d, exist_ok=True)
         
         # Simple key derivation for dev mode
@@ -98,6 +99,110 @@ class DocumentRepository:
         
         return content, metadata, verified
 
+    def store_analysis_provenance(self, 
+                                analysis_id: str,
+                                document_ids: List[str],
+                                analysis_type: str,
+                                analysis_parameters: Dict[str, Any],
+                                results: Dict[str, Any],
+                                analyzer_version: str = "1.0") -> Dict[str, Any]:
+        """
+        Store provenance for an analysis process.
+        
+        Args:
+            analysis_id: Unique ID for the analysis
+            document_ids: List of document IDs that were analyzed
+            analysis_type: Type of analysis performed
+            analysis_parameters: Parameters used for the analysis
+            results: Results of the analysis
+            analyzer_version: Version of the analyzer component
+            
+        Returns:
+            Analysis provenance record
+        """
+        timestamp = datetime.now().isoformat()
+        
+        # Generate result hash
+        result_hash = hashlib.sha256(
+            json.dumps(results, sort_keys=True).encode("utf-8")
+        ).hexdigest()
+        
+        analysis_record = {
+            "analysis_id": analysis_id,
+            "timestamp": timestamp,
+            "document_ids": document_ids,
+            "analysis_type": analysis_type,
+            "analysis_parameters": analysis_parameters,
+            "result_hash": result_hash,
+            "analyzer_version": analyzer_version
+        }
+        
+        # Create signature
+        sig_data = {
+            "content_hash": result_hash,
+            "metadata": analysis_record,
+            "timestamp": timestamp
+        }
+        
+        sig_json = json.dumps(sig_data, sort_keys=True)
+        signature = hmac.new(self.key, sig_json.encode("utf-8"), hashlib.sha256).digest()
+        sig_data["signature"] = base64.b64encode(signature).decode("utf-8")
+        
+        # Save complete record
+        provenance_record = {
+            "analysis_record": analysis_record,
+            "signature": sig_data
+        }
+        
+        record_path = os.path.join(self.analysis_dir, f"{analysis_id}.json")
+        with open(record_path, "w", encoding="utf-8") as f:
+            json.dump(provenance_record, f, indent=2, ensure_ascii=False)
+        
+        self.logger.info(f"Stored analysis provenance for {analysis_id}")
+        return provenance_record
+
+    def verify_analysis(self, analysis_id: str) -> Dict[str, Any]:
+        """Verify an analysis record's integrity."""
+        record_path = os.path.join(self.analysis_dir, f"{analysis_id}.json")
+        
+        if not os.path.exists(record_path):
+            return {
+                "verified": False,
+                "reason": "Analysis record not found"
+            }
+        
+        try:
+            with open(record_path, "r", encoding="utf-8") as f:
+                provenance_record = json.load(f)
+            
+            analysis_record = provenance_record.get("analysis_record", {})
+            sig_data = provenance_record.get("signature", {})
+            
+            # Verify signature
+            stored_sig = sig_data.pop("signature", None)
+            if not stored_sig:
+                return {"verified": False, "reason": "No signature found"}
+            
+            sig_json = json.dumps(sig_data, sort_keys=True)
+            expected_sig = hmac.new(self.key, sig_json.encode("utf-8"), hashlib.sha256).digest()
+            
+            if not hmac.compare_digest(base64.b64decode(stored_sig), expected_sig):
+                return {"verified": False, "reason": "Signature verification failed"}
+            
+            return {
+                "verified": True,
+                "analysis_id": analysis_id,
+                "timestamp": analysis_record.get("timestamp"),
+                "document_count": len(analysis_record.get("document_ids", [])),
+                "analysis_type": analysis_record.get("analysis_type")
+            }
+            
+        except Exception as e:
+            return {
+                "verified": False,
+                "reason": f"Error verifying analysis record: {str(e)}"
+            }
+
     def list_documents(self) -> List[str]:
         """List all document IDs."""
         docs = []
@@ -105,6 +210,48 @@ class DocumentRepository:
             if filename.endswith(".txt"):
                 docs.append(filename[:-4])
         return docs
+
+    def verify_all(self) -> Dict[str, Any]:
+        """Verify all documents and analyses."""
+        results = {
+            "documents": {"total": 0, "verified": 0, "failed": 0},
+            "analyses": {"total": 0, "verified": 0, "failed": 0},
+            "failures": []
+        }
+        
+        # Verify documents
+        for doc_id in self.list_documents():
+            results["documents"]["total"] += 1
+            _, _, verified = self.get_document(doc_id, verify=True)
+            if verified:
+                results["documents"]["verified"] += 1
+            else:
+                results["documents"]["failed"] += 1
+                results["failures"].append({
+                    "type": "document",
+                    "id": doc_id,
+                    "reason": "Verification failed"
+                })
+        
+        # Verify analyses
+        if os.path.exists(self.analysis_dir):
+            for filename in os.listdir(self.analysis_dir):
+                if filename.endswith(".json"):
+                    analysis_id = filename[:-5]
+                    results["analyses"]["total"] += 1
+                    
+                    verification = self.verify_analysis(analysis_id)
+                    if verification["verified"]:
+                        results["analyses"]["verified"] += 1
+                    else:
+                        results["analyses"]["failed"] += 1
+                        results["failures"].append({
+                            "type": "analysis",
+                            "id": analysis_id,
+                            "reason": verification.get("reason", "Unknown")
+                        })
+        
+        return results
 
     def _create_signature(self, doc_id: str, content: str, metadata: Dict[str, Any]):
         """Create HMAC signature for document."""
@@ -167,8 +314,13 @@ class DocumentRepository:
             if os.path.exists(content_path):
                 total_size += os.path.getsize(content_path)
         
+        analysis_count = 0
+        if os.path.exists(self.analysis_dir):
+            analysis_count = len([f for f in os.listdir(self.analysis_dir) if f.endswith(".json")])
+        
         return {
             "total_documents": len(docs),
+            "total_analyses": analysis_count,
             "total_size_bytes": total_size,
             "total_size_mb": round(total_size / 1024 / 1024, 2)
         }
