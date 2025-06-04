@@ -1,33 +1,35 @@
-# Core dependencies
+# Night_watcher Framework Requirements
+# Python 3.8+ required
+
+# Core dependencies (required)
 feedparser>=6.0.0
 requests>=2.25.0
 beautifulsoup4>=4.9.0
 python-dateutil>=2.8.0
+networkx>=3.0
+flask>=3.0.0
+flask-cors>=4.0.0
 
-# Article extraction
+# Article extraction (at least one recommended)
 newspaper3k>=0.2.8
 trafilatura>=1.6.0
 lxml>=4.9.0
 
-# Optional for cloudflare bypass
-cloudscraper>=1.2.0
-
-# LLM providers (optional)
-anthropic>=0.18.0
-
-# Knowledge Graph
-networkx>=3.0
-
-# Vector Store (optional but recommended)
+# Vector Store (required for full functionality)
 numpy>=1.24.0
-faiss-cpu>=1.7.4  # or faiss-gpu if you have CUDA
+faiss-cpu>=1.7.4  # Use faiss-gpu if CUDA available
 sentence-transformers>=2.2.2
-# chromadb>=0.4.0  # Alternative to FAISS
 
-# Optional ML libraries
-# scikit-learn>=1.3.0
-# pandas>=2.0.0
+# LLM Providers (choose one)
+# For Anthropic API (if not using LM Studio):
+# anthropic>=0.18.0
 
-# Web Interface
-flask>=3.0.0
-flask-cors>=4.0.0
+# Optional enhancements
+cloudscraper>=1.2.0  # For cloudflare-protected sites
+# pandas>=2.0.0      # For advanced data analysis
+# scikit-learn>=1.3.0 # For pattern clustering
+
+# Development tools (optional)
+# pytest>=7.0.0
+# black>=22.0.0
+# flake8>=4.0.0
