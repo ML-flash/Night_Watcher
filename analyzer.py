@@ -1,6 +1,6 @@
 """
 Night_watcher Content Analyzer
-Template-based multi-round prompting for authoritarian pattern analysis with validation.
+Uses JSON template files to run multi-round analysis pipelines.
 """
 
 import json
@@ -9,9 +9,6 @@ import re
 import os
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Tuple
-
-# Import template-based prompts
-from prompts import load_template_variables, format_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +30,6 @@ class ContentAnalyzer:
         # Load analysis template
         self.template_file = template_file
         self.template = self._load_template(template_file)
-        self.variables = self.template.get("variables", {})
         
         self.logger.info(f"Loaded template: {self.template.get('name')} (status: {self.template.get('status')})")
 
@@ -46,7 +42,7 @@ class ContentAnalyzer:
             template = json.load(f)
         
         # Validate template structure
-        required_fields = ["name", "status", "rounds", "variables"]
+        required_fields = ["name", "status", "rounds"]
         for field in required_fields:
             if field not in template:
                 raise ValueError(f"Template missing required field: {field}")
@@ -129,12 +125,12 @@ class ContentAnalyzer:
         
         for round_config in self.template["rounds"]:
             round_name = round_config["name"]
-            template_name = round_config["prompt_template"]
+            prompt_template = round_config["prompt"]
             max_tokens = round_config.get("max_tokens", 2000)
             
             try:
-                # Format prompt with variables and round data
-                prompt = format_prompt(template_name, self.variables, **round_data)
+                # Format prompt by replacing variables
+                prompt = prompt_template.format(**round_data)
                 
                 # Get LLM response
                 response = self._get_llm_response(prompt, max_tokens)
@@ -143,7 +139,6 @@ class ContentAnalyzer:
                 prompt_chain.append({
                     "round": len(prompt_chain) + 1,
                     "name": round_name,
-                    "template": template_name,
                     "prompt": prompt,
                     "response": response
                 })
@@ -187,6 +182,16 @@ class ContentAnalyzer:
                 processed["facts"] = json.dumps(facts, indent=2)
                 processed["facts_data"] = facts
         
+        elif round_name == "article_analysis":
+            # Extract manipulation and authoritarian assessments from the analysis
+            manipulation_score = self._extract_manipulation_assessment(response)
+            auth_indicators, concern_level = self._extract_authoritarian_assessment(response)
+            
+            processed["manipulation_score"] = manipulation_score
+            processed["authoritarian_indicators"] = auth_indicators
+            processed["concern_level"] = concern_level
+            processed["article_analysis_text"] = response
+        
         elif round_name == "node_extraction":
             nodes = self._extract_json(response)
             if nodes and isinstance(nodes, list):
@@ -220,7 +225,7 @@ class ContentAnalyzer:
         return processed
 
     def _extract_legacy_fields(self, analysis_data: Dict[str, Any], round_data: Dict[str, Any]):
-        """Extract legacy fields for backward compatibility."""
+        """Extract key fields for backward compatibility."""
         # Facts
         if "facts_data" in round_data:
             analysis_data["facts"] = round_data["facts_data"]
@@ -228,17 +233,17 @@ class ContentAnalyzer:
         # Article analysis
         if "article_analysis" in analysis_data["rounds"]:
             analysis_data["article_analysis"] = analysis_data["rounds"]["article_analysis"]["response"]
-        
-        # Manipulation score
-        if "manipulation_score" in analysis_data["rounds"]:
-            score_response = analysis_data["rounds"]["manipulation_score"]["response"]
-            analysis_data["manipulation_score"] = self._extract_manipulation_score(score_response)
-        
-        # Authoritarian analysis
-        if "authoritarian_analysis" in analysis_data["rounds"]:
-            auth_response = analysis_data["rounds"]["authoritarian_analysis"]["response"]
-            indicators, concern_level = self._extract_authoritarian_data(auth_response)
-            analysis_data["authoritarian_indicators"] = indicators
+            
+            # Extract manipulation score and authoritarian indicators from article analysis
+            analysis_text = analysis_data["article_analysis"]
+            
+            # Extract manipulation assessment
+            manipulation_score = self._extract_manipulation_assessment(analysis_text)
+            analysis_data["manipulation_score"] = manipulation_score
+            
+            # Extract authoritarian assessment  
+            auth_indicators, concern_level = self._extract_authoritarian_assessment(analysis_text)
+            analysis_data["authoritarian_indicators"] = auth_indicators
             analysis_data["concern_level"] = concern_level
         
         # Knowledge graph payload
@@ -269,8 +274,8 @@ class ContentAnalyzer:
             "required_fields": True
         }
         
-        # Check for critical fields
-        critical_rounds = ["fact_extraction", "manipulation_score", "authoritarian_analysis"]
+        # Check for critical fields  
+        critical_rounds = ["fact_extraction", "article_analysis", "node_extraction"]
         for round_name in critical_rounds:
             if round_name not in analysis_data.get("rounds", {}):
                 validation_checks["required_fields"] = False
@@ -278,10 +283,6 @@ class ContentAnalyzer:
             if "error" in analysis_data["rounds"][round_name]:
                 validation_checks["required_fields"] = False
                 break
-        
-        # Check manipulation score range
-        manipulation_score = analysis_data.get("manipulation_score", 0)
-        validation_checks["score_range"] = 1 <= manipulation_score <= 10
         
         # Check for obvious LLM errors
         error_indicators = ["I cannot", "I'm unable", "ERROR:", "FAILED:"]
@@ -411,58 +412,86 @@ class ContentAnalyzer:
 
         return first_part + "..." + last_part
 
-    def _extract_manipulation_score(self, text: str) -> int:
+    def _extract_manipulation_assessment(self, text: str) -> int:
         """
-        Extract manipulation score from analysis text.
-
+        Extract manipulation assessment from article analysis.
+        
         Args:
-            text: Analysis text
-
+            text: Article analysis text
+            
         Returns:
-            Manipulation score (1-10) or 0 if not found
+            Manipulation score (1-10) based on analysis
         """
-        try:
-            match = re.search(r"MANIPULATION SCORE:\s*(\d+)", text)
-            if match:
-                score = int(match.group(1))
-                # Ensure the score is within range
-                return max(1, min(10, score))
-            return 0
-        except Exception as e:
-            self.logger.error(f"Error extracting manipulation score: {e}")
-            return 0
+        # Look for manipulation section
+        manipulation_section = re.search(r"4\.\s*MANIPULATION[:\s]*(.*?)(?=\n\d+\.|$)", text, re.IGNORECASE | re.DOTALL)
+        
+        if not manipulation_section:
+            return 5  # Default middle score
+        
+        manipulation_text = manipulation_section.group(1).lower()
+        
+        # Score based on severity indicators
+        if any(word in manipulation_text for word in ["extreme", "severe", "significant", "heavy", "strong"]):
+            return 8
+        elif any(word in manipulation_text for word in ["moderate", "some", "certain", "notable"]):
+            return 6
+        elif any(word in manipulation_text for word in ["minimal", "little", "minor", "slight"]):
+            return 3
+        elif any(word in manipulation_text for word in ["no", "none", "neutral", "objective"]):
+            return 1
+        else:
+            return 5  # Default
 
-    def _extract_authoritarian_data(self, text: str) -> Tuple[List[str], str]:
+    def _extract_authoritarian_assessment(self, text: str) -> Tuple[List[str], str]:
         """
-        Extract authoritarian indicators and concern level.
-
+        Extract authoritarian assessment from article analysis.
+        
         Args:
-            text: Analysis text
-
+            text: Article analysis text
+            
         Returns:
             Tuple of (indicators list, concern level)
         """
         indicators = []
         concern_level = "Unknown"
-
-        try:
-            # Extract indicators
-            indicators_match = re.search(r"AUTHORITARIAN INDICATORS:\s*(.*?)(?:\n|$)", text)
-            if indicators_match:
-                indicators_text = indicators_match.group(1).strip()
-                if indicators_text.lower() != "none detected":
-                    # Split by common list separators
-                    indicators = re.split(r'[,;]|\n-', indicators_text)
-                    indicators = [i.strip() for i in indicators if i.strip()]
-
-            # Extract concern level
-            concern_match = re.search(r"CONCERN LEVEL:\s*(None|Low|Moderate|High|Very High)", text)
-            if concern_match:
-                concern_level = concern_match.group(1).strip()
-
-        except Exception as e:
-            self.logger.error(f"Error extracting authoritarian data: {e}")
-
+        
+        # Look for democratic concerns section
+        concerns_section = re.search(r"5\.\s*DEMOCRATIC CONCERNS[:\s]*(.*?)(?=\n|$)", text, re.IGNORECASE | re.DOTALL)
+        
+        if concerns_section:
+            concerns_text = concerns_section.group(1)
+            
+            # Extract specific indicators mentioned
+            indicator_patterns = [
+                r"undermin\w+ (?:of )?(\w+ ?\w*)",
+                r"delegitimiz\w+ (?:of )?(\w+ ?\w*)",
+                r"expansion of (\w+ ?\w*)",
+                r"erosion of (\w+ ?\w*)",
+                r"attack\w* on (\w+ ?\w*)",
+                r"threat\w* to (\w+ ?\w*)"
+            ]
+            
+            for pattern in indicator_patterns:
+                matches = re.findall(pattern, concerns_text, re.IGNORECASE)
+                indicators.extend(matches)
+            
+            # Determine concern level based on language
+            concerns_lower = concerns_text.lower()
+            if any(word in concerns_lower for word in ["severe", "significant", "serious", "grave"]):
+                concern_level = "High"
+            elif any(word in concerns_lower for word in ["moderate", "some", "potential"]):
+                concern_level = "Moderate"
+            elif any(word in concerns_lower for word in ["minimal", "little", "minor"]):
+                concern_level = "Low"
+            elif any(word in concerns_lower for word in ["no", "none"]):
+                concern_level = "None"
+            else:
+                concern_level = "Moderate"  # Default
+        
+        # Clean up indicators
+        indicators = [ind.strip() for ind in indicators if ind.strip()]
+        indicators = list(set(indicators))[:5]  # Dedupe and limit to 5
+        
         return indicators, concern_level
 
     def _create_article_summary(self, article: Dict[str, Any]) -> Dict[str, Any]:
