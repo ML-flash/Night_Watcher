@@ -31,6 +31,9 @@ class ContentAnalyzer:
         self.template_file = template_file
         self.template = self._load_template(template_file)
         
+        # Create logs directory for JSON failures
+        os.makedirs("data/logs", exist_ok=True)
+        
         self.logger.info(f"Loaded template: {self.template.get('name')} (status: {self.template.get('status')})")
 
     def _load_template(self, template_file: str) -> Dict[str, Any]:
@@ -135,6 +138,16 @@ class ContentAnalyzer:
                 # Get LLM response
                 response = self._get_llm_response(prompt, max_tokens)
                 
+                # For JSON-critical rounds, retry if extraction fails
+                if round_name in ["node_extraction", "edge_extraction", "fact_extraction"]:
+                    expected_type = list if "extraction" in round_name else dict
+                    test_extraction = self._extract_json_with_recovery(response, expected_type)
+                    
+                    if not test_extraction:
+                        self.logger.warning(f"JSON extraction failed for {round_name}, retrying with clearer prompt")
+                        retry_prompt = self._add_json_retry_prompt(prompt)
+                        response = self._get_llm_response(retry_prompt, max_tokens)
+                
                 # Store round info
                 prompt_chain.append({
                     "round": len(prompt_chain) + 1,
@@ -177,10 +190,12 @@ class ContentAnalyzer:
         processed = {}
         
         if round_name == "fact_extraction":
-            facts = self._extract_json(response)
+            facts = self._extract_json_with_recovery(response, dict)
             if facts and isinstance(facts, dict):
                 processed["facts"] = json.dumps(facts, indent=2)
                 processed["facts_data"] = facts
+            else:
+                self._log_json_failure(round_name, response)
         
         elif round_name == "article_analysis":
             # Extract manipulation and authoritarian assessments from the analysis
@@ -193,34 +208,42 @@ class ContentAnalyzer:
             processed["article_analysis_text"] = response
         
         elif round_name == "node_extraction":
-            nodes = self._extract_json(response)
+            nodes = self._extract_json_with_recovery(response, list)
             if nodes and isinstance(nodes, list):
                 processed["nodes"] = json.dumps(nodes, indent=2)
                 processed["nodes_data"] = nodes
+            else:
+                self._log_json_failure(round_name, response)
         
         elif round_name == "node_deduplication":
-            unique_nodes = self._extract_json(response)
+            unique_nodes = self._extract_json_with_recovery(response, list)
             if unique_nodes and isinstance(unique_nodes, list):
                 processed["unique_nodes"] = json.dumps(unique_nodes, indent=2)
                 processed["unique_nodes_data"] = unique_nodes
                 # Update nodes for edge extraction
                 processed["nodes"] = processed["unique_nodes"]
                 processed["nodes_data"] = unique_nodes
+            else:
+                self._log_json_failure(round_name, response)
         
         elif round_name == "edge_extraction":
-            edges = self._extract_json(response)
+            edges = self._extract_json_with_recovery(response, list)
             if edges and isinstance(edges, list):
                 processed["edges"] = json.dumps(edges, indent=2)
                 processed["edges_data"] = edges
+            else:
+                self._log_json_failure(round_name, response)
         
         elif round_name == "edge_enrichment":
-            enriched_edges = self._extract_json(response)
+            enriched_edges = self._extract_json_with_recovery(response, list)
             if enriched_edges and isinstance(enriched_edges, list):
                 processed["enriched_edges"] = json.dumps(enriched_edges, indent=2)
                 processed["enriched_edges_data"] = enriched_edges
                 # Update edges for packaging
                 processed["edges"] = processed["enriched_edges"]
                 processed["edges_data"] = enriched_edges
+            else:
+                self._log_json_failure(round_name, response)
         
         return processed
 
@@ -249,7 +272,7 @@ class ContentAnalyzer:
         # Knowledge graph payload
         if "package_ingestion" in analysis_data["rounds"]:
             kg_response = analysis_data["rounds"]["package_ingestion"]["response"]
-            kg_package = self._extract_json(kg_response)
+            kg_package = self._extract_json_with_recovery(kg_response, dict)
             if kg_package and isinstance(kg_package, dict):
                 analysis_data["kg_payload"] = kg_package
             else:
@@ -388,6 +411,133 @@ class ContentAnalyzer:
         except Exception as e:
             self.logger.error(f"Error extracting JSON: {e}")
             return None
+
+    def _extract_json_with_recovery(self, text: str, expected_type: type = None) -> Optional[Any]:
+        """
+        Enhanced JSON extraction with multiple recovery strategies.
+        
+        Args:
+            text: Text containing JSON
+            expected_type: Expected type (list or dict) for validation
+            
+        Returns:
+            Parsed JSON object or None if all strategies fail
+        """
+        if not text:
+            return None
+
+        # Strategy 1: Try standard extraction first
+        result = self._extract_json(text)
+        if result and (expected_type is None or isinstance(result, expected_type)):
+            return result
+
+        # Strategy 2: Clean common LLM mistakes
+        cleaned_text = text
+        
+        # Remove common prefixes LLMs add
+        prefixes_to_remove = [
+            "Here is the JSON:",
+            "Here's the JSON:",
+            "JSON:",
+            "```json",
+            "```"
+        ]
+        for prefix in prefixes_to_remove:
+            if cleaned_text.strip().startswith(prefix):
+                cleaned_text = cleaned_text[len(prefix):].strip()
+        
+        # Remove trailing backticks
+        cleaned_text = cleaned_text.rstrip('`').strip()
+        
+        # Fix unclosed arrays/objects
+        if cleaned_text.count('[') > cleaned_text.count(']'):
+            cleaned_text += ']' * (cleaned_text.count('[') - cleaned_text.count(']'))
+        if cleaned_text.count('{') > cleaned_text.count('}'):
+            cleaned_text += '}' * (cleaned_text.count('{') - cleaned_text.count('}'))
+        
+        # Try parsing cleaned text
+        try:
+            result = json.loads(cleaned_text)
+            if expected_type is None or isinstance(result, expected_type):
+                return result
+        except:
+            pass
+
+        # Strategy 3: Extract JSON-like structures more aggressively
+        if expected_type == list:
+            # Find the largest valid array
+            matches = re.findall(r'\[\s*\{[^]]+\]\s*\]', text, re.DOTALL)
+            for match in sorted(matches, key=len, reverse=True):
+                try:
+                    result = json.loads(match)
+                    if isinstance(result, list) and len(result) > 0:
+                        return result
+                except:
+                    continue
+        
+        elif expected_type == dict:
+            # Find the largest valid object
+            matches = re.findall(r'\{[^{}]+\}', text, re.DOTALL)
+            for match in sorted(matches, key=len, reverse=True):
+                try:
+                    result = json.loads(match)
+                    if isinstance(result, dict):
+                        return result
+                except:
+                    continue
+
+        # Strategy 4: If we expect specific structure, try to build it
+        if expected_type == list and "node_type" in text:
+            # Try to extract node-like structures
+            nodes = []
+            node_pattern = r'"node_type"\s*:\s*"([^"]+)"[^}]*"name"\s*:\s*"([^"]+)"'
+            for match in re.finditer(node_pattern, text):
+                nodes.append({
+                    "node_type": match.group(1),
+                    "name": match.group(2),
+                    "attributes": {}
+                })
+            if nodes:
+                return nodes
+
+        return None
+
+    def _add_json_retry_prompt(self, original_prompt: str, error_msg: str = None) -> str:
+        """
+        Add a retry instruction to the prompt when JSON extraction fails.
+        """
+        retry_instruction = """
+
+IMPORTANT: Your previous response could not be parsed as valid JSON. 
+Please provide ONLY a valid JSON response with no additional text.
+- Start directly with [ or {
+- End with ] or }
+- No markdown code blocks
+- No explanatory text before or after
+- Ensure all quotes are properly escaped
+- Ensure all brackets are balanced
+"""
+        
+        if error_msg:
+            retry_instruction += f"\nError encountered: {error_msg}\n"
+        
+        return original_prompt + retry_instruction
+
+    def _log_json_failure(self, round_name: str, response: str):
+        """Log JSON extraction failures for pattern analysis."""
+        try:
+            failure_log = f"data/logs/json_failures_{round_name}.txt"
+            with open(failure_log, "a", encoding="utf-8") as f:
+                f.write(f"\n--- {datetime.now().isoformat()} ---\n")
+                f.write(f"Length: {len(response)} chars\n")
+                f.write("Response:\n")
+                f.write(response[:1000])  # First 1000 chars
+                if len(response) > 1000:
+                    f.write("\n... (truncated) ...\n")
+                f.write("\n")
+            self.logger.warning(f"JSON extraction failed for {round_name}, logged to {failure_log}")
+        except Exception as e:
+            self.logger.error(f"Failed to log JSON failure: {e}")
 
     def _optimize_content(self, content: str, max_length: int = 4000) -> str:
         """
