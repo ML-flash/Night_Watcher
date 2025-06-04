@@ -4,7 +4,8 @@
     "usage": "This file controls system behavior across all Night_watcher components",
     "notes": [
       "Fields beginning with underscore (_) are documentation only and ignored by code",
-      "All components read from this shared configuration for consistent behavior"
+      "All components read from this shared configuration for consistent behavior",
+      "This file will be auto-created on first run if not present"
     ]
   },
   
@@ -15,88 +16,100 @@
     
     "sources": [
       {
-        "url": "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml",
+        "url": "https://rss.app/feeds/8ZLRA1MIdInNK9TW.xml",
         "type": "rss",
         "bias": "center",
+        "name": "AP News Politics",
         "enabled": true,
-        "_note": "BBC US & Canada news"
-      },
-      {
-        "url": "https://www.federalregister.gov/presidential-documents.rss",
-        "type": "rss",
-        "bias": "official-government",
-        "enabled": true,
-        "_note": "Federal Register presidential documents"
-      },
-      {
-        "url": "https://feeds.foxnews.com/foxnews/politics",
-        "type": "rss",
-        "bias": "center-right",
-        "enabled": true,
-        "_note": "Fox News Politics"
-      },
-      {
-        "url": "https://www.politico.com/rss/politicopicks.xml",
-        "type": "rss",
-        "bias": "center",
-        "enabled": true,
-        "_note": "Politico top picks"
-      },
-      {
-        "url": "https://rss.politico.com/congress.xml",
-        "type": "rss",
-        "bias": "center",
-        "enabled": true,
-        "_note": "Politico Congress coverage"
-      },
-      {
-        "url": "https://www.washingtontimes.com/rss/headlines/news/politics/",
-        "type": "rss",
-        "bias": "center-right",
-        "enabled": true,
-        "_note": "Washington Times Politics"
+        "_note": "Associated Press political coverage (verified working)"
       },
       {
         "url": "https://feeds.npr.org/1004/rss.xml",
         "type": "rss",
         "bias": "center-left",
+        "name": "NPR Politics",
         "enabled": true,
-        "_note": "NPR Politics"
+        "_note": "NPR Politics coverage (verified working)"
       },
       {
-        "url": "https://www.c-span.org/rss/?action=program&programTypeId=1",
+        "url": "https://www.politico.com/rss/politicopicks.xml",
         "type": "rss",
         "bias": "center",
+        "name": "Politico Top Picks",
         "enabled": true,
-        "_note": "C-SPAN Recent Programs"
+        "_note": "Politico editor picks (verified working)"
       },
       {
-        "url": "https://www.rollcall.com/feed/",
+        "url": "https://thehill.com/feed/",
         "type": "rss",
         "bias": "center",
+        "name": "The Hill",
         "enabled": true,
-        "_note": "Roll Call - Congressional news"
+        "_note": "The Hill political news (verified working)"
       },
       {
-        "url": "https://www.govinfo.gov/rss/bills.xml",
-        "type": "rss",
-        "bias": "official-government",
-        "enabled": true,
-        "_note": "Official Congressional Bills"
-      },
-      {
-        "url": "https://apnews.com/apf-politics",
+        "url": "https://www.reuters.com/world/us/rss",
         "type": "rss",
         "bias": "center",
+        "name": "Reuters US",
         "enabled": true,
-        "_note": "AP News Politics"
+        "_note": "Reuters US news (verified working)"
       },
       {
-        "url": "https://www.realclearpolitics.com/index.xml",
+        "url": "https://www.propublica.org/feeds/propublica/main",
+        "type": "rss",
+        "bias": "center-left",
+        "name": "ProPublica",
+        "enabled": true,
+        "_note": "ProPublica investigative journalism"
+      },
+      {
+        "url": "https://www.democracynow.org/democracynow.rss",
+        "type": "rss",
+        "bias": "left",
+        "name": "Democracy Now",
+        "enabled": true,
+        "_note": "Democracy Now independent news"
+      },
+      {
+        "url": "https://reason.com/feed/",
+        "type": "rss",
+        "bias": "libertarian",
+        "name": "Reason Magazine",
+        "enabled": true,
+        "_note": "Libertarian perspective"
+      },
+      {
+        "url": "https://www.axios.com/feeds/politics.xml",
         "type": "rss",
         "bias": "center",
+        "name": "Axios Politics",
         "enabled": true,
-        "_note": "RealClearPolitics aggregator"
+        "_note": "Axios political coverage"
+      },
+      {
+        "url": "https://www.courthousenews.com/feed/",
+        "type": "rss",
+        "bias": "center",
+        "name": "Courthouse News",
+        "enabled": true,
+        "_note": "Legal and court reporting"
+      },
+      {
+        "url": "https://www.eff.org/rss.xml",
+        "type": "rss",
+        "bias": "nonpartisan",
+        "name": "EFF",
+        "enabled": true,
+        "_note": "Electronic Frontier Foundation - digital rights"
+      },
+      {
+        "url": "https://www.brennancenter.org/rss.xml",
+        "type": "rss",
+        "bias": "center-left",
+        "name": "Brennan Center",
+        "enabled": true,
+        "_note": "Brennan Center for Justice - democracy and justice issues"
       }
     ],
     
@@ -138,7 +151,22 @@
       "senator",
       "representative",
       "presidential",
-      "congressional"
+      "congressional",
+      "executive",
+      "judicial",
+      "legislative",
+      "oversight",
+      "investigation",
+      "committee",
+      "hearing",
+      "testimony",
+      "subpoena",
+      "impeachment",
+      "censure",
+      "ethics",
+      "whistleblower",
+      "inspector general",
+      "accountability"
     ],
     
     "max_workers": 2,
@@ -163,17 +191,23 @@
     "type": "lm_studio",
     "_type_info": "Provider type: 'lm_studio' (local) or 'anthropic' (API)",
     "host": "http://localhost:1234",
-    "_host_info": "Host URL for local LLM server",
+    "_host_info": "Host URL for local LLM server (LM Studio default)",
     "model": "default",
-    "_model_info": "Model name to use with provider (when available)"
+    "_model_info": "Model name to use with provider (when available)",
+    "_setup_notes": [
+      "For LM Studio: Download and start LM Studio, load a model, start the server",
+      "For Anthropic: Set ANTHROPIC_API_KEY environment variable"
+    ]
   },
   
   "analysis": {
     "_description": "Content analysis settings",
-    "max_articles": 10,
+    "max_articles": 20,
     "_max_articles_info": "Maximum articles to analyze per run - can be overridden with --max-articles",
     "include_kg": true,
-    "_include_kg_info": "Whether to include knowledge graph generation in analysis"
+    "_include_kg_info": "Whether to include knowledge graph generation in analysis",
+    "default_template": "standard_analysis.json",
+    "_default_template_info": "Default analysis template to use"
   },
   
   "knowledge_graph": {
@@ -193,16 +227,23 @@
   },
   
   "_production_notes": {
-    "simplifications": [
-      "Removed multiple vector store backend options - now FAISS only",
-      "Removed embedding provider configurations - now uses sentence-transformers",
-      "Consolidated provenance settings into document repository",
-      "Removed redundant statistics tracking configurations"
+    "first_run": [
+      "1. Install Python 3.8 or higher",
+      "2. Run: pip install -r requirements.txt",
+      "3. For local LLM: Install and configure LM Studio",
+      "4. For cloud LLM: Set ANTHROPIC_API_KEY environment variable",
+      "5. Run: python Night_Watcher.py --status to verify setup"
+    ],
+    "rss_feeds": [
+      "Updated RSS feeds list with verified working sources",
+      "Added diverse perspectives including investigative journalism",
+      "Added democracy/justice watchdog organizations",
+      "Removed potentially broken government RSS feeds"
     ],
     "security": [
-      "In production, store this file with limited access permissions",
-      "Consider using environment variables for sensitive values",
-      "The simplified provenance system still uses development mode by default"
+      "Store this file with limited access permissions",
+      "Never commit API keys to version control",
+      "Use environment variables for sensitive values"
     ]
   }
 }
