@@ -61,9 +61,7 @@ class NightWatcher:
         )
         
         self.vector_store = VectorStore(
-            base_dir=f"{self.base_dir}/vector_store",
-            embedding_provider="local",
-            kg_instance=self.knowledge_graph
+            base_dir=f"{self.base_dir}/vector_store"
         )
     
     def _load_config(self) -> Dict[str, Any]:
@@ -148,14 +146,29 @@ class NightWatcher:
         # Run analysis
         result = self.analyzer.process({"articles": articles, "document_ids": [a["document_id"] for a in articles]})
         
-        # Save analyses
+        # Save analyses with provenance
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         for i, analysis in enumerate(result.get("analyses", [])):
             doc_id = articles[i]["document_id"]
-            filename = f"analysis_{doc_id}_{timestamp}.json"
+            analysis_id = f"analysis_{doc_id}_{timestamp}"
             
+            # Store analysis file
+            filename = f"{analysis_id}.json"
             with open(f"{self.base_dir}/analyzed/{filename}", 'w') as f:
                 json.dump(analysis, f, indent=2)
+            
+            # Store analysis provenance
+            self.document_repository.store_analysis_provenance(
+                analysis_id=analysis_id,
+                document_ids=[doc_id],
+                analysis_type="content_analysis",
+                analysis_parameters={
+                    "template": analysis.get("template_info", {}).get("file", "unknown"),
+                    "max_articles": max_articles
+                },
+                results=analysis,
+                analyzer_version=analysis.get("template_info", {}).get("version", "1.0")
+            )
         
         return {"status": "completed", "analyzed": len(result.get("analyses", []))}
     
@@ -189,8 +202,7 @@ class NightWatcher:
     
     def sync_vectors(self) -> Dict[str, Any]:
         """Sync vector store with knowledge graph."""
-        stats = self.vector_store.sync_with_kg(self.knowledge_graph)
-        self.vector_store.save()
+        stats = self.vector_store.sync_with_knowledge_graph(self.knowledge_graph)
         return stats
     
     def _get_analyzed_docs(self) -> set:
@@ -213,17 +225,44 @@ class NightWatcher:
         return analyzed
     
     def status(self) -> Dict[str, Any]:
-        """Get system status."""
-        docs = self.document_repository.list_documents()
+        """Get unified system status from all components."""
+        # Get repository stats
+        repo_stats = self.document_repository.get_statistics()
+        
+        # Get analyzed count
         analyzed = len(self._get_analyzed_docs())
         
+        # Get KG stats
+        kg_stats = self.knowledge_graph.get_basic_statistics()
+        
+        # Get vector stats
+        vector_stats = self.vector_store.get_statistics()
+        
         return {
-            "total_documents": len(docs),
-            "analyzed_documents": analyzed,
-            "pending_analysis": len(docs) - analyzed,
-            "graph_nodes": len(self.knowledge_graph.graph.nodes),
-            "graph_edges": len(self.knowledge_graph.graph.edges),
-            "vector_count": len(self.vector_store.metadata)
+            "documents": {
+                "total": repo_stats["total_documents"],
+                "analyzed": analyzed,
+                "pending": repo_stats["total_documents"] - analyzed,
+                "total_size_mb": repo_stats["total_size_mb"]
+            },
+            "analyses": {
+                "total": repo_stats["total_analyses"]
+            },
+            "knowledge_graph": {
+                "nodes": kg_stats["node_count"],
+                "edges": kg_stats["edge_count"],
+                "node_types": kg_stats["node_types"],
+                "relation_types": kg_stats["relation_types"]
+            },
+            "vector_store": {
+                "total_vectors": vector_stats["total_vectors"],
+                "index_size_mb": vector_stats["index_size_mb"]
+            },
+            "system": {
+                "llm_connected": self.llm_provider is not None,
+                "base_dir": self.base_dir,
+                "timestamp": datetime.now().isoformat()
+            }
         }
 
 
@@ -254,8 +293,7 @@ def main():
         if args.status:
             status = nw.status()
             print("\n=== Night_watcher Status ===")
-            for key, value in status.items():
-                print(f"{key}: {value}")
+            print(json.dumps(status, indent=2))
         
         elif args.collect:
             result = nw.collect(mode=args.mode)
