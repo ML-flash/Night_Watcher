@@ -1,249 +1,77 @@
 {
-  "_documentation": {
-    "overview": "Night_watcher configuration file - simplified version",
-    "usage": "This file controls system behavior across all Night_watcher components",
-    "notes": [
-      "Fields beginning with underscore (_) are documentation only and ignored by code",
-      "All components read from this shared configuration for consistent behavior",
-      "This file will be auto-created on first run if not present"
-    ]
-  },
-  
   "content_collection": {
-    "_description": "Settings for the content collection component",
     "article_limit": 50,
-    "_article_limit_info": "Maximum articles to collect per source",
-    
     "sources": [
       {
         "url": "https://rss.app/feeds/8ZLRA1MIdInNK9TW.xml",
         "type": "rss",
         "bias": "center",
         "name": "AP News Politics",
-        "enabled": true,
-        "_note": "Associated Press political coverage (verified working)"
+        "enabled": true
       },
       {
         "url": "https://feeds.npr.org/1004/rss.xml",
         "type": "rss",
         "bias": "center-left",
         "name": "NPR Politics",
-        "enabled": true,
-        "_note": "NPR Politics coverage (verified working)"
+        "enabled": true
       },
       {
         "url": "https://www.politico.com/rss/politicopicks.xml",
         "type": "rss",
         "bias": "center",
         "name": "Politico Top Picks",
-        "enabled": true,
-        "_note": "Politico editor picks (verified working)"
+        "enabled": true
       },
       {
         "url": "https://thehill.com/feed/",
         "type": "rss",
         "bias": "center",
         "name": "The Hill",
-        "enabled": true,
-        "_note": "The Hill political news (verified working)"
+        "enabled": true
       },
       {
         "url": "https://www.reuters.com/world/us/rss",
         "type": "rss",
         "bias": "center",
         "name": "Reuters US",
-        "enabled": true,
-        "_note": "Reuters US news (verified working)"
+        "enabled": true
       },
       {
         "url": "https://www.propublica.org/feeds/propublica/main",
         "type": "rss",
         "bias": "center-left",
         "name": "ProPublica",
-        "enabled": true,
-        "_note": "ProPublica investigative journalism"
+        "enabled": true
       },
       {
         "url": "https://www.democracynow.org/democracynow.rss",
         "type": "rss",
         "bias": "left",
         "name": "Democracy Now",
-        "enabled": true,
-        "_note": "Democracy Now independent news"
+        "enabled": true
       },
       {
         "url": "https://reason.com/feed/",
         "type": "rss",
         "bias": "libertarian",
         "name": "Reason Magazine",
-        "enabled": true,
-        "_note": "Libertarian perspective"
-      },
-      {
-        "url": "https://www.axios.com/feeds/politics.xml",
-        "type": "rss",
-        "bias": "center",
-        "name": "Axios Politics",
-        "enabled": true,
-        "_note": "Axios political coverage"
-      },
-      {
-        "url": "https://www.courthousenews.com/feed/",
-        "type": "rss",
-        "bias": "center",
-        "name": "Courthouse News",
-        "enabled": true,
-        "_note": "Legal and court reporting"
-      },
-      {
-        "url": "https://www.eff.org/rss.xml",
-        "type": "rss",
-        "bias": "nonpartisan",
-        "name": "EFF",
-        "enabled": true,
-        "_note": "Electronic Frontier Foundation - digital rights"
-      },
-      {
-        "url": "https://www.brennancenter.org/rss.xml",
-        "type": "rss",
-        "bias": "center-left",
-        "name": "Brennan Center",
-        "enabled": true,
-        "_note": "Brennan Center for Justice - democracy and justice issues"
+        "enabled": true
       }
     ],
-    
     "govt_keywords": [
-      "executive order",
-      "administration",
-      "white house",
-      "congress",
-      "senate",
-      "house of representatives",
-      "supreme court",
-      "federal",
-      "president",
-      "department of",
-      "agency",
-      "regulation",
-      "policy",
-      "law",
-      "legislation",
-      "election",
-      "democracy",
-      "constitution",
-      "amendment",
-      "biden",
-      "trump", 
-      "harris",
-      "cabinet",
-      "judiciary",
-      "bill",
-      "vote",
-      "republican",
-      "democrat",
-      "government",
-      "political",
-      "politics",
-      "campaign",
-      "candidate",
-      "governor",
-      "senator",
-      "representative",
-      "presidential",
-      "congressional",
-      "executive",
-      "judicial",
-      "legislative",
-      "oversight",
-      "investigation",
-      "committee",
-      "hearing",
-      "testimony",
-      "subpoena",
-      "impeachment",
-      "censure",
-      "ethics",
-      "whistleblower",
-      "inspector general",
-      "accountability"
+      "executive order", "administration", "white house", "president",
+      "congress", "senate", "supreme court", "federal", "government",
+      "politics", "election", "democracy", "biden", "trump"
     ],
-    
-    "max_workers": 2,
-    "_max_workers_info": "Number of concurrent threads for collection",
-    "delay_between_requests": 5.0,
-    "_delay_between_requests_info": "Delay in seconds between requests to avoid rate limiting",
-    "request_timeout": 30,
-    "_request_timeout_info": "Request timeout in seconds",
-    "min_word_count": 50,
-    "_min_word_count_info": "Minimum word count for valid articles",
-    "enable_deduplication": true
+    "request_timeout": 45,
+    "delay_between_requests": 2.0
   },
-  
-  "output": {
-    "_description": "Output directory settings",
-    "base_dir": "data",
-    "_base_dir_info": "Base directory for all data storage - can be overridden with --output-dir"
-  },
-  
   "llm_provider": {
-    "_description": "Settings for the Large Language Model provider",
-    "type": "lm_studio",
-    "_type_info": "Provider type: 'lm_studio' (local) or 'anthropic' (API)",
-    "host": "http://localhost:1234",
-    "_host_info": "Host URL for local LLM server (LM Studio default)",
-    "model": "default",
-    "_model_info": "Model name to use with provider (when available)",
-    "_setup_notes": [
-      "For LM Studio: Download and start LM Studio, load a model, start the server",
-      "For Anthropic: Set ANTHROPIC_API_KEY environment variable"
-    ]
+    "type": "anthropic",
+    "model": "claude-3-haiku-20240307"
   },
-  
   "analysis": {
-    "_description": "Content analysis settings",
-    "max_articles": 20,
-    "_max_articles_info": "Maximum articles to analyze per run - can be overridden with --max-articles",
-    "include_kg": true,
-    "_include_kg_info": "Whether to include knowledge graph generation in analysis",
-    "default_template": "standard_analysis.json",
-    "_default_template_info": "Default analysis template to use"
-  },
-  
-  "knowledge_graph": {
-    "_description": "Knowledge graph settings",
-    "graph_file": "data/knowledge_graph/graph.json",
-    "_graph_file_info": "Path to primary knowledge graph storage file",
-    "taxonomy_file": "KG_Taxonomy.csv",
-    "_taxonomy_file_info": "Path to knowledge graph taxonomy definition"
-  },
-  
-  "logging": {
-    "_description": "Logging settings",
-    "level": "INFO",
-    "_level_info": "Log level: DEBUG, INFO, WARNING, ERROR, or CRITICAL",
-    "log_dir": "logs",
-    "_log_dir_info": "Directory to store log files"
-  },
-  
-  "_production_notes": {
-    "first_run": [
-      "1. Install Python 3.8 or higher",
-      "2. Run: pip install -r requirements.txt",
-      "3. For local LLM: Install and configure LM Studio",
-      "4. For cloud LLM: Set ANTHROPIC_API_KEY environment variable",
-      "5. Run: python Night_Watcher.py --status to verify setup"
-    ],
-    "rss_feeds": [
-      "Updated RSS feeds list with verified working sources",
-      "Added diverse perspectives including investigative journalism",
-      "Added democracy/justice watchdog organizations",
-      "Removed potentially broken government RSS feeds"
-    ],
-    "security": [
-      "Store this file with limited access permissions",
-      "Never commit API keys to version control",
-      "Use environment variables for sensitive values"
-    ]
+    "max_articles": 20
   }
 }
