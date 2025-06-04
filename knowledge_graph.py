@@ -1131,6 +1131,8 @@ import os
 import json
 import logging
 import csv
+import hashlib
+import uuid
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Set, Union, Tuple
 import networkx as nx
@@ -1160,6 +1162,7 @@ class KnowledgeGraph:
         self.nodes_dir = os.path.join(base_dir, "nodes")
         self.edges_dir = os.path.join(base_dir, "edges")
         self.snapshots_dir = os.path.join(base_dir, "snapshots")
+        self.provenance_dir = os.path.join(base_dir, "provenance")
 
         # Setup logging
         self.logger = logging.getLogger("KnowledgeGraph")
@@ -1174,6 +1177,18 @@ class KnowledgeGraph:
 
         # Initialize NetworkX graph
         self.graph = nx.DiGraph()
+        
+        # Graph provenance tracking
+        self.graph_id = None
+        self.graph_version = 0
+        self.provenance_chain = []
+        self.parent_graph_id = None
+
+        # Create directories if they don't exist
+        os.makedirs(self.nodes_dir, exist_ok=True)
+        os.makedirs(self.edges_dir, exist_ok=True)
+        os.makedirs(self.snapshots_dir, exist_ok=True)
+        os.makedirs(self.provenance_dir, exist_ok=True)
 
         # Load taxonomy if available
         self.taxonomy = self._load_taxonomy()
@@ -1182,11 +1197,6 @@ class KnowledgeGraph:
         self._node_counter = 0
         self._edge_counter = 0
 
-        # Create directories if they don't exist
-        os.makedirs(self.nodes_dir, exist_ok=True)
-        os.makedirs(self.edges_dir, exist_ok=True)
-        os.makedirs(self.snapshots_dir, exist_ok=True)
-
         # Load existing graph if available
         if graph_file and os.path.exists(graph_file):
             self._load_graph_from_file(graph_file)
@@ -1194,6 +1204,28 @@ class KnowledgeGraph:
         else:
             self._load_graph()
             self.logger.info(f"Loaded knowledge graph from directory structure at {base_dir}")
+            
+        # Initialize graph ID if not already set
+        if not self.graph_id:
+            self._initialize_graph_provenance()
+
+    def _initialize_graph_provenance(self):
+        """Initialize the graph provenance with a new ID if not already set"""
+        if not self.graph_id:
+            self.graph_id = f"graph_{uuid.uuid4().hex[:16]}"
+            self.graph_version = 1
+            self.provenance_chain = [{
+                "timestamp": datetime.now().isoformat(),
+                "operation": "initialize",
+                "graph_id": self.graph_id,
+                "graph_version": self.graph_version,
+                "parent_graph_id": None,
+                "description": "Initial graph creation"
+            }]
+            self.logger.info(f"Initialized new graph with ID: {self.graph_id}, version: {self.graph_version}")
+            
+            # Save initial provenance record
+            self._save_provenance_record()
 
     def _load_taxonomy(self) -> Dict[str, Any]:
         """
@@ -1228,7 +1260,7 @@ class KnowledgeGraph:
                     examples = row.get("examples", "")
 
                     # Parse attributes
-                    attributes = [attr.strip() for attr in key_attributes.split(";")]
+                    attributes = [attr.strip() for attr in key_attributes.split(";") if attr.strip()]
 
                     # Parse domain/range for relations
                     domain_range_parts = domain_range.split("→") if "→" in domain_range else []
@@ -1241,7 +1273,7 @@ class KnowledgeGraph:
                         self.discovered_node_types.add(name)
                     elif taxonomy_type == "relation":
                         # Extract domain and range
-                        if len(domain_range_parts) > 1:
+                        if len(domain_range_parts) >= 2:
                             domain = domain_range_parts[0].strip()
                             range_val = domain_range_parts[1].strip()
 
@@ -1335,6 +1367,9 @@ class KnowledgeGraph:
                         self.logger.error(f"Error loading edge {edge_id}: {e}")
 
         self.logger.info(f"Loaded {node_count} nodes and {edge_count} edges from directory structure")
+        
+        # Load graph provenance
+        self._load_graph_provenance()
 
     def _load_graph_from_file(self, graph_file: str) -> None:
         """
@@ -1349,6 +1384,19 @@ class KnowledgeGraph:
 
             # Clear existing graph
             self.graph.clear()
+
+            # Load graph metadata and provenance
+            if "metadata" in graph_data:
+                metadata = graph_data.get("metadata", {})
+                self.graph_id = metadata.get("graph_id")
+                self.graph_version = metadata.get("graph_version", 1)
+                self.parent_graph_id = metadata.get("parent_graph_id")
+                self.provenance_chain = metadata.get("provenance_chain", [])
+                
+                if not self.graph_id:
+                    self._initialize_graph_provenance()
+            else:
+                self._initialize_graph_provenance()
 
             # Load nodes
             nodes = graph_data.get("nodes", {})
@@ -1392,6 +1440,104 @@ class KnowledgeGraph:
             self.logger.error(f"Error loading graph from file {graph_file}: {e}")
             # Initialize empty graph
             self.graph.clear()
+            self._initialize_graph_provenance()
+
+    def _load_graph_provenance(self):
+        """Load graph provenance from provenance file if available"""
+        provenance_file = os.path.join(self.provenance_dir, "graph_provenance.json")
+        if os.path.exists(provenance_file):
+            try:
+                with open(provenance_file, 'r', encoding='utf-8') as f:
+                    provenance_data = json.load(f)
+                
+                self.graph_id = provenance_data.get("graph_id")
+                self.graph_version = provenance_data.get("graph_version", 1)
+                self.parent_graph_id = provenance_data.get("parent_graph_id")
+                self.provenance_chain = provenance_data.get("provenance_chain", [])
+                
+                self.logger.info(f"Loaded graph provenance: ID={self.graph_id}, version={self.graph_version}")
+            except Exception as e:
+                self.logger.error(f"Error loading graph provenance: {e}")
+                self._initialize_graph_provenance()
+        else:
+            self._initialize_graph_provenance()
+
+    def _save_provenance_record(self):
+        """Save the current graph provenance information"""
+        provenance_data = {
+            "graph_id": self.graph_id,
+            "graph_version": self.graph_version,
+            "parent_graph_id": self.parent_graph_id,
+            "provenance_chain": self.provenance_chain,
+            "last_updated": datetime.now().isoformat()
+        }
+        
+        provenance_file = os.path.join(self.provenance_dir, "graph_provenance.json")
+        try:
+            with open(provenance_file, 'w', encoding='utf-8') as f:
+                json.dump(provenance_data, f, indent=2, ensure_ascii=False)
+            self.logger.info(f"Saved graph provenance record: {self.graph_id} (version {self.graph_version})")
+        except Exception as e:
+            self.logger.error(f"Error saving provenance record: {e}")
+
+    def update_provenance(self, operation: str, description: str, source_ids: List[str] = None):
+        """
+        Update the graph provenance with a new operation
+        
+        Args:
+            operation: Type of operation performed
+            description: Description of the operation
+            source_ids: List of source IDs (documents, analyses) that contributed to this update
+        """
+        # Increment graph version
+        self.graph_version += 1
+        
+        # Create provenance record
+        record = {
+            "timestamp": datetime.now().isoformat(),
+            "operation": operation,
+            "graph_id": self.graph_id,
+            "graph_version": self.graph_version,
+            "parent_graph_id": self.parent_graph_id,
+            "description": description
+        }
+        
+        # Add source IDs if provided
+        if source_ids:
+            record["source_ids"] = source_ids
+            
+        # Add content hash of the graph
+        record["content_hash"] = self._compute_graph_hash()
+        
+        # Add to provenance chain
+        self.provenance_chain.append(record)
+        
+        # Save updated provenance
+        self._save_provenance_record()
+        
+        self.logger.info(f"Updated graph provenance: {operation}, version {self.graph_version}")
+        
+    def _compute_graph_hash(self) -> str:
+        """Compute a hash of the graph content for integrity verification"""
+        # Convert graph to a stable representation for hashing
+        nodes_str = json.dumps(
+            {node: {k: v for k, v in data.items() if k != "timestamp" and k != "created_at"} 
+             for node, data in sorted(self.graph.nodes(data=True))}, 
+            sort_keys=True
+        )
+        
+        edges_str = json.dumps(
+            [{
+                "source": source,
+                "target": target,
+                **{k: v for k, v in data.items() if k != "timestamp" and k != "created_at"}
+            } for source, target, data in sorted(self.graph.edges(data=True))], 
+            sort_keys=True
+        )
+        
+        # Compute hash of combined content
+        hash_obj = hashlib.sha256((nodes_str + edges_str).encode('utf-8'))
+        return hash_obj.hexdigest()
 
     def add_node(self,
                  node_type: str,
@@ -1459,7 +1605,9 @@ class KnowledgeGraph:
             "source": {
                 "document_id": source_document_id,
                 "sentence": source_sentence
-            }
+            },
+            "graph_id": self.graph_id,
+            "graph_version": self.graph_version
         }
 
         # Add node to graph
@@ -1558,9 +1706,8 @@ class KnowledgeGraph:
             "attributes": attributes or {}
         }
 
-        # Add edge to graph
-        edge_attrs = {k: v for k, v in edge_data.items() if k != 'id'}  # Remove id to avoid duplicate
-        self.graph.add_edge(source_id, target_id, **edge_attrs)
+        # Add edge to graph with the edge_id as an attribute
+        self.graph.add_edge(source_id, target_id, id=edge_id, **edge_data)
 
         # Save edge to disk
         self._save_edge(edge_id, edge_data)
@@ -1741,13 +1888,24 @@ class KnowledgeGraph:
 
             self.logger.info(f"Processed article analysis: {article.get('title')} - added {nodes_added} nodes, {edges_added} edges")
 
+            # Update provenance if anything was added
+            if nodes_added > 0 or edges_added > 0:
+                analysis_id = kg_analysis.get("provenance_id", "unknown")
+                self.update_provenance(
+                    operation="add_article_analysis",
+                    description=f"Added analysis from {article.get('title')}",
+                    source_ids=[document_id, analysis_id]
+                )
+
             return {
                 "status": "success",
                 "article_id": article_id,
                 "document_id": document_id,
                 "article_node_id": article_node_id,
                 "nodes_added": nodes_added,
-                "edges_added": edges_added
+                "edges_added": edges_added,
+                "graph_id": self.graph_id,
+                "graph_version": self.graph_version
             }
 
         except Exception as e:
@@ -1782,6 +1940,9 @@ class KnowledgeGraph:
             "timestamp": timestamp,
             "node_count": len(self.graph.nodes),
             "edge_count": len(self.graph.edges),
+            "graph_id": self.graph_id,
+            "graph_version": self.graph_version,
+            "content_hash": self._compute_graph_hash(),
             "nodes": {node: data for node, data in self.graph.nodes(data=True)},
             "edges": {f"{source}_{target}": data for source, target, data in self.graph.edges(data=True)}
         }
@@ -1791,6 +1952,14 @@ class KnowledgeGraph:
         try:
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump(snapshot_data, f, indent=2, ensure_ascii=False)
+            
+            # Update provenance to record snapshot creation
+            self.update_provenance(
+                operation="create_snapshot",
+                description=f"Created snapshot: {snapshot_name}",
+                source_ids=[snapshot_id]
+            )
+            
             self.logger.info(f"Saved snapshot {snapshot_id}: {snapshot_name}")
             return snapshot_id
         except Exception as e:
@@ -1811,8 +1980,18 @@ class KnowledgeGraph:
         if not filepath:
             filepath = os.path.join(self.base_dir, "graph.json")
 
-        # Prepare graph data
+        # Prepare graph data with provenance metadata
         graph_data = {
+            "metadata": {
+                "graph_id": self.graph_id,
+                "graph_version": self.graph_version,
+                "parent_graph_id": self.parent_graph_id,
+                "timestamp": datetime.now().isoformat(),
+                "node_count": len(self.graph.nodes),
+                "edge_count": len(self.graph.edges),
+                "content_hash": self._compute_graph_hash(),
+                "provenance_chain": self.provenance_chain
+            },
             "nodes": {},
             "edges": []
         }
@@ -1832,6 +2011,14 @@ class KnowledgeGraph:
         try:
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump(graph_data, f, indent=2, ensure_ascii=False)
+            
+            # Update provenance to record save
+            self.update_provenance(
+                operation="save_graph",
+                description=f"Saved graph to {os.path.basename(filepath)}",
+                source_ids=None
+            )
+            
             self.logger.info(f"Saved graph to {filepath}")
             return filepath
         except Exception as e:
@@ -1908,6 +2095,14 @@ class KnowledgeGraph:
                 except Exception as e:
                     self.logger.warning(f"Error inferring temporal relationships: {e}")
 
+        # Update provenance if any relationships were added
+        if relationships_added > 0:
+            self.update_provenance(
+                operation="infer_temporal_relationships",
+                description=f"Inferred {relationships_added} temporal relationships between events",
+                source_ids=None
+            )
+
         return relationships_added
 
     def get_basic_statistics(self) -> Dict[str, Any]:
@@ -1943,6 +2138,109 @@ class KnowledgeGraph:
             "graph_density": density,
             "discovered_node_types": list(self.discovered_node_types),
             "discovered_relation_types": list(self.discovered_relation_types),
+            "graph_id": self.graph_id,
+            "graph_version": self.graph_version,
+            "content_hash": self._compute_graph_hash(),
+            "provenance_chain_length": len(self.provenance_chain),
             "timestamp": datetime.now().isoformat()
+        }
+    
+    def merge_graph(self, other_graph_file: str, description: str = None) -> bool:
+        """
+        Merge another graph into this one
+        
+        Args:
+            other_graph_file: Path to the other graph file
+            description: Description of the merge operation
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Load the other graph
+            with open(other_graph_file, 'r', encoding='utf-8') as f:
+                other_graph_data = json.load(f)
+                
+            # Extract metadata
+            other_metadata = other_graph_data.get("metadata", {})
+            other_graph_id = other_metadata.get("graph_id")
+            
+            if not other_graph_id:
+                self.logger.error(f"No graph ID found in {other_graph_file}")
+                return False
+                
+            # Set as parent graph
+            self.parent_graph_id = other_graph_id
+            
+            # Track added elements
+            nodes_added = 0
+            edges_added = 0
+            
+            # Add nodes from other graph
+            for node_id, node_data in other_graph_data.get("nodes", {}).items():
+                if not self.graph.has_node(node_id):
+                    self.graph.add_node(node_id, **node_data)
+                    nodes_added += 1
+                    
+                    # Update node counter if needed
+                    numeric_id = int(node_id.split('_')[-1]) if '_' in node_id else 0
+                    if numeric_id > self._node_counter:
+                        self._node_counter = numeric_id
+                        
+                    # Save node file
+                    self._save_node(node_id, node_data)
+            
+            # Add edges from other graph
+            for edge_data in other_graph_data.get("edges", []):
+                source = edge_data.get("source")
+                target = edge_data.get("target")
+                
+                if source and target and not self.graph.has_edge(source, target):
+                    # Remove source and target to avoid duplicate in attributes
+                    edge_attrs = {k: v for k, v in edge_data.items() if k not in ["source", "target"]}
+                    self.graph.add_edge(source, target, **edge_attrs)
+                    edges_added += 1
+                    
+                    # Update edge counter if needed
+                    if "id" in edge_data:
+                        edge_id = edge_data["id"]
+                        numeric_id = int(edge_id.split('_')[-1]) if '_' in edge_id else 0
+                        if numeric_id > self._edge_counter:
+                            self._edge_counter = numeric_id
+                            
+                        # Save edge file
+                        self._save_edge(edge_id, edge_data)
+            
+            # Update provenance
+            merge_description = description or f"Merged graph {other_graph_id} into {self.graph_id}"
+            self.update_provenance(
+                operation="merge_graph",
+                description=merge_description,
+                source_ids=[other_graph_id]
+            )
+            
+            self.logger.info(f"Merged graph {other_graph_id}: added {nodes_added} nodes, {edges_added} edges")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Error merging graph {other_graph_file}: {e}")
+            return False
+            
+    def get_provenance_info(self) -> Dict[str, Any]:
+        """
+        Get detailed provenance information for the graph
+        
+        Returns:
+            Dictionary with provenance info
+        """
+        return {
+            "graph_id": self.graph_id,
+            "graph_version": self.graph_version,
+            "parent_graph_id": self.parent_graph_id,
+            "content_hash": self._compute_graph_hash(),
+            "first_created": self.provenance_chain[0]["timestamp"] if self.provenance_chain else None,
+            "last_updated": self.provenance_chain[-1]["timestamp"] if self.provenance_chain else None,
+            "update_count": len(self.provenance_chain),
+            "provenance_chain": self.provenance_chain
         }
     
