@@ -51,6 +51,7 @@ class AnthropicProvider:
         try:
             import anthropic
             self.client = anthropic.Anthropic(api_key=api_key)
+            logger.info(f"Anthropic client initialized with model: {model}")
         except ImportError:
             raise ImportError("Install anthropic: pip install anthropic")
     
@@ -80,6 +81,8 @@ def initialize_llm_provider(config: Dict[str, Any]) -> Optional[Any]:
     llm_config = config.get("llm_provider", {})
     provider_type = llm_config.get("type", "lm_studio")
     
+    logger.info(f"Attempting to initialize LLM provider: {provider_type}")
+    
     if provider_type == "lm_studio":
         host = llm_config.get("host", "http://localhost:1234")
         
@@ -87,20 +90,69 @@ def initialize_llm_provider(config: Dict[str, Any]) -> Optional[Any]:
         try:
             response = requests.get(f"{host}/v1/models", timeout=5)
             if response.status_code == 200:
-                logger.info("LM Studio connected")
+                logger.info(f"LM Studio connected at {host}")
+                models = response.json().get("data", [])
+                if models:
+                    logger.info(f"Available models: {[m.get('id') for m in models]}")
+                else:
+                    logger.warning("No models loaded in LM Studio")
                 return LMStudioProvider(host)
-        except:
-            logger.warning("LM Studio not available")
+            else:
+                logger.warning(f"LM Studio returned status {response.status_code}")
+        except requests.exceptions.ConnectionError:
+            logger.warning(f"Cannot connect to LM Studio at {host}")
+        except Exception as e:
+            logger.warning(f"LM Studio connection error: {e}")
     
     elif provider_type == "anthropic":
-        api_key = llm_config.get("api_key") or os.environ.get("ANTHROPIC_API_KEY")
+        # Check for API key in multiple places
+        api_key = None
+        
+        # 1. Check config file
+        if "api_key" in llm_config and llm_config["api_key"]:
+            api_key = llm_config["api_key"]
+            logger.info("Using API key from config file")
+        
+        # 2. Check environment variable
+        elif os.environ.get("ANTHROPIC_API_KEY"):
+            api_key = os.environ.get("ANTHROPIC_API_KEY")
+            logger.info("Using API key from environment variable")
+        
+        # 3. Check for key file (from document 7)
+        elif os.path.exists("key"):
+            try:
+                with open("key", "r") as f:
+                    api_key = f.read().strip()
+                logger.info("Using API key from key file")
+            except Exception as e:
+                logger.error(f"Error reading key file: {e}")
+        
         if api_key:
             try:
-                provider = AnthropicProvider(api_key, llm_config.get("model", "claude-3-haiku-20240307"))
-                logger.info("Anthropic provider initialized")
+                # Import anthropic to check if it's installed
+                import anthropic
+                
+                # Get model from config or use default
+                model = llm_config.get("model", "claude-3-haiku-20240307")
+                
+                provider = AnthropicProvider(api_key, model)
+                logger.info(f"Anthropic provider initialized with model: {model}")
+                
+                # Test the provider
+                test_response = provider.complete("Say 'test'", max_tokens=10)
+                if "error" not in test_response:
+                    logger.info("Anthropic provider test successful")
+                else:
+                    logger.error(f"Anthropic provider test failed: {test_response.get('error')}")
+                
                 return provider
+                
+            except ImportError:
+                logger.error("anthropic package not installed. Run: pip install anthropic")
             except Exception as e:
-                logger.error(f"Anthropic init failed: {e}")
+                logger.error(f"Anthropic initialization failed: {e}")
+        else:
+            logger.error("No Anthropic API key found in config, environment, or key file")
     
     logger.warning("No LLM provider available")
     return None
