@@ -7,6 +7,7 @@
         "type": "rss",
         "bias": "center",
         "name": "AP News Politics",
+        "site_domain": "apnews.com",
         "enabled": true
       },
       {
@@ -14,6 +15,7 @@
         "type": "rss",
         "bias": "center-left",
         "name": "NPR Politics",
+        "site_domain": "npr.org",
         "enabled": true
       },
       {
@@ -21,6 +23,7 @@
         "type": "rss",
         "bias": "center",
         "name": "Politico Top Picks",
+        "site_domain": "politico.com",
         "enabled": true
       },
       {
@@ -28,6 +31,7 @@
         "type": "rss",
         "bias": "center",
         "name": "The Hill",
+        "site_domain": "thehill.com",
         "enabled": true
       },
       {
@@ -35,6 +39,7 @@
         "type": "rss",
         "bias": "center",
         "name": "Reuters US",
+        "site_domain": "reuters.com",
         "enabled": true
       },
       {
@@ -42,6 +47,7 @@
         "type": "rss",
         "bias": "center-left",
         "name": "ProPublica",
+        "site_domain": "propublica.org",
         "enabled": true
       },
       {
@@ -49,6 +55,7 @@
         "type": "rss",
         "bias": "left",
         "name": "Democracy Now",
+        "site_domain": "democracynow.org",
         "enabled": true
       },
       {
@@ -56,6 +63,31 @@
         "type": "rss",
         "bias": "libertarian",
         "name": "Reason Magazine",
+        "site_domain": "reason.com",
+        "enabled": true
+      },
+      {
+        "url": "https://www.whitehouse.gov/briefing-room/statements-releases/feed/",
+        "type": "rss",
+        "bias": "official",
+        "name": "White House Press Releases",
+        "site_domain": "whitehouse.gov",
+        "enabled": true
+      },
+      {
+        "url": "https://www.supremecourt.gov/rss/opinions.xml",
+        "type": "rss",
+        "bias": "official",
+        "name": "Supreme Court Opinions",
+        "site_domain": "supremecourt.gov",
+        "enabled": true
+      },
+      {
+        "url": "https://www.justice.gov/feeds/press_releases/rss.xml",
+        "type": "rss",
+        "bias": "official",
+        "name": "DOJ Press Releases",
+        "site_domain": "justice.gov",
         "enabled": true
       }
     ],

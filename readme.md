@@ -4,7 +4,7 @@ A streamlined system for analyzing news and identifying authoritarian patterns w
 
 ## Overview
 
-Night_watcher is an intelligence gathering and analysis tool designed to monitor political content for authoritarian patterns. It collects articles from news sources, analyzes them for manipulation techniques and authoritarian indicators, and builds a knowledge base of patterns over time.
+Night_watcher is an intelligence gathering and analysis tool designed to monitor political content for authoritarian patterns. It collects articles from news sources and official government feeds, analyzes them for manipulation techniques and authoritarian indicators, and builds a knowledge base of patterns over time.
 
 ## Quick Start
 
@@ -98,8 +98,11 @@ python night_watcher.py --llm-host http://192.168.1.100:1234 --article-limit 20 
 
 ## Configuration
 
-The default configuration will be created automatically on first run. 
-To customize, edit the generated `config.json` file.
+The default configuration will be created automatically on first run.
+To customize, edit the generated `config.json` file.  Each RSS source may
+optionally define a `site_domain` field.  When collecting articles the
+collector derives the base domain for Wayback queries from this field.  If it
+is not provided, the domain is taken from the first article link.
 
 ## Output Structure
 
@@ -114,7 +117,7 @@ After running, you'll find the following in your output directory:
 
 ## Security Considerations
 
-- The framework runs locally with no external API calls except to specified news sources
+ - The framework runs locally with no external API calls except to specified news and government sources
 - All LLM interactions happen locally through LM Studio (or optionally via Anthropic API)
 - Documents are stored with cryptographic provenance to prevent tampering
 - No data is sent to external servers unless using Anthropic API
