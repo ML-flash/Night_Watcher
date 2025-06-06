@@ -120,9 +120,10 @@ class ContentCollector:
         for source in self.sources:
             if not source.get("enabled", True):
                 continue
-                
+
             try:
-                articles = self._collect_from_source(source, start_date, end_date)
+                limit = source.get("limit", self.article_limit)
+                articles = self._collect_from_source(source, start_date, end_date, limit)
                 
                 # Filter by inauguration day if first run
                 if mode == "first_run":
@@ -180,7 +181,7 @@ class ContentCollector:
         except:
             return ("incremental", current_time - timedelta(days=1), current_time)
 
-    def _collect_from_source(self, source: Dict[str, Any], start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
+    def _collect_from_source(self, source: Dict[str, Any], start_date: datetime, end_date: datetime, limit: int) -> List[Dict[str, Any]]:
         """Collect from a single source."""
         url = source.get("url", "")
 
@@ -199,7 +200,7 @@ class ContentCollector:
             feed = feedparser.parse(url, agent=random.choice(self.user_agents))
             articles = []
             
-            for entry in feed.entries[:self.article_limit]:
+            for entry in feed.entries[:limit]:
                 if not entry.get("link"):
                     continue
                 

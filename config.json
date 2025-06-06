@@ -8,7 +8,8 @@
         "bias": "center",
         "name": "AP News Politics",
         "site_domain": "apnews.com",
-        "enabled": true
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://feeds.npr.org/1004/rss.xml",
@@ -16,7 +17,8 @@
         "bias": "center-left",
         "name": "NPR Politics",
         "site_domain": "npr.org",
-        "enabled": true
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://www.politico.com/rss/politicopicks.xml",
@@ -24,7 +26,8 @@
         "bias": "center",
         "name": "Politico Top Picks",
         "site_domain": "politico.com",
-        "enabled": true
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://thehill.com/feed/",
@@ -32,7 +35,8 @@
         "bias": "center",
         "name": "The Hill",
         "site_domain": "thehill.com",
-        "enabled": true
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://www.reuters.com/world/us/rss",
@@ -40,7 +44,8 @@
         "bias": "center",
         "name": "Reuters US",
         "site_domain": "reuters.com",
-        "enabled": true
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://www.propublica.org/feeds/propublica/main",
@@ -48,7 +53,8 @@
         "bias": "center-left",
         "name": "ProPublica",
         "site_domain": "propublica.org",
-        "enabled": true
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://www.democracynow.org/democracynow.rss",
@@ -56,7 +62,8 @@
         "bias": "left",
         "name": "Democracy Now",
         "site_domain": "democracynow.org",
-        "enabled": true
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://reason.com/feed/",
@@ -64,7 +71,8 @@
         "bias": "libertarian",
         "name": "Reason Magazine",
         "site_domain": "reason.com",
-        "enabled": true
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://www.whitehouse.gov/briefing-room/statements-releases/feed/",
@@ -72,7 +80,8 @@
         "bias": "official",
         "name": "White House Press Releases",
         "site_domain": "whitehouse.gov",
-        "enabled": true
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://www.supremecourt.gov/rss/opinions.xml",
@@ -80,7 +89,8 @@
         "bias": "official",
         "name": "Supreme Court Opinions",
         "site_domain": "supremecourt.gov",
-        "enabled": true
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://www.justice.gov/feeds/press_releases/rss.xml",
@@ -88,7 +98,8 @@
         "bias": "official",
         "name": "DOJ Press Releases",
         "site_domain": "justice.gov",
-        "enabled": true
+        "enabled": true,
+        "limit": 50
       }
     ],
     "govt_keywords": [
