@@ -183,10 +183,15 @@ class ContentCollector:
     def _collect_from_source(self, source: Dict[str, Any], start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
         """Collect from a single source."""
         url = source.get("url", "")
-        
+
         if source.get("type") == "article":
             # Direct article
             article = self._extract_article(url)
+            if article:
+                domain = source.get("site_domain") or urlparse(article["url"]).netloc or urlparse(url).netloc
+                archive_url = self._query_wayback(domain)
+                if archive_url:
+                    article["archive_url"] = archive_url
             return [article] if article else []
         
         # RSS feed
@@ -212,6 +217,10 @@ class ContentCollector:
                 if article:
                     article["source"] = source.get("name", urlparse(url).netloc)
                     article["bias_label"] = source.get("bias", "unknown")
+                    domain = source.get("site_domain") or urlparse(entry.link).netloc or urlparse(url).netloc
+                    archive_url = self._query_wayback(domain)
+                    if archive_url:
+                        article["archive_url"] = archive_url
                     articles.append(article)
                     
                 time.sleep(random.uniform(0.5, 1.5))
@@ -349,3 +358,20 @@ class ContentCollector:
         except Exception as e:
             self.logger.error(f"Error adding source: {e}")
             return False
+
+    def _query_wayback(self, domain: str) -> Optional[str]:
+        """Return archive snapshot URL for the given domain if available."""
+        try:
+            resp = self.session.get(
+                "https://archive.org/wayback/available",
+                params={"url": domain},
+                timeout=self.request_timeout,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                closest = data.get("archived_snapshots", {}).get("closest")
+                if closest and closest.get("available"):
+                    return closest.get("url")
+        except Exception as e:
+            self.logger.debug(f"Wayback query failed for {domain}: {e}")
+        return None

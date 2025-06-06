@@ -69,7 +69,7 @@ python Night_Watcher.py --web
 
 ## 🎯 Key Features
 
-- **Multi-source collection** from 12+ verified RSS feeds
+ - **Multi-source collection** from verified news outlets and official government feeds
 - **7-round analysis pipeline** for deep content understanding
 - **Knowledge graph** tracking entities and relationships
 - **Vector search** for finding similar patterns
@@ -164,6 +164,8 @@ Each article goes through 7 rounds of analysis:
 - Normal - some feeds may be temporarily down
 - System continues with working feeds
 - Add new sources via web dashboard
+- For Wayback queries the collector uses the `site_domain` specified in a
+  source entry. If omitted, the domain is derived from the first article link.
 
 ### Out of Memory
 - Reduce `article_limit` in config.json
