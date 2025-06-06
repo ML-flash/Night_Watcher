@@ -80,7 +80,8 @@ class NightWatcher:
                         "type": "rss",
                         "bias": "center",
                         "name": "BBC US & Canada",
-                        "enabled": True
+                        "enabled": True,
+                        "limit": 50
                     }
                 ],
                 "govt_keywords": [

@@ -569,6 +569,41 @@ def api_add_source():
         return jsonify({"error": str(e)}), 400
 
 
+@app.route('/api/sources/update', methods=['POST'])
+def api_update_source():
+    """Update an existing content source."""
+    try:
+        init_night_watcher()
+        data = request.json
+        url = data.get("url")
+        limit = data.get("limit")
+
+        if not url or limit is None:
+            return jsonify({"error": "url and limit required"}), 400
+
+        sources = night_watcher.config.get("content_collection", {}).get("sources", [])
+        updated = False
+        for src in sources:
+            if src.get("url") == url:
+                src["limit"] = int(limit)
+                updated = True
+                break
+
+        if not updated:
+            return jsonify({"error": "source not found"}), 404
+
+        night_watcher.collector.sources = sources
+
+        with open(night_watcher.config_path, 'w', encoding='utf-8') as f:
+            json.dump(night_watcher.config, f, indent=2)
+
+        add_log_message("success", f"Updated source limit for {url}")
+        return jsonify({"status": "updated"})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
 @app.route('/api/search', methods=['POST'])
 def api_search():
     """Search vector store."""

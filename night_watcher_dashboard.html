@@ -463,6 +463,11 @@
                         <button class="btn btn-warning" onclick="testLLMConnection()">Test LLM Connection</button>
                         <button class="btn btn-primary" onclick="refreshStatus()">Refresh Status</button>
                     </div>
+
+                    <div class="control-panel">
+                        <h3>Source Limits</h3>
+                        <div id="sources-list"></div>
+                    </div>
                 </div>
 
                 <div class="progress-bar">
@@ -669,6 +674,7 @@
             startStatusPolling();
             loadTemplates();
             refreshReviewQueue();
+            loadSources();
         });
 
         // Navigation
@@ -687,6 +693,8 @@
             // Auto-refresh review queue when section is opened
             if (sectionId === 'review-queue') {
                 refreshReviewQueue();
+            } else if (sectionId === 'collector') {
+                loadSources();
             }
         }
 
@@ -826,6 +834,38 @@
 
         async function stopCollection() {
             logMessage('task-log', 'warning', 'Stop function not implemented yet');
+        }
+
+        async function loadSources() {
+            try {
+                const sources = await apiCall('/sources');
+                const container = document.getElementById('sources-list');
+                container.innerHTML = '';
+                sources.forEach((src, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'form-group';
+                    div.innerHTML = `
+                        <label>${src.name}</label>
+                        <input type="number" id="limit-${idx}" value="${src.limit || 50}" min="1" style="width:80px;">
+                        <button class="btn btn-small" onclick="updateSourceLimit('${src.url}', document.getElementById('limit-${idx}').value)">Save</button>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to load sources: ${error.message}`);
+            }
+        }
+
+        async function updateSourceLimit(url, limit) {
+            try {
+                await apiCall('/sources/update', {
+                    method: 'POST',
+                    body: JSON.stringify({ url, limit: parseInt(limit) })
+                });
+                logMessage('task-log', 'success', `Updated limit for ${url}`);
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to update source: ${error.message}`);
+            }
         }
 
         // Analysis functions
