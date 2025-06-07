@@ -64,6 +64,8 @@ class ContentCollector:
         self.sources = cc.get("sources", [])
         self.request_timeout = cc.get("request_timeout", 45)
         self.delay_between_requests = cc.get("delay_between_requests", 2.0)
+
+        self.cancelled = False
         
         # State files
         self.last_run_file = os.path.join(base_dir, "last_run_date.txt")
@@ -99,6 +101,10 @@ class ContentCollector:
             except:
                 self.cloudscraper = None
 
+    def cancel(self):
+        """Signal to stop collection."""
+        self.cancelled = True
+
     def _rotate_headers(self):
         """Rotate session headers."""
         self.session.headers.update({
@@ -108,8 +114,14 @@ class ContentCollector:
             'DNT': '1'
         })
 
-    def collect_content(self, force_mode: Optional[str] = None) -> Dict[str, Any]:
-        """Main collection method with intelligent date handling."""
+    def collect_content(self, force_mode: Optional[str] = None, callback=None) -> Dict[str, Any]:
+        """Main collection method with intelligent date handling.
+
+        Args:
+            force_mode: Optional mode override.
+            callback: Optional function to receive progress events.
+        """
+        self.cancelled = False
         # Determine collection mode
         mode, start_date, end_date = self._get_collection_mode(force_mode)
         self.logger.info(f"Collection mode: {mode}, Range: {start_date} to {end_date}")
@@ -120,9 +132,13 @@ class ContentCollector:
         for source in self.sources:
             if not source.get("enabled", True):
                 continue
-                
+
             try:
-                articles = self._collect_from_source(source, start_date, end_date)
+                if self.cancelled:
+                    break
+
+                limit = source.get("limit", self.article_limit)
+                articles = self._collect_from_source(source, start_date, end_date, limit, callback)
                 
                 # Filter by inauguration day if first run
                 if mode == "first_run":
@@ -142,6 +158,8 @@ class ContentCollector:
                 
                 all_articles.extend(articles)
                 time.sleep(random.uniform(1, 3))
+                if self.cancelled:
+                    break
                 
             except Exception as e:
                 self.logger.error(f"Error processing {source.get('url')}: {e}")
@@ -149,6 +167,9 @@ class ContentCollector:
         # Update state
         if mode != "custom":
             self._update_last_run()
+
+        if self.cancelled and callback:
+            callback({"type": "cancelled"})
         
         return {
             "articles": all_articles,
@@ -180,47 +201,117 @@ class ContentCollector:
         except:
             return ("incremental", current_time - timedelta(days=1), current_time)
 
-    def _collect_from_source(self, source: Dict[str, Any], start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
+    def _collect_from_source(self, source: Dict[str, Any], start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
         """Collect from a single source."""
         url = source.get("url", "")
-        
+
         if source.get("type") == "article":
             # Direct article
             article = self._extract_article(url)
+            if article:
+                domain = source.get("site_domain") or urlparse(article["url"]).netloc or urlparse(url).netloc
+                archive_url = self._query_wayback(domain)
+                if archive_url:
+                    article["archive_url"] = archive_url
+                if callback:
+                    callback({"type": "article", "source": source.get("name", url), "title": article.get("title")})
             return [article] if article else []
         
         # RSS feed
         try:
             feed = feedparser.parse(url, agent=random.choice(self.user_agents))
-            articles = []
-            
-            for entry in feed.entries[:self.article_limit]:
-                if not entry.get("link"):
-                    continue
-                
-                # Date filtering
-                pub_date = self._parse_date(entry)
-                if pub_date and (pub_date < start_date or pub_date > end_date):
-                    continue
-                
-                # Check if political
-                if not self._is_political(entry.get("title", ""), entry.get("summary", "")):
-                    continue
-                
-                # Extract content
-                article = self._extract_article(entry.link, entry.get("title"), pub_date)
-                if article:
-                    article["source"] = source.get("name", urlparse(url).netloc)
-                    article["bias_label"] = source.get("bias", "unknown")
-                    articles.append(article)
-                    
-                time.sleep(random.uniform(0.5, 1.5))
-            
+            articles = self._process_feed_entries(feed.entries, source, url, start_date, end_date, limit, callback)
+
+            # If we're reaching back more than 5 days, also pull archived feed snapshots
+            if (datetime.now() - start_date).days > 5 and len(articles) < limit:
+                archived = self._collect_archived_feed(source, start_date, end_date, limit - len(articles), callback)
+                seen = {a["url"] for a in articles}
+                for art in archived:
+                    if art["url"] not in seen:
+                        articles.append(art)
+                        seen.add(art["url"])
+                        if len(articles) >= limit:
+                            break
+
             return articles
             
         except Exception as e:
             self.logger.error(f"RSS collection failed for {url}: {e}")
+            if callback:
+                callback({"type": "error", "source": source.get("name", url), "message": str(e)})
             return []
+
+    def _process_feed_entries(self, entries: List[Any], source: Dict[str, Any], base_url: str, start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
+        """Process RSS feed entries into article records."""
+        articles = []
+        for entry in entries:
+            if self.cancelled or len(articles) >= limit:
+                break
+
+            if not entry.get("link"):
+                continue
+
+            pub_date = self._parse_date(entry)
+            if pub_date and (pub_date < start_date or pub_date > end_date):
+                continue
+
+            if not self._is_political(entry.get("title", ""), entry.get("summary", "")):
+                continue
+
+            article = self._extract_article(entry.link, entry.get("title"), pub_date)
+            if article:
+                article["source"] = source.get("name", urlparse(base_url).netloc)
+                article["bias_label"] = source.get("bias", "unknown")
+                domain = source.get("site_domain") or urlparse(entry.link).netloc or urlparse(base_url).netloc
+                archive_url = self._query_wayback(domain)
+                if archive_url:
+                    article["archive_url"] = archive_url
+                articles.append(article)
+                if callback:
+                    callback({"type": "article", "source": article.get("source"), "title": article.get("title")})
+
+            time.sleep(random.uniform(0.5, 1.5))
+
+        return articles
+
+    def _collect_archived_feed(self, source: Dict[str, Any], start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
+        """Collect articles from archived snapshots of an RSS feed."""
+        url = source.get("url", "")
+        cdx_url = "https://web.archive.org/cdx/search/cdx"
+        params = {
+            "url": url,
+            "output": "json",
+            "from": start_date.strftime('%Y%m%d'),
+            "to": end_date.strftime('%Y%m%d'),
+            "limit": limit,
+            "collapse": "timestamp"
+        }
+
+        articles = []
+        try:
+            resp = self.session.get(cdx_url, params=params, timeout=self.request_timeout)
+            if resp.status_code != 200:
+                return []
+            data = resp.json()
+            snapshots = data[1:] if len(data) > 1 else []
+            for snap in snapshots:
+                if self.cancelled or len(articles) >= limit:
+                    break
+                timestamp = snap[1]
+                snapshot_url = f"https://web.archive.org/web/{timestamp}/{url}"
+                r = self.session.get(snapshot_url, timeout=self.request_timeout)
+                feed = feedparser.parse(r.text)
+                processed = self._process_feed_entries(feed.entries, source, url, start_date, end_date, limit - len(articles), callback)
+                for art in processed:
+                    art["archive_snapshot"] = snapshot_url
+                    articles.append(art)
+                    if len(articles) >= limit:
+                        break
+                time.sleep(random.uniform(0.5, 1.5))
+        except Exception as e:
+            self.logger.error(f"Archive collection failed for {url}: {e}")
+
+        return articles
 
     def _extract_article(self, url: str, title: str = None, pub_date: datetime = None) -> Optional[Dict[str, Any]]:
         """Extract article content."""
@@ -349,3 +440,20 @@ class ContentCollector:
         except Exception as e:
             self.logger.error(f"Error adding source: {e}")
             return False
+
+    def _query_wayback(self, domain: str) -> Optional[str]:
+        """Return archive snapshot URL for the given domain if available."""
+        try:
+            resp = self.session.get(
+                "https://archive.org/wayback/available",
+                params={"url": domain},
+                timeout=self.request_timeout,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                closest = data.get("archived_snapshots", {}).get("closest")
+                if closest and closest.get("available"):
+                    return closest.get("url")
+        except Exception as e:
+            self.logger.debug(f"Wayback query failed for {domain}: {e}")
+        return None

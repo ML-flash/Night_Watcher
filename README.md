@@ -1,6 +1,6 @@
 # Night_watcher Intelligence Gathering System
 
-A framework for monitoring and analyzing political media to detect authoritarian patterns and threats to democracy.
+A framework for monitoring and analyzing political media to detect authoritarian patterns and threats to democracy. This streamlined system includes enhanced memory capabilities for long-running investigations.
 
 ## 🚀 Quick Start (5 minutes)
 
@@ -69,13 +69,14 @@ python Night_Watcher.py --web
 
 ## 🎯 Key Features
 
-- **Multi-source collection** from 12+ verified RSS feeds
+ - **Multi-source collection** from verified news outlets and official government feeds
 - **7-round analysis pipeline** for deep content understanding
 - **Knowledge graph** tracking entities and relationships
 - **Vector search** for finding similar patterns
 - **Review queue** for human validation
 - **Web dashboard** for monitoring and control
 - **Cryptographic provenance** to prevent tampering
+- **Automatic archival retrieval** when collecting older dates
 
 ## 🔧 Command Line Usage
 
@@ -136,6 +137,23 @@ data/
 └── logs/              # System logs and JSON failures
 ```
 
+## 📦 Exporting & Applying Updates
+
+Create a signed bundle of the current repository, graph and vector store:
+
+```bash
+python export_artifact.py --output my_bundle.tar.gz
+```
+
+To integrate an update from another bundle:
+
+```bash
+python update_artifact.py my_bundle.tar.gz
+```
+
+All documents and analyses are verified before import and the knowledge graph is
+merged safely.
+
 ## 🔍 Understanding the Analysis
 
 Each article goes through 7 rounds of analysis:
@@ -164,6 +182,9 @@ Each article goes through 7 rounds of analysis:
 - Normal - some feeds may be temporarily down
 - System continues with working feeds
 - Add new sources via web dashboard
+- For Wayback queries the collector uses the `site_domain` specified in a
+  source entry. If omitted, the domain is derived from the first article link.
+- If the date range goes back more than 5 days, archived feed snapshots are queried automatically.
 
 ### Out of Memory
 - Reduce `article_limit` in config.json

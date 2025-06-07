@@ -455,6 +455,11 @@
                         </div>
                         <button class="btn btn-primary" onclick="startCollection()">Start Collection</button>
                         <button class="btn btn-danger" onclick="stopCollection()">Stop Collection</button>
+                        <div class="form-group" style="margin-top:1rem;">
+                            <label>Anthropic API Key</label>
+                            <input type="text" id="anthropic-key" placeholder="sk-...">
+                            <button class="btn btn-small" onclick="saveAPIKey()">Save</button>
+                        </div>
                     </div>
 
                     <div class="control-panel">
@@ -462,6 +467,11 @@
                         <button class="btn btn-success" onclick="runFullPipeline()">Run Full Pipeline</button>
                         <button class="btn btn-warning" onclick="testLLMConnection()">Test LLM Connection</button>
                         <button class="btn btn-primary" onclick="refreshStatus()">Refresh Status</button>
+                    </div>
+
+                    <div class="control-panel">
+                        <h3>Source Limits</h3>
+                        <div id="sources-list"></div>
                     </div>
                 </div>
 
@@ -497,8 +507,8 @@
                     <div class="control-panel">
                         <h3>Analysis Controls</h3>
                         <div class="form-group">
-                            <label>Analysis Template</label>
-                            <select id="analysis-template">
+                            <label>Analysis Templates</label>
+                            <select id="analysis-templates" multiple size="3">
                                 <option value="standard_analysis.json">Standard Analysis v1</option>
                             </select>
                         </div>
@@ -669,6 +679,7 @@
             startStatusPolling();
             loadTemplates();
             refreshReviewQueue();
+            loadSources();
         });
 
         // Navigation
@@ -687,6 +698,8 @@
             // Auto-refresh review queue when section is opened
             if (sectionId === 'review-queue') {
                 refreshReviewQueue();
+            } else if (sectionId === 'collector') {
+                loadSources();
             }
         }
 
@@ -825,24 +838,76 @@
         }
 
         async function stopCollection() {
-            logMessage('task-log', 'warning', 'Stop function not implemented yet');
+            try {
+                await apiCall('/collect/stop', { method: 'POST' });
+                logMessage('task-log', 'info', 'Collection stop requested');
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to stop collection: ${error.message}`);
+            }
+        }
+
+        async function saveAPIKey() {
+            const key = document.getElementById('anthropic-key').value.trim();
+            if (!key) return;
+            try {
+                await apiCall('/config', {
+                    method: 'POST',
+                    body: JSON.stringify({ llm_provider: { type: 'anthropic', model: 'claude-3-haiku-20240307', api_key: key } })
+                });
+                logMessage('task-log', 'success', 'API key saved');
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to save key: ${error.message}`);
+            }
+        }
+
+        async function loadSources() {
+            try {
+                const sources = await apiCall('/sources');
+                const container = document.getElementById('sources-list');
+                container.innerHTML = '';
+                sources.forEach((src, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'form-group';
+                    div.innerHTML = `
+                        <label>${src.name}</label>
+                        <input type="number" id="limit-${idx}" value="${src.limit || 50}" min="1" style="width:80px;">
+                        <button class="btn btn-small" onclick="updateSourceLimit('${src.url}', document.getElementById('limit-${idx}').value)">Save</button>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to load sources: ${error.message}`);
+            }
+        }
+
+        async function updateSourceLimit(url, limit) {
+            try {
+                await apiCall('/sources/update', {
+                    method: 'POST',
+                    body: JSON.stringify({ url, limit: parseInt(limit) })
+                });
+                logMessage('task-log', 'success', `Updated limit for ${url}`);
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to update source: ${error.message}`);
+            }
         }
 
         // Analysis functions
         async function startAnalysis() {
             const maxArticles = parseInt(document.getElementById('max-analyze').value);
-            const template = document.getElementById('analysis-template').value;
-            
+            const selector = document.getElementById('analysis-templates');
+            const templates = Array.from(selector.selectedOptions).map(o => o.value);
+
             try {
                 await apiCall('/analyze', {
                     method: 'POST',
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         max_articles: maxArticles,
-                        template: template 
+                        templates: templates
                     })
                 });
-                
-                logMessage('analyzer-log', 'info', `Analysis started with template: ${template}`);
+
+                logMessage('analyzer-log', 'info', `Analysis started with templates: ${templates.join(', ')}`);
                 startTaskPolling();
                 
             } catch (error) {
@@ -854,7 +919,7 @@
         async function loadTemplates() {
             try {
                 const templates = await apiCall('/templates');
-                const selector = document.getElementById('analysis-template');
+                const selector = document.getElementById('analysis-templates');
                 const list = document.getElementById('templates-list');
                 
                 selector.innerHTML = '';

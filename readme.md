@@ -1,124 +1,220 @@
 # Night_watcher Intelligence Gathering System
 
-A streamlined system for analyzing news and identifying authoritarian patterns with enhanced memory capabilities.
+A framework for monitoring and analyzing political media to detect authoritarian patterns and threats to democracy. This streamlined system includes enhanced memory capabilities for long-running investigations.
 
-## Overview
+## 🚀 Quick Start (5 minutes)
 
-Night_watcher is an intelligence gathering and analysis tool designed to monitor political content for authoritarian patterns. It collects articles from news sources, analyzes them for manipulation techniques and authoritarian indicators, and builds a knowledge base of patterns over time.
+### 1. Prerequisites
+- Python 3.8+ installed
+- 8GB+ RAM recommended
+- ~4GB free disk space
 
-## Quick Start
-
-1. Make sure you have Python 3.8+ installed
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Run the content collection:
-   ```bash
-   python night_watcher.py
-   ```
-4. Run the knowledge graph component:
-   ```bash
-   python night_watcher_kg.py
-   ```
-
-That's it! The system will automatically:
-- Create necessary directories
-- Generate default configuration files if needed
-- Connect to LM Studio at localhost:1234 (or use Anthropic API)
-- Collect and analyze articles
-- Identify authoritarian patterns
-- Build a comprehensive knowledge graph
-- Generate intelligence reports
-- Save all results in the output directory
-
-## Components
-
-The Night_watcher system consists of the following core components:
-
-1. **Content Collector**: Gathers politically-focused content from various RSS feeds with filtering
-2. **Content Analyzer**: Identifies manipulation techniques and authoritarian patterns in content
-3. **Knowledge Graph**: Maps relationships between entities and events to track patterns over time
-4. **Document Repository**: Stores documents with cryptographic provenance
-
-## Knowledge Graph
-
-The Knowledge Graph component is designed to track patterns of authoritarian behavior over time:
-
+### 2. Setup
 ```bash
-python night_watcher_kg.py [OPTIONS]
+# Clone the repository (or download files)
+git clone [your-repo-url]
+cd night_watcher
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run setup check
+python setup_night_watcher.py
 ```
 
-Options:
-- `--config PATH` - Path to configuration file (default: config.json)
-- `--graph-file PATH` - Override path to knowledge graph file
-- `--taxonomy-file PATH` - Override path to taxonomy file
-- `--analyzed-dir PATH` - Override path to analyzed directory
-- `--file-pattern PATTERN` - Override file pattern for analysis files
-- `--reports-dir PATH` - Override path to reports directory
-- `--trend-days DAYS` - Override number of days for trend analysis
-- `--no-viz` - Disable visualization generation
-- `--create-config` - Create default config file and exit
-- `--verbose` - Enable verbose logging
+### 3. Configure LLM (Choose One)
 
-The Knowledge Graph tracks:
-- Actors (people, institutions, media outlets)
-- Events and their causal relationships
-- Authoritarian action patterns
-- Narratives and their normalization role
-- Changes to legal frameworks and procedural norms
+**Option A: Local with LM Studio (Recommended)**
+1. Download [LM Studio](https://lmstudio.ai/)
+2. Download a model (e.g., Qwen2.5-32B-Instruct or similar)
+3. Start the local server in LM Studio (default port 1234)
 
-It generates reports on:
-- Authoritarian trends (0-10 score)
-- Democratic erosion analysis
-- Influential actors and their relationships
-- Coordination patterns between actors
-- Temporal patterns revealing larger strategies
-
-## Command Line Options
-
-The main `night_watcher.py` script accepts several optional parameters:
-
+**Option B: Anthropic API**
 ```bash
-python night_watcher.py [OPTIONS]
+export ANTHROPIC_API_KEY='your-key-here'
 ```
 
-Options:
-- `--config PATH` - Path to configuration file (default: config.json)
-- `--llm-host URL` - LLM provider URL (default: http://localhost:1234)
-- `--article-limit N` - Maximum articles to collect per source (default: 5)
-- `--output-dir PATH` - Output directory (default: ./data)
-- `--reset-date` - Reset date tracking to start from inauguration day (Jan 20, 2025)
-- `--use-anthropic` - Force using Anthropic API instead of LM Studio
+### 4. First Run
 
-Example:
+**Test Mode (Recommended for first time):**
 ```bash
-python night_watcher.py --llm-host http://192.168.1.100:1234 --article-limit 20 --output-dir ./outputs
+# Collect just 5 articles to test
+python Night_Watcher.py --collect --max-articles 5
+
+# Analyze 3 articles
+python Night_Watcher.py --analyze --max-articles 3
+
+# Check what we found
+python Night_Watcher.py --status
 ```
 
-## Configuration
+**Full Pipeline:**
+```bash
+python Night_Watcher.py --full
+```
 
-The default configuration will be created automatically on first run. 
-To customize, edit the generated `config.json` file.
+**Web Dashboard (Easier):**
+```bash
+python Night_Watcher.py --web
+# Open browser to http://localhost:5000
+```
 
-## Output Structure
+## 📊 What Night_watcher Does
 
-After running, you'll find the following in your output directory:
+1. **Collects** - Gathers political news from diverse sources
+2. **Analyzes** - Identifies manipulation techniques and authoritarian indicators
+3. **Extracts** - Builds a knowledge graph of actors, events, and relationships
+4. **Tracks** - Monitors patterns over time to identify democratic erosion
+5. **Preserves** - Maintains cryptographic provenance of all data
 
-- `collected/` - Raw article data
-- `analyzed/` - Analysis results with manipulation scoring
-- `analysis/` - Pattern analysis and intelligence outputs
-- `knowledge_graph/` - Entity and relationship data
-- `documents/` - Document repository with cryptographic provenance
-- `logs/` - Execution logs
+## 🎯 Key Features
 
-## Security Considerations
+ - **Multi-source collection** from verified news outlets and official government feeds
+- **7-round analysis pipeline** for deep content understanding
+- **Knowledge graph** tracking entities and relationships
+- **Vector search** for finding similar patterns
+- **Review queue** for human validation
+- **Web dashboard** for monitoring and control
+- **Cryptographic provenance** to prevent tampering
+- **Automatic archival retrieval** when collecting older dates
 
-- The framework runs locally with no external API calls except to specified news sources
-- All LLM interactions happen locally through LM Studio (or optionally via Anthropic API)
-- Documents are stored with cryptographic provenance to prevent tampering
-- No data is sent to external servers unless using Anthropic API
+## 🔧 Command Line Usage
 
-## License
+### Basic Commands
+```bash
+# Check system status
+python Night_Watcher.py --status
 
-This project is released into the public domain.
+# Run collection only
+python Night_Watcher.py --collect
+
+# Run analysis only  
+python Night_Watcher.py --analyze
+
+# Build knowledge graph
+python Night_Watcher.py --build-kg
+
+# Run everything
+python Night_Watcher.py --full
+```
+
+### Advanced Options
+```bash
+# Collect from specific date
+python Night_Watcher.py --collect --mode first_run
+
+# Analyze more articles
+python Night_Watcher.py --analyze --max-articles 50
+
+# Use different data directory
+python Night_Watcher.py --base-dir /path/to/data
+```
+
+## 🌐 Web Dashboard
+
+The easiest way to use Night_watcher:
+
+```bash
+python Night_Watcher.py --web
+```
+
+Features:
+- Real-time monitoring of collection and analysis
+- Review queue for validating results  
+- Source management
+- Knowledge graph statistics
+- Vector search interface
+
+## 📁 Output Structure
+
+```
+data/
+├── collected/          # Raw articles
+├── analyzed/           # Analysis results with manipulation scores
+├── documents/          # Document repository with provenance
+├── knowledge_graph/    # Entity and relationship data
+├── vector_store/       # Embeddings for similarity search
+└── logs/              # System logs and JSON failures
+```
+
+## 📦 Exporting & Applying Updates
+
+Create a signed bundle of the current repository, graph and vector store:
+
+```bash
+python export_artifact.py --output my_bundle.tar.gz
+```
+
+To integrate an update from another bundle:
+
+```bash
+python update_artifact.py my_bundle.tar.gz
+```
+
+All documents and analyses are verified before import and the knowledge graph is
+merged safely.
+
+## 🔍 Understanding the Analysis
+
+Each article goes through 7 rounds of analysis:
+
+1. **Fact Extraction** - Objective facts and quotes
+2. **Article Analysis** - Bias, framing, manipulation techniques
+3. **Node Extraction** - Entities (people, institutions, events)
+4. **Node Deduplication** - Merging similar entities
+5. **Edge Extraction** - Relationships between entities
+6. **Edge Enrichment** - Severity and impact assessment
+7. **Package Ingestion** - Final knowledge graph format
+
+## ⚠️ Troubleshooting
+
+### LLM Not Responding
+- Check LM Studio is running with a model loaded
+- Verify Anthropic API key is set correctly
+- Test with: `curl http://localhost:1234/v1/models`
+
+### JSON Extraction Errors
+- Check `data/logs/json_failures_*.txt` for patterns
+- The system will retry once automatically
+- Failed analyses go to review queue
+
+### RSS Feed Failures
+- Normal - some feeds may be temporarily down
+- System continues with working feeds
+- Add new sources via web dashboard
+- For Wayback queries the collector uses the `site_domain` specified in a
+  source entry. If omitted, the domain is derived from the first article link.
+- If the date range goes back more than 5 days, archived feed snapshots are queried automatically.
+
+### Out of Memory
+- Reduce `article_limit` in config.json
+- Process fewer articles with `--max-articles`
+- Use smaller embedding model
+
+## 🛡️ Security & Privacy
+
+- All analysis runs locally (with LM Studio)
+- Documents stored with cryptographic signatures
+- No data sent to external servers (unless using Anthropic)
+- Review queue ensures quality control
+
+## 📈 Monitoring Authoritarian Patterns
+
+The system tracks:
+- **Power consolidation** (purges, co-opts, expands_power)
+- **Institutional capture** (undermines, restricts, delegitimizes)
+- **Opposition suppression** (criminalizes, intimidates, targets)
+- **Information control** (censors, narrative manipulation)
+- **Democratic erosion** (procedural norm violations)
+
+
+## 📜 License
+
+This project is released into the public domain. Use it to defend democracy.
+
+---
+
+**Remember**: *"The price of freedom is eternal vigilance"* - Thomas Jefferson
+
+For detailed documentation, see the docs/ directory.
+For quick help: `python Night_Watcher.py --help`

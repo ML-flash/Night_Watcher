@@ -12,11 +12,12 @@ import threading
 import time
 import glob
 from datetime import datetime
-from flask import Flask, render_template_string, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 # Import Night_watcher components
 from Night_Watcher import NightWatcher
+import providers
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -71,7 +72,7 @@ def load_review_queue():
     """Load review queue from file."""
     if os.path.exists(REVIEW_QUEUE_FILE):
         try:
-            with open(REVIEW_QUEUE_FILE, 'r') as f:
+            with open(REVIEW_QUEUE_FILE, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except:
             return []
@@ -82,7 +83,7 @@ def save_review_queue(queue):
     """Save review queue to file."""
     try:
         os.makedirs(os.path.dirname(REVIEW_QUEUE_FILE), exist_ok=True)
-        with open(REVIEW_QUEUE_FILE, 'w') as f:
+        with open(REVIEW_QUEUE_FILE, 'w', encoding='utf-8') as f:
             json.dump(queue, f, indent=2)
     except Exception as e:
         logger.error(f"Failed to save review queue: {e}")
@@ -102,7 +103,7 @@ def scan_for_review_items():
             
         try:
             filepath = os.path.join(analyzed_dir, filename)
-            with open(filepath, 'r') as f:
+            with open(filepath, 'r', encoding='utf-8') as f:
                 analysis = json.load(f)
             
             validation = analysis.get("validation", {})
@@ -132,10 +133,10 @@ def scan_for_review_items():
 @app.route('/')
 def dashboard():
     """Serve the dashboard HTML."""
-    # Read the dashboard HTML file
+    # Read the dashboard HTML file with UTF-8 encoding
     dashboard_path = os.path.join(os.path.dirname(__file__), 'night_watcher_dashboard.html')
     if os.path.exists(dashboard_path):
-        with open(dashboard_path, 'r') as f:
+        with open(dashboard_path, 'r', encoding='utf-8') as f:
             return f.read()
     else:
         return "<h1>Dashboard not found. Please ensure night_watcher_dashboard.html is in the same directory.</h1>"
@@ -192,7 +193,7 @@ def api_templates():
         
         for filename in template_files:
             try:
-                with open(filename, 'r') as f:
+                with open(filename, 'r', encoding='utf-8') as f:
                     template_data = json.load(f)
                 
                 templates.append({
@@ -233,7 +234,7 @@ def api_approve_analysis():
         if not os.path.exists(filepath):
             return jsonify({"error": "Analysis not found"}), 404
         
-        with open(filepath, 'r') as f:
+        with open(filepath, 'r', encoding='utf-8') as f:
             analysis = json.load(f)
         
         # Update validation status
@@ -243,7 +244,7 @@ def api_approve_analysis():
         analysis["validation"]["notes"] = notes
         
         # Save updated analysis
-        with open(filepath, 'w') as f:
+        with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(analysis, f, indent=2)
         
         # Clear cache to force status refresh
@@ -268,7 +269,7 @@ def api_reject_analysis():
         if not os.path.exists(filepath):
             return jsonify({"error": "Analysis not found"}), 404
         
-        with open(filepath, 'r') as f:
+        with open(filepath, 'r', encoding='utf-8') as f:
             analysis = json.load(f)
         
         # Update validation status
@@ -278,7 +279,7 @@ def api_reject_analysis():
         analysis["validation"]["notes"] = notes
         
         # Save updated analysis
-        with open(filepath, 'w') as f:
+        with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(analysis, f, indent=2)
         
         # Clear cache to force status refresh
@@ -327,13 +328,24 @@ def api_collect():
         task_status["task"] = "collection"
         task_status["progress"] = 0
         add_log_message("info", f"Starting collection (mode: {mode})")
-        
+
+        def progress(event):
+            if event.get("type") == "article":
+                add_log_message("info", f"Collected: {event.get('title')}")
+            elif event.get("type") == "error":
+                add_log_message("error", f"{event.get('source')}: {event.get('message')}")
+            elif event.get("type") == "cancelled":
+                add_log_message("warning", "Collection cancelled")
+
         try:
             init_night_watcher()
-            result = night_watcher.collect(mode=mode)
+            result = night_watcher.collect(mode=mode, callback=progress)
             
             articles_count = len(result.get("articles", []))
-            add_log_message("success", f"Collection completed: {articles_count} articles")
+            if night_watcher.collector.cancelled:
+                add_log_message("warning", "Collection stopped by user")
+            else:
+                add_log_message("success", f"Collection completed: {articles_count} articles")
             task_status["progress"] = 100
             
         except Exception as e:
@@ -346,8 +358,20 @@ def api_collect():
     
     task_thread = threading.Thread(target=run_collection)
     task_thread.start()
-    
+
     return jsonify({"status": "started"})
+
+
+@app.route('/api/collect/stop', methods=['POST'])
+def api_collect_stop():
+    """Request stopping an ongoing collection."""
+    try:
+        if night_watcher and night_watcher.collector:
+            night_watcher.collector.cancel()
+            return jsonify({"status": "stopping"})
+        return jsonify({"error": "Collector not running"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 @app.route('/api/analyze', methods=['POST'])
@@ -360,20 +384,16 @@ def api_analyze():
     
     data = request.json or {}
     max_articles = data.get("max_articles", 20)
-    template = data.get("template", "standard_analysis.json")
+    templates = data.get("templates") or [data.get("template", "standard_analysis.json")]
     
     def run_analysis():
         task_status["running"] = True
         task_status["task"] = "analysis"
         task_status["progress"] = 0
-        add_log_message("info", f"Starting analysis (max: {max_articles}, template: {template})")
+        add_log_message("info", f"Starting analysis (max: {max_articles}, templates: {', '.join(templates)})")
         
         try:
             init_night_watcher()
-            
-            # Create analyzer with specific template
-            from analyzer import ContentAnalyzer
-            analyzer = ContentAnalyzer(night_watcher.llm_provider, template_file=template)
             
             # Get unanalyzed documents
             all_docs = night_watcher.document_repository.list_documents()
@@ -401,19 +421,9 @@ def api_analyze():
                     })
             
             # Run analysis
-            result = analyzer.process({"articles": articles, "document_ids": [a["document_id"] for a in articles]})
-            
-            # Save analyses
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            for i, analysis in enumerate(result.get("analyses", [])):
-                doc_id = articles[i]["document_id"]
-                filename = f"analysis_{doc_id}_{timestamp}.json"
-                
-                with open(f"data/analyzed/{filename}", 'w') as f:
-                    json.dump(analysis, f, indent=2)
-            
-            analyzed_count = len(result.get("analyses", []))
-            add_log_message("success", f"Analysis completed: {analyzed_count} documents")
+            result = night_watcher.analyze(max_articles=max_articles, templates=templates)
+            analyzed_count = result.get("analyzed", 0)
+            add_log_message("success", f"Analysis completed: {analyzed_count} documents across {result.get('templates', 1)} templates")
             task_status["progress"] = 100
             
         except Exception as e:
@@ -530,9 +540,12 @@ def api_config():
             night_watcher.config.update(new_config)
             
             # Save to file
-            with open(night_watcher.config_path, 'w') as f:
+            with open(night_watcher.config_path, 'w', encoding='utf-8') as f:
                 json.dump(night_watcher.config, f, indent=2)
-            
+
+            # Reinitialize LLM provider if needed
+            night_watcher.llm_provider = providers.initialize_llm_provider(night_watcher.config)
+
             add_log_message("success", "Configuration updated")
             return jsonify({"status": "updated"})
             
@@ -557,7 +570,7 @@ def api_add_source():
         
         if night_watcher.collector.add_source(source_data):
             # Save config
-            with open(night_watcher.config_path, 'w') as f:
+            with open(night_watcher.config_path, 'w', encoding='utf-8') as f:
                 json.dump(night_watcher.config, f, indent=2)
             
             add_log_message("success", f"Added source: {source_data.get('name', source_data.get('url'))}")
@@ -565,6 +578,41 @@ def api_add_source():
         else:
             return jsonify({"error": "Failed to add source"}), 400
             
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route('/api/sources/update', methods=['POST'])
+def api_update_source():
+    """Update an existing content source."""
+    try:
+        init_night_watcher()
+        data = request.json
+        url = data.get("url")
+        limit = data.get("limit")
+
+        if not url or limit is None:
+            return jsonify({"error": "url and limit required"}), 400
+
+        sources = night_watcher.config.get("content_collection", {}).get("sources", [])
+        updated = False
+        for src in sources:
+            if src.get("url") == url:
+                src["limit"] = int(limit)
+                updated = True
+                break
+
+        if not updated:
+            return jsonify({"error": "source not found"}), 404
+
+        night_watcher.collector.sources = sources
+
+        with open(night_watcher.config_path, 'w', encoding='utf-8') as f:
+            json.dump(night_watcher.config, f, indent=2)
+
+        add_log_message("success", f"Updated source limit for {url}")
+        return jsonify({"status": "updated"})
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 

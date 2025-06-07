@@ -7,56 +7,99 @@
         "type": "rss",
         "bias": "center",
         "name": "AP News Politics",
-        "enabled": true
+        "site_domain": "apnews.com",
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://feeds.npr.org/1004/rss.xml",
         "type": "rss",
         "bias": "center-left",
         "name": "NPR Politics",
-        "enabled": true
+        "site_domain": "npr.org",
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://www.politico.com/rss/politicopicks.xml",
         "type": "rss",
         "bias": "center",
         "name": "Politico Top Picks",
-        "enabled": true
+        "site_domain": "politico.com",
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://thehill.com/feed/",
         "type": "rss",
         "bias": "center",
         "name": "The Hill",
-        "enabled": true
+        "site_domain": "thehill.com",
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://www.reuters.com/world/us/rss",
         "type": "rss",
         "bias": "center",
         "name": "Reuters US",
-        "enabled": true
+        "site_domain": "reuters.com",
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://www.propublica.org/feeds/propublica/main",
         "type": "rss",
         "bias": "center-left",
         "name": "ProPublica",
-        "enabled": true
+        "site_domain": "propublica.org",
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://www.democracynow.org/democracynow.rss",
         "type": "rss",
         "bias": "left",
         "name": "Democracy Now",
-        "enabled": true
+        "site_domain": "democracynow.org",
+        "enabled": true,
+        "limit": 50
       },
       {
         "url": "https://reason.com/feed/",
         "type": "rss",
         "bias": "libertarian",
         "name": "Reason Magazine",
-        "enabled": true
+        "site_domain": "reason.com",
+        "enabled": true,
+        "limit": 50
+      },
+      {
+        "url": "https://www.whitehouse.gov/briefing-room/statements-releases/feed/",
+        "type": "rss",
+        "bias": "official",
+        "name": "White House Press Releases",
+        "site_domain": "whitehouse.gov",
+        "enabled": true,
+        "limit": 50
+      },
+      {
+        "url": "https://www.supremecourt.gov/rss/opinions.xml",
+        "type": "rss",
+        "bias": "official",
+        "name": "Supreme Court Opinions",
+        "site_domain": "supremecourt.gov",
+        "enabled": true,
+        "limit": 50
+      },
+      {
+        "url": "https://www.justice.gov/feeds/press_releases/rss.xml",
+        "type": "rss",
+        "bias": "official",
+        "name": "DOJ Press Releases",
+        "site_domain": "justice.gov",
+        "enabled": true,
+        "limit": 50
       }
     ],
     "govt_keywords": [

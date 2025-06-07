@@ -10,7 +10,7 @@ import json
 import logging
 import argparse
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from pathlib import Path
 
 # Core imports
@@ -80,7 +80,8 @@ class NightWatcher:
                         "type": "rss",
                         "bias": "center",
                         "name": "BBC US & Canada",
-                        "enabled": True
+                        "enabled": True,
+                        "limit": 50
                     }
                 ],
                 "govt_keywords": [
@@ -110,13 +111,13 @@ class NightWatcher:
         for d in dirs:
             os.makedirs(f"{self.base_dir}/{d}", exist_ok=True)
     
-    def collect(self, mode: str = "auto") -> Dict[str, Any]:
+    def collect(self, mode: str = "auto", callback=None) -> Dict[str, Any]:
         """Run content collection."""
         self.logger.info(f"Starting collection (mode: {mode})")
-        return self.collector.collect_content(force_mode=mode if mode != "auto" else None)
+        return self.collector.collect_content(force_mode=mode if mode != "auto" else None, callback=callback)
     
-    def analyze(self, max_articles: int = 20) -> Dict[str, Any]:
-        """Run content analysis."""
+    def analyze(self, max_articles: int = 20, templates: Optional[List[str]] = None) -> Dict[str, Any]:
+        """Run content analysis with one or more templates."""
         if not self.analyzer:
             raise Exception("Analyzer not available - check LLM provider")
         
@@ -143,34 +144,37 @@ class NightWatcher:
                     "document_id": doc_id
                 })
         
-        # Run analysis
-        result = self.analyzer.process({"articles": articles, "document_ids": [a["document_id"] for a in articles]})
-        
-        # Save analyses with provenance
+        templates = templates or ["standard_analysis.json"]
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        for i, analysis in enumerate(result.get("analyses", [])):
-            doc_id = articles[i]["document_id"]
-            analysis_id = f"analysis_{doc_id}_{timestamp}"
-            
-            # Store analysis file
-            filename = f"{analysis_id}.json"
-            with open(f"{self.base_dir}/analyzed/{filename}", 'w') as f:
-                json.dump(analysis, f, indent=2)
-            
-            # Store analysis provenance
-            self.document_repository.store_analysis_provenance(
-                analysis_id=analysis_id,
-                document_ids=[doc_id],
-                analysis_type="content_analysis",
-                analysis_parameters={
-                    "template": analysis.get("template_info", {}).get("file", "unknown"),
-                    "max_articles": max_articles
-                },
-                results=analysis,
-                analyzer_version=analysis.get("template_info", {}).get("version", "1.0")
-            )
-        
-        return {"status": "completed", "analyzed": len(result.get("analyses", []))}
+        total_analyses = 0
+
+        for template_file in templates:
+            analyzer = ContentAnalyzer(self.llm_provider, template_file=template_file)
+            result = analyzer.process({"articles": articles, "document_ids": [a["document_id"] for a in articles]})
+
+            for i, analysis in enumerate(result.get("analyses", [])):
+                doc_id = articles[i]["document_id"]
+                base = os.path.splitext(os.path.basename(template_file))[0]
+                analysis_id = f"analysis_{doc_id}_{base}_{timestamp}"
+
+                with open(f"{self.base_dir}/analyzed/{analysis_id}.json", 'w') as f:
+                    json.dump(analysis, f, indent=2)
+
+                self.document_repository.store_analysis_provenance(
+                    analysis_id=analysis_id,
+                    document_ids=[doc_id],
+                    analysis_type="content_analysis",
+                    analysis_parameters={
+                        "template": analysis.get("template_info", {}).get("file", "unknown"),
+                        "max_articles": max_articles
+                    },
+                    results=analysis,
+                    analyzer_version=analysis.get("template_info", {}).get("version", "1.0")
+                )
+
+            total_analyses += len(result.get("analyses", []))
+
+        return {"status": "completed", "analyzed": total_analyses, "templates": len(templates)}
     
     def build_kg(self) -> Dict[str, Any]:
         """Build knowledge graph from analyses."""
