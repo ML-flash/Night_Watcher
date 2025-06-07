@@ -904,6 +904,27 @@ class KnowledgeGraph:
             self.logger.error(f"Error saving graph to {filepath}: {e}")
             return ""
 
+    def export_graph(self, path: str) -> str:
+        """Export the current graph and provenance to a directory."""
+        os.makedirs(path, exist_ok=True)
+
+        graph_path = os.path.join(path, "graph.json")
+        provenance_src = os.path.join(self.provenance_dir, "graph_provenance.json")
+        provenance_dest = os.path.join(path, "graph_provenance.json")
+
+        # Save graph to the export directory
+        self.save_graph(graph_path)
+
+        # Copy provenance if it exists
+        if os.path.exists(provenance_src):
+            try:
+                import shutil
+                shutil.copy2(provenance_src, provenance_dest)
+            except Exception as e:
+                self.logger.error(f"Error exporting provenance: {e}")
+
+        return path
+
     def infer_temporal_relationships(self) -> int:
         """
         Infer temporal relationships ('precedes' and 'follows') between events based on timestamps.
