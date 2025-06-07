@@ -64,6 +64,8 @@ class ContentCollector:
         self.sources = cc.get("sources", [])
         self.request_timeout = cc.get("request_timeout", 45)
         self.delay_between_requests = cc.get("delay_between_requests", 2.0)
+
+        self.cancelled = False
         
         # State files
         self.last_run_file = os.path.join(base_dir, "last_run_date.txt")
@@ -99,6 +101,10 @@ class ContentCollector:
             except:
                 self.cloudscraper = None
 
+    def cancel(self):
+        """Signal to stop collection."""
+        self.cancelled = True
+
     def _rotate_headers(self):
         """Rotate session headers."""
         self.session.headers.update({
@@ -108,8 +114,14 @@ class ContentCollector:
             'DNT': '1'
         })
 
-    def collect_content(self, force_mode: Optional[str] = None) -> Dict[str, Any]:
-        """Main collection method with intelligent date handling."""
+    def collect_content(self, force_mode: Optional[str] = None, callback=None) -> Dict[str, Any]:
+        """Main collection method with intelligent date handling.
+
+        Args:
+            force_mode: Optional mode override.
+            callback: Optional function to receive progress events.
+        """
+        self.cancelled = False
         # Determine collection mode
         mode, start_date, end_date = self._get_collection_mode(force_mode)
         self.logger.info(f"Collection mode: {mode}, Range: {start_date} to {end_date}")
@@ -122,8 +134,11 @@ class ContentCollector:
                 continue
 
             try:
+                if self.cancelled:
+                    break
+
                 limit = source.get("limit", self.article_limit)
-                articles = self._collect_from_source(source, start_date, end_date, limit)
+                articles = self._collect_from_source(source, start_date, end_date, limit, callback)
                 
                 # Filter by inauguration day if first run
                 if mode == "first_run":
@@ -143,6 +158,8 @@ class ContentCollector:
                 
                 all_articles.extend(articles)
                 time.sleep(random.uniform(1, 3))
+                if self.cancelled:
+                    break
                 
             except Exception as e:
                 self.logger.error(f"Error processing {source.get('url')}: {e}")
@@ -150,6 +167,9 @@ class ContentCollector:
         # Update state
         if mode != "custom":
             self._update_last_run()
+
+        if self.cancelled and callback:
+            callback({"type": "cancelled"})
         
         return {
             "articles": all_articles,
@@ -181,7 +201,7 @@ class ContentCollector:
         except:
             return ("incremental", current_time - timedelta(days=1), current_time)
 
-    def _collect_from_source(self, source: Dict[str, Any], start_date: datetime, end_date: datetime, limit: int) -> List[Dict[str, Any]]:
+    def _collect_from_source(self, source: Dict[str, Any], start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
         """Collect from a single source."""
         url = source.get("url", "")
 
@@ -193,6 +213,8 @@ class ContentCollector:
                 archive_url = self._query_wayback(domain)
                 if archive_url:
                     article["archive_url"] = archive_url
+                if callback:
+                    callback({"type": "article", "source": source.get("name", url), "title": article.get("title")})
             return [article] if article else []
         
         # RSS feed
@@ -201,6 +223,9 @@ class ContentCollector:
             articles = []
             
             for entry in feed.entries[:limit]:
+                if self.cancelled:
+                    break
+
                 if not entry.get("link"):
                     continue
                 
@@ -223,6 +248,8 @@ class ContentCollector:
                     if archive_url:
                         article["archive_url"] = archive_url
                     articles.append(article)
+                    if callback:
+                        callback({"type": "article", "source": article.get("source"), "title": article.get("title")})
                     
                 time.sleep(random.uniform(0.5, 1.5))
             
@@ -230,6 +257,8 @@ class ContentCollector:
             
         except Exception as e:
             self.logger.error(f"RSS collection failed for {url}: {e}")
+            if callback:
+                callback({"type": "error", "source": source.get("name", url), "message": str(e)})
             return []
 
     def _extract_article(self, url: str, title: str = None, pub_date: datetime = None) -> Optional[Dict[str, Any]]:
