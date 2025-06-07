@@ -324,3 +324,86 @@ class DocumentRepository:
             "total_size_bytes": total_size,
             "total_size_mb": round(total_size / 1024 / 1024, 2)
         }
+
+    def export_repository(self, path: str) -> str:
+        """Export all repository data to a directory."""
+        import shutil
+
+        os.makedirs(path, exist_ok=True)
+        for sub in ["content", "metadata", "signatures", "analysis_provenance"]:
+            src = os.path.join(self.base_dir, sub)
+            dest = os.path.join(path, sub)
+            if os.path.exists(src):
+                shutil.copytree(src, dest, dirs_exist_ok=True)
+
+        return path
+
+    def import_repository(self, path: str) -> Dict[str, Any]:
+        """Import documents and analyses from a directory with verification."""
+        import shutil
+
+        results = {"documents": 0, "analyses": 0, "failed": []}
+
+        content_dir = os.path.join(path, "content")
+        metadata_dir = os.path.join(path, "metadata")
+        sig_dir = os.path.join(path, "signatures")
+        analysis_dir = os.path.join(path, "analysis_provenance")
+
+        # Import documents
+        if os.path.exists(content_dir):
+            for filename in os.listdir(content_dir):
+                if not filename.endswith(".txt"):
+                    continue
+                doc_id = filename[:-4]
+                src_content = os.path.join(content_dir, filename)
+                src_meta = os.path.join(metadata_dir, f"{doc_id}.json")
+                src_sig = os.path.join(sig_dir, f"{doc_id}.sig.json")
+
+                if not (os.path.exists(src_meta) and os.path.exists(src_sig)):
+                    results["failed"].append(doc_id)
+                    continue
+
+                with open(src_content, "r", encoding="utf-8") as f:
+                    content = f.read()
+                with open(src_meta, "r", encoding="utf-8") as f:
+                    metadata = json.load(f)
+                with open(src_sig, "r", encoding="utf-8") as f:
+                    sig_data = json.load(f)
+
+                # Verify signature
+                stored_sig = sig_data.pop("signature", None)
+                sig_json = json.dumps(sig_data, sort_keys=True)
+                expected_sig = hmac.new(self.key, sig_json.encode("utf-8"), hashlib.sha256).digest()
+                if not stored_sig or not hmac.compare_digest(base64.b64decode(stored_sig), expected_sig):
+                    results["failed"].append(doc_id)
+                    continue
+
+                # Copy files
+                shutil.copy2(src_content, os.path.join(self.content_dir, filename))
+                shutil.copy2(src_meta, os.path.join(self.metadata_dir, f"{doc_id}.json"))
+                shutil.copy2(src_sig, os.path.join(self.signatures_dir, f"{doc_id}.sig.json"))
+                results["documents"] += 1
+
+        # Import analyses
+        if os.path.exists(analysis_dir):
+            for file in os.listdir(analysis_dir):
+                if not file.endswith(".json"):
+                    continue
+                analysis_id = file[:-5]
+                src_path = os.path.join(analysis_dir, file)
+                with open(src_path, "r", encoding="utf-8") as f:
+                    provenance_record = json.load(f)
+
+                sig_data = provenance_record.get("signature", {})
+                stored_sig = sig_data.pop("signature", None)
+                sig_json = json.dumps(sig_data, sort_keys=True)
+                expected_sig = hmac.new(self.key, sig_json.encode("utf-8"), hashlib.sha256).digest()
+                if not stored_sig or not hmac.compare_digest(base64.b64decode(stored_sig), expected_sig):
+                    results["failed"].append(analysis_id)
+                    continue
+
+                dest_path = os.path.join(self.analysis_dir, file)
+                shutil.copy2(src_path, dest_path)
+                results["analyses"] += 1
+
+        return results

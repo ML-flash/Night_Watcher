@@ -295,3 +295,24 @@ class VectorStore:
         self._save_index()
         self._save_metadata()
         self.logger.info("Cleared all vector store data")
+
+    def export_vector_store(self, path: str) -> str:
+        """Export index and metadata to a directory."""
+        import shutil
+
+        os.makedirs(path, exist_ok=True)
+
+        # Ensure latest data is saved
+        self._save_index()
+        self._save_metadata()
+
+        dest_index = os.path.join(path, "faiss_index.bin")
+        dest_meta = os.path.join(path, "metadata.json")
+
+        try:
+            shutil.copy2(self.index_path, dest_index)
+            shutil.copy2(self.metadata_path, dest_meta)
+        except Exception as e:
+            self.logger.error(f"Error exporting vector store: {e}")
+
+        return path

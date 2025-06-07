@@ -136,6 +136,23 @@ data/
 └── logs/              # System logs and JSON failures
 ```
 
+## 📦 Exporting & Applying Updates
+
+Create a signed bundle of the current repository, graph and vector store:
+
+```bash
+python export_artifact.py --output my_bundle.tar.gz
+```
+
+To integrate an update from another bundle:
+
+```bash
+python update_artifact.py my_bundle.tar.gz
+```
+
+All documents and analyses are verified before import and the knowledge graph is
+merged safely.
+
 ## 🔍 Understanding the Analysis
 
 Each article goes through 7 rounds of analysis:
