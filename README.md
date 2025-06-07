@@ -185,6 +185,7 @@ Each article goes through 7 rounds of analysis:
 - For Wayback queries the collector uses the `site_domain` specified in a
   source entry. If omitted, the domain is derived from the first article link.
 - If the date range goes back more than 5 days, archived feed snapshots are queried automatically.
+- If too few articles are collected, lower the `keyword_threshold` value in `config.json`.
 
 ### Out of Memory
 - Reduce `article_limit` in config.json

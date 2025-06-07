@@ -74,9 +74,10 @@ class ContentCollector:
         # Keywords
         self.govt_keywords = set(kw.lower() for kw in cc.get("govt_keywords", [
             "executive order", "administration", "white house", "president",
-            "congress", "senate", "supreme court", "federal", "government", 
+            "congress", "senate", "supreme court", "federal", "government",
             "politics", "election", "democracy", "biden", "trump"
         ]))
+        self.keyword_threshold = cc.get("keyword_threshold", 2)
         
         # User agents
         self.user_agents = [
@@ -283,7 +284,7 @@ class ContentCollector:
             "output": "json",
             "from": start_date.strftime('%Y%m%d'),
             "to": end_date.strftime('%Y%m%d'),
-            "limit": limit,
+            "limit": limit * 5,
             "collapse": "timestamp"
         }
 
@@ -294,6 +295,7 @@ class ContentCollector:
                 return []
             data = resp.json()
             snapshots = data[1:] if len(data) > 1 else []
+            seen_urls = set()
             for snap in snapshots:
                 if self.cancelled or len(articles) >= limit:
                     break
@@ -301,8 +303,19 @@ class ContentCollector:
                 snapshot_url = f"https://web.archive.org/web/{timestamp}/{url}"
                 r = self.session.get(snapshot_url, timeout=self.request_timeout)
                 feed = feedparser.parse(r.text)
-                processed = self._process_feed_entries(feed.entries, source, url, start_date, end_date, limit - len(articles), callback)
+                processed = self._process_feed_entries(
+                    feed.entries,
+                    source,
+                    url,
+                    start_date,
+                    end_date,
+                    limit - len(articles),
+                    callback,
+                )
                 for art in processed:
+                    if art["url"] in seen_urls:
+                        continue
+                    seen_urls.add(art["url"])
                     art["archive_snapshot"] = snapshot_url
                     articles.append(art)
                     if len(articles) >= limit:
@@ -357,7 +370,7 @@ class ContentCollector:
     def _is_political(self, title: str, content: str) -> bool:
         """Check if content is political."""
         text = f"{title} {content}".lower()
-        return sum(1 for kw in self.govt_keywords if kw in text) >= 2
+        return sum(1 for kw in self.govt_keywords if kw in text) >= self.keyword_threshold
 
     def _after_inauguration(self, article: Dict[str, Any]) -> bool:
         """Check if article is after inauguration day."""
