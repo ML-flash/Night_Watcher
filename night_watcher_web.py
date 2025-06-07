@@ -148,9 +148,9 @@ def api_status():
     try:
         init_night_watcher()
         
-        # Cache status for 30 seconds
+        # Cache status for 5 seconds to keep UI responsive
         now = datetime.now()
-        if stats_cache["last_update"] and (now - stats_cache["last_update"]).seconds < 30:
+        if stats_cache["last_update"] and (now - stats_cache["last_update"]).seconds < 5:
             return jsonify(stats_cache["data"])
         
         status = night_watcher.status()
@@ -329,8 +329,20 @@ def api_collect():
         task_status["progress"] = 0
         add_log_message("info", f"Starting collection (mode: {mode})")
 
+        init_night_watcher()
+        total_estimate = sum(
+            src.get("limit", night_watcher.collector.article_limit)
+            for src in night_watcher.collector.sources
+            if src.get("enabled", True)
+        ) or 1
+        collected = 0
+
         def progress(event):
+            nonlocal collected
             if event.get("type") == "article":
+                collected += 1
+                pct = int(100 * collected / total_estimate)
+                task_status["progress"] = min(99, pct)
                 add_log_message("info", f"Collected: {event.get('title')}")
             elif event.get("type") == "error":
                 add_log_message("error", f"{event.get('source')}: {event.get('message')}")
@@ -338,7 +350,6 @@ def api_collect():
                 add_log_message("warning", "Collection cancelled")
 
         try:
-            init_night_watcher()
             result = night_watcher.collect(mode=mode, callback=progress)
             
             articles_count = len(result.get("articles", []))
@@ -611,6 +622,29 @@ def api_update_source():
             json.dump(night_watcher.config, f, indent=2)
 
         add_log_message("success", f"Updated source limit for {url}")
+        return jsonify({"status": "updated"})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route('/api/keyword-threshold', methods=['POST'])
+def api_keyword_threshold():
+    """Update keyword threshold setting."""
+    try:
+        init_night_watcher()
+        data = request.json
+        thresh = data.get("threshold")
+        if thresh is None:
+            return jsonify({"error": "threshold required"}), 400
+
+        night_watcher.config.setdefault("content_collection", {})["keyword_threshold"] = int(thresh)
+        night_watcher.collector.keyword_threshold = int(thresh)
+
+        with open(night_watcher.config_path, 'w', encoding='utf-8') as f:
+            json.dump(night_watcher.config, f, indent=2)
+
+        add_log_message("success", f"Keyword threshold set to {thresh}")
         return jsonify({"status": "updated"})
 
     except Exception as e:

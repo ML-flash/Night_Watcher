@@ -86,8 +86,9 @@ class NightWatcher:
                 ],
                 "govt_keywords": [
                     "executive order", "administration", "white house", "president",
-                    "congress", "senate", "supreme court", "federal", "government"
+                "congress", "senate", "supreme court", "federal", "government"
                 ],
+                "keyword_threshold": 1,
                 "request_timeout": 45,
                 "delay_between_requests": 2.0
             },

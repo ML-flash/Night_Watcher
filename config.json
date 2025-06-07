@@ -107,6 +107,7 @@
       "congress", "senate", "supreme court", "federal", "government",
       "politics", "election", "democracy", "biden", "trump"
     ],
+    "keyword_threshold": 1,
     "request_timeout": 45,
     "delay_between_requests": 2.0
   },

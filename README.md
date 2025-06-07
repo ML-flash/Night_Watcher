@@ -76,6 +76,7 @@ python Night_Watcher.py --web
 - **Review queue** for human validation
 - **Web dashboard** for monitoring and control
 - **Cryptographic provenance** to prevent tampering
+- **Automatic archival retrieval** when collecting older dates
 
 ## 🔧 Command Line Usage
 
@@ -183,6 +184,8 @@ Each article goes through 7 rounds of analysis:
 - Add new sources via web dashboard
 - For Wayback queries the collector uses the `site_domain` specified in a
   source entry. If omitted, the domain is derived from the first article link.
+- If the date range goes back more than 5 days, archived feed snapshots are queried automatically.
+- If too few articles are collected, lower the `keyword_threshold` value in `config.json`.
 
 ### Out of Memory
 - Reduce `article_limit` in config.json

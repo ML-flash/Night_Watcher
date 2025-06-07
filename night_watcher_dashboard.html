@@ -460,6 +460,11 @@
                             <input type="text" id="anthropic-key" placeholder="sk-...">
                             <button class="btn btn-small" onclick="saveAPIKey()">Save</button>
                         </div>
+                        <div class="form-group">
+                            <label>Keyword Threshold</label>
+                            <input type="number" id="keyword-threshold" value="1" min="1" max="5" style="width:80px;">
+                            <button class="btn btn-small" onclick="saveKeywordThreshold()">Save</button>
+                        </div>
                     </div>
 
                     <div class="control-panel">
@@ -680,6 +685,7 @@
             loadTemplates();
             refreshReviewQueue();
             loadSources();
+            loadConfig();
         });
 
         // Navigation
@@ -857,6 +863,30 @@
                 logMessage('task-log', 'success', 'API key saved');
             } catch (error) {
                 logMessage('task-log', 'error', `Failed to save key: ${error.message}`);
+            }
+        }
+
+        async function loadConfig() {
+            try {
+                const cfg = await apiCall('/config');
+                const threshold = cfg.content_collection?.keyword_threshold || 1;
+                document.getElementById('keyword-threshold').value = threshold;
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to load config: ${error.message}`);
+            }
+        }
+
+        async function saveKeywordThreshold() {
+            const value = parseInt(document.getElementById('keyword-threshold').value);
+            if (!value) return;
+            try {
+                await apiCall('/keyword-threshold', {
+                    method: 'POST',
+                    body: JSON.stringify({ threshold: value })
+                });
+                logMessage('task-log', 'success', `Keyword threshold set to ${value}`);
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to update threshold: ${error.message}`);
             }
         }
 

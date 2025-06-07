@@ -74,9 +74,10 @@ class ContentCollector:
         # Keywords
         self.govt_keywords = set(kw.lower() for kw in cc.get("govt_keywords", [
             "executive order", "administration", "white house", "president",
-            "congress", "senate", "supreme court", "federal", "government", 
+            "congress", "senate", "supreme court", "federal", "government",
             "politics", "election", "democracy", "biden", "trump"
         ]))
+        self.keyword_threshold = cc.get("keyword_threshold", 2)
         
         # User agents
         self.user_agents = [
@@ -220,39 +221,19 @@ class ContentCollector:
         # RSS feed
         try:
             feed = feedparser.parse(url, agent=random.choice(self.user_agents))
-            articles = []
-            
-            for entry in feed.entries[:limit]:
-                if self.cancelled:
-                    break
+            articles = self._process_feed_entries(feed.entries, source, url, start_date, end_date, limit, callback)
 
-                if not entry.get("link"):
-                    continue
-                
-                # Date filtering
-                pub_date = self._parse_date(entry)
-                if pub_date and (pub_date < start_date or pub_date > end_date):
-                    continue
-                
-                # Check if political
-                if not self._is_political(entry.get("title", ""), entry.get("summary", "")):
-                    continue
-                
-                # Extract content
-                article = self._extract_article(entry.link, entry.get("title"), pub_date)
-                if article:
-                    article["source"] = source.get("name", urlparse(url).netloc)
-                    article["bias_label"] = source.get("bias", "unknown")
-                    domain = source.get("site_domain") or urlparse(entry.link).netloc or urlparse(url).netloc
-                    archive_url = self._query_wayback(domain)
-                    if archive_url:
-                        article["archive_url"] = archive_url
-                    articles.append(article)
-                    if callback:
-                        callback({"type": "article", "source": article.get("source"), "title": article.get("title")})
-                    
-                time.sleep(random.uniform(0.5, 1.5))
-            
+            # If we're reaching back more than 5 days, also pull archived feed snapshots
+            if (datetime.now() - start_date).days > 5 and len(articles) < limit:
+                archived = self._collect_archived_feed(source, start_date, end_date, limit - len(articles), callback)
+                seen = {a["url"] for a in articles}
+                for art in archived:
+                    if art["url"] not in seen:
+                        articles.append(art)
+                        seen.add(art["url"])
+                        if len(articles) >= limit:
+                            break
+
             return articles
             
         except Exception as e:
@@ -260,6 +241,90 @@ class ContentCollector:
             if callback:
                 callback({"type": "error", "source": source.get("name", url), "message": str(e)})
             return []
+
+    def _process_feed_entries(self, entries: List[Any], source: Dict[str, Any], base_url: str, start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
+        """Process RSS feed entries into article records."""
+        articles = []
+        for entry in entries:
+            if self.cancelled or len(articles) >= limit:
+                break
+
+            if not entry.get("link"):
+                continue
+
+            pub_date = self._parse_date(entry)
+            if pub_date and (pub_date < start_date or pub_date > end_date):
+                continue
+
+            if not self._is_political(entry.get("title", ""), entry.get("summary", "")):
+                continue
+
+            article = self._extract_article(entry.link, entry.get("title"), pub_date)
+            if article:
+                article["source"] = source.get("name", urlparse(base_url).netloc)
+                article["bias_label"] = source.get("bias", "unknown")
+                domain = source.get("site_domain") or urlparse(entry.link).netloc or urlparse(base_url).netloc
+                archive_url = self._query_wayback(domain)
+                if archive_url:
+                    article["archive_url"] = archive_url
+                articles.append(article)
+                if callback:
+                    callback({"type": "article", "source": article.get("source"), "title": article.get("title")})
+
+            time.sleep(random.uniform(0.5, 1.5))
+
+        return articles
+
+    def _collect_archived_feed(self, source: Dict[str, Any], start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
+        """Collect articles from archived snapshots of an RSS feed."""
+        url = source.get("url", "")
+        cdx_url = "https://web.archive.org/cdx/search/cdx"
+        params = {
+            "url": url,
+            "output": "json",
+            "from": start_date.strftime('%Y%m%d'),
+            "to": end_date.strftime('%Y%m%d'),
+            "limit": limit * 5,
+            "collapse": "timestamp"
+        }
+
+        articles = []
+        try:
+            resp = self.session.get(cdx_url, params=params, timeout=self.request_timeout)
+            if resp.status_code != 200:
+                return []
+            data = resp.json()
+            snapshots = data[1:] if len(data) > 1 else []
+            seen_urls = set()
+            for snap in snapshots:
+                if self.cancelled or len(articles) >= limit:
+                    break
+                timestamp = snap[1]
+                snapshot_url = f"https://web.archive.org/web/{timestamp}/{url}"
+                r = self.session.get(snapshot_url, timeout=self.request_timeout)
+                feed = feedparser.parse(r.text)
+                processed = self._process_feed_entries(
+                    feed.entries,
+                    source,
+                    url,
+                    start_date,
+                    end_date,
+                    limit - len(articles),
+                    callback,
+                )
+                for art in processed:
+                    if art["url"] in seen_urls:
+                        continue
+                    seen_urls.add(art["url"])
+                    art["archive_snapshot"] = snapshot_url
+                    articles.append(art)
+                    if len(articles) >= limit:
+                        break
+                time.sleep(random.uniform(0.5, 1.5))
+        except Exception as e:
+            self.logger.error(f"Archive collection failed for {url}: {e}")
+
+        return articles
 
     def _extract_article(self, url: str, title: str = None, pub_date: datetime = None) -> Optional[Dict[str, Any]]:
         """Extract article content."""
@@ -305,7 +370,7 @@ class ContentCollector:
     def _is_political(self, title: str, content: str) -> bool:
         """Check if content is political."""
         text = f"{title} {content}".lower()
-        return sum(1 for kw in self.govt_keywords if kw in text) >= 2
+        return sum(1 for kw in self.govt_keywords if kw in text) >= self.keyword_threshold
 
     def _after_inauguration(self, article: Dict[str, Any]) -> bool:
         """Check if article is after inauguration day."""
