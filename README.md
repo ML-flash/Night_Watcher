@@ -1,6 +1,6 @@
 # Night_watcher Intelligence Gathering System
 
-A framework for monitoring and analyzing political media to detect authoritarian patterns and threats to democracy.
+A framework for monitoring and analyzing political media to detect authoritarian patterns and threats to democracy. This streamlined system includes enhanced memory capabilities for long-running investigations.
 
 ## 🚀 Quick Start (5 minutes)
 
