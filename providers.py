@@ -13,22 +13,41 @@ logger = logging.getLogger(__name__)
 
 class LMStudioProvider:
     """LM Studio local LLM provider."""
-    
-    def __init__(self, host: str = "http://localhost:1234"):
+
+    def __init__(self, host: str = "http://localhost:1234", model: Optional[str] = None):
         self.host = host.rstrip('/')
+        self.model = model
         self.api_url = f"{self.host}/v1/completions"
+
+    def update_model(self, model: Optional[str]):
+        """Set the model to use for completions."""
+        self.model = model
+
+    def list_models(self) -> list:
+        """Return available model IDs from LM Studio."""
+        try:
+            resp = requests.get(f"{self.host}/v1/models", timeout=5)
+            if resp.status_code == 200:
+                return [m.get("id") or m.get("model") for m in resp.json().get("data", [])]
+        except Exception:
+            pass
+        return []
     
     def complete(self, prompt: str, max_tokens: int = 2000, temperature: float = 0.1) -> Dict[str, Any]:
         """Get completion from LM Studio."""
         try:
+            payload = {
+                "prompt": prompt,
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "stream": False
+            }
+            if self.model:
+                payload["model"] = self.model
+
             response = requests.post(
                 self.api_url,
-                json={
-                    "prompt": prompt,
-                    "max_tokens": max_tokens,
-                    "temperature": temperature,
-                    "stream": False
-                },
+                json=payload,
                 timeout=120
             )
             
@@ -84,20 +103,24 @@ def initialize_llm_provider(config: Dict[str, Any]) -> Optional[Any]:
     
     if provider_type == "lm_studio":
         host = llm_config.get("host", "http://localhost:1234")
-        
-        # Test connection
+        model = llm_config.get("model")
+
         try:
             response = requests.get(f"{host}/v1/models", timeout=5)
             if response.status_code == 200:
                 models = response.json().get("data", [])
                 logger.info(f"LM Studio connected at {host} - {len(models)} models available")
-                return LMStudioProvider(host)
             else:
-                logger.error(f"LM Studio returned error code: {response.status_code}")
+                logger.warning(f"LM Studio /v1/models returned status {response.status_code}; proceeding anyway")
         except requests.exceptions.ConnectionError:
             logger.error(f"Could not connect to LM Studio at {host}")
+            return None
         except Exception as e:
-            logger.error(f"LM Studio connection test failed: {e}")
+            logger.warning(f"LM Studio connection test failed: {e}; proceeding")
+
+        provider = LMStudioProvider(host)
+        provider.update_model(model)
+        return provider
     
     elif provider_type == "anthropic":
         # Check for API key in multiple places

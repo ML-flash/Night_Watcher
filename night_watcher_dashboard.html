@@ -460,6 +460,11 @@
                             <input type="text" id="anthropic-key" placeholder="sk-...">
                             <button class="btn btn-small" onclick="saveAPIKey()">Save</button>
                         </div>
+                        <div class="form-group" style="margin-top:1rem;">
+                            <label>LLM Model</label>
+                            <select id="llm-model"></select>
+                            <button class="btn btn-small" onclick="saveLLMModel()">Set Model</button>
+                        </div>
                     </div>
 
                     <div class="control-panel">
@@ -680,6 +685,7 @@
             loadTemplates();
             refreshReviewQueue();
             loadSources();
+            loadLLMModels();
         });
 
         // Navigation
@@ -857,6 +863,39 @@
                 logMessage('task-log', 'success', 'API key saved');
             } catch (error) {
                 logMessage('task-log', 'error', `Failed to save key: ${error.message}`);
+            }
+        }
+
+        async function loadLLMModels() {
+            try {
+                const models = await apiCall('/llm-models');
+                const select = document.getElementById('llm-model');
+                select.innerHTML = '';
+                models.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m;
+                    opt.textContent = m;
+                    select.appendChild(opt);
+                });
+
+                const cfg = await apiCall('/config');
+                const current = cfg.llm_provider?.model;
+                if (current) select.value = current;
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to load models: ${error.message}`);
+            }
+        }
+
+        async function saveLLMModel() {
+            const model = document.getElementById('llm-model').value;
+            try {
+                await apiCall('/config', {
+                    method: 'POST',
+                    body: JSON.stringify({ llm_provider: { model } })
+                });
+                logMessage('task-log', 'success', `Model set to ${model}`);
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to set model: ${error.message}`);
             }
         }
 

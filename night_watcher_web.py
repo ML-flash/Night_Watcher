@@ -553,6 +553,16 @@ def api_config():
             return jsonify({"error": str(e)}), 400
 
 
+@app.route('/api/llm-models')
+def api_llm_models():
+    """Return available models from LM Studio."""
+    init_night_watcher()
+    provider = night_watcher.llm_provider
+    if provider and hasattr(provider, 'list_models'):
+        return jsonify(provider.list_models())
+    return jsonify([])
+
+
 @app.route('/api/sources')
 def api_sources():
     """Get content sources."""

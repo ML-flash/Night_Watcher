@@ -7,7 +7,8 @@ import tarfile
 import hashlib
 import tempfile
 from datetime import datetime
-import shutil
+
+
 
 from knowledge_graph import KnowledgeGraph
 from vector_store import VectorStore
@@ -36,15 +37,18 @@ def build_manifest(directory: str, version: str = "1.0") -> dict:
     return manifest
 
 
-def export_artifact(output_path: str):
+
+def export_artifact(output_path: str, kg_dir: str = "data/knowledge_graph", vector_dir: str = "data/vector_store", documents_dir: str = "data/documents"):
+    """Package repository data into a single archive."""
     with tempfile.TemporaryDirectory() as tmpdir:
-        kg = KnowledgeGraph(graph_file="data/knowledge_graph/graph.json", taxonomy_file="KG_Taxonomy.csv")
+        kg = KnowledgeGraph(graph_file=os.path.join(kg_dir, "graph.json"), taxonomy_file="KG_Taxonomy.csv")
         kg.export_graph(os.path.join(tmpdir, "graph"))
 
-        vs = VectorStore(base_dir="data/vector_store")
+        vs = VectorStore(base_dir=vector_dir)
         vs.export_vector_store(os.path.join(tmpdir, "vector_store"))
 
-        repo = DocumentRepository(base_dir="data/documents", dev_mode=True)
+        repo = DocumentRepository(base_dir=documents_dir, dev_mode=True)
+
         repo.export_repository(os.path.join(tmpdir, "documents"))
 
         manifest = build_manifest(tmpdir)
@@ -61,6 +65,10 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Export Night_Watcher artifact")
     parser.add_argument("--output", default="night_watcher_artifact.tar.gz", help="Output archive path")
+    parser.add_argument("--kg-dir", default="data/knowledge_graph", help="Knowledge graph directory")
+    parser.add_argument("--vector-dir", default="data/vector_store", help="Vector store directory")
+    parser.add_argument("--documents-dir", default="data/documents", help="Document repository directory")
     args = parser.parse_args()
 
-    export_artifact(args.output)
+    export_artifact(args.output, kg_dir=args.kg_dir, vector_dir=args.vector_dir, documents_dir=args.documents_dir)
+
