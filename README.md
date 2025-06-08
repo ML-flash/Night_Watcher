@@ -28,6 +28,14 @@ python setup_night_watcher.py
 1. Download [LM Studio](https://lmstudio.ai/)
 2. Download a model (e.g., Qwen2.5-32B-Instruct or similar)
 3. Start the local server in LM Studio (default port 1234)
+4. Edit `config.json` if you run LM Studio on a different port:
+```json
+"llm_provider": {
+  "type": "lm_studio",
+  "host": "http://localhost:1234"
+}
+```
+The web dashboard lists available models from LM Studio so you can switch models at runtime.
 
 **Option B: Anthropic API**
 ```bash
@@ -135,6 +143,25 @@ data/
 ├── vector_store/       # Embeddings for similarity search
 └── logs/              # System logs and JSON failures
 ```
+
+## 📦 Exporting & Applying Updates
+
+Create a signed bundle of the current repository, graph and vector store:
+
+```bash
+python export_artifact.py --output my_bundle.tar.gz
+# Use custom paths with --kg-dir, --vector-dir and --documents-dir if needed
+```
+
+To integrate an update from another bundle:
+
+```bash
+python update_artifact.py my_bundle.tar.gz
+# Use the same optional directories as above
+```
+
+All documents and analyses are verified before import and the knowledge graph is
+merged safely.
 
 ## 🔍 Understanding the Analysis
 
