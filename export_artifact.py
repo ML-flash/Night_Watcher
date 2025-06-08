@@ -8,6 +8,8 @@ import hashlib
 import tempfile
 from datetime import datetime
 
+
+
 from knowledge_graph import KnowledgeGraph
 from vector_store import VectorStore
 from document_repository import DocumentRepository
@@ -35,6 +37,7 @@ def build_manifest(directory: str, version: str = "1.0") -> dict:
     return manifest
 
 
+
 def export_artifact(output_path: str, kg_dir: str = "data/knowledge_graph", vector_dir: str = "data/vector_store", documents_dir: str = "data/documents"):
     """Package repository data into a single archive."""
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -45,6 +48,7 @@ def export_artifact(output_path: str, kg_dir: str = "data/knowledge_graph", vect
         vs.export_vector_store(os.path.join(tmpdir, "vector_store"))
 
         repo = DocumentRepository(base_dir=documents_dir, dev_mode=True)
+
         repo.export_repository(os.path.join(tmpdir, "documents"))
 
         manifest = build_manifest(tmpdir)
@@ -67,3 +71,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     export_artifact(args.output, kg_dir=args.kg_dir, vector_dir=args.vector_dir, documents_dir=args.documents_dir)
+
