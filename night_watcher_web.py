@@ -17,6 +17,7 @@ from flask_cors import CORS
 
 # Import Night_watcher components
 from Night_Watcher import NightWatcher
+from analyzer import ContentAnalyzer
 import providers
 
 # Configure logging
@@ -534,21 +535,30 @@ def api_config():
     
     elif request.method == 'POST':
         try:
-            new_config = request.json
-            
-            # Update config
-            night_watcher.config.update(new_config)
-            
+            new_config = request.json or {}
+
+            def deep_update(orig, updates):
+                for k, v in updates.items():
+                    if isinstance(v, dict) and isinstance(orig.get(k), dict):
+                        deep_update(orig[k], v)
+                    else:
+                        orig[k] = v
+                return orig
+
+            # Merge new values into existing config
+            night_watcher.config = deep_update(night_watcher.config, new_config)
+
             # Save to file
             with open(night_watcher.config_path, 'w', encoding='utf-8') as f:
                 json.dump(night_watcher.config, f, indent=2)
 
-            # Reinitialize LLM provider if needed
+            # Reinitialize LLM provider and analyzer
             night_watcher.llm_provider = providers.initialize_llm_provider(night_watcher.config)
+            night_watcher.analyzer = ContentAnalyzer(night_watcher.llm_provider) if night_watcher.llm_provider else None
 
             add_log_message("success", "Configuration updated")
             return jsonify({"status": "updated"})
-            
+
         except Exception as e:
             return jsonify({"error": str(e)}), 400
 
