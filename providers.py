@@ -4,6 +4,7 @@ Minimal implementation for LM Studio and Anthropic support.
 """
 
 import os
+import json
 import requests
 import logging
 from typing import Dict, Any, Optional
@@ -33,14 +34,15 @@ class LMStudioProvider:
             pass
         return []
     
-    def complete(self, prompt: str, max_tokens: int = 2000, temperature: float = 0.1) -> Dict[str, Any]:
-        """Get completion from LM Studio."""
+    def complete(self, prompt: str, max_tokens: int = 2000, temperature: float = 0.1, stream: bool = False):
+        """Get completion from LM Studio. If ``stream`` is True a generator of
+        text chunks is returned."""
         try:
             payload = {
                 "prompt": prompt,
                 "max_tokens": max_tokens,
                 "temperature": temperature,
-                "stream": False
+                "stream": bool(stream)
             }
             if self.model:
                 payload["model"] = self.model
@@ -48,14 +50,32 @@ class LMStudioProvider:
             response = requests.post(
                 self.api_url,
                 json=payload,
-                timeout=120
+                timeout=120,
+                stream=bool(stream)
             )
-            
-            if response.status_code == 200:
-                return response.json()
-            else:
+
+            if response.status_code != 200:
                 return {"error": f"LM Studio error: {response.status_code}"}
-                
+
+            if not stream:
+                return response.json()
+
+            def generate():
+                for line in response.iter_lines():
+                    if not line:
+                        continue
+                    if line.startswith(b"data:"):
+                        line = line[5:]
+                    if line.strip() == b"[DONE]":
+                        break
+                    try:
+                        data = json.loads(line.decode("utf-8"))
+                        yield data.get("choices", [{}])[0].get("text", "")
+                    except Exception:
+                        continue
+
+            return generate()
+
         except Exception as e:
             return {"error": str(e)}
 
