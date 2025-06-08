@@ -59,14 +59,10 @@ def verify_graph_provenance(directory: str) -> bool:
 
 
 def apply_update(archive: str, kg_dir: str = "data/knowledge_graph", vector_dir: str = "data/vector_store", documents_dir: str = "data/documents"):
+    """Apply an exported artifact to the local environment."""
     with tempfile.TemporaryDirectory() as tmpdir:
         with tarfile.open(archive, "r:gz") as tar:
             safe_extract(tar, tmpdir)
-
-def apply_update(archive: str):
-    with tempfile.TemporaryDirectory() as tmpdir:
-        with tarfile.open(archive, "r:gz") as tar:
-            tar.extractall(tmpdir)
 
 
         if not verify_manifest(tmpdir) or not verify_graph_provenance(tmpdir):
