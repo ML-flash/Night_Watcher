@@ -28,6 +28,7 @@ python setup_night_watcher.py
 1. Download [LM Studio](https://lmstudio.ai/)
 2. Download a model (e.g., Qwen2.5-32B-Instruct or similar)
 3. Start the local server in LM Studio (default port 1234)
+4. The LMStudio provider supports streaming tokens by passing `stream=True`
 
 **Option B: Anthropic API**
 ```bash
