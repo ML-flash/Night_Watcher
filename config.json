@@ -111,8 +111,8 @@
     "delay_between_requests": 2.0
   },
   "llm_provider": {
-    "type": "anthropic",
-    "model": "claude-3-haiku-20240307"
+    "type": "lm_studio",
+    "model": ""
   },
   "analysis": {
     "max_articles": 20
