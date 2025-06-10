@@ -978,7 +978,11 @@
         // Template functions
         async function loadTemplates() {
             try {
-                const templates = await apiCall('/templates');
+                const templatesData = await apiCall('/templates');
+                const templates = [
+                    ...(templatesData.approved || []),
+                    ...(templatesData.unapproved || [])
+                ];
                 
                 // Update template selectors
                 const selectors = [
