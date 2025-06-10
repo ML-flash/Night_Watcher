@@ -149,9 +149,9 @@ def api_status():
     try:
         init_night_watcher()
         
-        # Cache status for 30 seconds
+        # Cache status for 2 seconds to keep dashboard responsive
         now = datetime.now()
-        if stats_cache["last_update"] and (now - stats_cache["last_update"]).seconds < 30:
+        if stats_cache["last_update"] and (now - stats_cache["last_update"]).seconds < 2:
             # But always update certain fields
             status = stats_cache["data"].copy()
         else:
@@ -655,6 +655,34 @@ def api_update_source():
             json.dump(night_watcher.config, f, indent=2)
 
         add_log_message("success", f"Updated source limit for {url}")
+        return jsonify({"status": "updated"})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route('/api/sources/set-limit', methods=['POST'])
+def api_set_source_limit():
+    """Set article limit for all sources."""
+    try:
+        init_night_watcher()
+        data = request.json
+        limit = data.get("limit")
+
+        if limit is None:
+            return jsonify({"error": "limit required"}), 400
+
+        sources = night_watcher.config.get("content_collection", {}).get("sources", [])
+        for src in sources:
+            src["limit"] = int(limit)
+
+        night_watcher.collector.sources = sources
+        night_watcher.config["content_collection"]["article_limit"] = int(limit)
+
+        with open(night_watcher.config_path, 'w', encoding='utf-8') as f:
+            json.dump(night_watcher.config, f, indent=2)
+
+        add_log_message("success", f"Set article limit for all sources: {limit}")
         return jsonify({"status": "updated"})
 
     except Exception as e:

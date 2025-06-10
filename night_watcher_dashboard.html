@@ -136,11 +136,22 @@
             margin-bottom: 1rem;
         }
 
+        .inline-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             color: #cbd5e0;
             font-weight: 500;
+        }
+
+        .inline-group label {
+            margin-bottom: 0;
+            flex: 1;
         }
 
         .form-group input,
@@ -163,6 +174,10 @@
             box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.1);
         }
 
+        .inline-group input {
+            width: 80px;
+        }
+
         .btn {
             padding: 0.75rem 1.5rem;
             border: none;
@@ -183,6 +198,11 @@
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(49, 130, 206, 0.4);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) inset;
         }
 
         .btn-success {
@@ -456,6 +476,14 @@
                         <button class="btn btn-primary" onclick="startCollection()">Start Collection</button>
                         <button class="btn btn-danger" onclick="stopCollection()">Stop Collection</button>
                         <div class="form-group" style="margin-top:1rem;">
+                            <label>LLM Provider</label>
+                            <select id="llm-provider">
+                                <option value="lm_studio">LM Studio</option>
+                                <option value="anthropic">Anthropic</option>
+                            </select>
+                            <button class="btn btn-small" onclick="saveLLMProvider()">Set</button>
+                        </div>
+                        <div class="form-group" style="margin-top:1rem;">
                             <label>Anthropic API Key</label>
                             <input type="text" id="anthropic-key" placeholder="sk-...">
                             <button class="btn btn-small" onclick="saveAPIKey()">Save</button>
@@ -476,6 +504,11 @@
 
                     <div class="control-panel">
                         <h3>Source Limits</h3>
+                        <div class="form-group inline-group">
+                            <label for="global-limit">Articles per Source</label>
+                            <input type="number" id="global-limit" value="50" min="1" style="width:80px;">
+                            <button class="btn btn-small" onclick="setGlobalLimit()">Apply</button>
+                        </div>
                         <div id="sources-list"></div>
                     </div>
                 </div>
@@ -686,6 +719,7 @@
             refreshReviewQueue();
             loadSources();
             loadLLMModels();
+            loadLLMProvider();
         });
 
         // Navigation
@@ -778,7 +812,7 @@
         }
 
         function startStatusPolling() {
-            statusInterval = setInterval(refreshStatus, 5000);
+            statusInterval = setInterval(refreshStatus, 2000);
         }
 
         // Task monitoring
@@ -793,16 +827,27 @@
                 // Update logs
                 if (taskStatus.messages && taskStatus.messages.length > 0) {
                     const logContainer = document.getElementById('task-log');
+                    const analyzerContainer = document.getElementById('analyzer-log');
                     logContainer.innerHTML = '';
-                    
+                    if (taskStatus.task === 'analysis') {
+                        analyzerContainer.innerHTML = '';
+                    }
+
                     taskStatus.messages.forEach(msg => {
                         const entry = document.createElement('div');
                         entry.className = `log-entry ${msg.level}`;
                         entry.textContent = `[${msg.time}] ${msg.message}`;
                         logContainer.appendChild(entry);
+                        if (taskStatus.task === 'analysis') {
+                            const clone = entry.cloneNode(true);
+                            analyzerContainer.appendChild(clone);
+                        }
                     });
-                    
+
                     logContainer.scrollTop = logContainer.scrollHeight;
+                    if (taskStatus.task === 'analysis') {
+                        analyzerContainer.scrollTop = analyzerContainer.scrollHeight;
+                    }
                 }
                 
                 // Stop polling if task is done
@@ -866,6 +911,30 @@
             }
         }
 
+        async function loadLLMProvider() {
+            try {
+                const cfg = await apiCall('/config');
+                const provider = cfg.llm_provider?.type || 'lm_studio';
+                document.getElementById('llm-provider').value = provider;
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to load provider: ${error.message}`);
+            }
+        }
+
+        async function saveLLMProvider() {
+            const provider = document.getElementById('llm-provider').value;
+            try {
+                await apiCall('/config', {
+                    method: 'POST',
+                    body: JSON.stringify({ llm_provider: { type: provider } })
+                });
+                logMessage('task-log', 'success', `Provider set to ${provider}`);
+                loadLLMModels();
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to set provider: ${error.message}`);
+            }
+        }
+
         async function loadLLMModels() {
             try {
                 const models = await apiCall('/llm-models');
@@ -906,7 +975,7 @@
                 container.innerHTML = '';
                 sources.forEach((src, idx) => {
                     const div = document.createElement('div');
-                    div.className = 'form-group';
+                    div.className = 'form-group inline-group';
                     div.innerHTML = `
                         <label>${src.name}</label>
                         <input type="number" id="limit-${idx}" value="${src.limit || 50}" min="1" style="width:80px;">
@@ -914,8 +983,25 @@
                     `;
                     container.appendChild(div);
                 });
+                const cfg = await apiCall('/config');
+                document.getElementById('global-limit').value = cfg.content_collection?.article_limit || 50;
             } catch (error) {
                 logMessage('task-log', 'error', `Failed to load sources: ${error.message}`);
+            }
+        }
+
+        async function setGlobalLimit() {
+            const limit = document.getElementById('global-limit').value;
+            if (!limit) return;
+            try {
+                await apiCall('/sources/set-limit', {
+                    method: 'POST',
+                    body: JSON.stringify({ limit: parseInt(limit) })
+                });
+                logMessage('task-log', 'success', `Set article limit to ${limit}`);
+                loadSources();
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to set limit: ${error.message}`);
             }
         }
 
