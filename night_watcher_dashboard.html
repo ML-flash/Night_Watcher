@@ -186,8 +186,9 @@
         }
 
         .btn:active {
-            transform: scale(0.97);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) inset;
+            transform: scale(0.96);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3) inset;
+            filter: brightness(0.9);
         }
 
         .btn-success {
@@ -705,6 +706,7 @@
             loadSources();
             loadLLMModels();
             loadLLMProvider();
+            startEventStreams();
         });
 
         // Navigation
@@ -797,7 +799,7 @@
         }
 
         function startStatusPolling() {
-            statusInterval = setInterval(refreshStatus, 2000);
+            statusInterval = setInterval(refreshStatus, 1000);
         }
 
         // Task monitoring
@@ -852,6 +854,38 @@
             if (!taskInterval) {
                 updateTaskStatus();
                 taskInterval = setInterval(updateTaskStatus, 1000);
+            }
+        }
+
+        function startEventStreams() {
+            try {
+                const taskSource = new EventSource('/stream/task-status');
+                taskSource.onmessage = event => {
+                    const data = JSON.parse(event.data);
+                    const progress = data.progress || 0;
+                    document.getElementById('task-progress').style.width = progress + '%';
+                    if (data.messages && data.messages.length > 0) {
+                        data.messages.forEach(msg => {
+                            logMessage('task-log', msg.level, msg.message);
+                            if (data.task === 'analysis') {
+                                logMessage('analyzer-log', msg.level, msg.message);
+                            }
+                        });
+                    }
+                };
+
+                const statusSource = new EventSource('/stream/status');
+                statusSource.onmessage = event => {
+                    const s = JSON.parse(event.data);
+                    document.getElementById('collection-status').textContent = s.task_status.running && s.task_status.current_task === 'collection' ? 'Collecting' : 'Idle';
+                    document.getElementById('analysis-status').textContent = s.task_status.running && s.task_status.current_task === 'analysis' ? 'Analyzing' : 'Ready';
+                    document.getElementById('total-documents').textContent = s.total_documents;
+                    document.getElementById('pending-analysis').textContent = s.pending_analysis;
+                    document.getElementById('analyzed-documents').textContent = s.analyzed_documents;
+                    document.getElementById('review-queue-count').textContent = s.pending_review;
+                };
+            } catch (e) {
+                console.error('SSE failed', e);
             }
         }
 
@@ -958,14 +992,10 @@
                 const sources = await apiCall('/sources');
                 const container = document.getElementById('sources-list');
                 container.innerHTML = '';
-                sources.forEach((src, idx) => {
+                sources.forEach(src => {
                     const div = document.createElement('div');
                     div.className = 'form-group';
-                    div.innerHTML = `
-                        <label>${src.name}</label>
-                        <input type="number" id="limit-${idx}" value="${src.limit || 50}" min="1" style="width:80px;">
-                        <button class="btn btn-small" onclick="updateSourceLimit('${src.url}', document.getElementById('limit-${idx}').value)">Save</button>
-                    `;
+                    div.textContent = `${src.name} (limit: ${src.limit || 50})`;
                     container.appendChild(div);
                 });
                 const cfg = await apiCall('/config');
