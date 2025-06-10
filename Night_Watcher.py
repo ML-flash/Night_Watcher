@@ -116,22 +116,51 @@ class NightWatcher:
         self.logger.info(f"Starting collection (mode: {mode})")
         return self.collector.collect_content(force_mode=mode if mode != "auto" else None, callback=callback)
     
-    def analyze(self, max_articles: int = 20, template: str = "standard_analysis.json") -> Dict[str, Any]:
-        """Run content analysis with a single template."""
+    def analyze(self, max_articles: int = 20, templates: List[str] = None, 
+                target: str = "unanalyzed", since_date: str = None) -> Dict[str, Any]:
+        """Run content analysis with multiple templates.
+        
+        Args:
+            max_articles: Maximum articles to analyze
+            templates: List of template files to use
+            target: "unanalyzed" (default), "all", or "recent" 
+            since_date: ISO date string for custom date range (when target="all")
+        """
         if not self.analyzer:
             raise Exception("Analyzer not available - check LLM provider")
         
-        # Get unanalyzed documents
-        all_docs = self.document_repository.list_documents()
-        analyzed = self._get_analyzed_docs()
-        unanalyzed = [d for d in all_docs if d not in analyzed][:max_articles]
+        templates = templates or ["standard_analysis.json"]
         
-        if not unanalyzed:
-            return {"status": "no_new_documents", "analyzed": 0}
+        # Get documents based on target
+        if target == "unanalyzed":
+            all_docs = self.document_repository.list_documents()
+            analyzed = self._get_analyzed_docs()
+            target_docs = [d for d in all_docs if d not in analyzed][:max_articles]
+        elif target == "recent":
+            # Get documents from last collection run
+            last_run_file = os.path.join(self.base_dir, "last_run_date.txt")
+            if os.path.exists(last_run_file):
+                with open(last_run_file, 'r') as f:
+                    last_run = datetime.fromisoformat(f.read().strip())
+                target_docs = self._get_docs_since(last_run)[:max_articles]
+            else:
+                target_docs = []
+        elif target == "all" and since_date:
+            # Get all docs since specified date
+            since = datetime.fromisoformat(since_date)
+            target_docs = self._get_docs_since(since)[:max_articles]
+        else:
+            # Default to unanalyzed
+            all_docs = self.document_repository.list_documents()
+            analyzed = self._get_analyzed_docs()
+            target_docs = [d for d in all_docs if d not in analyzed][:max_articles]
         
-        # Prepare for analysis
+        if not target_docs:
+            return {"status": "no_documents", "analyzed": 0}
+        
+        # Prepare articles
         articles = []
-        for doc_id in unanalyzed:
+        for doc_id in target_docs:
             content, metadata, _ = self.document_repository.get_document(doc_id)
             if content and metadata:
                 articles.append({
@@ -144,40 +173,59 @@ class NightWatcher:
                     "document_id": doc_id
                 })
         
-        # Run analysis with single template
-        analyzer = ContentAnalyzer(self.llm_provider, template_file=template)
-        result = analyzer.process({"articles": articles, "document_ids": [a["document_id"] for a in articles]})
-        
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         total_analyses = 0
         
-        for i, analysis in enumerate(result.get("analyses", [])):
-            doc_id = articles[i]["document_id"]
-            base = os.path.splitext(os.path.basename(template))[0]
-            analysis_id = f"analysis_{doc_id}_{base}_{timestamp}"
+        # Run each template
+        for template in templates:
+            analyzer = ContentAnalyzer(self.llm_provider, template_file=template)
+            result = analyzer.process({"articles": articles, "document_ids": [a["document_id"] for a in articles]})
             
-            with open(f"{self.base_dir}/analyzed/{analysis_id}.json", 'w') as f:
-                json.dump(analysis, f, indent=2)
-            
-            self.document_repository.store_analysis_provenance(
-                analysis_id=analysis_id,
-                document_ids=[doc_id],
-                analysis_type="content_analysis",
-                analysis_parameters={
-                    "template": template,
-                    "max_articles": max_articles
-                },
-                results=analysis,
-                analyzer_version=analysis.get("template_info", {}).get("version", "1.0")
-            )
-            
-            total_analyses += 1
+            for i, analysis in enumerate(result.get("analyses", [])):
+                doc_id = articles[i]["document_id"]
+                base = os.path.splitext(os.path.basename(template))[0]
+                analysis_id = f"analysis_{doc_id}_{base}_{timestamp}"
+                
+                with open(f"{self.base_dir}/analyzed/{analysis_id}.json", 'w') as f:
+                    json.dump(analysis, f, indent=2)
+                
+                self.document_repository.store_analysis_provenance(
+                    analysis_id=analysis_id,
+                    document_ids=[doc_id],
+                    analysis_type="content_analysis",
+                    analysis_parameters={
+                        "template": template,
+                        "max_articles": max_articles,
+                        "target": target
+                    },
+                    results=analysis,
+                    analyzer_version=analysis.get("template_info", {}).get("version", "1.0")
+                )
+                
+                total_analyses += 1
         
         return {
             "status": "completed",
             "analyzed": total_analyses,
-            "template": template
+            "templates": templates,
+            "target": target
         }
+    
+    def _get_docs_since(self, since_date: datetime) -> List[str]:
+        """Get document IDs collected since a given date."""
+        docs = []
+        for doc_id in self.document_repository.list_documents():
+            _, metadata, _ = self.document_repository.get_document(doc_id)
+            if metadata:
+                collected_at = metadata.get("collected_at")
+                if collected_at:
+                    try:
+                        doc_date = datetime.fromisoformat(collected_at.replace('Z', '+00:00'))
+                        if doc_date >= since_date:
+                            docs.append(doc_id)
+                    except:
+                        pass
+        return docs
     
     def test_template(self, template: str, article_content: str = None, article_url: str = None) -> Dict[str, Any]:
         """Test a template with a single article."""
@@ -319,7 +367,10 @@ def main():
     parser.add_argument("--mode", choices=["auto", "first_run", "incremental", "full"],
                        default="auto", help="Collection mode")
     parser.add_argument("--max-articles", type=int, default=20, help="Max articles to analyze")
-    parser.add_argument("--template", default="standard_analysis.json", help="Analysis template")
+    parser.add_argument("--templates", nargs="+", help="Analysis templates to use")
+    parser.add_argument("--target", choices=["unanalyzed", "recent", "all"],
+                       default="unanalyzed", help="Analysis target")
+    parser.add_argument("--since-date", help="Since date for target=all (ISO format)")
     
     args = parser.parse_args()
     
@@ -337,8 +388,14 @@ def main():
             print(f"✓ Collected {len(result['articles'])} articles")
         
         elif args.analyze:
-            result = nw.analyze(max_articles=args.max_articles, template=args.template)
-            print(f"✓ Analyzed {result.get('analyzed', 0)} documents with {result.get('template')}")
+            templates = args.templates or ["standard_analysis.json"]
+            result = nw.analyze(
+                max_articles=args.max_articles,
+                templates=templates,
+                target=args.target,
+                since_date=args.since_date
+            )
+            print(f"✓ Analyzed {result.get('analyzed', 0)} documents with {len(templates)} templates")
         
         elif args.build_kg:
             result = nw.build_kg()
