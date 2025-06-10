@@ -116,8 +116,14 @@ class NightWatcher:
         self.logger.info(f"Starting collection (mode: {mode})")
         return self.collector.collect_content(force_mode=mode if mode != "auto" else None, callback=callback)
     
-    def analyze(self, max_articles: int = 20, templates: Optional[List[str]] = None) -> Dict[str, Any]:
-        """Run content analysis with one or more templates."""
+    def analyze(self, max_articles: int = 20, templates: Optional[List[str]] = None,
+                ab_split: bool = False) -> Dict[str, Any]:
+        """Run content analysis.
+
+        If multiple templates are provided and ``ab_split`` is True, articles are
+        evenly distributed across templates (A/B style). Otherwise each template
+        processes the full article set as before.
+        """
         if not self.analyzer:
             raise Exception("Analyzer not available - check LLM provider")
         
@@ -148,12 +154,23 @@ class NightWatcher:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         total_analyses = 0
 
-        for template_file in templates:
+        if ab_split and len(templates) > 1:
+            assignments = {t: [] for t in templates}
+            for idx, art in enumerate(articles):
+                t = templates[idx % len(templates)]
+                assignments[t].append(art)
+        else:
+            assignments = {t: articles for t in templates}
+
+        for template_file, batch in assignments.items():
+            if not batch:
+                continue
+
             analyzer = ContentAnalyzer(self.llm_provider, template_file=template_file)
-            result = analyzer.process({"articles": articles, "document_ids": [a["document_id"] for a in articles]})
+            result = analyzer.process({"articles": batch, "document_ids": [a["document_id"] for a in batch]})
 
             for i, analysis in enumerate(result.get("analyses", [])):
-                doc_id = articles[i]["document_id"]
+                doc_id = batch[i]["document_id"]
                 base = os.path.splitext(os.path.basename(template_file))[0]
                 analysis_id = f"analysis_{doc_id}_{base}_{timestamp}"
 
@@ -166,7 +183,8 @@ class NightWatcher:
                     analysis_type="content_analysis",
                     analysis_parameters={
                         "template": analysis.get("template_info", {}).get("file", "unknown"),
-                        "max_articles": max_articles
+                        "max_articles": max_articles,
+                        "ab_split": ab_split
                     },
                     results=analysis,
                     analyzer_version=analysis.get("template_info", {}).get("version", "1.0")
@@ -174,7 +192,12 @@ class NightWatcher:
 
             total_analyses += len(result.get("analyses", []))
 
-        return {"status": "completed", "analyzed": total_analyses, "templates": len(templates)}
+        return {
+            "status": "completed",
+            "analyzed": total_analyses,
+            "templates": len(assignments),
+            "ab_split": ab_split
+        }
     
     def build_kg(self) -> Dict[str, Any]:
         """Build knowledge graph from analyses."""
