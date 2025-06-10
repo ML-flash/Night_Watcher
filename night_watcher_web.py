@@ -201,9 +201,12 @@ def api_status():
 
 @app.route('/api/templates')
 def api_templates():
-    """Get available analysis templates."""
+    """Get available analysis templates grouped by status."""
     try:
-        templates = []
+        templates = {
+            "approved": [],
+            "unapproved": []
+        }
         
         # Scan for template files
         template_files = glob.glob("*_analysis.json")
@@ -213,14 +216,21 @@ def api_templates():
                 with open(filename, 'r', encoding='utf-8') as f:
                     template_data = json.load(f)
                 
-                templates.append({
+                template_info = {
                     "filename": filename,
                     "name": template_data.get("name", filename),
                     "description": template_data.get("description", ""),
                     "version": template_data.get("version", ""),
                     "status": template_data.get("status", "UNKNOWN"),
                     "rounds": len(template_data.get("rounds", []))
-                })
+                }
+                
+                # Group by status
+                if template_data.get("status") == "PRODUCTION":
+                    templates["approved"].append(template_info)
+                else:
+                    templates["unapproved"].append(template_info)
+                    
             except Exception as e:
                 logger.error(f"Error reading template {filename}: {e}")
         
@@ -243,6 +253,36 @@ def api_get_template(filename):
             template_data = json.load(f)
         
         return jsonify(template_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/template/approve', methods=['POST'])
+def api_approve_template():
+    """Approve a template by changing its status to PRODUCTION."""
+    try:
+        data = request.json
+        template_file = data.get("template")
+        
+        if not template_file or not os.path.exists(template_file):
+            return jsonify({"error": "Template not found"}), 404
+        
+        # Load template
+        with open(template_file, 'r', encoding='utf-8') as f:
+            template_data = json.load(f)
+        
+        # Update status
+        template_data["status"] = "PRODUCTION"
+        template_data["approved_at"] = datetime.now().isoformat()
+        template_data["approved_by"] = "dashboard_user"
+        
+        # Save updated template
+        with open(template_file, 'w', encoding='utf-8') as f:
+            json.dump(template_data, f, indent=2)
+        
+        add_log_message("success", f"Template approved: {template_file}")
+        return jsonify({"status": "approved"})
+        
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -408,13 +448,18 @@ def api_analyze():
     
     data = request.json or {}
     max_articles = data.get("max_articles", 20)
-    template = data.get("template", "standard_analysis.json")
+    templates = data.get("templates", [])
+    target = data.get("target", "unanalyzed")
+    since_date = data.get("since_date")
+    
+    if not templates:
+        return jsonify({"error": "No templates selected"}), 400
     
     def run_analysis():
         task_status["running"] = True
         task_status["task"] = "analysis"
         task_status["progress"] = 0
-        add_log_message("info", f"Starting analysis (template: {template}, max: {max_articles})")
+        add_log_message("info", f"Starting analysis (templates: {len(templates)}, target: {target})")
         
         try:
             init_night_watcher()
@@ -425,22 +470,20 @@ def api_analyze():
                 task_status["progress"] = 100
                 return
             
-            # Get unanalyzed documents
-            all_docs = night_watcher.document_repository.list_documents()
-            analyzed = night_watcher._get_analyzed_docs()
-            unanalyzed = [d for d in all_docs if d not in analyzed][:max_articles]
-            
-            if not unanalyzed:
-                add_log_message("warning", "No new documents to analyze")
-                task_status["progress"] = 100
-                return
-            
-            add_log_message("info", f"Found {len(unanalyzed)} documents to analyze")
-            
             # Run analysis
-            result = night_watcher.analyze(max_articles=max_articles, template=template)
-            analyzed_count = result.get("analyzed", 0)
-            add_log_message("success", f"Analysis completed: {analyzed_count} documents with {template}")
+            result = night_watcher.analyze(
+                max_articles=max_articles, 
+                templates=templates,
+                target=target,
+                since_date=since_date
+            )
+            
+            if result.get("status") == "no_documents":
+                add_log_message("warning", "No documents to analyze for selected target")
+            else:
+                analyzed_count = result.get("analyzed", 0)
+                add_log_message("success", f"Analysis completed: {analyzed_count} documents with {len(templates)} templates")
+            
             task_status["progress"] = 100
             
         except Exception as e:
