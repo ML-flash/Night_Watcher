@@ -239,24 +239,6 @@ def api_templates():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/api/template/<filename>')
-def api_get_template(filename):
-    """Get detailed template information."""
-    try:
-        if not filename.endswith('.json'):
-            filename += '.json'
-        
-        if not os.path.exists(filename):
-            return jsonify({"error": "Template not found"}), 404
-        
-        with open(filename, 'r', encoding='utf-8') as f:
-            template_data = json.load(f)
-        
-        return jsonify(template_data)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
 @app.route('/api/template/approve', methods=['POST'])
 def api_approve_template():
     """Approve a template by changing its status to PRODUCTION."""
