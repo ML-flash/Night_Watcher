@@ -199,25 +199,6 @@ def api_status():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/api/stream/status')
-def api_stream_status():
-    """Stream system status updates via SSE."""
-    def generate():
-        while True:
-            try:
-                status_resp = api_status()
-                if isinstance(status_resp, tuple):
-                    status = status_resp[0].get_json()
-                else:
-                    status = status_resp.get_json()
-                yield f"data: {json.dumps(status)}\n\n"
-            except Exception as e:
-                logger.error(f"Status stream error: {e}")
-            time.sleep(2)
-
-    return Response(generate(), mimetype='text/event-stream')
-
-
 @app.route('/api/templates')
 def api_templates():
     """Get available analysis templates."""
@@ -225,8 +206,7 @@ def api_templates():
         templates = []
         
         # Scan for template files
-        template_files = glob.glob("*.json")
-        template_files = [f for f in template_files if "analysis" in f.lower()]
+        template_files = glob.glob("*_analysis.json")
         
         for filename in template_files:
             try:
@@ -238,12 +218,298 @@ def api_templates():
                     "name": template_data.get("name", filename),
                     "description": template_data.get("description", ""),
                     "version": template_data.get("version", ""),
-                    "status": template_data.get("status", "UNKNOWN")
+                    "status": template_data.get("status", "UNKNOWN"),
+                    "rounds": len(template_data.get("rounds", []))
                 })
             except Exception as e:
                 logger.error(f"Error reading template {filename}: {e}")
         
         return jsonify(templates)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/template/<filename>')
+def api_get_template(filename):
+    """Get detailed template information."""
+    try:
+        if not filename.endswith('.json'):
+            filename += '.json'
+        
+        if not os.path.exists(filename):
+            return jsonify({"error": "Template not found"}), 404
+        
+        with open(filename, 'r', encoding='utf-8') as f:
+            template_data = json.load(f)
+        
+        return jsonify(template_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/template/test', methods=['POST'])
+def api_test_template():
+    """Test a template with a single article."""
+    try:
+        init_night_watcher()
+        
+        data = request.json or {}
+        template = data.get("template", "standard_analysis.json")
+        article_content = data.get("article_content")
+        article_url = data.get("article_url")
+        
+        # Run test
+        result = night_watcher.test_template(
+            template=template,
+            article_content=article_content,
+            article_url=article_url
+        )
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Template test error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/analysis/<analysis_id>')
+def api_get_analysis(analysis_id):
+    """Get a specific analysis result."""
+    try:
+        filepath = f"data/analyzed/{analysis_id}.json"
+        if not os.path.exists(filepath):
+            return jsonify({"error": "Analysis not found"}), 404
+        
+        with open(filepath, 'r', encoding='utf-8') as f:
+            analysis = json.load(f)
+        
+        return jsonify(analysis)
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/analysis/recent')
+def api_recent_analyses():
+    """Get recent analysis results."""
+    try:
+        analyses = []
+        analyzed_dir = "data/analyzed"
+        
+        if not os.path.exists(analyzed_dir):
+            return jsonify([])
+        
+        # Get all analysis files
+        files = []
+        for filename in os.listdir(analyzed_dir):
+            if filename.startswith("analysis_"):
+                filepath = os.path.join(analyzed_dir, filename)
+                mtime = os.path.getmtime(filepath)
+                files.append((filename, filepath, mtime))
+        
+        # Sort by modification time (newest first)
+        files.sort(key=lambda x: x[2], reverse=True)
+        
+        # Get top 20
+        for filename, filepath, mtime in files[:20]:
+            try:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    analysis = json.load(f)
+                
+                analyses.append({
+                    "id": filename[:-5],  # Remove .json
+                    "filename": filename,
+                    "timestamp": analysis.get("timestamp"),
+                    "template": analysis.get("template_info", {}).get("name", "Unknown"),
+                    "article_title": analysis.get("article", {}).get("title", "Unknown"),
+                    "article_source": analysis.get("article", {}).get("source", "Unknown"),
+                    "validation_status": analysis.get("validation", {}).get("status", "Unknown"),
+                    "manipulation_score": analysis.get("manipulation_score", 0),
+                    "concern_level": analysis.get("concern_level", "Unknown")
+                })
+            except Exception as e:
+                logger.error(f"Error reading {filename}: {e}")
+        
+        return jsonify(analyses)
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/collect', methods=['POST'])
+def api_collect():
+    """Start content collection."""
+    global task_thread, task_status
+    
+    if task_status["running"]:
+        return jsonify({"error": "Another task is already running"}), 400
+    
+    data = request.json or {}
+    mode = data.get("mode", "auto")
+    
+    def run_collection():
+        task_status["running"] = True
+        task_status["task"] = "collection"
+        task_status["progress"] = 0
+        add_log_message("info", f"Starting collection (mode: {mode})")
+
+        def progress(event):
+            if event.get("type") == "article":
+                add_log_message("info", f"Collected: {event.get('title')}")
+            elif event.get("type") == "error":
+                add_log_message("error", f"{event.get('source')}: {event.get('message')}")
+            elif event.get("type") == "cancelled":
+                add_log_message("warning", "Collection cancelled")
+
+        try:
+            init_night_watcher()
+            result = night_watcher.collect(mode=mode, callback=progress)
+            
+            articles_count = len(result.get("articles", []))
+            if night_watcher.collector.cancelled:
+                add_log_message("warning", "Collection stopped by user")
+            else:
+                add_log_message("success", f"Collection completed: {articles_count} articles")
+            task_status["progress"] = 100
+            
+        except Exception as e:
+            add_log_message("error", f"Collection failed: {str(e)}")
+        finally:
+            task_status["running"] = False
+            task_status["task"] = None
+            # Clear cache to update status
+            stats_cache["last_update"] = None
+    
+    task_thread = threading.Thread(target=run_collection)
+    task_thread.start()
+
+    return jsonify({"status": "started"})
+
+
+@app.route('/api/collect/stop', methods=['POST'])
+def api_collect_stop():
+    """Request stopping an ongoing collection."""
+    try:
+        if night_watcher and night_watcher.collector:
+            night_watcher.collector.cancel()
+            return jsonify({"status": "stopping"})
+        return jsonify({"error": "Collector not running"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route('/api/analyze', methods=['POST'])
+def api_analyze():
+    """Start content analysis."""
+    global task_thread, task_status
+    
+    if task_status["running"]:
+        return jsonify({"error": "Another task is already running"}), 400
+    
+    data = request.json or {}
+    max_articles = data.get("max_articles", 20)
+    template = data.get("template", "standard_analysis.json")
+    
+    def run_analysis():
+        task_status["running"] = True
+        task_status["task"] = "analysis"
+        task_status["progress"] = 0
+        add_log_message("info", f"Starting analysis (template: {template}, max: {max_articles})")
+        
+        try:
+            init_night_watcher()
+            
+            # Check if analyzer is available
+            if not night_watcher.analyzer:
+                add_log_message("error", "Analyzer not available - check LLM provider")
+                task_status["progress"] = 100
+                return
+            
+            # Get unanalyzed documents
+            all_docs = night_watcher.document_repository.list_documents()
+            analyzed = night_watcher._get_analyzed_docs()
+            unanalyzed = [d for d in all_docs if d not in analyzed][:max_articles]
+            
+            if not unanalyzed:
+                add_log_message("warning", "No new documents to analyze")
+                task_status["progress"] = 100
+                return
+            
+            add_log_message("info", f"Found {len(unanalyzed)} documents to analyze")
+            
+            # Run analysis
+            result = night_watcher.analyze(max_articles=max_articles, template=template)
+            analyzed_count = result.get("analyzed", 0)
+            add_log_message("success", f"Analysis completed: {analyzed_count} documents with {template}")
+            task_status["progress"] = 100
+            
+        except Exception as e:
+            add_log_message("error", f"Analysis failed: {str(e)}")
+            logger.error(f"Analysis error details: {e}", exc_info=True)
+        finally:
+            task_status["running"] = False
+            task_status["task"] = None
+            # Clear cache to update status
+            stats_cache["last_update"] = None
+    
+    task_thread = threading.Thread(target=run_analysis)
+    task_thread.start()
+    
+    return jsonify({"status": "started"})
+
+
+@app.route('/api/validate-template', methods=['POST'])
+def api_validate_template():
+    """Validate a template's JSON output capability."""
+    try:
+        data = request.json or {}
+        template_file = data.get("template")
+        
+        if not template_file:
+            return jsonify({"error": "No template specified"}), 400
+        
+        # Load template
+        if not os.path.exists(template_file):
+            return jsonify({"error": "Template not found"}), 404
+        
+        with open(template_file, 'r', encoding='utf-8') as f:
+            template = json.load(f)
+        
+        # Validate structure
+        issues = []
+        
+        if "rounds" not in template:
+            issues.append("Missing 'rounds' array")
+        else:
+            for i, round_config in enumerate(template["rounds"]):
+                round_name = round_config.get("name", f"Round {i+1}")
+                
+                # Check for JSON-critical rounds
+                if round_name in ["fact_extraction", "node_extraction", "edge_extraction", 
+                                  "node_deduplication", "edge_enrichment", "package_ingestion"]:
+                    prompt = round_config.get("prompt", "")
+                    
+                    # Check for JSON instructions
+                    if "json" not in prompt.lower():
+                        issues.append(f"{round_name}: Prompt should mention JSON format")
+                    
+                    if "must be ONLY" not in prompt and "ENTIRE response" not in prompt:
+                        issues.append(f"{round_name}: Should emphasize JSON-only response")
+                    
+                    # Check for format examples
+                    if "{" not in prompt or "}" not in prompt:
+                        issues.append(f"{round_name}: Should include JSON format example")
+        
+        return jsonify({
+            "valid": len(issues) == 0,
+            "issues": issues,
+            "template": {
+                "name": template.get("name"),
+                "status": template.get("status"),
+                "rounds": len(template.get("rounds", []))
+            }
+        })
+        
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -326,151 +592,6 @@ def api_reject_analysis():
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-@app.route('/api/review-queue/retry', methods=['POST'])
-def api_retry_analysis():
-    """Retry a failed analysis."""
-    try:
-        data = request.json
-        analysis_id = data.get("analysis_id")
-        
-        # For now, just mark as failed - actual retry would need more work
-        filepath = f"data/analyzed/{analysis_id}.json"
-        if not os.path.exists(filepath):
-            return jsonify({"error": "Analysis not found"}), 404
-        
-        # Simple approach: just delete the file so it can be reprocessed
-        os.remove(filepath)
-        
-        return jsonify({"status": "queued_for_retry"})
-        
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route('/api/collect', methods=['POST'])
-def api_collect():
-    """Start content collection."""
-    global task_thread, task_status
-    
-    if task_status["running"]:
-        return jsonify({"error": "Another task is already running"}), 400
-    
-    data = request.json or {}
-    mode = data.get("mode", "auto")
-    
-    def run_collection():
-        task_status["running"] = True
-        task_status["task"] = "collection"
-        task_status["progress"] = 0
-        add_log_message("info", f"Starting collection (mode: {mode})")
-
-        def progress(event):
-            if event.get("type") == "article":
-                add_log_message("info", f"Collected: {event.get('title')}")
-            elif event.get("type") == "error":
-                add_log_message("error", f"{event.get('source')}: {event.get('message')}")
-            elif event.get("type") == "cancelled":
-                add_log_message("warning", "Collection cancelled")
-
-        try:
-            init_night_watcher()
-            result = night_watcher.collect(mode=mode, callback=progress)
-            
-            articles_count = len(result.get("articles", []))
-            if night_watcher.collector.cancelled:
-                add_log_message("warning", "Collection stopped by user")
-            else:
-                add_log_message("success", f"Collection completed: {articles_count} articles")
-            task_status["progress"] = 100
-            
-        except Exception as e:
-            add_log_message("error", f"Collection failed: {str(e)}")
-        finally:
-            task_status["running"] = False
-            task_status["task"] = None
-            # Clear cache to update status
-            stats_cache["last_update"] = None
-    
-    task_thread = threading.Thread(target=run_collection)
-    task_thread.start()
-
-    return jsonify({"status": "started"})
-
-
-@app.route('/api/collect/stop', methods=['POST'])
-def api_collect_stop():
-    """Request stopping an ongoing collection."""
-    try:
-        if night_watcher and night_watcher.collector:
-            night_watcher.collector.cancel()
-            return jsonify({"status": "stopping"})
-        return jsonify({"error": "Collector not running"}), 400
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-
-@app.route('/api/analyze', methods=['POST'])
-def api_analyze():
-    """Start content analysis."""
-    global task_thread, task_status
-    
-    if task_status["running"]:
-        return jsonify({"error": "Another task is already running"}), 400
-    
-    data = request.json or {}
-    max_articles = data.get("max_articles", 20)
-    templates = data.get("templates") or [data.get("template", "standard_analysis.json")]
-    ab_split = bool(data.get("ab_split", False))
-    
-    def run_analysis():
-        task_status["running"] = True
-        task_status["task"] = "analysis"
-        task_status["progress"] = 0
-        mode = "A/B" if ab_split and len(templates) > 1 else "standard"
-        add_log_message("info", f"Starting analysis (mode: {mode}, max: {max_articles}, templates: {', '.join(templates)})")
-        
-        try:
-            init_night_watcher()
-            
-            # Check if analyzer is available
-            if not night_watcher.analyzer:
-                add_log_message("error", "Analyzer not available - check LLM provider")
-                task_status["progress"] = 100
-                return
-            
-            # Get unanalyzed documents
-            all_docs = night_watcher.document_repository.list_documents()
-            analyzed = night_watcher._get_analyzed_docs()
-            unanalyzed = [d for d in all_docs if d not in analyzed][:max_articles]
-            
-            if not unanalyzed:
-                add_log_message("warning", "No new documents to analyze")
-                task_status["progress"] = 100
-                return
-            
-            add_log_message("info", f"Found {len(unanalyzed)} documents to analyze")
-            
-            # Run analysis
-            result = night_watcher.analyze(max_articles=max_articles, templates=templates, ab_split=ab_split)
-            analyzed_count = result.get("analyzed", 0)
-            add_log_message("success", f"Analysis completed: {analyzed_count} documents across {result.get('templates', 1)} templates")
-            task_status["progress"] = 100
-            
-        except Exception as e:
-            add_log_message("error", f"Analysis failed: {str(e)}")
-            logger.error(f"Analysis error details: {e}", exc_info=True)
-        finally:
-            task_status["running"] = False
-            task_status["task"] = None
-            # Clear cache to update status
-            stats_cache["last_update"] = None
-    
-    task_thread = threading.Thread(target=run_analysis)
-    task_thread.start()
-    
-    return jsonify({"status": "started"})
 
 
 @app.route('/api/build-kg', methods=['POST'])
@@ -595,6 +716,9 @@ def api_export():
         os.makedirs(export_dir, exist_ok=True)
         output_path = os.path.join(export_dir, filename)
 
+        # Import here to avoid circular imports
+        from export_artifact import export_artifact
+
         private_key = night_watcher.config.get("export", {}).get("private_key")
         public_key = night_watcher.config.get("export", {}).get("public_key", PUBLIC_KEY_FILE if os.path.exists(PUBLIC_KEY_FILE) else None)
 
@@ -613,25 +737,6 @@ def api_export():
     except Exception as e:
         logger.error(f"Export error: {e}")
         return jsonify({"error": str(e)}), 400
-
-
-@app.route('/api/stream/task-status')
-def api_stream_task_status():
-    """Server-Sent Events stream of task status updates."""
-    def generate():
-        last_len = 0
-        while True:
-            data = {
-                "running": task_status["running"],
-                "task": task_status["task"],
-                "progress": task_status["progress"],
-                "messages": task_status["messages"][last_len:]
-            }
-            last_len = len(task_status["messages"])
-            yield f"data: {json.dumps(data)}\n\n"
-            time.sleep(1)
-
-    return Response(generate(), mimetype='text/event-stream')
 
 
 @app.route('/api/config', methods=['GET', 'POST'])
@@ -871,7 +976,7 @@ def api_pipeline():
                 # Analysis
                 add_log_message("info", "Starting analysis phase")
                 task_status["progress"] = 40
-                analyze_result = night_watcher.analyze(ab_split=False)
+                analyze_result = night_watcher.analyze()
                 analyzed = analyze_result.get("analyzed", 0)
                 add_log_message("success", f"Analyzed {analyzed} documents")
                 
