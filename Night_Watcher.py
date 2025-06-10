@@ -116,14 +116,8 @@ class NightWatcher:
         self.logger.info(f"Starting collection (mode: {mode})")
         return self.collector.collect_content(force_mode=mode if mode != "auto" else None, callback=callback)
     
-    def analyze(self, max_articles: int = 20, templates: Optional[List[str]] = None,
-                ab_split: bool = False) -> Dict[str, Any]:
-        """Run content analysis.
-
-        If multiple templates are provided and ``ab_split`` is True, articles are
-        evenly distributed across templates (A/B style). Otherwise each template
-        processes the full article set as before.
-        """
+    def analyze(self, max_articles: int = 20, template: str = "standard_analysis.json") -> Dict[str, Any]:
+        """Run content analysis with a single template."""
         if not self.analyzer:
             raise Exception("Analyzer not available - check LLM provider")
         
@@ -150,54 +144,69 @@ class NightWatcher:
                     "document_id": doc_id
                 })
         
-        templates = templates or ["standard_analysis.json"]
+        # Run analysis with single template
+        analyzer = ContentAnalyzer(self.llm_provider, template_file=template)
+        result = analyzer.process({"articles": articles, "document_ids": [a["document_id"] for a in articles]})
+        
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         total_analyses = 0
-
-        if ab_split and len(templates) > 1:
-            assignments = {t: [] for t in templates}
-            for idx, art in enumerate(articles):
-                t = templates[idx % len(templates)]
-                assignments[t].append(art)
-        else:
-            assignments = {t: articles for t in templates}
-
-        for template_file, batch in assignments.items():
-            if not batch:
-                continue
-
-            analyzer = ContentAnalyzer(self.llm_provider, template_file=template_file)
-            result = analyzer.process({"articles": batch, "document_ids": [a["document_id"] for a in batch]})
-
-            for i, analysis in enumerate(result.get("analyses", [])):
-                doc_id = batch[i]["document_id"]
-                base = os.path.splitext(os.path.basename(template_file))[0]
-                analysis_id = f"analysis_{doc_id}_{base}_{timestamp}"
-
-                with open(f"{self.base_dir}/analyzed/{analysis_id}.json", 'w') as f:
-                    json.dump(analysis, f, indent=2)
-
-                self.document_repository.store_analysis_provenance(
-                    analysis_id=analysis_id,
-                    document_ids=[doc_id],
-                    analysis_type="content_analysis",
-                    analysis_parameters={
-                        "template": analysis.get("template_info", {}).get("file", "unknown"),
-                        "max_articles": max_articles,
-                        "ab_split": ab_split
-                    },
-                    results=analysis,
-                    analyzer_version=analysis.get("template_info", {}).get("version", "1.0")
-                )
-
-            total_analyses += len(result.get("analyses", []))
-
+        
+        for i, analysis in enumerate(result.get("analyses", [])):
+            doc_id = articles[i]["document_id"]
+            base = os.path.splitext(os.path.basename(template))[0]
+            analysis_id = f"analysis_{doc_id}_{base}_{timestamp}"
+            
+            with open(f"{self.base_dir}/analyzed/{analysis_id}.json", 'w') as f:
+                json.dump(analysis, f, indent=2)
+            
+            self.document_repository.store_analysis_provenance(
+                analysis_id=analysis_id,
+                document_ids=[doc_id],
+                analysis_type="content_analysis",
+                analysis_parameters={
+                    "template": template,
+                    "max_articles": max_articles
+                },
+                results=analysis,
+                analyzer_version=analysis.get("template_info", {}).get("version", "1.0")
+            )
+            
+            total_analyses += 1
+        
         return {
             "status": "completed",
             "analyzed": total_analyses,
-            "templates": len(assignments),
-            "ab_split": ab_split
+            "template": template
         }
+    
+    def test_template(self, template: str, article_content: str = None, article_url: str = None) -> Dict[str, Any]:
+        """Test a template with a single article."""
+        if not self.analyzer:
+            raise Exception("Analyzer not available - check LLM provider")
+        
+        # Use provided article or fetch from URL
+        if article_url and not article_content:
+            article_data = self.collector._extract_article(article_url)
+            if not article_data:
+                raise Exception("Failed to extract article from URL")
+        elif article_content:
+            article_data = {
+                "title": "Test Article",
+                "content": article_content,
+                "url": article_url or "test://article",
+                "published": datetime.now().isoformat()
+            }
+        else:
+            raise Exception("Either article_content or article_url must be provided")
+        
+        # Run analysis
+        analyzer = ContentAnalyzer(self.llm_provider, template_file=template)
+        result = analyzer.process({"articles": [article_data], "document_ids": ["test_doc"]})
+        
+        if result.get("analyses"):
+            return result["analyses"][0]
+        else:
+            return {"error": "No analysis produced"}
     
     def build_kg(self) -> Dict[str, Any]:
         """Build knowledge graph from analyses."""
@@ -310,6 +319,7 @@ def main():
     parser.add_argument("--mode", choices=["auto", "first_run", "incremental", "full"],
                        default="auto", help="Collection mode")
     parser.add_argument("--max-articles", type=int, default=20, help="Max articles to analyze")
+    parser.add_argument("--template", default="standard_analysis.json", help="Analysis template")
     
     args = parser.parse_args()
     
@@ -327,8 +337,8 @@ def main():
             print(f"✓ Collected {len(result['articles'])} articles")
         
         elif args.analyze:
-            result = nw.analyze(max_articles=args.max_articles)
-            print(f"✓ Analyzed {result.get('analyzed', 0)} documents")
+            result = nw.analyze(max_articles=args.max_articles, template=args.template)
+            print(f"✓ Analyzed {result.get('analyzed', 0)} documents with {result.get('template')}")
         
         elif args.build_kg:
             result = nw.build_kg()
