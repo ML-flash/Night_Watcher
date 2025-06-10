@@ -625,6 +625,10 @@
                 </div>
 
                 <h3>Review Queue <span style="font-size: 0.8rem; color: #a0aec0;">(Testing Templates Only)</span></h3>
+                <div style="margin-bottom: 0.5rem;">
+                    <button class="btn btn-success btn-small" onclick="approveSelectedAnalyses()">Validate Selected</button>
+                    <button class="btn btn-danger btn-small" onclick="rejectSelectedAnalyses()">Reject Selected</button>
+                </div>
                 <div id="review-queue-container" style="margin-bottom: 2rem;">
                     <div class="empty-state">
                         <h3>No items in review queue</h3>
@@ -639,13 +643,6 @@
                     </div>
                 </div>
 
-                <h3>Recent Analyses</h3>
-                <div id="recent-analyses">
-                    <div class="empty-state">
-                        <h3>No analyses yet</h3>
-                        <p>Run analysis to see results here</p>
-                    </div>
-                </div>
 
                 <div class="log-container" id="analyzer-log" style="margin-top: 2rem;">
                     <div class="log-entry info">[INFO] Analysis system ready</div>
@@ -755,7 +752,19 @@
             loadLLMModels();
             loadLLMProvider();
             loadPublicKey();
-            loadRecentAnalyses();
+
+            const targetSelect = document.getElementById('analysis-target');
+            if (targetSelect) {
+                targetSelect.addEventListener('change', function() {
+                    const dateGroup = document.getElementById('date-range-group');
+                    if (this.value === 'all') {
+                        dateGroup.style.display = 'block';
+                    } else {
+                        dateGroup.style.display = 'none';
+                    }
+                });
+                targetSelect.dispatchEvent(new Event('change'));
+            }
         });
 
         // Navigation
@@ -773,7 +782,6 @@
 
             // Auto-refresh sections when opened
             if (sectionId === 'analysis') {
-                loadRecentAnalyses();
                 refreshReviewQueue();
                 loadTemplates();
             } else if (sectionId === 'collector') {
@@ -909,7 +917,6 @@
                     taskInterval = null;
                     refreshStatus();
                     if (taskStatus.task === 'analysis') {
-                        loadRecentAnalyses();
                         refreshReviewQueue();
                     }
                 }
@@ -956,20 +963,32 @@
         // Analysis functions
         async function startAnalysis() {
             const maxArticles = parseInt(document.getElementById('max-analyze').value);
-            const template = document.getElementById('analysis-template').value;
-            
+            const target = document.getElementById('analysis-target').value;
+            const sinceDateElem = document.getElementById('since-date');
+            const sinceDate = (target === 'all' && sinceDateElem) ? sinceDateElem.value : null;
+
+            const selected = document.querySelectorAll('.template-checkbox:checked');
+            const templates = Array.from(selected).map(cb => cb.value);
+
+            if (templates.length === 0) {
+                alert('Please select at least one template');
+                return;
+            }
+
             try {
                 await apiCall('/analyze', {
                     method: 'POST',
                     body: JSON.stringify({
                         max_articles: maxArticles,
-                        template: template
+                        templates: templates,
+                        target: target,
+                        since_date: sinceDate
                     })
                 });
-                
-                logMessage('analyzer-log', 'info', `Analysis started with template: ${template}`);
+
+                logMessage('analyzer-log', 'info', `Analysis started (${templates.length} templates, target: ${target})`);
                 startTaskPolling();
-                
+
             } catch (error) {
                 logMessage('analyzer-log', 'error', `Failed to start analysis: ${error.message}`);
             }
@@ -1003,6 +1022,40 @@
                         });
                     }
                 });
+
+                // Populate template checkboxes
+                const approvedDiv = document.getElementById('approved-templates');
+                const unapprovedDiv = document.getElementById('unapproved-templates');
+                if (approvedDiv) approvedDiv.innerHTML = '';
+                if (unapprovedDiv) unapprovedDiv.innerHTML = '';
+
+                (templatesData.approved || []).forEach(t => {
+                    if (approvedDiv) {
+                        const label = document.createElement('label');
+                        label.style.display = 'block';
+                        const cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.className = 'template-checkbox';
+                        cb.value = t.filename;
+                        label.appendChild(cb);
+                        label.appendChild(document.createTextNode(' ' + t.name));
+                        approvedDiv.appendChild(label);
+                    }
+                });
+
+                (templatesData.unapproved || []).forEach(t => {
+                    if (unapprovedDiv) {
+                        const label = document.createElement('label');
+                        label.style.display = 'block';
+                        const cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.className = 'template-checkbox';
+                        cb.value = t.filename;
+                        label.appendChild(cb);
+                        label.appendChild(document.createTextNode(' ' + t.name));
+                        unapprovedDiv.appendChild(label);
+                    }
+                });
                 
                 // Update templates list
                 const list = document.getElementById('templates-list');
@@ -1029,6 +1082,26 @@
         async function refreshTemplates() {
             await loadTemplates();
             logMessage('task-log', 'success', 'Templates refreshed');
+        }
+
+        async function validateSelectedTemplates() {
+            const selected = document.querySelectorAll('.template-checkbox:checked');
+            if (selected.length === 0) {
+                alert('Please select at least one template');
+                return;
+            }
+
+            for (const cb of selected) {
+                try {
+                    const result = await apiCall('/validate-template', {
+                        method: 'POST',
+                        body: JSON.stringify({ template: cb.value })
+                    });
+                    logMessage('analyzer-log', result.valid ? 'success' : 'warning', `${cb.value}: ${result.valid ? 'Valid' : 'Issues found'}`);
+                } catch (error) {
+                    logMessage('analyzer-log', 'error', `Validation failed for ${cb.value}: ${error.message}`);
+                }
+            }
         }
 
         async function validateTemplate() {
@@ -1140,57 +1213,6 @@
             }
         }
 
-        // Recent analyses
-        async function loadRecentAnalyses() {
-            try {
-                const analyses = await apiCall('/analysis/recent');
-                const container = document.getElementById('recent-analyses');
-                
-                if (analyses.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <h3>No analyses yet</h3>
-                            <p>Run analysis to see results here</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                container.innerHTML = '';
-                analyses.forEach(analysis => {
-                    const item = document.createElement('div');
-                    item.className = 'analysis-item';
-                    item.innerHTML = `
-                        <div class="analysis-header" onclick="toggleAnalysis('${analysis.id}')">
-                            <div>
-                                <strong>${analysis.article_title}</strong>
-                                <div style="margin-top: 0.5rem;">
-                                    <span class="template-badge">${analysis.template}</span>
-                                    <span class="status-badge ${analysis.validation_status.toLowerCase()}">${analysis.validation_status}</span>
-                                </div>
-                            </div>
-                            <div>
-                                <small>${analysis.article_source} • ${new Date(analysis.timestamp).toLocaleString()}</small>
-                            </div>
-                        </div>
-                        <div class="analysis-details" id="details-${analysis.id}">
-                            <p><strong>Manipulation Score:</strong> ${analysis.manipulation_score}/10</p>
-                            <p><strong>Concern Level:</strong> ${analysis.concern_level}</p>
-                            <button class="btn btn-small btn-primary" onclick="viewFullAnalysis('${analysis.id}')">View Full Analysis</button>
-                        </div>
-                    `;
-                    container.appendChild(item);
-                });
-                
-            } catch (error) {
-                console.error('Failed to load recent analyses:', error);
-            }
-        }
-
-        function toggleAnalysis(id) {
-            const item = event.target.closest('.analysis-item');
-            item.classList.toggle('expanded');
-        }
 
         async function viewFullAnalysis(id) {
             try {
@@ -1222,7 +1244,14 @@
                             <h4>${name}</h4>
                             <pre>${JSON.stringify(data.processed_data || data.response, null, 2)}</pre>
                         `).join('')}
-                        
+
+                        <h3>Prompt & Responses</h3>
+                        ${(analysis.prompt_chain || []).map(p => `
+                            <h4>Round ${p.round}: ${p.name}</h4>
+                            <pre><strong>Prompt:</strong>\n${p.prompt}</pre>
+                            <pre><strong>Response:</strong>\n${p.response}</pre>
+                        `).join('')}
+
                         <h3>Knowledge Graph Payload</h3>
                         <pre>${JSON.stringify(analysis.kg_payload, null, 2)}</pre>
                     </body>
@@ -1266,6 +1295,7 @@
             div.className = 'analysis-item';
             div.innerHTML = `
                 <div class="analysis-header">
+                    <input type="checkbox" class="review-select" data-id="${item.id}" style="margin-right:0.5rem;">
                     <div>
                         <strong>${item.article.title}</strong>
                         <div style="margin-top: 0.5rem;">
@@ -1347,6 +1377,20 @@
                 
             } catch (error) {
                 logMessage('task-log', 'error', `Failed to reject: ${error.message}`);
+            }
+        }
+
+        async function approveSelectedAnalyses() {
+            const selected = document.querySelectorAll('.review-select:checked');
+            for (const cb of selected) {
+                await approveAnalysis(cb.dataset.id);
+            }
+        }
+
+        async function rejectSelectedAnalyses() {
+            const selected = document.querySelectorAll('.review-select:checked');
+            for (const cb of selected) {
+                await rejectAnalysis(cb.dataset.id);
             }
         }
 
