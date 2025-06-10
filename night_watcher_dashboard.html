@@ -756,6 +756,19 @@
             loadLLMProvider();
             loadPublicKey();
             loadRecentAnalyses();
+
+            const targetSelect = document.getElementById('analysis-target');
+            if (targetSelect) {
+                targetSelect.addEventListener('change', function() {
+                    const dateGroup = document.getElementById('date-range-group');
+                    if (this.value === 'all') {
+                        dateGroup.style.display = 'block';
+                    } else {
+                        dateGroup.style.display = 'none';
+                    }
+                });
+                targetSelect.dispatchEvent(new Event('change'));
+            }
         });
 
         // Navigation
@@ -956,20 +969,32 @@
         // Analysis functions
         async function startAnalysis() {
             const maxArticles = parseInt(document.getElementById('max-analyze').value);
-            const template = document.getElementById('analysis-template').value;
-            
+            const target = document.getElementById('analysis-target').value;
+            const sinceDateElem = document.getElementById('since-date');
+            const sinceDate = (target === 'all' && sinceDateElem) ? sinceDateElem.value : null;
+
+            const selected = document.querySelectorAll('.template-checkbox:checked');
+            const templates = Array.from(selected).map(cb => cb.value);
+
+            if (templates.length === 0) {
+                alert('Please select at least one template');
+                return;
+            }
+
             try {
                 await apiCall('/analyze', {
                     method: 'POST',
                     body: JSON.stringify({
                         max_articles: maxArticles,
-                        template: template
+                        templates: templates,
+                        target: target,
+                        since_date: sinceDate
                     })
                 });
-                
-                logMessage('analyzer-log', 'info', `Analysis started with template: ${template}`);
+
+                logMessage('analyzer-log', 'info', `Analysis started (${templates.length} templates, target: ${target})`);
                 startTaskPolling();
-                
+
             } catch (error) {
                 logMessage('analyzer-log', 'error', `Failed to start analysis: ${error.message}`);
             }
@@ -1001,6 +1026,40 @@
                             option.textContent = `${template.name} (${template.status})`;
                             select.appendChild(option);
                         });
+                    }
+                });
+
+                // Populate template checkboxes
+                const approvedDiv = document.getElementById('approved-templates');
+                const unapprovedDiv = document.getElementById('unapproved-templates');
+                if (approvedDiv) approvedDiv.innerHTML = '';
+                if (unapprovedDiv) unapprovedDiv.innerHTML = '';
+
+                (templatesData.approved || []).forEach(t => {
+                    if (approvedDiv) {
+                        const label = document.createElement('label');
+                        label.style.display = 'block';
+                        const cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.className = 'template-checkbox';
+                        cb.value = t.filename;
+                        label.appendChild(cb);
+                        label.appendChild(document.createTextNode(' ' + t.name));
+                        approvedDiv.appendChild(label);
+                    }
+                });
+
+                (templatesData.unapproved || []).forEach(t => {
+                    if (unapprovedDiv) {
+                        const label = document.createElement('label');
+                        label.style.display = 'block';
+                        const cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.className = 'template-checkbox';
+                        cb.value = t.filename;
+                        label.appendChild(cb);
+                        label.appendChild(document.createTextNode(' ' + t.name));
+                        unapprovedDiv.appendChild(label);
                     }
                 });
                 
