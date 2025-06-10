@@ -29,7 +29,7 @@ cloudscraper>=1.2.0  # For cloudflare-protected sites
 pandas>=2.0.0      # For advanced data analysis
 scikit-learn>=1.3.0 # For pattern clustering
 
-Development tools (optional)
+#Development tools (optional)
 pytest>=7.0.0
 black>=22.0.0
 flake8>=4.0.0
