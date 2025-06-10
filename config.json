@@ -116,5 +116,9 @@
   },
   "analysis": {
     "max_articles": 20
+  },
+  "export": {
+    "public_key": "data/export_keys/public_key.pem",
+    "private_key": ""
   }
 }
