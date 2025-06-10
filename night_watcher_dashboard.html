@@ -747,9 +747,10 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard initializing...');
             refreshStatus();
             startStatusPolling();
-            loadTemplates();
+            loadTemplates().catch(err => console.error('Initial template load failed:', err));
             loadSources();
             loadLLMModels();
             loadLLMProvider();
@@ -806,40 +807,53 @@
             try {
                 const status = await apiCall('/status');
                 
-                // Update UI
-                document.getElementById('total-documents').textContent = status.total_documents || 0;
-                document.getElementById('pending-analysis').textContent = status.pending_analysis || 0;
-                document.getElementById('analyzed-documents').textContent = status.analyzed_documents || 0;
-                document.getElementById('kg-nodes').textContent = status.graph_nodes || 0;
-                document.getElementById('kg-edges').textContent = status.graph_edges || 0;
-                document.getElementById('total-vectors').textContent = status.vector_count || 0;
-                document.getElementById('pending-review').textContent = status.pending_review || 0;
-                document.getElementById('review-queue-count').textContent = status.pending_review || 0;
-                document.getElementById('pending-analysis-2').textContent = status.pending_analysis || 0;
+                // Update UI - check each element exists before setting
+                const updateElement = (id, value) => {
+                    const elem = document.getElementById(id);
+                    if (elem) elem.textContent = value;
+                };
+                
+                updateElement('total-documents', status.total_documents || 0);
+                updateElement('pending-analysis', status.pending_analysis || 0);
+                updateElement('analyzed-documents', status.analyzed_documents || 0);
+                updateElement('kg-nodes', status.graph_nodes || 0);
+                updateElement('kg-edges', status.graph_edges || 0);
+                updateElement('total-vectors', status.vector_count || 0);
+                updateElement('pending-review', status.pending_review || 0);
+                updateElement('review-queue-count', status.pending_review || 0);
+                updateElement('pending-analysis-2', status.pending_analysis || 0);
                 
                 // Update review badge
                 const reviewCount = status.pending_review || 0;
                 const badge = document.getElementById('review-count');
-                if (reviewCount > 0) {
-                    badge.textContent = reviewCount;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
+                if (badge) {
+                    if (reviewCount > 0) {
+                        badge.textContent = reviewCount;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
                 }
                 
                 // LLM status
                 const llmConnected = status.system?.llm_connected;
-                document.getElementById('llm-status').textContent = llmConnected ? 'Connected' : 'Offline';
-                document.getElementById('llm-status').style.color = llmConnected ? '#68d391' : '#fc8181';
+                const llmStatusElem = document.getElementById('llm-status');
+                if (llmStatusElem) {
+                    llmStatusElem.textContent = llmConnected ? 'Connected' : 'Offline';
+                    llmStatusElem.style.color = llmConnected ? '#68d391' : '#fc8181';
+                }
                 
                 // Task status
-                if (status.task_status?.running) {
-                    document.getElementById('collection-status').textContent = 'Running';
-                    document.getElementById('collection-status').parentElement.classList.add('pulsing');
-                    startTaskPolling();
-                } else {
-                    document.getElementById('collection-status').textContent = 'Idle';
-                    document.getElementById('collection-status').parentElement.classList.remove('pulsing');
+                const collectionStatusElem = document.getElementById('collection-status');
+                if (collectionStatusElem) {
+                    if (status.task_status?.running) {
+                        collectionStatusElem.textContent = 'Running';
+                        collectionStatusElem.parentElement.classList.add('pulsing');
+                        startTaskPolling();
+                    } else {
+                        collectionStatusElem.textContent = 'Idle';
+                        collectionStatusElem.parentElement.classList.remove('pulsing');
+                    }
                 }
                 
             } catch (error) {
