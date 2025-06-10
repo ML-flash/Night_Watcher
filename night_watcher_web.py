@@ -12,7 +12,7 @@ import threading
 import time
 import glob
 from datetime import datetime
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 
 # Import Night_watcher components
@@ -194,6 +194,25 @@ def api_status():
     except Exception as e:
         logger.error(f"Status error: {e}")
         return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/stream/status')
+def api_stream_status():
+    """Stream system status updates via SSE."""
+    def generate():
+        while True:
+            try:
+                status_resp = api_status()
+                if isinstance(status_resp, tuple):
+                    status = status_resp[0].get_json()
+                else:
+                    status = status_resp.get_json()
+                yield f"data: {json.dumps(status)}\n\n"
+            except Exception as e:
+                logger.error(f"Status stream error: {e}")
+            time.sleep(2)
+
+    return Response(generate(), mimetype='text/event-stream')
 
 
 @app.route('/api/templates')
@@ -531,6 +550,25 @@ def api_task_status():
         "progress": task_status["progress"],
         "messages": task_status["messages"][-20:]  # Last 20 messages
     })
+
+
+@app.route('/api/stream/task-status')
+def api_stream_task_status():
+    """Server-Sent Events stream of task status updates."""
+    def generate():
+        last_len = 0
+        while True:
+            data = {
+                "running": task_status["running"],
+                "task": task_status["task"],
+                "progress": task_status["progress"],
+                "messages": task_status["messages"][last_len:]
+            }
+            last_len = len(task_status["messages"])
+            yield f"data: {json.dumps(data)}\n\n"
+            time.sleep(1)
+
+    return Response(generate(), mimetype='text/event-stream')
 
 
 @app.route('/api/config', methods=['GET', 'POST'])
