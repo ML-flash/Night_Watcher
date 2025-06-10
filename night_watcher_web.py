@@ -422,12 +422,14 @@ def api_analyze():
     data = request.json or {}
     max_articles = data.get("max_articles", 20)
     templates = data.get("templates") or [data.get("template", "standard_analysis.json")]
+    ab_split = bool(data.get("ab_split", False))
     
     def run_analysis():
         task_status["running"] = True
         task_status["task"] = "analysis"
         task_status["progress"] = 0
-        add_log_message("info", f"Starting analysis (max: {max_articles}, templates: {', '.join(templates)})")
+        mode = "A/B" if ab_split and len(templates) > 1 else "standard"
+        add_log_message("info", f"Starting analysis (mode: {mode}, max: {max_articles}, templates: {', '.join(templates)})")
         
         try:
             init_night_watcher()
@@ -451,7 +453,7 @@ def api_analyze():
             add_log_message("info", f"Found {len(unanalyzed)} documents to analyze")
             
             # Run analysis
-            result = night_watcher.analyze(max_articles=max_articles, templates=templates)
+            result = night_watcher.analyze(max_articles=max_articles, templates=templates, ab_split=ab_split)
             analyzed_count = result.get("analyzed", 0)
             add_log_message("success", f"Analysis completed: {analyzed_count} documents across {result.get('templates', 1)} templates")
             task_status["progress"] = 100
@@ -869,7 +871,7 @@ def api_pipeline():
                 # Analysis
                 add_log_message("info", "Starting analysis phase")
                 task_status["progress"] = 40
-                analyze_result = night_watcher.analyze()
+                analyze_result = night_watcher.analyze(ab_split=False)
                 analyzed = analyze_result.get("analyzed", 0)
                 add_log_message("success", f"Analyzed {analyzed} documents")
                 
