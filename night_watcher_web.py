@@ -47,6 +47,9 @@ stats_cache = {
 # Review queue storage (simple file-based)
 REVIEW_QUEUE_FILE = "data/review_queue.json"
 
+# Public key storage
+PUBLIC_KEY_FILE = "data/export_keys/public_key.pem"
+
 
 def init_night_watcher():
     """Initialize Night_watcher instance."""
@@ -550,6 +553,64 @@ def api_task_status():
         "progress": task_status["progress"],
         "messages": task_status["messages"][-20:]  # Last 20 messages
     })
+
+
+@app.route('/api/public-key', methods=['GET', 'POST'])
+def api_public_key():
+    """Retrieve or update stored public key."""
+    init_night_watcher()
+
+    if request.method == 'GET':
+        if os.path.exists(PUBLIC_KEY_FILE):
+            with open(PUBLIC_KEY_FILE, 'r', encoding='utf-8') as f:
+                key = f.read()
+        else:
+            key = ""
+        return jsonify({"public_key": key})
+
+    data = request.json or {}
+    key = data.get("public_key", "")
+    os.makedirs(os.path.dirname(PUBLIC_KEY_FILE), exist_ok=True)
+    with open(PUBLIC_KEY_FILE, 'w', encoding='utf-8') as f:
+        f.write(key)
+
+    night_watcher.config.setdefault("export", {})["public_key"] = PUBLIC_KEY_FILE
+    with open(night_watcher.config_path, 'w', encoding='utf-8') as f:
+        json.dump(night_watcher.config, f, indent=2)
+
+    add_log_message("success", "Public key saved")
+    return jsonify({"status": "saved"})
+
+
+@app.route('/api/export', methods=['POST'])
+def api_export():
+    """Create a signed export archive."""
+    try:
+        init_night_watcher()
+        data = request.json or {}
+        filename = data.get("filename") or f"night_watcher_{datetime.now().strftime('%Y%m%d_%H%M%S')}.tar.gz"
+        export_dir = os.path.join(night_watcher.base_dir, "exports")
+        os.makedirs(export_dir, exist_ok=True)
+        output_path = os.path.join(export_dir, filename)
+
+        private_key = night_watcher.config.get("export", {}).get("private_key")
+        public_key = night_watcher.config.get("export", {}).get("public_key", PUBLIC_KEY_FILE if os.path.exists(PUBLIC_KEY_FILE) else None)
+
+        export_artifact(
+            output_path,
+            kg_dir=os.path.join(night_watcher.base_dir, "knowledge_graph"),
+            vector_dir=os.path.join(night_watcher.base_dir, "vector_store"),
+            documents_dir=os.path.join(night_watcher.base_dir, "documents"),
+            private_key_path=private_key,
+            public_key_path=public_key,
+        )
+
+        add_log_message("success", f"Exported package: {filename}")
+        return jsonify({"status": "exported", "path": output_path})
+
+    except Exception as e:
+        logger.error(f"Export error: {e}")
+        return jsonify({"error": str(e)}), 400
 
 
 @app.route('/api/stream/task-status')
