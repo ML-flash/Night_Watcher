@@ -37,10 +37,10 @@
 
         .main-container {
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 250px 1fr;
             gap: 2rem;
             padding: 2rem;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -112,6 +112,13 @@
             padding-bottom: 0.5rem;
         }
 
+        .section h3 {
+            color: #e2e8f0;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
         .control-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -129,6 +136,7 @@
         .control-panel h3 {
             color: #e2e8f0;
             margin-bottom: 1rem;
+            margin-top: 0;
             font-size: 1.1rem;
         }
 
@@ -288,51 +296,34 @@
             transition: width 0.3s ease;
         }
 
-        /* Review Queue Styles */
-        .review-item {
+        /* Analysis Viewer Styles */
+        .analysis-item {
             background: #4a5568;
             border-radius: 8px;
             margin: 1rem 0;
-            border: 2px solid #d69e2e;
+            border: 1px solid #5a6578;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .review-header {
+        .analysis-item:hover {
+            border-color: #63b3ed;
+        }
+
+        .analysis-header {
             padding: 1rem;
-            border-bottom: 1px solid #5a6578;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .review-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            padding: 1rem;
+        .analysis-details {
+            padding: 0 1rem 1rem 1rem;
+            display: none;
         }
 
-        .article-preview {
-            background: #2d3748;
-            padding: 1rem;
-            border-radius: 6px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .analysis-preview {
-            background: #2d3748;
-            padding: 1rem;
-            border-radius: 6px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .review-actions {
-            padding: 1rem;
-            border-top: 1px solid #5a6578;
-            display: flex;
-            gap: 1rem;
-            align-items: center;
+        .analysis-item.expanded .analysis-details {
+            display: block;
         }
 
         .template-badge {
@@ -370,6 +361,57 @@
             color: white;
         }
 
+        .json-viewer {
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .json-valid {
+            border-color: #38a169;
+        }
+
+        .json-invalid {
+            border-color: #e53e3e;
+        }
+
+        .round-result {
+            background: #2d3748;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .round-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .round-name {
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .validation-icon {
+            font-size: 1.2rem;
+        }
+
+        .validation-icon.valid {
+            color: #68d391;
+        }
+
+        .validation-icon.invalid {
+            color: #fc8181;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -389,6 +431,17 @@
             margin-bottom: 1rem;
             color: #cbd5e0;
         }
+
+        .template-test-panel {
+            background: #4a5568;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .test-results {
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -403,7 +456,7 @@
                 📡 Content Collector
             </div>
             <div class="nav-item" onclick="showSection('analysis')">
-                🔍 Analysis
+                🔍 Analysis & Templates
                 <span class="nav-badge" id="review-count" style="display: none;">0</span>
             </div>
             <div class="nav-item" onclick="showSection('knowledge-graph')">
@@ -414,9 +467,6 @@
             </div>
             <div class="nav-item" onclick="showSection('exporter')">
                 📦 Export
-            </div>
-            <div class="nav-item" onclick="showSection('monitoring')">
-                📊 System Monitoring
             </div>
         </div>
 
@@ -506,9 +556,9 @@
                 </div>
             </div>
 
-            <!-- Analysis Section -->
+            <!-- Analysis & Templates Section -->
             <div id="analysis" class="section">
-                <h2>Analysis</h2>
+                <h2>Analysis & Templates</h2>
                 
                 <div class="status-grid">
                     <div class="status-card">
@@ -523,92 +573,84 @@
                         <h4>Pending Review</h4>
                         <div class="value" id="pending-review">0</div>
                     </div>
+                    <div class="status-card">
+                        <h4>Pending Analysis</h4>
+                        <div class="value" id="pending-analysis-2">0</div>
+                    </div>
                 </div>
 
+                <h3>Run Analysis</h3>
                 <div class="control-grid">
                     <div class="control-panel">
-                        <h3>Analysis Controls</h3>
-                        <div class="form-group">
-                            <label>Analysis Templates</label>
-                            <select id="analysis-templates" multiple size="3">
-                                <option value="standard_analysis.json">Standard Analysis v1</option>
-                            </select>
+                        <h3>Select Templates</h3>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color: #68d391;">✓ Approved Templates</strong>
+                            <div id="approved-templates" style="max-height: 120px; overflow-y: auto; margin-top: 0.5rem;">
+                                <!-- Checkboxes will be populated here -->
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Max Articles to Analyze</label>
-                            <input type="number" id="max-analyze" value="20" min="1" max="100">
-                        </div>
-                        <div class="form-group">
-                            <label><input type="checkbox" id="ab-split"> A/B Split Templates</label>
-                        </div>
-                        <button class="btn btn-primary" onclick="startAnalysis()">Start Analysis</button>
-                    </div>
-                </div>
-
-                <div class="log-container" id="analyzer-log">
-                    <div class="log-entry info">[INFO] Content Analyzer ready</div>
-                </div>
-
-            <h3 style="margin-top:2rem;">Review Queue</h3>
-            <div id="review-queue-section">
-                
-                <div class="status-grid">
-                    <div class="status-card">
-                        <h4>Items Pending Review</h4>
-                        <div class="value" id="review-queue-count">0</div>
-                    </div>
-                    <div class="status-card">
-                        <h4>Approved Today</h4>
-                        <div class="value" id="approved-today">0</div>
-                    </div>
-                    <div class="status-card">
-                        <h4>Rejected Today</h4>
-                        <div class="value" id="rejected-today">0</div>
-                    </div>
-                </div>
-
-                <div class="control-panel">
-                    <h3>Queue Actions</h3>
-                    <button class="btn btn-success btn-small" onclick="approveAll()">Approve All</button>
-                    <button class="btn btn-danger btn-small" onclick="rejectAll()">Reject All</button>
-                    <button class="btn btn-primary btn-small" onclick="refreshReviewQueue()">Refresh Queue</button>
-                </div>
-
-                <div id="review-queue-container">
-                    <div class="empty-state">
-                        <h3>No items in review queue</h3>
-                        <p>Run analysis with a TESTING template to generate items for review</p>
-                    </div>
-                </div>
-            </div>
-
-            <h3 style="margin-top:2rem;">Analysis Templates</h3>
-            <div id="templates-section">
-                
-                <div class="control-grid">
-                    <div class="control-panel">
-                        <h3>Available Templates</h3>
-                        <div id="templates-list">
-                            <div class="template-item">
-                                <div class="template-badge">PRODUCTION</div>
-                                <strong>standard_analysis.json</strong>
-                                <p>Standard 9-round analysis pipeline</p>
+                        <div>
+                            <strong style="color: #fbd38d;">⚠ Testing Templates</strong>
+                            <div id="unapproved-templates" style="max-height: 120px; overflow-y: auto; margin-top: 0.5rem;">
+                                <!-- Checkboxes will be populated here -->
                             </div>
                         </div>
                     </div>
 
                     <div class="control-panel">
-                        <h3>Template Actions</h3>
-                        <button class="btn btn-primary" onclick="refreshTemplates()">Refresh Templates</button>
-                        <button class="btn btn-warning" onclick="validateTemplate()">Validate Template</button>
+                        <h3>Analysis Settings</h3>
+                        <div class="form-group">
+                            <label>Apply To</label>
+                            <select id="analysis-target">
+                                <option value="unanalyzed">Unanalyzed Documents Only</option>
+                                <option value="recent">Last Collection Run</option>
+                                <option value="all">All Documents Since Date</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="date-range-group" style="display: none;">
+                            <label>Since Date</label>
+                            <input type="date" id="since-date">
+                        </div>
+                        <div class="form-group">
+                            <label>Max Documents</label>
+                            <input type="number" id="max-analyze" value="20" min="1" max="100">
+                        </div>
+                        <button class="btn btn-primary" onclick="startAnalysis()">Start Analysis</button>
+                        <button class="btn btn-warning btn-small" onclick="validateSelectedTemplates()">Validate Templates</button>
                     </div>
                 </div>
 
-                <div class="log-container" id="templates-log">
-                    <div class="log-entry info">[INFO] Templates ready</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="analysis-progress"></div>
+                </div>
+
+                <h3>Review Queue <span style="font-size: 0.8rem; color: #a0aec0;">(Testing Templates Only)</span></h3>
+                <div id="review-queue-container" style="margin-bottom: 2rem;">
+                    <div class="empty-state">
+                        <h3>No items in review queue</h3>
+                        <p>Run analysis with testing templates to generate items for review</p>
+                    </div>
+                </div>
+
+                <h3>Template Library</h3>
+                <div id="templates-list" style="margin-bottom: 2rem;">
+                    <div class="empty-state">
+                        <p>Loading templates...</p>
+                    </div>
+                </div>
+
+                <h3>Recent Analyses</h3>
+                <div id="recent-analyses">
+                    <div class="empty-state">
+                        <h3>No analyses yet</h3>
+                        <p>Run analysis to see results here</p>
+                    </div>
+                </div>
+
+                <div class="log-container" id="analyzer-log" style="margin-top: 2rem;">
+                    <div class="log-entry info">[INFO] Analysis system ready</div>
                 </div>
             </div>
-            <!-- end analysis section -->
 
             <!-- Knowledge Graph Section -->
             <div id="knowledge-graph" class="section">
@@ -692,26 +734,6 @@
                     <div class="log-entry info">[INFO] Export module ready</div>
                 </div>
             </div>
-
-            <!-- System Monitoring Section -->
-            <div id="monitoring" class="section">
-                <h2>System Monitoring</h2>
-                
-                <div class="status-grid">
-                    <div class="status-card">
-                        <h4>System Status</h4>
-                        <div class="value" style="color: #68d391;">Online</div>
-                    </div>
-                    <div class="status-card">
-                        <h4>Current Task</h4>
-                        <div class="value" id="current-task">None</div>
-                    </div>
-                </div>
-
-                <div class="log-container" id="system-log">
-                    <div class="log-entry info">[INFO] System monitoring active</div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -722,19 +744,17 @@
         // State
         let taskInterval = null;
         let statusInterval = null;
-        let reviewQueue = [];
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             refreshStatus();
             startStatusPolling();
             loadTemplates();
-            refreshReviewQueue();
             loadSources();
             loadLLMModels();
             loadLLMProvider();
             loadPublicKey();
-            startEventStreams();
+            loadRecentAnalyses();
         });
 
         // Navigation
@@ -752,6 +772,7 @@
 
             // Auto-refresh sections when opened
             if (sectionId === 'analysis') {
+                loadRecentAnalyses();
                 refreshReviewQueue();
                 loadTemplates();
             } else if (sectionId === 'collector') {
@@ -794,6 +815,7 @@
                 document.getElementById('total-vectors').textContent = status.vector_count || 0;
                 document.getElementById('pending-review').textContent = status.pending_review || 0;
                 document.getElementById('review-queue-count').textContent = status.pending_review || 0;
+                document.getElementById('pending-analysis-2').textContent = status.pending_analysis || 0;
                 
                 // Update review badge
                 const reviewCount = status.pending_review || 0;
@@ -814,21 +836,19 @@
                 if (status.task_status?.running) {
                     document.getElementById('collection-status').textContent = 'Running';
                     document.getElementById('collection-status').parentElement.classList.add('pulsing');
-                    document.getElementById('current-task').textContent = status.task_status.current_task || 'Unknown';
                     startTaskPolling();
                 } else {
                     document.getElementById('collection-status').textContent = 'Idle';
                     document.getElementById('collection-status').parentElement.classList.remove('pulsing');
-                    document.getElementById('current-task').textContent = 'None';
                 }
                 
             } catch (error) {
-                logMessage('system-log', 'error', `Failed to refresh status: ${error.message}`);
+                logMessage('task-log', 'error', `Failed to refresh status: ${error.message}`);
             }
         }
 
         function startStatusPolling() {
-            statusInterval = setInterval(refreshStatus, 1000);
+            statusInterval = setInterval(refreshStatus, 5000);
         }
 
         // Task monitoring
@@ -836,9 +856,12 @@
             try {
                 const taskStatus = await apiCall('/task-status');
                 
-                // Update progress
-                const progress = taskStatus.progress || 0;
+                // Update progress bar
+                const progress = data.progress || 0;
                 document.getElementById('task-progress').style.width = progress + '%';
+                if (data.task === 'analysis') {
+                    document.getElementById('analysis-progress').style.width = progress + '%';
+                }
                 
                 // Update logs
                 if (taskStatus.messages && taskStatus.messages.length > 0) {
@@ -871,7 +894,10 @@
                     clearInterval(taskInterval);
                     taskInterval = null;
                     refreshStatus();
-                    refreshReviewQueue(); // Refresh review queue after task completion
+                    if (taskStatus.task === 'analysis') {
+                        loadRecentAnalyses();
+                        refreshReviewQueue();
+                    }
                 }
                 
             } catch (error) {
@@ -883,38 +909,6 @@
             if (!taskInterval) {
                 updateTaskStatus();
                 taskInterval = setInterval(updateTaskStatus, 1000);
-            }
-        }
-
-        function startEventStreams() {
-            try {
-                const taskSource = new EventSource('/stream/task-status');
-                taskSource.onmessage = event => {
-                    const data = JSON.parse(event.data);
-                    const progress = data.progress || 0;
-                    document.getElementById('task-progress').style.width = progress + '%';
-                    if (data.messages && data.messages.length > 0) {
-                        data.messages.forEach(msg => {
-                            logMessage('task-log', msg.level, msg.message);
-                            if (data.task === 'analysis') {
-                                logMessage('analyzer-log', msg.level, msg.message);
-                            }
-                        });
-                    }
-                };
-
-                const statusSource = new EventSource('/stream/status');
-                statusSource.onmessage = event => {
-                    const s = JSON.parse(event.data);
-                    document.getElementById('collection-status').textContent = s.task_status.running && s.task_status.current_task === 'collection' ? 'Collecting' : 'Idle';
-                    document.getElementById('analysis-status').textContent = s.task_status.running && s.task_status.current_task === 'analysis' ? 'Analyzing' : 'Ready';
-                    document.getElementById('total-documents').textContent = s.total_documents;
-                    document.getElementById('pending-analysis').textContent = s.pending_analysis;
-                    document.getElementById('analyzed-documents').textContent = s.analyzed_documents;
-                    document.getElementById('review-queue-count').textContent = s.pending_review;
-                };
-            } catch (e) {
-                console.error('SSE failed', e);
             }
         }
 
@@ -945,6 +939,400 @@
             }
         }
 
+        // Analysis functions
+        async function startAnalysis() {
+            const maxArticles = parseInt(document.getElementById('max-analyze').value);
+            const template = document.getElementById('analysis-template').value;
+            
+            try {
+                await apiCall('/analyze', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        max_articles: maxArticles,
+                        template: template
+                    })
+                });
+                
+                logMessage('analyzer-log', 'info', `Analysis started with template: ${template}`);
+                startTaskPolling();
+                
+            } catch (error) {
+                logMessage('analyzer-log', 'error', `Failed to start analysis: ${error.message}`);
+            }
+        }
+
+        // Template functions
+        async function loadTemplates() {
+            try {
+                const templates = await apiCall('/templates');
+                
+                // Update template selectors
+                const selectors = [
+                    'analysis-template',
+                    'validate-template-select',
+                    'test-template-select'
+                ];
+                
+                selectors.forEach(id => {
+                    const select = document.getElementById(id);
+                    if (select) {
+                        select.innerHTML = '';
+                        templates.forEach(template => {
+                            const option = document.createElement('option');
+                            option.value = template.filename;
+                            option.textContent = `${template.name} (${template.status})`;
+                            select.appendChild(option);
+                        });
+                    }
+                });
+                
+                // Update templates list
+                const list = document.getElementById('templates-list');
+                list.innerHTML = '';
+                
+                templates.forEach(template => {
+                    const item = document.createElement('div');
+                    item.className = 'template-item';
+                    item.style.marginBottom = '1rem';
+                    item.innerHTML = `
+                        <div class="template-badge ${template.status.toLowerCase()}">${template.status}</div>
+                        <strong>${template.filename}</strong>
+                        <p>${template.description || 'No description'}</p>
+                        <small>Version: ${template.version || 'N/A'} | Rounds: ${template.rounds}</small>
+                    `;
+                    list.appendChild(item);
+                });
+                
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to load templates: ${error.message}`);
+            }
+        }
+
+        async function refreshTemplates() {
+            await loadTemplates();
+            logMessage('task-log', 'success', 'Templates refreshed');
+        }
+
+        async function validateTemplate() {
+            const template = document.getElementById('validate-template-select').value;
+            const resultsDiv = document.getElementById('validation-results');
+            
+            try {
+                const result = await apiCall('/validate-template', {
+                    method: 'POST',
+                    body: JSON.stringify({ template })
+                });
+                
+                resultsDiv.innerHTML = `
+                    <h4>Validation Results</h4>
+                    <p><strong>Valid:</strong> ${result.valid ? '✅ Yes' : '❌ No'}</p>
+                    ${result.issues.length > 0 ? `
+                        <p><strong>Issues:</strong></p>
+                        <ul>
+                            ${result.issues.map(issue => `<li>${issue}</li>`).join('')}
+                        </ul>
+                    ` : '<p>No issues found!</p>'}
+                `;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<p class="error">Validation failed: ${error.message}</p>`;
+            }
+        }
+
+        async function testTemplate() {
+            const template = document.getElementById('test-template-select').value;
+            const url = document.getElementById('test-article-url').value;
+            const content = document.getElementById('test-article-content').value;
+            const resultsDiv = document.getElementById('test-results');
+            
+            if (!url && !content) {
+                alert('Please provide either a URL or article content');
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<p>Running template test...</p>';
+            
+            try {
+                const result = await apiCall('/template/test', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        template,
+                        article_url: url,
+                        article_content: content
+                    })
+                });
+                
+                // Display results
+                resultsDiv.innerHTML = '<h4>Test Results</h4>';
+                
+                // Show rounds
+                if (result.rounds) {
+                    Object.entries(result.rounds).forEach(([roundName, roundData]) => {
+                        const roundDiv = document.createElement('div');
+                        roundDiv.className = 'round-result';
+                        
+                        // Try to parse JSON from response
+                        let jsonValid = false;
+                        let jsonData = null;
+                        
+                        try {
+                            // Extract JSON from response
+                            const response = roundData.response || '';
+                            const jsonMatch = response.match(/(\[[\s\S]*\]|\{[\s\S]*\})/);
+                            if (jsonMatch) {
+                                jsonData = JSON.parse(jsonMatch[0]);
+                                jsonValid = true;
+                            }
+                        } catch (e) {
+                            // JSON parsing failed
+                        }
+                        
+                        roundDiv.innerHTML = `
+                            <div class="round-header">
+                                <span class="round-name">${roundName}</span>
+                                <span class="validation-icon ${jsonValid ? 'valid' : 'invalid'}">
+                                    ${jsonValid ? '✅' : '❌'}
+                                </span>
+                            </div>
+                            <div class="json-viewer ${jsonValid ? 'json-valid' : 'json-invalid'}">
+                                ${jsonValid 
+                                    ? `<pre>${JSON.stringify(jsonData, null, 2)}</pre>`
+                                    : `<p>Invalid JSON output</p><pre>${roundData.response?.substring(0, 500)}...</pre>`
+                                }
+                            </div>
+                        `;
+                        
+                        resultsDiv.appendChild(roundDiv);
+                    });
+                }
+                
+                // Show validation status
+                if (result.validation) {
+                    const valDiv = document.createElement('div');
+                    valDiv.innerHTML = `
+                        <h4>Validation Status</h4>
+                        <p><strong>Status:</strong> <span class="status-badge ${result.validation.status.toLowerCase()}">${result.validation.status}</span></p>
+                        <p><strong>Reason:</strong> ${result.validation.reason}</p>
+                    `;
+                    resultsDiv.appendChild(valDiv);
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<p class="error">Test failed: ${error.message}</p>`;
+            }
+        }
+
+        // Recent analyses
+        async function loadRecentAnalyses() {
+            try {
+                const analyses = await apiCall('/analysis/recent');
+                const container = document.getElementById('recent-analyses');
+                
+                if (analyses.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>No analyses yet</h3>
+                            <p>Run analysis to see results here</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                analyses.forEach(analysis => {
+                    const item = document.createElement('div');
+                    item.className = 'analysis-item';
+                    item.innerHTML = `
+                        <div class="analysis-header" onclick="toggleAnalysis('${analysis.id}')">
+                            <div>
+                                <strong>${analysis.article_title}</strong>
+                                <div style="margin-top: 0.5rem;">
+                                    <span class="template-badge">${analysis.template}</span>
+                                    <span class="status-badge ${analysis.validation_status.toLowerCase()}">${analysis.validation_status}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <small>${analysis.article_source} • ${new Date(analysis.timestamp).toLocaleString()}</small>
+                            </div>
+                        </div>
+                        <div class="analysis-details" id="details-${analysis.id}">
+                            <p><strong>Manipulation Score:</strong> ${analysis.manipulation_score}/10</p>
+                            <p><strong>Concern Level:</strong> ${analysis.concern_level}</p>
+                            <button class="btn btn-small btn-primary" onclick="viewFullAnalysis('${analysis.id}')">View Full Analysis</button>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+                
+            } catch (error) {
+                console.error('Failed to load recent analyses:', error);
+            }
+        }
+
+        function toggleAnalysis(id) {
+            const item = event.target.closest('.analysis-item');
+            item.classList.toggle('expanded');
+        }
+
+        async function viewFullAnalysis(id) {
+            try {
+                const analysis = await apiCall(`/analysis/${id}`);
+                
+                // Create a new window/modal to show full analysis
+                const modal = window.open('', 'Analysis', 'width=800,height=600');
+                modal.document.write(`
+                    <html>
+                    <head>
+                        <title>Analysis: ${analysis.article?.title || 'Unknown'}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            pre { background: #f5f5f5; padding: 10px; overflow: auto; }
+                            h3 { color: #333; margin-top: 20px; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>${analysis.article?.title || 'Analysis Result'}</h1>
+                        <p><strong>Source:</strong> ${analysis.article?.source || 'Unknown'}</p>
+                        <p><strong>Template:</strong> ${analysis.template_info?.name || 'Unknown'}</p>
+                        <p><strong>Timestamp:</strong> ${analysis.timestamp}</p>
+                        
+                        <h3>Validation</h3>
+                        <pre>${JSON.stringify(analysis.validation, null, 2)}</pre>
+                        
+                        <h3>Analysis Results</h3>
+                        ${Object.entries(analysis.rounds || {}).map(([name, data]) => `
+                            <h4>${name}</h4>
+                            <pre>${JSON.stringify(data.processed_data || data.response, null, 2)}</pre>
+                        `).join('')}
+                        
+                        <h3>Knowledge Graph Payload</h3>
+                        <pre>${JSON.stringify(analysis.kg_payload, null, 2)}</pre>
+                    </body>
+                    </html>
+                `);
+                
+            } catch (error) {
+                alert(`Failed to load analysis: ${error.message}`);
+            }
+        }
+
+        // Review Queue functions
+        async function refreshReviewQueue() {
+            try {
+                const queue = await apiCall('/review-queue');
+                const container = document.getElementById('review-queue-container');
+                
+                if (queue.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>No items in review queue</h3>
+                            <p>Run analysis with a TESTING template to generate items for review</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                queue.forEach((item, index) => {
+                    const reviewItem = createReviewItem(item, index);
+                    container.appendChild(reviewItem);
+                });
+                
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to refresh review queue: ${error.message}`);
+            }
+        }
+
+        function createReviewItem(item, index) {
+            const div = document.createElement('div');
+            div.className = 'analysis-item';
+            div.innerHTML = `
+                <div class="analysis-header">
+                    <div>
+                        <strong>${item.article.title}</strong>
+                        <div style="margin-top: 0.5rem;">
+                            <span class="template-badge ${item.template_status.toLowerCase()}">${item.template_name}</span>
+                            <span class="status-badge ${item.validation_status.toLowerCase()}">${item.validation_status}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <small>${item.article.source} • ${new Date(item.timestamp).toLocaleString()}</small>
+                    </div>
+                </div>
+                <div class="analysis-details">
+                    <p><strong>Validation Reason:</strong> ${item.validation_reason}</p>
+                    <p><strong>Manipulation Score:</strong> ${item.manipulation_score || 'N/A'}/10</p>
+                    <p><strong>Concern Level:</strong> ${item.concern_level || 'N/A'}</p>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-success btn-small" onclick="approveAnalysis('${item.id}')">✓ Approve Analysis</button>
+                        <button class="btn btn-danger btn-small" onclick="rejectAnalysis('${item.id}')">✗ Reject</button>
+                        <button class="btn btn-warning btn-small" onclick="approveTemplate('${item.template_name}')">Approve Template</button>
+                        <button class="btn btn-primary btn-small" onclick="viewFullAnalysis('${item.id}')">View Full</button>
+                    </div>
+                </div>
+            `;
+            return div;
+        }
+
+        async function approveTemplate(templateName) {
+            // Find the template filename from the loaded templates
+            try {
+                const templates = await apiCall('/templates');
+                const allTemplates = [...(templates.approved || []), ...(templates.unapproved || [])];
+                const template = allTemplates.find(t => t.name === templateName);
+                
+                if (!template) {
+                    alert('Template not found');
+                    return;
+                }
+                
+                await apiCall('/template/approve', {
+                    method: 'POST',
+                    body: JSON.stringify({ template: template.filename })
+                });
+                
+                logMessage('task-log', 'success', `Template approved: ${templateName}`);
+                await loadTemplates(); // Reload templates
+                await refreshReviewQueue(); // Refresh review queue
+                
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to approve template: ${error.message}`);
+            }
+        }
+
+        async function approveAnalysis(id) {
+            try {
+                await apiCall('/review-queue/approve', {
+                    method: 'POST',
+                    body: JSON.stringify({ analysis_id: id })
+                });
+                
+                logMessage('task-log', 'success', `Approved analysis: ${id}`);
+                refreshReviewQueue();
+                refreshStatus();
+                
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to approve: ${error.message}`);
+            }
+        }
+
+        async function rejectAnalysis(id) {
+            try {
+                await apiCall('/review-queue/reject', {
+                    method: 'POST',
+                    body: JSON.stringify({ analysis_id: id })
+                });
+                
+                logMessage('task-log', 'warning', `Rejected analysis: ${id}`);
+                refreshReviewQueue();
+                refreshStatus();
+                
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to reject: ${error.message}`);
+            }
+        }
+
+        // LLM functions
         async function saveAPIKey() {
             const key = document.getElementById('anthropic-key').value.trim();
             if (!key) return;
@@ -1003,15 +1391,6 @@
             }
         }
 
-        async function loadPublicKey() {
-            try {
-                const result = await apiCall('/public-key');
-                document.getElementById('public-key').value = result.public_key || '';
-            } catch (error) {
-                logMessage('export-log', 'error', `Failed to load key: ${error.message}`);
-            }
-        }
-
         async function saveLLMModel() {
             const model = document.getElementById('llm-model').value;
             try {
@@ -1022,6 +1401,15 @@
                 logMessage('task-log', 'success', `Model set to ${model}`);
             } catch (error) {
                 logMessage('task-log', 'error', `Failed to set model: ${error.message}`);
+            }
+        }
+
+        async function loadPublicKey() {
+            try {
+                const result = await apiCall('/public-key');
+                document.getElementById('public-key').value = result.public_key || '';
+            } catch (error) {
+                logMessage('export-log', 'error', `Failed to load key: ${error.message}`);
             }
         }
 
@@ -1055,220 +1443,6 @@
                 loadSources();
             } catch (error) {
                 logMessage('task-log', 'error', `Failed to set limit: ${error.message}`);
-            }
-        }
-
-        async function updateSourceLimit(url, limit) {
-            try {
-                await apiCall('/sources/update', {
-                    method: 'POST',
-                    body: JSON.stringify({ url, limit: parseInt(limit) })
-                });
-                logMessage('task-log', 'success', `Updated limit for ${url}`);
-            } catch (error) {
-                logMessage('task-log', 'error', `Failed to update source: ${error.message}`);
-            }
-        }
-
-        // Analysis functions
-        async function startAnalysis() {
-            const maxArticles = parseInt(document.getElementById('max-analyze').value);
-            const selector = document.getElementById('analysis-templates');
-            const templates = Array.from(selector.selectedOptions).map(o => o.value);
-            const abSplit = document.getElementById('ab-split').checked;
-
-            try {
-                await apiCall('/analyze', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        max_articles: maxArticles,
-                        templates: templates,
-                        ab_split: abSplit
-                    })
-                });
-
-                const mode = abSplit && templates.length > 1 ? 'A/B' : 'standard';
-                logMessage('analyzer-log', 'info', `Analysis started (${mode}) with templates: ${templates.join(', ')}`);
-                startTaskPolling();
-                
-            } catch (error) {
-                logMessage('analyzer-log', 'error', `Failed to start analysis: ${error.message}`);
-            }
-        }
-
-        // Template functions
-        async function loadTemplates() {
-            try {
-                const templates = await apiCall('/templates');
-                const selector = document.getElementById('analysis-templates');
-                const list = document.getElementById('templates-list');
-                
-                selector.innerHTML = '';
-                list.innerHTML = '';
-                
-                templates.forEach(template => {
-                    // Add to selector
-                    const option = document.createElement('option');
-                    option.value = template.filename;
-                    option.textContent = `${template.name} (${template.status})`;
-                    selector.appendChild(option);
-                    
-                    // Add to list
-                    const item = document.createElement('div');
-                    item.className = 'template-item';
-                    item.style.marginBottom = '1rem';
-                    item.innerHTML = `
-                        <div class="template-badge ${template.status.toLowerCase()}">${template.status}</div>
-                        <strong>${template.filename}</strong>
-                        <p>${template.description || 'No description'}</p>
-                        <small>Version: ${template.version || 'N/A'}</small>
-                    `;
-                    list.appendChild(item);
-                });
-                
-            } catch (error) {
-                logMessage('templates-log', 'error', `Failed to load templates: ${error.message}`);
-            }
-        }
-
-        async function refreshTemplates() {
-            await loadTemplates();
-            logMessage('templates-log', 'success', 'Templates refreshed');
-        }
-
-        // Review Queue functions
-        async function refreshReviewQueue() {
-            try {
-                const queue = await apiCall('/review-queue');
-                reviewQueue = queue;
-                
-                const container = document.getElementById('review-queue-container');
-                
-                if (queue.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <h3>No items in review queue</h3>
-                            <p>Run analysis with a TESTING template to generate items for review</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                container.innerHTML = '';
-                queue.forEach((item, index) => {
-                    const reviewItem = createReviewItem(item, index);
-                    container.appendChild(reviewItem);
-                });
-                
-            } catch (error) {
-                logMessage('system-log', 'error', `Failed to refresh review queue: ${error.message}`);
-            }
-        }
-
-        function createReviewItem(item, index) {
-            const div = document.createElement('div');
-            div.className = 'review-item';
-            div.innerHTML = `
-                <div class="review-header">
-                    <div>
-                        <strong>${item.article.title}</strong>
-                        <div class="template-badge ${item.template_status.toLowerCase()}">${item.template_name}</div>
-                        <div class="status-badge ${item.validation_status.toLowerCase()}">${item.validation_status}</div>
-                    </div>
-                    <div>
-                        <small>${item.article.source} • ${new Date(item.timestamp).toLocaleString()}</small>
-                    </div>
-                </div>
-                <div class="review-content">
-                    <div class="article-preview">
-                        <h4>Article Content</h4>
-                        <p><strong>Source:</strong> ${item.article.source}</p>
-                        <p><strong>URL:</strong> <a href="${item.article.url}" target="_blank">${item.article.url}</a></p>
-                        <div style="margin-top: 1rem; max-height: 200px; overflow-y: auto;">
-                            ${item.article.content.substring(0, 500)}...
-                        </div>
-                    </div>
-                    <div class="analysis-preview">
-                        <h4>Analysis Results</h4>
-                        <p><strong>Manipulation Score:</strong> ${item.manipulation_score || 'N/A'}/10</p>
-                        <p><strong>Concern Level:</strong> ${item.concern_level || 'N/A'}</p>
-                        <p><strong>Validation Reason:</strong> ${item.validation_reason}</p>
-                        <div style="margin-top: 1rem;">
-                            <strong>Authoritarian Indicators:</strong>
-                            <ul style="margin-left: 1rem; margin-top: 0.5rem;">
-                                ${(item.authoritarian_indicators || []).map(ind => `<li>${ind}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="review-actions">
-                    <button class="btn btn-success btn-small" onclick="approveAnalysis(${index})">✓ Approve</button>
-                    <button class="btn btn-danger btn-small" onclick="rejectAnalysis(${index})">✗ Reject</button>
-                    <button class="btn btn-warning btn-small" onclick="retryAnalysis(${index})">🔄 Retry</button>
-                    <textarea placeholder="Optional notes..." id="notes-${index}" style="margin-left: 1rem; flex: 1;"></textarea>
-                </div>
-            `;
-            return div;
-        }
-
-        async function approveAnalysis(index) {
-            const item = reviewQueue[index];
-            const notes = document.getElementById(`notes-${index}`).value;
-            
-            try {
-                await apiCall('/review-queue/approve', {
-                    method: 'POST',
-                    body: JSON.stringify({ 
-                        analysis_id: item.id,
-                        notes: notes 
-                    })
-                });
-                
-                logMessage('system-log', 'success', `Approved analysis: ${item.article.title}`);
-                refreshReviewQueue();
-                refreshStatus();
-                
-            } catch (error) {
-                logMessage('system-log', 'error', `Failed to approve: ${error.message}`);
-            }
-        }
-
-        async function rejectAnalysis(index) {
-            const item = reviewQueue[index];
-            const notes = document.getElementById(`notes-${index}`).value;
-            
-            try {
-                await apiCall('/review-queue/reject', {
-                    method: 'POST',
-                    body: JSON.stringify({ 
-                        analysis_id: item.id,
-                        notes: notes 
-                    })
-                });
-                
-                logMessage('system-log', 'warning', `Rejected analysis: ${item.article.title}`);
-                refreshReviewQueue();
-                refreshStatus();
-                
-            } catch (error) {
-                logMessage('system-log', 'error', `Failed to reject: ${error.message}`);
-            }
-        }
-
-        async function retryAnalysis(index) {
-            const item = reviewQueue[index];
-            
-            try {
-                await apiCall('/review-queue/retry', {
-                    method: 'POST',
-                    body: JSON.stringify({ analysis_id: item.id })
-                });
-                
-                logMessage('system-log', 'info', `Retrying analysis: ${item.article.title}`);
-                refreshReviewQueue();
-                
-            } catch (error) {
-                logMessage('system-log', 'error', `Failed to retry: ${error.message}`);
             }
         }
 
