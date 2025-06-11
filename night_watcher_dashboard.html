@@ -717,41 +717,6 @@
                     <div class="value" id="current-version">None</div>
                 </div>
 
-
-                <!-- Staging Area -->
-                <div class="control-panel">
-                    <h3>Package Staging</h3>
-                    <div id="staging-files">
-                        <!-- List of files to be included -->
-                    </div>
-                    <button class="btn btn-primary" onclick="addFileToStaging()">Add File</button>
-                    <button class="btn btn-warning" onclick="clearStaging()">Clear Staging</button>
-                </div>
-
-                <!-- Export Controls -->
-                <div class="control-panel">
-                    <h3>Create Distribution Package</h3>
-                    <div class="form-group">
-                        <label>Private Key</label>
-                        <textarea id="private-key" rows="4" placeholder="-----BEGIN PRIVATE KEY-----"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Public Key</label>
-                        <textarea id="public-key" rows="4" placeholder="-----BEGIN PUBLIC KEY-----"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Package Type</label>
-                        <select id="export-type">
-                            <option value="v001">V001 - Genesis Package (Complete Platform)</option>
-                            <option value="update">Update Package (Incremental)</option>
-                            <option value="full_v2">Full Release (v2+ History)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label><input type="checkbox" id="full-v2"> Include history since v2</label>
-                    </div>
-
-
                 <!-- Staging Area -->
                 <div class="control-panel">
                     <h3>Package Staging</h3>
@@ -769,7 +734,6 @@
                         <option value="v001">V001 - Genesis Package (Complete Platform)</option>
                         <option value="update">Update Package (Incremental)</option>
                     </select>
-
                     <button class="btn btn-success" onclick="createPackage()">Create Package</button>
                 </div>
 
@@ -1756,20 +1720,10 @@
 
         async function createPackage() {
             const type = document.getElementById('export-type').value;
-
-            const privateKey = document.getElementById('private-key').value.trim();
-            const publicKey = document.getElementById('public-key').value.trim();
-            const fullV2 = document.getElementById('full-v2').checked;
-            try {
-                const result = await apiCall('/export/create', {
-                    method: 'POST',
-                    body: JSON.stringify({ type, private_key: privateKey, public_key: publicKey, full_since_v2: fullV2 })
-
             try {
                 const result = await apiCall('/export/create', {
                     method: 'POST',
                     body: JSON.stringify({ type })
-
                 });
                 logMessage('export-log', 'success', `Package created: ${result.path || ''}`);
             } catch (error) {
