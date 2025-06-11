@@ -363,11 +363,12 @@ def main():
     parser.add_argument("--full", action="store_true", help="Run full pipeline")
     parser.add_argument("--status", action="store_true", help="Show status")
     parser.add_argument("--export-signed", help="Export signed release artifact")
-    parser.add_argument("--export-release", action="store_true", help="Export versioned release")
+    parser.add_argument("--export-release", help="Export complete distribution release")
+    parser.add_argument("--release-version", help="Release version (v001, v002, etc)")
     parser.add_argument("--version", help="Version (v001, v002, etc)")
+    parser.add_argument("--previous-release", help="Previous release file for chain validation")
     parser.add_argument("--private-key", help="Private key file for signing")
-    parser.add_argument("--previous-artifact", help="Previous artifact for chain")
-    parser.add_argument("--bundle-files", nargs="+", help="Extra files to include")
+    parser.add_argument("--bundle-files", nargs="+", help="Additional files to bundle in release")
     
     # Options
     parser.add_argument("--mode", choices=["auto", "first_run", "incremental", "full"],
@@ -422,15 +423,21 @@ def main():
                 bundled_files=args.bundle_files,
             )
         elif args.export_release:
-            from export_versioned_artifact import export_versioned_artifact
-            out = f"night_watcher_{args.version}.tar.gz"
-            export_versioned_artifact(
-                output_path=out,
-                version=args.version,
-                private_key_path=args.private_key,
-                previous_artifact_path=args.previous_artifact,
-                bundled_files=args.bundle_files,
+            from export_versioned_artifact import create_distribution_release
+
+            success = create_distribution_release(
+                output_path=args.export_release,
+                version=args.release_version,
+                previous_release_path=args.previous_release,
+                bundle_files=args.bundle_files or [],
+                night_watcher_instance=nw
             )
+
+            if success:
+                print(f"✅ Distribution release created: {args.export_release}")
+            else:
+                print("❌ Failed to create distribution release")
+                sys.exit(1)
 
         elif args.full:
             print("Running full pipeline...")
