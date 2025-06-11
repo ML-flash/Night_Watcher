@@ -51,6 +51,21 @@ class ExportOrchestrator:
         tmp.close()
         return tmp.name
 
+    def create_package(self, package_type: str, private_key_pem: str, public_key_pem: str, staging_files: list | None = None) -> Dict:
+        """Create a package using the existing helpers."""
+        try:
+            if package_type == "v001":
+                return self.create_v001_package(private_key_pem, public_key_pem)
+            elif package_type == "incremental":
+                return self.create_update_package("update", private_key_pem, public_key_pem, full_since_v2=False)
+            elif package_type == "full-data":
+                return self.create_update_package("update", private_key_pem, public_key_pem, full_since_v2=True)
+            else:
+                raise ValueError(f"Invalid package type: {package_type}")
+        except Exception as e:
+            self._log_export_step("package_creation", "FAILED", {"error": str(e)})
+            return {"success": False, "error": str(e)}
+
     def create_v001_package(self, private_key: Optional[str] = None, public_key: Optional[str] = None) -> Dict:
         self._log_export_step("start", "info", {"type": "v001"})
         version = "v001"
@@ -114,17 +129,6 @@ class ExportOrchestrator:
                 os.unlink(pk_file)
         self.version_mgr.log_export_attempt(target_version, success, {"path": out_path})
         result = {"status": "created" if success else "error", "path": out_path}
-
-    def create_v001_package(self) -> Dict:
-        self._log_export_step("start", "info", {"type": "v001"})
-        # Placeholder implementation
-        result = {"status": "created", "path": ""}
         self._create_export_report(result)
         return result
 
-    def create_update_package(self, previous_version: str) -> Dict:
-        self._log_export_step("start", "info", {"type": "update", "previous": previous_version})
-        # Placeholder implementation
-        result = {"status": "created", "path": ""}
-        self._create_export_report(result)
-        return result
