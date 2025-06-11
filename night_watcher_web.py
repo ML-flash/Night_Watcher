@@ -839,6 +839,72 @@ def api_export():
         return jsonify({"error": str(e)}), 400
 
 
+@app.route('/api/export/status')
+def api_export_status():
+    """Get export system status and version info."""
+    init_night_watcher()
+    orchestrator = night_watcher.get_export_orchestrator()
+    version = orchestrator.version_mgr.get_current_version()
+    return jsonify({"current_version": version})
+
+
+@app.route('/api/export/staging')
+def api_staging_list():
+    """List files in staging area."""
+    init_night_watcher()
+    orchestrator = night_watcher.get_export_orchestrator()
+    files = orchestrator.staging_mgr.list_staged_files()
+    return jsonify({"files": files})
+
+
+@app.route('/api/export/staging/add', methods=['POST'])
+def api_staging_add():
+    """Add file to staging area."""
+    init_night_watcher()
+    path = (request.json or {}).get('file')
+    orchestrator = night_watcher.get_export_orchestrator()
+    orchestrator.staging_mgr.add_file(path)
+    return jsonify({"status": "added"})
+
+
+@app.route('/api/export/staging/remove', methods=['POST'])
+def api_staging_remove():
+    """Remove file from staging area."""
+    init_night_watcher()
+    data = request.json or {}
+    orchestrator = night_watcher.get_export_orchestrator()
+    if data.get('clear'):
+        orchestrator.staging_mgr.clear_staging()
+    else:
+        orchestrator.staging_mgr.remove_file(data.get('file'))
+    return jsonify({"status": "removed"})
+
+
+@app.route('/api/export/create', methods=['POST'])
+def api_create_package():
+    """Create distribution package."""
+    init_night_watcher()
+    data = request.json or {}
+    orchestrator = night_watcher.get_export_orchestrator()
+    pkg_type = data.get('type', 'v001')
+    priv = data.get('private_key')
+    pub = data.get('public_key')
+    full_v2 = data.get('full_since_v2', False)
+    if pkg_type == 'v001':
+        result = orchestrator.create_v001_package(priv, pub)
+    else:
+        result = orchestrator.create_update_package(pkg_type, priv, pub, full_since_v2=full_v2)
+    return jsonify(result)
+
+
+@app.route('/api/export/history')
+def api_export_history():
+    """Get export history and logs."""
+    init_night_watcher()
+    orchestrator = night_watcher.get_export_orchestrator()
+    history = orchestrator.version_mgr.get_export_history()
+    return jsonify(history)
+
 @app.route('/api/config', methods=['GET', 'POST'])
 def api_config():
     """Get or update configuration."""
