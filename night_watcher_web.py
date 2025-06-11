@@ -72,6 +72,35 @@ def add_log_message(level, message):
         task_status["messages"] = task_status["messages"][-100:]
 
 
+def validate_key_pair(private_key_pem: str, public_key_pem: str) -> dict:
+    """Validate that the provided private and public keys match."""
+    try:
+        from cryptography.hazmat.primitives import serialization, hashes
+        from cryptography.hazmat.primitives.asymmetric import padding
+
+        private_key = serialization.load_pem_private_key(private_key_pem.encode(), password=None)
+        public_key = serialization.load_pem_public_key(public_key_pem.encode())
+
+        test_data = b"Night_watcher key validation test"
+        signature = private_key.sign(
+            test_data,
+            padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+            hashes.SHA256()
+        )
+
+        public_key.verify(
+            signature,
+            test_data,
+            padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+            hashes.SHA256()
+        )
+
+        return {"valid": True, "message": "Key pair validation successful"}
+
+    except Exception as e:
+        return {"valid": False, "message": str(e)}
+
+
 def load_review_queue():
     """Load review queue from file."""
     if os.path.exists(REVIEW_QUEUE_FILE):
@@ -880,6 +909,42 @@ def api_staging_remove():
     return jsonify({"status": "removed"})
 
 
+@app.route('/api/export/validate-keys', methods=['POST'])
+def api_validate_keys():
+    """Validate private/public key pair."""
+    data = request.json or {}
+    result = validate_key_pair(data.get('private_key', ''), data.get('public_key', ''))
+    status = 200 if result.get('valid') else 400
+    return jsonify(result), status
+
+
+@app.route('/api/export/create-package', methods=['POST'])
+def api_create_package_v2():
+    """Create package with user provided keys."""
+    try:
+        init_night_watcher()
+        data = request.json or {}
+        package_type = data.get('package_type', 'v001')
+        private_key = data.get('private_key', '')
+        public_key = data.get('public_key', '')
+        staging_files = data.get('staging_files', [])
+
+        validation = validate_key_pair(private_key, public_key)
+        if not validation['valid']:
+            return jsonify({"error": f"Key validation failed: {validation['message']}"}), 400
+
+        orchestrator = night_watcher.get_export_orchestrator()
+        result = orchestrator.create_package(package_type, private_key, public_key, staging_files)
+
+        if result.get('success', True):
+            return jsonify(result)
+        else:
+            return jsonify({"error": result.get('error', 'unknown')}), 400
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/api/export/create', methods=['POST'])
 def api_create_package():
     """Create distribution package."""
@@ -891,14 +956,12 @@ def api_create_package():
     priv = data.get('private_key')
     pub = data.get('public_key')
     full_v2 = data.get('full_since_v2', False)
+
     if pkg_type == 'v001':
         result = orchestrator.create_v001_package(priv, pub)
     else:
         result = orchestrator.create_update_package(pkg_type, priv, pub, full_since_v2=full_v2)
-    if pkg_type == 'v001':
-        result = orchestrator.create_v001_package()
-    else:
-        result = orchestrator.create_update_package(pkg_type)
+
     return jsonify(result)
 
 
