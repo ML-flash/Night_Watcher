@@ -51,7 +51,6 @@ def export_artifact(
     documents_dir: str = "data/documents",
     *,
     private_key_path: typing.Optional[str] = None,
-    public_key_path: typing.Optional[str] = None,
     version: str = "v001",
 ):
     """Package repository data into a signed archive."""
@@ -94,11 +93,12 @@ def export_artifact(
             with open(os.path.join(tmpdir, "signature.json"), "w", encoding="utf-8") as f:
                 json.dump(signature, f, indent=2)
 
-        if public_key_path and os.path.exists(public_key_path):
-            shutil.copy2(public_key_path, os.path.join(tmpdir, "public_key.pem"))
-            verify_src = os.path.join(os.path.dirname(__file__), "verify.py")
-            if os.path.exists(verify_src):
-                shutil.copy2(verify_src, os.path.join(tmpdir, "verify.py"))
+            pub_bytes = private_key.public_key().public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo)
+            with open(os.path.join(tmpdir, "public_key.pem"), "wb") as f:
+                f.write(pub_bytes)
+        verify_src = os.path.join(os.path.dirname(__file__), "verify.py")
+        if os.path.exists(verify_src):
+            shutil.copy2(verify_src, os.path.join(tmpdir, "verify.py"))
 
         with tarfile.open(output_path, "w:gz") as tar:
             tar.add(tmpdir, arcname=".")
@@ -113,8 +113,7 @@ if __name__ == "__main__":
     parser.add_argument("--kg-dir", default="data/knowledge_graph", help="Knowledge graph directory")
     parser.add_argument("--vector-dir", default="data/vector_store", help="Vector store directory")
     parser.add_argument("--documents-dir", default="data/documents", help="Document repository directory")
-    parser.add_argument("--private-key", help="Private key for signing")
-    parser.add_argument("--public-key", help="Public key to include")
+    parser.add_argument("--private-key", required=True, help="Private key for signing")
     args = parser.parse_args()
 
     export_artifact(
@@ -123,6 +122,5 @@ if __name__ == "__main__":
         vector_dir=args.vector_dir,
         documents_dir=args.documents_dir,
         private_key_path=args.private_key,
-        public_key_path=args.public_key,
     )
 
