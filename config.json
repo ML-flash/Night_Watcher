@@ -121,6 +121,13 @@
     "public_key": "data/export_keys/public_key.pem",
     "private_key": ""
   },
+  "export_control": {
+    "staging_directory": "data/export_staging",
+    "private_key_path": "data/keys/private.pem",
+    "auto_backup_before_export": true,
+    "require_validation_before_export": true,
+    "export_log_retention_days": 90
+  },
   "distribution": {
     "current_version": "v001",
     "auto_check_updates": true,
