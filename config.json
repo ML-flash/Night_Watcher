@@ -120,5 +120,10 @@
   "export": {
     "public_key": "data/export_keys/public_key.pem",
     "private_key": ""
+  },
+  "distribution": {
+    "current_version": "v001",
+    "auto_check_updates": true,
+    "torrent_trackers": ["tracker1.com", "tracker2.com"]
   }
 }
