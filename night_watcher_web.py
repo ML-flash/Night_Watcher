@@ -241,30 +241,105 @@ def api_templates():
 
 @app.route('/api/template/approve', methods=['POST'])
 def api_approve_template():
-    """Approve a template by changing its status to PRODUCTION."""
+    """Approve a template and mark its analyses as valid."""
     try:
         data = request.json
         template_file = data.get("template")
-        
+
         if not template_file or not os.path.exists(template_file):
             return jsonify({"error": "Template not found"}), 404
-        
+
         # Load template
         with open(template_file, 'r', encoding='utf-8') as f:
             template_data = json.load(f)
-        
+
+        template_name = template_data.get("name", os.path.basename(template_file))
+
         # Update status
         template_data["status"] = "PRODUCTION"
         template_data["approved_at"] = datetime.now().isoformat()
         template_data["approved_by"] = "dashboard_user"
-        
+
         # Save updated template
         with open(template_file, 'w', encoding='utf-8') as f:
             json.dump(template_data, f, indent=2)
-        
+
+        # Update analyses created with this template
+        analyzed_dir = "data/analyzed"
+        if os.path.exists(analyzed_dir):
+            for filename in os.listdir(analyzed_dir):
+                if not filename.startswith("analysis_"):
+                    continue
+                filepath = os.path.join(analyzed_dir, filename)
+                try:
+                    with open(filepath, 'r', encoding='utf-8') as af:
+                        analysis = json.load(af)
+                    if analysis.get("template_info", {}).get("name") != template_name:
+                        continue
+                    if analysis.get("validation", {}).get("status") == "REVIEW":
+                        analysis["validation"]["status"] = "VALID"
+                        analysis["validation"]["approved_by"] = "dashboard_user"
+                        analysis["validation"]["approved_at"] = datetime.now().isoformat()
+                        with open(filepath, 'w', encoding='utf-8') as af:
+                            json.dump(analysis, af, indent=2)
+                except Exception as e:
+                    logger.error(f"Failed to update analysis {filename}: {e}")
+
         add_log_message("success", f"Template approved: {template_file}")
         return jsonify({"status": "approved"})
-        
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/template/reject', methods=['POST'])
+def api_reject_template():
+    """Reject a template and mark its analyses as rejected."""
+    try:
+        data = request.json
+        template_file = data.get("template")
+
+        if not template_file or not os.path.exists(template_file):
+            return jsonify({"error": "Template not found"}), 404
+
+        # Load template
+        with open(template_file, 'r', encoding='utf-8') as f:
+            template_data = json.load(f)
+
+        template_name = template_data.get("name", os.path.basename(template_file))
+
+        # Update status
+        template_data["status"] = "REJECTED"
+        template_data["rejected_at"] = datetime.now().isoformat()
+        template_data["rejected_by"] = "dashboard_user"
+
+        # Save updated template
+        with open(template_file, 'w', encoding='utf-8') as f:
+            json.dump(template_data, f, indent=2)
+
+        # Mark associated analyses as rejected
+        analyzed_dir = "data/analyzed"
+        if os.path.exists(analyzed_dir):
+            for filename in os.listdir(analyzed_dir):
+                if not filename.startswith("analysis_"):
+                    continue
+                filepath = os.path.join(analyzed_dir, filename)
+                try:
+                    with open(filepath, 'r', encoding='utf-8') as af:
+                        analysis = json.load(af)
+                    if analysis.get("template_info", {}).get("name") != template_name:
+                        continue
+                    analysis["validation"]["status"] = "REJECTED"
+                    analysis["validation"]["rejected_by"] = "dashboard_user"
+                    analysis["validation"]["rejected_at"] = datetime.now().isoformat()
+                    with open(filepath, 'w', encoding='utf-8') as af:
+                        json.dump(analysis, af, indent=2)
+                except Exception as e:
+                    logger.error(f"Failed to reject analysis {filename}: {e}")
+
+        add_log_message("warning", f"Template rejected: {template_file}")
+        return jsonify({"status": "rejected"})
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
