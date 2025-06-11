@@ -887,6 +887,7 @@ def api_create_package():
     data = request.json or {}
     orchestrator = night_watcher.get_export_orchestrator()
     pkg_type = data.get('type', 'v001')
+
     priv = data.get('private_key')
     pub = data.get('public_key')
     full_v2 = data.get('full_since_v2', False)
@@ -894,6 +895,10 @@ def api_create_package():
         result = orchestrator.create_v001_package(priv, pub)
     else:
         result = orchestrator.create_update_package(pkg_type, priv, pub, full_since_v2=full_v2)
+    if pkg_type == 'v001':
+        result = orchestrator.create_v001_package()
+    else:
+        result = orchestrator.create_update_package(pkg_type)
     return jsonify(result)
 
 

@@ -3,7 +3,6 @@ import json
 import logging
 import tempfile
 from typing import Dict, Optional
-
 from version_control import IntegratedVersionManager, StagingManager
 
 
@@ -42,6 +41,7 @@ class ExportOrchestrator:
             "staging_area": True,
             "version_sequence": True,
         }
+
 
     def _write_temp_key(self, text: Optional[str]) -> Optional[str]:
         if not text:
@@ -114,5 +114,17 @@ class ExportOrchestrator:
                 os.unlink(pk_file)
         self.version_mgr.log_export_attempt(target_version, success, {"path": out_path})
         result = {"status": "created" if success else "error", "path": out_path}
+
+    def create_v001_package(self) -> Dict:
+        self._log_export_step("start", "info", {"type": "v001"})
+        # Placeholder implementation
+        result = {"status": "created", "path": ""}
+        self._create_export_report(result)
+        return result
+
+    def create_update_package(self, previous_version: str) -> Dict:
+        self._log_export_step("start", "info", {"type": "update", "previous": previous_version})
+        # Placeholder implementation
+        result = {"status": "created", "path": ""}
         self._create_export_report(result)
         return result
