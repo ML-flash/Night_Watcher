@@ -349,6 +349,21 @@ class NightWatcher:
             }
         }
 
+    def get_export_orchestrator(self):
+        """Get export orchestrator instance."""
+        if not hasattr(self, '_export_orchestrator'):
+            from export_orchestrator import ExportOrchestrator
+            self._export_orchestrator = ExportOrchestrator(self)
+        return self._export_orchestrator
+
+    def create_distribution_package(self, package_type: str = "v001"):
+        """Create distribution package through web interface."""
+        orchestrator = self.get_export_orchestrator()
+        if package_type == "v001":
+            return orchestrator.create_v001_package()
+        else:
+            return orchestrator.create_update_package(package_type)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Night_watcher - Political Intelligence Framework")

@@ -465,8 +465,8 @@
             <div class="nav-item" onclick="showSection('vector-store')">
                 🧠 Vector Store
             </div>
-            <div class="nav-item" onclick="showSection('exporter')">
-                📦 Export
+            <div class="nav-item" onclick="showSection('export')">
+                📦 Export & Distribution
             </div>
         </div>
 
@@ -708,30 +708,53 @@
             </div>
 
             <!-- Export Section -->
-            <div id="exporter" class="section">
-                <h2>Export Package</h2>
+            <div id="export" class="section">
+                <h2>Distribution Package Creation</h2>
 
-                <div class="control-grid">
-                    <div class="control-panel">
-                        <h3>Public Key</h3>
-                        <div class="form-group">
-                            <textarea id="public-key" rows="6" placeholder="-----BEGIN PUBLIC KEY-----"></textarea>
-                            <button class="btn btn-small" onclick="savePublicKey()">Save Key</button>
-                        </div>
-                    </div>
-
-                    <div class="control-panel">
-                        <h3>Create Export</h3>
-                        <div class="form-group">
-                            <label>Filename</label>
-                            <input type="text" id="export-filename" placeholder="bundle.tar.gz">
-                        </div>
-                        <button class="btn btn-primary" onclick="exportPackage()">Export</button>
-                    </div>
+                <!-- Version Status -->
+                <div class="status-card">
+                    <h4>Current Version</h4>
+                    <div class="value" id="current-version">None</div>
                 </div>
 
+                <!-- Staging Area -->
+                <div class="control-panel">
+                    <h3>Package Staging</h3>
+                    <div id="staging-files">
+                        <!-- List of files to be included -->
+                    </div>
+                    <button class="btn btn-primary" onclick="addFileToStaging()">Add File</button>
+                    <button class="btn btn-warning" onclick="clearStaging()">Clear Staging</button>
+                </div>
+
+                <!-- Export Controls -->
+                <div class="control-panel">
+                    <h3>Create Distribution Package</h3>
+                    <div class="form-group">
+                        <label>Private Key</label>
+                        <textarea id="private-key" rows="4" placeholder="-----BEGIN PRIVATE KEY-----"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Public Key</label>
+                        <textarea id="public-key" rows="4" placeholder="-----BEGIN PUBLIC KEY-----"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Package Type</label>
+                        <select id="export-type">
+                            <option value="v001">V001 - Genesis Package (Complete Platform)</option>
+                            <option value="update">Update Package (Incremental)</option>
+                            <option value="full_v2">Full Release (v2+ History)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="full-v2"> Include history since v2</label>
+                    </div>
+                    <button class="btn btn-success" onclick="createPackage()">Create Package</button>
+                </div>
+
+                <!-- Export Log -->
                 <div class="log-container" id="export-log">
-                    <div class="log-entry info">[INFO] Export module ready</div>
+                    <div class="log-entry info">[INFO] Export system ready</div>
                 </div>
             </div>
         </div>
@@ -789,6 +812,9 @@
                 loadTemplates();
             } else if (sectionId === 'collector') {
                 loadSources();
+            } else if (sectionId === 'export') {
+                loadExportStatus();
+                loadStaging();
             }
         }
 
@@ -1657,6 +1683,69 @@
                 logMessage('export-log', 'success', `Exported: ${result.path}`);
             } catch (error) {
                 logMessage('export-log', 'error', `Export failed: ${error.message}`);
+            }
+        }
+
+        async function loadExportStatus() {
+            try {
+                const status = await apiCall('/export/status');
+                document.getElementById('current-version').textContent = status.current_version || 'None';
+            } catch (error) {
+                logMessage('export-log', 'error', `Status error: ${error.message}`);
+            }
+        }
+
+        async function loadStaging() {
+            try {
+                const data = await apiCall('/export/staging');
+                const container = document.getElementById('staging-files');
+                container.innerHTML = '';
+                (data.files || []).forEach(file => {
+                    const div = document.createElement('div');
+                    div.textContent = file;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                logMessage('export-log', 'error', `Load staging failed: ${error.message}`);
+            }
+        }
+
+        async function addFileToStaging() {
+            const file = prompt('Enter file path to stage:');
+            if (!file) return;
+            try {
+                await apiCall('/export/staging/add', {
+                    method: 'POST',
+                    body: JSON.stringify({ file })
+                });
+                loadStaging();
+            } catch (error) {
+                logMessage('export-log', 'error', `Add file failed: ${error.message}`);
+            }
+        }
+
+        async function clearStaging() {
+            try {
+                await apiCall('/export/staging/remove', { method: 'POST', body: JSON.stringify({ clear: true }) });
+                loadStaging();
+            } catch (error) {
+                logMessage('export-log', 'error', `Clear staging failed: ${error.message}`);
+            }
+        }
+
+        async function createPackage() {
+            const type = document.getElementById('export-type').value;
+            const privateKey = document.getElementById('private-key').value.trim();
+            const publicKey = document.getElementById('public-key').value.trim();
+            const fullV2 = document.getElementById('full-v2').checked;
+            try {
+                const result = await apiCall('/export/create', {
+                    method: 'POST',
+                    body: JSON.stringify({ type, private_key: privateKey, public_key: publicKey, full_since_v2: fullV2 })
+                });
+                logMessage('export-log', 'success', `Package created: ${result.path || ''}`);
+            } catch (error) {
+                logMessage('export-log', 'error', `Package creation failed: ${error.message}`);
             }
         }
 
