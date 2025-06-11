@@ -625,10 +625,12 @@
                 </div>
 
                 <h3>Review Queue <span style="font-size: 0.8rem; color: #a0aec0;">(Testing Templates Only)</span></h3>
+
                 <div id="template-review-controls" style="margin-bottom: 0.5rem;">
                     <div id="review-template-list" style="margin-bottom: 0.5rem;"></div>
                     <button class="btn btn-success btn-small" onclick="approveSelectedTemplates()">Validate Selected Templates</button>
                     <button class="btn btn-danger btn-small" onclick="rejectSelectedTemplates()">Reject Selected Templates</button>
+
                 </div>
                 <div id="review-queue-container" style="margin-bottom: 2rem;">
                     <div class="empty-state">
@@ -1313,6 +1315,7 @@
             div.className = 'analysis-item';
             div.innerHTML = `
                 <div class="analysis-header">
+                    <input type="checkbox" class="review-select" data-id="${item.id}" style="margin-right:0.5rem;">
                     <div>
                         <strong>${item.article.title}</strong>
                         <div style="margin-top: 0.5rem;">
@@ -1418,6 +1421,7 @@
                 logMessage('task-log', 'error', `Failed to reject: ${error.message}`);
             }
         }
+
 
         async function approveSelectedTemplates() {
             const selected = document.querySelectorAll('.review-template:checked');
