@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night_watcher Control Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            padding: 1rem 2rem;
+            border-bottom: 3px solid #4a5568;
+        }
+
+        .header h1 {
+            color: #f7fafc;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #a0aec0;
+            font-size: 1rem;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            background: #2d3748;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            background: #4a5568;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: #5a6578;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #3182ce;
+            border-color: #63b3ed;
+        }
+
+        .nav-badge {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .content {
+            background: #2d3748;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            color: #f7fafc;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #4a5568;
+            padding-bottom: 0.5rem;
+        }
+
+        .section h3 {
+            color: #e2e8f0;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-panel {
+            background: #4a5568;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #5a6578;
+        }
+
+        .control-panel h3 {
+            color: #e2e8f0;
+            margin-bottom: 1rem;
+            margin-top: 0;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #cbd5e0;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2d3748;
+            border: 1px solid #5a6578;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3182ce 0%, #2b77cb 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(49, 130, 206, 0.4);
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3) inset;
+            filter: brightness(0.9);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #d69e2e 0%, #b7791f 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .status-card {
+            background: #4a5568;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #5a6578;
+        }
+
+        .status-card h4 {
+            color: #cbd5e0;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #63b3ed;
+        }
+
+        .log-container {
+            background: #1a202c;
+            border-radius: 8px;
+            padding: 1rem;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            border: 1px solid #4a5568;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+        }
+
+        .log-entry.info {
+            color: #63b3ed;
+        }
+
+        .log-entry.success {
+            color: #68d391;
+        }
+
+        .log-entry.warning {
+            color: #fbd38d;
+        }
+
+        .log-entry.error {
+            color: #fc8181;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #2d3748;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3182ce, #63b3ed);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Analysis Viewer Styles */
+        .analysis-item {
+            background: #4a5568;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #5a6578;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .analysis-item:hover {
+            border-color: #63b3ed;
+        }
+
+        .analysis-header {
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .analysis-details {
+            padding: 0 1rem 1rem 1rem;
+            display: none;
+        }
+
+        .analysis-item.expanded .analysis-details {
+            display: block;
+        }
+
+        .template-badge {
+            background: #3182ce;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .template-badge.testing {
+            background: #d69e2e;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.review {
+            background: #d69e2e;
+            color: white;
+        }
+
+        .status-badge.valid {
+            background: #38a169;
+            color: white;
+        }
+
+        .status-badge.failed {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .json-viewer {
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .json-valid {
+            border-color: #38a169;
+        }
+
+        .json-invalid {
+            border-color: #e53e3e;
+        }
+
+        .round-result {
+            background: #2d3748;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .round-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .round-name {
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .validation-icon {
+            font-size: 1.2rem;
+        }
+
+        .validation-icon.valid {
+            color: #68d391;
+        }
+
+        .validation-icon.invalid {
+            color: #fc8181;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulsing {
+            animation: pulse 2s infinite;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #a0aec0;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 1rem;
+            color: #cbd5e0;
+        }
+
+        .template-test-panel {
+            background: #4a5568;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .test-results {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌙 Night_watcher Control Dashboard</h1>
+        <p>Intelligence Gathering & Analysis Framework</p>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="nav-item active" onclick="showSection('collector')">
+                📡 Content Collector
+            </div>
+            <div class="nav-item" onclick="showSection('analysis')">
+                🔍 Analysis & Templates
+                <span class="nav-badge" id="review-count" style="display: none;">0</span>
+            </div>
+            <div class="nav-item" onclick="showSection('knowledge-graph')">
+                🕸️ Knowledge Graph
+            </div>
+            <div class="nav-item" onclick="showSection('vector-store')">
+                🧠 Vector Store
+            </div>
+            <div class="nav-item" onclick="showSection('export')">
+                📦 Export & Distribution
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Content Collector Section -->
+            <div id="collector" class="section active">
+                <h2>Content Collector</h2>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <h4>Collection Status</h4>
+                        <div class="value" id="collection-status">Idle</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Total Documents</h4>
+                        <div class="value" id="total-documents">0</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Pending Analysis</h4>
+                        <div class="value" id="pending-analysis">0</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>LLM Status</h4>
+                        <div class="value" id="llm-status">Unknown</div>
+                    </div>
+                </div>
+
+                <div class="control-grid">
+                    <div class="control-panel">
+                        <h3>Collection Controls</h3>
+                        <div class="form-group">
+                            <label>Collection Mode</label>
+                            <select id="collection-mode">
+                                <option value="auto">Auto (Smart Detection)</option>
+                                <option value="incremental">Incremental (Since Last Run)</option>
+                                <option value="first_run">First Run (From Jan 2025)</option>
+                                <option value="full">Full (All Since Inauguration)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="startCollection()">Start Collection</button>
+                        <button class="btn btn-danger" onclick="stopCollection()">Stop Collection</button>
+                        <div class="form-group" style="margin-top:1rem;">
+                            <label>LLM Provider</label>
+                            <select id="llm-provider">
+                                <option value="lm_studio">LM Studio</option>
+                                <option value="anthropic">Anthropic</option>
+                            </select>
+                            <button class="btn btn-small" onclick="saveLLMProvider()">Set</button>
+                        </div>
+                        <div class="form-group" style="margin-top:1rem;">
+                            <label>Anthropic API Key</label>
+                            <input type="text" id="anthropic-key" placeholder="sk-...">
+                            <button class="btn btn-small" onclick="saveAPIKey()">Save</button>
+                        </div>
+                        <div class="form-group" style="margin-top:1rem;">
+                            <label>LLM Model</label>
+                            <select id="llm-model"></select>
+                            <button class="btn btn-small" onclick="saveLLMModel()">Set Model</button>
+                        </div>
+                    </div>
+
+                    <div class="control-panel">
+                        <h3>Quick Actions</h3>
+                        <button class="btn btn-success" onclick="runFullPipeline()">Run Full Pipeline</button>
+                        <button class="btn btn-warning" onclick="testLLMConnection()">Test LLM Connection</button>
+                        <button class="btn btn-primary" onclick="refreshStatus()">Refresh Status</button>
+                        <button class="btn btn-primary" onclick="exportPackage()">Export Package</button>
+                    </div>
+
+                    <div class="control-panel">
+                        <h3>Source Limits</h3>
+                        <div class="form-group">
+                            <label>Articles per Source</label>
+                            <input type="number" id="global-limit" value="50" min="1" style="width:80px;">
+                            <button class="btn btn-small" onclick="setGlobalLimit()">Apply</button>
+                        </div>
+                        <div id="sources-list"></div>
+                    </div>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="task-progress"></div>
+                </div>
+
+                <div class="log-container" id="task-log">
+                    <div class="log-entry info">[INFO] Ready to start collection</div>
+                </div>
+            </div>
+
+            <!-- Analysis & Templates Section -->
+            <div id="analysis" class="section">
+                <h2>Analysis & Templates</h2>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <h4>Analysis Status</h4>
+                        <div class="value" id="analysis-status">Ready</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Analyzed Documents</h4>
+                        <div class="value" id="analyzed-documents">0</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Pending Review</h4>
+                        <div class="value" id="pending-review">0</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Pending Analysis</h4>
+                        <div class="value" id="pending-analysis-2">0</div>
+                    </div>
+                </div>
+
+                <h3>Run Analysis</h3>
+                <div class="control-grid">
+                    <div class="control-panel">
+                        <h3>Select Templates</h3>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color: #68d391;">✓ Approved Templates</strong>
+                            <div id="approved-templates" style="max-height: 120px; overflow-y: auto; margin-top: 0.5rem;">
+                                <!-- Checkboxes will be populated here -->
+                            </div>
+                        </div>
+                        <div>
+                            <strong style="color: #fbd38d;">⚠ Testing Templates</strong>
+                            <div id="unapproved-templates" style="max-height: 120px; overflow-y: auto; margin-top: 0.5rem;">
+                                <!-- Checkboxes will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-panel">
+                        <h3>Analysis Settings</h3>
+                        <div class="form-group">
+                            <label>Apply To</label>
+                            <select id="analysis-target">
+                                <option value="unanalyzed">Unanalyzed Documents Only</option>
+                                <option value="recent">Last Collection Run</option>
+                                <option value="all">All Documents Since Date</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="date-range-group" style="display: none;">
+                            <label>Since Date</label>
+                            <input type="date" id="since-date">
+                        </div>
+                        <div class="form-group">
+                            <label>Max Documents</label>
+                            <input type="number" id="max-analyze" value="20" min="1" max="100">
+                        </div>
+                        <button class="btn btn-primary" onclick="startAnalysis()">Start Analysis</button>
+                        <button class="btn btn-warning btn-small" onclick="validateSelectedTemplates()">Validate Templates</button>
+                    </div>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="analysis-progress"></div>
+                </div>
+
+                <h3>Review Queue <span style="font-size: 0.8rem; color: #a0aec0;">(Testing Templates Only)</span></h3>
+
+                <div id="template-review-controls" style="margin-bottom: 0.5rem;">
+                    <div id="review-template-list" style="margin-bottom: 0.5rem;"></div>
+                    <button class="btn btn-success btn-small" onclick="approveSelectedTemplates()">Validate Selected Templates</button>
+                    <button class="btn btn-danger btn-small" onclick="rejectSelectedTemplates()">Reject Selected Templates</button>
+
+                </div>
+                <div id="review-queue-container" style="margin-bottom: 2rem;">
+                    <div class="empty-state">
+                        <h3>No items in review queue</h3>
+                        <p>Run analysis with testing templates to generate items for review</p>
+                    </div>
+                </div>
+
+                <h3>Template Library</h3>
+                <div id="templates-list" style="margin-bottom: 2rem;">
+                    <div class="empty-state">
+                        <p>Loading templates...</p>
+                    </div>
+                </div>
+
+
+                <div class="log-container" id="analyzer-log" style="margin-top: 2rem;">
+                    <div class="log-entry info">[INFO] Analysis system ready</div>
+                </div>
+            </div>
+
+            <!-- Knowledge Graph Section -->
+            <div id="knowledge-graph" class="section">
+                <h2>Knowledge Graph</h2>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <h4>Total Nodes</h4>
+                        <div class="value" id="kg-nodes">0</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Total Edges</h4>
+                        <div class="value" id="kg-edges">0</div>
+                    </div>
+                </div>
+
+                <div class="control-grid">
+                    <div class="control-panel">
+                        <h3>Graph Operations</h3>
+                        <button class="btn btn-primary" onclick="buildKnowledgeGraph()">Build Graph</button>
+                        <button class="btn btn-success" onclick="syncVectors()">Sync Vectors</button>
+                    </div>
+                </div>
+
+                <div class="log-container" id="kg-log">
+                    <div class="log-entry info">[INFO] Knowledge Graph ready</div>
+                </div>
+            </div>
+
+            <!-- Vector Store Section -->
+            <div id="vector-store" class="section">
+                <h2>Vector Store</h2>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <h4>Total Vectors</h4>
+                        <div class="value" id="total-vectors">0</div>
+                    </div>
+                </div>
+
+                <div class="control-grid">
+                    <div class="control-panel">
+                        <h3>Search Interface</h3>
+                        <div class="form-group">
+                            <label>Search Query</label>
+                            <input type="text" id="vector-search" placeholder="Enter search query...">
+                        </div>
+                        <button class="btn btn-primary" onclick="searchVectors()">Search</button>
+                    </div>
+                </div>
+
+                <div class="log-container" id="vector-log">
+                    <div class="log-entry info">[INFO] Vector Store ready</div>
+                </div>
+            </div>
+
+            <!-- Export Section -->
+            <div id="export" class="section">
+                <h2>Distribution Package Creation</h2>
+
+                <!-- Version Status -->
+                <div class="status-card">
+                    <h4>Current Version</h4>
+                    <div class="value" id="current-version">None</div>
+                </div>
+
+                <div class="control-panel">
+                    <h3>Export Authentication</h3>
+                    <div class="form-group">
+                        <label>Private Key (PEM format)</label>
+                        <textarea id="private-key-input" rows="8" placeholder="-----BEGIN PRIVATE KEY-----
+...
+-----END PRIVATE KEY-----"></textarea>
+                        <small>Or upload file: <input type="file" id="private-key-file" accept=".pem,.key"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Public Key (PEM format)</label>
+                        <textarea id="public-key-input" rows="6" placeholder="-----BEGIN PUBLIC KEY-----
+...
+-----END PUBLIC KEY-----"></textarea>
+                        <small>This will be embedded in the package for future verification</small>
+                    </div>
+                    <button class="btn btn-small" onclick="validateKeys()">Validate Key Pair</button>
+                    <div id="key-validation-result"></div>
+                </div>
+
+                <div class="control-panel">
+                    <h3>Package Type</h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="radio" name="package-type" value="v001" checked>
+                            V001 - Genesis Package (Complete Platform)
+                        </label>
+                        <label>
+                            <input type="radio" name="package-type" value="incremental">
+                            Incremental Update (New data only)
+                        </label>
+                        <label>
+                            <input type="radio" name="package-type" value="full-data">
+                            Full Data Release (Complete dataset, maintains provenance)
+                        </label>
+                    </div>
+                    <div id="full-data-warning" style="display:none; color:#fbd38d;">
+                        ⚠️ Full data releases contain complete intelligence dataset but maintain provenance chain.
+                        Larger download but allows users to skip missed updates.
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <h3>Package Staging</h3>
+                    <div id="staging-files">
+                        <!-- List of files to be included -->
+                    </div>
+                    <button class="btn btn-primary" onclick="addFileToStaging()">Add File</button>
+                    <button class="btn btn-warning" onclick="clearStaging()">Clear Staging</button>
+                </div>
+
+                <div class="control-panel">
+                    <h3>Create Distribution Package</h3>
+                    <button class="btn btn-success" onclick="createPackage()">Create Package</button>
+                </div>
+
+                <div class="log-container" id="export-log">
+                    <div class="log-entry info">[INFO] Export system ready</div>
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // API configuration
+        const API_BASE = window.location.origin + '/api';
+        
+        // State
+        let taskInterval = null;
+        let statusInterval = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard initializing...');
+            refreshStatus();
+            startStatusPolling();
+            loadTemplates().catch(err => console.error('Initial template load failed:', err));
+            loadSources();
+            loadLLMModels();
+            loadLLMProvider();
+            loadPublicKey();
+
+            const targetSelect = document.getElementById('analysis-target');
+            if (targetSelect) {
+                targetSelect.addEventListener('change', function() {
+                    const dateGroup = document.getElementById('date-range-group');
+                    if (this.value === 'all') {
+                        dateGroup.style.display = 'block';
+                    } else {
+                        dateGroup.style.display = 'none';
+                    }
+                });
+                targetSelect.dispatchEvent(new Event('change'));
+            }
+        });
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+
+            // Auto-refresh sections when opened
+            if (sectionId === 'analysis') {
+                refreshReviewQueue();
+                loadTemplates();
+            } else if (sectionId === 'collector') {
+                loadSources();
+            } else if (sectionId === 'export') {
+                loadExportStatus();
+                loadStaging();
+            }
+        }
+
+        // API calls
+        async function apiCall(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    ...options
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API call failed:', error);
+                throw error;
+            }
+        }
+
+        // Status updates
+        async function refreshStatus() {
+            try {
+                const status = await apiCall('/status');
+                
+                // Update UI - check each element exists before setting
+                const updateElement = (id, value) => {
+                    const elem = document.getElementById(id);
+                    if (elem) elem.textContent = value;
+                };
+                
+                updateElement('total-documents', status.total_documents || 0);
+                updateElement('pending-analysis', status.pending_analysis || 0);
+                updateElement('analyzed-documents', status.analyzed_documents || 0);
+                updateElement('kg-nodes', status.graph_nodes || 0);
+                updateElement('kg-edges', status.graph_edges || 0);
+                updateElement('total-vectors', status.vector_count || 0);
+                updateElement('pending-review', status.pending_review || 0);
+                updateElement('review-queue-count', status.pending_review || 0);
+                updateElement('pending-analysis-2', status.pending_analysis || 0);
+                
+                // Update review badge
+                const reviewCount = status.pending_review || 0;
+                const badge = document.getElementById('review-count');
+                if (badge) {
+                    if (reviewCount > 0) {
+                        badge.textContent = reviewCount;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+                
+                // LLM status
+                const llmConnected = status.system?.llm_connected;
+                const llmStatusElem = document.getElementById('llm-status');
+                if (llmStatusElem) {
+                    llmStatusElem.textContent = llmConnected ? 'Connected' : 'Offline';
+                    llmStatusElem.style.color = llmConnected ? '#68d391' : '#fc8181';
+                }
+                
+                // Task status
+                const collectionStatusElem = document.getElementById('collection-status');
+                if (collectionStatusElem) {
+                    if (status.task_status?.running) {
+                        collectionStatusElem.textContent = 'Running';
+                        collectionStatusElem.parentElement.classList.add('pulsing');
+                        startTaskPolling();
+                    } else {
+                        collectionStatusElem.textContent = 'Idle';
+                        collectionStatusElem.parentElement.classList.remove('pulsing');
+                    }
+                }
+                
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to refresh status: ${error.message}`);
+            }
+        }
+
+        function startStatusPolling() {
+            statusInterval = setInterval(refreshStatus, 5000);
+        }
+
+        // Task monitoring
+        async function updateTaskStatus() {
+            try {
+                const taskStatus = await apiCall('/task-status');
+                
+                // Update progress bar
+                const progress = data.progress || 0;
+                document.getElementById('task-progress').style.width = progress + '%';
+                if (data.task === 'analysis') {
+                    document.getElementById('analysis-progress').style.width = progress + '%';
+                }
+                
+                // Update logs
+                if (taskStatus.messages && taskStatus.messages.length > 0) {
+                    const logContainer = document.getElementById('task-log');
+                    const analyzerContainer = document.getElementById('analyzer-log');
+                    logContainer.innerHTML = '';
+                    if (taskStatus.task === 'analysis') {
+                        analyzerContainer.innerHTML = '';
+                    }
+
+                    taskStatus.messages.forEach(msg => {
+                        const entry = document.createElement('div');
+                        entry.className = `log-entry ${msg.level}`;
+                        entry.textContent = `[${msg.time}] ${msg.message}`;
+                        logContainer.appendChild(entry);
+                        if (taskStatus.task === 'analysis') {
+                            const clone = entry.cloneNode(true);
+                            analyzerContainer.appendChild(clone);
+                        }
+                    });
+
+                    logContainer.scrollTop = logContainer.scrollHeight;
+                    if (taskStatus.task === 'analysis') {
+                        analyzerContainer.scrollTop = analyzerContainer.scrollHeight;
+                    }
+                }
+                
+                // Stop polling if task is done
+                if (!taskStatus.running && taskInterval) {
+                    clearInterval(taskInterval);
+                    taskInterval = null;
+                    refreshStatus();
+                    if (taskStatus.task === 'analysis') {
+                        refreshReviewQueue();
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Failed to update task status:', error);
+            }
+        }
+
+        function startTaskPolling() {
+            if (!taskInterval) {
+                updateTaskStatus();
+                taskInterval = setInterval(updateTaskStatus, 1000);
+            }
+        }
+
+        // Collection functions
+        async function startCollection() {
+            const mode = document.getElementById('collection-mode').value;
+            
+            try {
+                await apiCall('/collect', {
+                    method: 'POST',
+                    body: JSON.stringify({ mode })
+                });
+                
+                logMessage('task-log', 'info', 'Collection started');
+                startTaskPolling();
+                
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to start collection: ${error.message}`);
+            }
+        }
+
+        async function stopCollection() {
+            try {
+                await apiCall('/collect/stop', { method: 'POST' });
+                logMessage('task-log', 'info', 'Collection stop requested');
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to stop collection: ${error.message}`);
+            }
+        }
+
+        // Analysis functions
+        async function startAnalysis() {
+            const maxArticles = parseInt(document.getElementById('max-analyze').value);
+            const target = document.getElementById('analysis-target').value;
+            const sinceDateElem = document.getElementById('since-date');
+            const sinceDate = (target === 'all' && sinceDateElem) ? sinceDateElem.value : null;
+
+            const selected = document.querySelectorAll('.template-checkbox:checked');
+            const templates = Array.from(selected).map(cb => cb.value);
+
+            if (templates.length === 0) {
+                alert('Please select at least one template');
+                return;
+            }
+
+            try {
+                await apiCall('/analyze', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        max_articles: maxArticles,
+                        templates: templates,
+                        target: target,
+                        since_date: sinceDate
+                    })
+                });
+
+                logMessage('analyzer-log', 'info', `Analysis started (${templates.length} templates, target: ${target})`);
+                startTaskPolling();
+
+            } catch (error) {
+                logMessage('analyzer-log', 'error', `Failed to start analysis: ${error.message}`);
+            }
+        }
+
+        // Template functions
+        async function loadTemplates() {
+            try {
+                const templatesData = await apiCall('/templates');
+                const templates = [
+                    ...(templatesData.approved || []),
+                    ...(templatesData.unapproved || [])
+                ];
+                
+                // Update template selectors
+                const selectors = [
+                    'analysis-template',
+                    'validate-template-select',
+                    'test-template-select'
+                ];
+                
+                selectors.forEach(id => {
+                    const select = document.getElementById(id);
+                    if (select) {
+                        select.innerHTML = '';
+                        templates.forEach(template => {
+                            const option = document.createElement('option');
+                            option.value = template.filename;
+                            option.textContent = `${template.name} (${template.status})`;
+                            select.appendChild(option);
+                        });
+                    }
+                });
+
+                // Populate template checkboxes
+                const approvedDiv = document.getElementById('approved-templates');
+                const unapprovedDiv = document.getElementById('unapproved-templates');
+                if (approvedDiv) approvedDiv.innerHTML = '';
+                if (unapprovedDiv) unapprovedDiv.innerHTML = '';
+
+                (templatesData.approved || []).forEach(t => {
+                    if (approvedDiv) {
+                        const label = document.createElement('label');
+                        label.style.display = 'block';
+                        const cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.className = 'template-checkbox';
+                        cb.value = t.filename;
+                        label.appendChild(cb);
+                        label.appendChild(document.createTextNode(' ' + t.name));
+                        approvedDiv.appendChild(label);
+                    }
+                });
+
+                (templatesData.unapproved || []).forEach(t => {
+                    if (unapprovedDiv) {
+                        const label = document.createElement('label');
+                        label.style.display = 'block';
+                        const cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.className = 'template-checkbox';
+                        cb.value = t.filename;
+                        label.appendChild(cb);
+                        label.appendChild(document.createTextNode(' ' + t.name));
+                        unapprovedDiv.appendChild(label);
+                    }
+                });
+                
+                // Update templates list
+                const list = document.getElementById('templates-list');
+                list.innerHTML = '';
+                
+                templates.forEach(template => {
+                    const item = document.createElement('div');
+                    item.className = 'template-item';
+                    item.style.marginBottom = '1rem';
+                    item.innerHTML = `
+                        <div class="template-badge ${template.status.toLowerCase()}">${template.status}</div>
+                        <strong>${template.filename}</strong>
+                        <p>${template.description || 'No description'}</p>
+                        <small>Version: ${template.version || 'N/A'} | Rounds: ${template.rounds}</small>
+                    `;
+                    list.appendChild(item);
+                });
+                
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to load templates: ${error.message}`);
+            }
+        }
+
+        async function refreshTemplates() {
+            await loadTemplates();
+            logMessage('task-log', 'success', 'Templates refreshed');
+        }
+
+        async function validateSelectedTemplates() {
+            const selected = document.querySelectorAll('.template-checkbox:checked');
+            if (selected.length === 0) {
+                alert('Please select at least one template');
+                return;
+            }
+
+            for (const cb of selected) {
+                try {
+                    const result = await apiCall('/validate-template', {
+                        method: 'POST',
+                        body: JSON.stringify({ template: cb.value })
+                    });
+                    logMessage('analyzer-log', result.valid ? 'success' : 'warning', `${cb.value}: ${result.valid ? 'Valid' : 'Issues found'}`);
+                } catch (error) {
+                    logMessage('analyzer-log', 'error', `Validation failed for ${cb.value}: ${error.message}`);
+                }
+            }
+        }
+
+        async function validateTemplate() {
+            const template = document.getElementById('validate-template-select').value;
+            const resultsDiv = document.getElementById('validation-results');
+            
+            try {
+                const result = await apiCall('/validate-template', {
+                    method: 'POST',
+                    body: JSON.stringify({ template })
+                });
+                
+                resultsDiv.innerHTML = `
+                    <h4>Validation Results</h4>
+                    <p><strong>Valid:</strong> ${result.valid ? '✅ Yes' : '❌ No'}</p>
+                    ${result.issues.length > 0 ? `
+                        <p><strong>Issues:</strong></p>
+                        <ul>
+                            ${result.issues.map(issue => `<li>${issue}</li>`).join('')}
+                        </ul>
+                    ` : '<p>No issues found!</p>'}
+                `;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<p class="error">Validation failed: ${error.message}</p>`;
+            }
+        }
+
+        async function testTemplate() {
+            const template = document.getElementById('test-template-select').value;
+            const url = document.getElementById('test-article-url').value;
+            const content = document.getElementById('test-article-content').value;
+            const resultsDiv = document.getElementById('test-results');
+            
+            if (!url && !content) {
+                alert('Please provide either a URL or article content');
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<p>Running template test...</p>';
+            
+            try {
+                const result = await apiCall('/template/test', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        template,
+                        article_url: url,
+                        article_content: content
+                    })
+                });
+                
+                // Display results
+                resultsDiv.innerHTML = '<h4>Test Results</h4>';
+                
+                // Show rounds
+                if (result.rounds) {
+                    Object.entries(result.rounds).forEach(([roundName, roundData]) => {
+                        const roundDiv = document.createElement('div');
+                        roundDiv.className = 'round-result';
+                        
+                        // Try to parse JSON from response
+                        let jsonValid = false;
+                        let jsonData = null;
+                        
+                        try {
+                            // Extract JSON from response
+                            const response = roundData.response || '';
+                            const jsonMatch = response.match(/(\[[\s\S]*\]|\{[\s\S]*\})/);
+                            if (jsonMatch) {
+                                jsonData = JSON.parse(jsonMatch[0]);
+                                jsonValid = true;
+                            }
+                        } catch (e) {
+                            // JSON parsing failed
+                        }
+                        
+                        roundDiv.innerHTML = `
+                            <div class="round-header">
+                                <span class="round-name">${roundName}</span>
+                                <span class="validation-icon ${jsonValid ? 'valid' : 'invalid'}">
+                                    ${jsonValid ? '✅' : '❌'}
+                                </span>
+                            </div>
+                            <div class="json-viewer ${jsonValid ? 'json-valid' : 'json-invalid'}">
+                                ${jsonValid 
+                                    ? `<pre>${JSON.stringify(jsonData, null, 2)}</pre>`
+                                    : `<p>Invalid JSON output</p><pre>${roundData.response?.substring(0, 500)}...</pre>`
+                                }
+                            </div>
+                        `;
+                        
+                        resultsDiv.appendChild(roundDiv);
+                    });
+                }
+                
+                // Show validation status
+                if (result.validation) {
+                    const valDiv = document.createElement('div');
+                    valDiv.innerHTML = `
+                        <h4>Validation Status</h4>
+                        <p><strong>Status:</strong> <span class="status-badge ${result.validation.status.toLowerCase()}">${result.validation.status}</span></p>
+                        <p><strong>Reason:</strong> ${result.validation.reason}</p>
+                    `;
+                    resultsDiv.appendChild(valDiv);
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<p class="error">Test failed: ${error.message}</p>`;
+            }
+        }
+
+
+        async function viewFullAnalysis(id) {
+            try {
+                const analysis = await apiCall(`/analysis/${id}`);
+                
+                // Create a new window/modal to show full analysis
+                const modal = window.open('', 'Analysis', 'width=800,height=600');
+                modal.document.write(`
+                    <html>
+                    <head>
+                        <title>Analysis: ${analysis.article?.title || 'Unknown'}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            pre { background: #f5f5f5; padding: 10px; overflow: auto; }
+                            h3 { color: #333; margin-top: 20px; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>${analysis.article?.title || 'Analysis Result'}</h1>
+                        <p><strong>Source:</strong> ${analysis.article?.source || 'Unknown'}</p>
+                        <p><strong>Template:</strong> ${analysis.template_info?.name || 'Unknown'}</p>
+                        <p><strong>Timestamp:</strong> ${analysis.timestamp}</p>
+                        
+                        <h3>Validation</h3>
+                        <pre>${JSON.stringify(analysis.validation, null, 2)}</pre>
+                        
+                        <h3>Analysis Results</h3>
+                        ${Object.entries(analysis.rounds || {}).map(([name, data]) => `
+                            <h4>${name}</h4>
+                            <pre>${JSON.stringify(data.processed_data || data.response, null, 2)}</pre>
+                        `).join('')}
+
+                        <h3>Prompt & Responses</h3>
+                        ${(analysis.prompt_chain || []).map(p => `
+                            <h4>Round ${p.round}: ${p.name}</h4>
+                            <pre><strong>Prompt:</strong>\n${p.prompt}</pre>
+                            <pre><strong>Response:</strong>\n${p.response}</pre>
+                        `).join('')}
+
+                        <h3>Knowledge Graph Payload</h3>
+                        <pre>${JSON.stringify(analysis.kg_payload, null, 2)}</pre>
+                    </body>
+                    </html>
+                `);
+                
+            } catch (error) {
+                alert(`Failed to load analysis: ${error.message}`);
+            }
+        }
+
+        // Review Queue functions
+        async function refreshReviewQueue() {
+            try {
+                const queue = await apiCall('/review-queue');
+                const container = document.getElementById('review-queue-container');
+                const templateList = document.getElementById('review-template-list');
+                if (templateList) templateList.innerHTML = '';
+
+                if (queue.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>No items in review queue</h3>
+                            <p>Run analysis with a TESTING template to generate items for review</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Populate template checkboxes from queue
+                const templateSet = new Set(queue.map(q => q.template_name));
+                templateSet.forEach(name => {
+                    if (!templateList) return;
+                    const label = document.createElement('label');
+                    label.style.marginRight = '0.5rem';
+                    const cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.className = 'review-template';
+                    cb.value = name;
+                    label.appendChild(cb);
+                    label.appendChild(document.createTextNode(' ' + name));
+                    templateList.appendChild(label);
+                });
+
+                container.innerHTML = '';
+                queue.forEach((item, index) => {
+                    const reviewItem = createReviewItem(item, index);
+                    container.appendChild(reviewItem);
+                });
+                
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to refresh review queue: ${error.message}`);
+            }
+        }
+
+        function createReviewItem(item, index) {
+            const div = document.createElement('div');
+            div.className = 'analysis-item';
+            div.innerHTML = `
+                <div class="analysis-header">
+                    <input type="checkbox" class="review-select" data-id="${item.id}" style="margin-right:0.5rem;">
+                    <div>
+                        <strong>${item.article.title}</strong>
+                        <div style="margin-top: 0.5rem;">
+                            <span class="template-badge ${item.template_status.toLowerCase()}">${item.template_name}</span>
+                            <span class="status-badge ${item.validation_status.toLowerCase()}">${item.validation_status}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <small>${item.article.source} • ${new Date(item.timestamp).toLocaleString()}</small>
+                    </div>
+                </div>
+                <div class="analysis-details">
+                    <p><strong>Validation Reason:</strong> ${item.validation_reason}</p>
+                    <p><strong>Manipulation Score:</strong> ${item.manipulation_score || 'N/A'}/10</p>
+                    <p><strong>Concern Level:</strong> ${item.concern_level || 'N/A'}</p>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-primary btn-small" onclick="viewFullAnalysis('${item.id}')">View Full</button>
+                    </div>
+                </div>
+            `;
+            return div;
+        }
+
+        async function approveTemplate(templateName) {
+            // Find the template filename from the loaded templates
+            try {
+                const templates = await apiCall('/templates');
+                const allTemplates = [...(templates.approved || []), ...(templates.unapproved || [])];
+                const template = allTemplates.find(t => t.name === templateName);
+                
+                if (!template) {
+                    alert('Template not found');
+                    return;
+                }
+                
+                await apiCall('/template/approve', {
+                    method: 'POST',
+                    body: JSON.stringify({ template: template.filename })
+                });
+                
+                logMessage('task-log', 'success', `Template approved: ${templateName}`);
+                await loadTemplates(); // Reload templates
+                await refreshReviewQueue(); // Refresh review queue
+
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to approve template: ${error.message}`);
+            }
+        }
+
+        async function rejectTemplate(templateName) {
+            try {
+                const templates = await apiCall('/templates');
+                const allTemplates = [...(templates.approved || []), ...(templates.unapproved || [])];
+                const template = allTemplates.find(t => t.name === templateName);
+
+                if (!template) {
+                    alert('Template not found');
+                    return;
+                }
+
+                await apiCall('/template/reject', {
+                    method: 'POST',
+                    body: JSON.stringify({ template: template.filename })
+                });
+
+                logMessage('task-log', 'warning', `Template rejected: ${templateName}`);
+                await loadTemplates();
+                await refreshReviewQueue();
+
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to reject template: ${error.message}`);
+            }
+        }
+
+        async function approveAnalysis(id) {
+            try {
+                await apiCall('/review-queue/approve', {
+                    method: 'POST',
+                    body: JSON.stringify({ analysis_id: id })
+                });
+                
+                logMessage('task-log', 'success', `Approved analysis: ${id}`);
+                refreshReviewQueue();
+                refreshStatus();
+                
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to approve: ${error.message}`);
+            }
+        }
+
+        async function rejectAnalysis(id) {
+            try {
+                await apiCall('/review-queue/reject', {
+                    method: 'POST',
+                    body: JSON.stringify({ analysis_id: id })
+                });
+                
+                logMessage('task-log', 'warning', `Rejected analysis: ${id}`);
+                refreshReviewQueue();
+                refreshStatus();
+                
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to reject: ${error.message}`);
+            }
+        }
+
+
+        async function approveSelectedTemplates() {
+            const selected = document.querySelectorAll('.review-template:checked');
+            if (selected.length === 0) {
+                alert('Please select at least one template');
+                return;
+            }
+            for (const cb of selected) {
+                await approveTemplate(cb.value);
+            }
+            await refreshReviewQueue();
+            await loadTemplates();
+            refreshStatus();
+        }
+
+        async function rejectSelectedTemplates() {
+            const selected = document.querySelectorAll('.review-template:checked');
+            if (selected.length === 0) {
+                alert('Please select at least one template');
+                return;
+            }
+            for (const cb of selected) {
+                await rejectTemplate(cb.value);
+            }
+            await refreshReviewQueue();
+            await loadTemplates();
+            refreshStatus();
+        }
+
+        // LLM functions
+        async function saveAPIKey() {
+            const key = document.getElementById('anthropic-key').value.trim();
+            if (!key) return;
+            try {
+                await apiCall('/config', {
+                    method: 'POST',
+                    body: JSON.stringify({ llm_provider: { type: 'anthropic', model: 'claude-3-haiku-20240307', api_key: key } })
+                });
+                logMessage('task-log', 'success', 'API key saved');
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to save key: ${error.message}`);
+            }
+        }
+
+        async function loadLLMProvider() {
+            try {
+                const cfg = await apiCall('/config');
+                const provider = cfg.llm_provider?.type || 'lm_studio';
+                document.getElementById('llm-provider').value = provider;
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to load provider: ${error.message}`);
+            }
+        }
+
+        async function saveLLMProvider() {
+            const provider = document.getElementById('llm-provider').value;
+            try {
+                await apiCall('/config', {
+                    method: 'POST',
+                    body: JSON.stringify({ llm_provider: { type: provider } })
+                });
+                logMessage('task-log', 'success', `Provider set to ${provider}`);
+                loadLLMModels();
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to set provider: ${error.message}`);
+            }
+        }
+
+        async function loadLLMModels() {
+            try {
+                const models = await apiCall('/llm-models');
+                const select = document.getElementById('llm-model');
+                select.innerHTML = '';
+                models.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m;
+                    opt.textContent = m;
+                    select.appendChild(opt);
+                });
+
+                const cfg = await apiCall('/config');
+                const current = cfg.llm_provider?.model;
+                if (current) select.value = current;
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to load models: ${error.message}`);
+            }
+        }
+
+        async function saveLLMModel() {
+            const model = document.getElementById('llm-model').value;
+            try {
+                await apiCall('/config', {
+                    method: 'POST',
+                    body: JSON.stringify({ llm_provider: { model } })
+                });
+                logMessage('task-log', 'success', `Model set to ${model}`);
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to set model: ${error.message}`);
+            }
+        }
+
+        async function loadPublicKey() {
+            try {
+                const result = await apiCall('/public-key');
+                document.getElementById('public-key').value = result.public_key || '';
+            } catch (error) {
+                logMessage('export-log', 'error', `Failed to load key: ${error.message}`);
+            }
+        }
+
+        async function loadSources() {
+            try {
+                const sources = await apiCall('/sources');
+                const container = document.getElementById('sources-list');
+                container.innerHTML = '';
+                sources.forEach(src => {
+                    const div = document.createElement('div');
+                    div.className = 'form-group';
+                    div.textContent = `${src.name} (limit: ${src.limit || 50})`;
+                    container.appendChild(div);
+                });
+                const cfg = await apiCall('/config');
+                document.getElementById('global-limit').value = cfg.content_collection?.article_limit || 50;
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to load sources: ${error.message}`);
+            }
+        }
+
+        async function setGlobalLimit() {
+            const limit = document.getElementById('global-limit').value;
+            if (!limit) return;
+            try {
+                await apiCall('/sources/set-limit', {
+                    method: 'POST',
+                    body: JSON.stringify({ limit: parseInt(limit) })
+                });
+                logMessage('task-log', 'success', `Set article limit to ${limit}`);
+                loadSources();
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to set limit: ${error.message}`);
+            }
+        }
+
+        // Knowledge Graph functions
+        async function buildKnowledgeGraph() {
+            try {
+                await apiCall('/build-kg', { method: 'POST' });
+                logMessage('kg-log', 'info', 'Building knowledge graph');
+                startTaskPolling();
+            } catch (error) {
+                logMessage('kg-log', 'error', `Failed to build graph: ${error.message}`);
+            }
+        }
+
+        async function syncVectors() {
+            try {
+                await apiCall('/sync-vectors', { method: 'POST' });
+                logMessage('vector-log', 'info', 'Synchronizing vectors');
+                startTaskPolling();
+            } catch (error) {
+                logMessage('vector-log', 'error', `Failed to sync vectors: ${error.message}`);
+            }
+        }
+
+        // Full pipeline
+        async function runFullPipeline() {
+            try {
+                await apiCall('/pipeline', { method: 'POST' });
+                logMessage('task-log', 'info', 'Full pipeline started');
+                startTaskPolling();
+            } catch (error) {
+                logMessage('task-log', 'error', `Failed to start pipeline: ${error.message}`);
+            }
+        }
+
+        // LLM test
+        async function testLLMConnection() {
+            try {
+                const result = await apiCall('/test-llm', { method: 'POST' });
+                logMessage('task-log', 'success', `LLM test: ${result.response || 'Connected'}`);
+            } catch (error) {
+                logMessage('task-log', 'error', `LLM test failed: ${error.message}`);
+            }
+        }
+
+        // Vector search
+        async function searchVectors() {
+            const query = document.getElementById('vector-search').value;
+            
+            if (!query) {
+                alert('Please enter a search query');
+                return;
+            }
+            
+            try {
+                const results = await apiCall('/search', {
+                    method: 'POST',
+                    body: JSON.stringify({ query, limit: 10 })
+                });
+                
+                logMessage('vector-log', 'success', `Found ${results.length} results`);
+                
+                // Display results
+                results.forEach(result => {
+                    logMessage('vector-log', 'info', `${result.name} (score: ${result.score.toFixed(3)})`);
+                });
+                
+            } catch (error) {
+                logMessage('vector-log', 'error', `Search failed: ${error.message}`);
+            }
+        }
+
+        async function savePublicKey() {
+            const key = document.getElementById('public-key').value;
+            try {
+                await apiCall('/public-key', {
+                    method: 'POST',
+                    body: JSON.stringify({ public_key: key })
+                });
+                logMessage('export-log', 'success', 'Public key saved');
+            } catch (error) {
+                logMessage('export-log', 'error', `Failed to save key: ${error.message}`);
+            }
+        }
+
+        async function exportPackage() {
+            const filename = document.getElementById('export-filename').value.trim();
+            try {
+                const result = await apiCall('/export', {
+                    method: 'POST',
+                    body: JSON.stringify({ filename })
+                });
+                logMessage('export-log', 'success', `Exported: ${result.path}`);
+            } catch (error) {
+                logMessage('export-log', 'error', `Export failed: ${error.message}`);
+            }
+        }
+
+        async function loadExportStatus() {
+            try {
+                const status = await apiCall('/export/status');
+                document.getElementById('current-version').textContent = status.current_version || 'None';
+            } catch (error) {
+                logMessage('export-log', 'error', `Status error: ${error.message}`);
+            }
+        }
+
+        async function loadStaging() {
+            try {
+                const data = await apiCall('/export/staging');
+                const container = document.getElementById('staging-files');
+                container.innerHTML = '';
+                (data.files || []).forEach(file => {
+                    const div = document.createElement('div');
+                    div.textContent = file;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                logMessage('export-log', 'error', `Load staging failed: ${error.message}`);
+            }
+        }
+
+        async function addFileToStaging() {
+            const file = prompt('Enter file path to stage:');
+            if (!file) return;
+            try {
+                await apiCall('/export/staging/add', {
+                    method: 'POST',
+                    body: JSON.stringify({ file })
+                });
+                loadStaging();
+            } catch (error) {
+                logMessage('export-log', 'error', `Add file failed: ${error.message}`);
+            }
+        }
+
+        async function clearStaging() {
+            try {
+                await apiCall('/export/staging/remove', { method: 'POST', body: JSON.stringify({ clear: true }) });
+                loadStaging();
+            } catch (error) {
+                logMessage('export-log', 'error', `Clear staging failed: ${error.message}`);
+            }
+        }
+
+        async function validateKeys() {
+            const privateKey = document.getElementById('private-key-input').value;
+            const publicKey = document.getElementById('public-key-input').value;
+
+            if (!privateKey || !publicKey) {
+                alert('Please provide both private and public keys');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/export/validate-keys', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ private_key: privateKey, public_key: publicKey })
+                });
+
+                const result = await response.json();
+                const resultDiv = document.getElementById('key-validation-result');
+
+                if (result.valid) {
+                    resultDiv.innerHTML = '<span style="color:#68d391;">✅ Key pair valid</span>';
+                } else {
+                    resultDiv.innerHTML = `<span style="color:#fc8181;">❌ ${result.message}</span>`;
+                }
+            } catch (error) {
+                document.getElementById('key-validation-result').innerHTML = `<span style="color:#fc8181;">❌ Validation error: ${error.message}</span>`;
+            }
+        }
+
+        document.querySelectorAll('input[name="package-type"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const warning = document.getElementById('full-data-warning');
+                if (this.value === 'full-data') {
+                    warning.style.display = 'block';
+                } else {
+                    warning.style.display = 'none';
+                }
+            });
+        });
+
+        async function getStagingFiles() {
+            const data = await apiCall('/export/staging');
+            return data.files || [];
+        }
+
+        async function createPackage() {
+            const packageType = document.querySelector('input[name="package-type"]:checked').value;
+            const privateKey = document.getElementById('private-key-input').value;
+            const publicKey = document.getElementById('public-key-input').value;
+
+            if (!privateKey || !publicKey) {
+                alert('Please provide both private and public keys');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/export/create-package', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        package_type: packageType,
+                        private_key: privateKey,
+                        public_key: publicKey,
+                        staging_files: await getStagingFiles()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    logMessage('export-log', 'success', `Package created: ${result.version} at ${result.package_path}`);
+                } else {
+                    logMessage('export-log', 'error', `Package creation failed: ${result.error}`);
+                }
+            } catch (error) {
+                logMessage('export-log', 'error', `Export error: ${error.message}`);
+            }
+        }
+
+        // Utility functions
+        function logMessage(containerId, level, message) {
+            const container = document.getElementById(containerId);
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${level}`;
+            entry.textContent = `[${timestamp}] ${message}`;
+            
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+            
+            // Keep only last 50 entries
+            while (container.children.length > 50) {
+                container.removeChild(container.firstChild);
+            }
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (statusInterval) clearInterval(statusInterval);
+            if (taskInterval) clearInterval(taskInterval);
+        });
+    </script>
+</body>
+</html>
