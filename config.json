@@ -1,6 +1,6 @@
 {
   "content_collection": {
-    "article_limit": 5,
+    "article_limit": 50,
     "sources": [
       {
         "url": "https://rss.app/feeds/8ZLRA1MIdInNK9TW.xml",
@@ -9,7 +9,7 @@
         "name": "AP News Politics",
         "site_domain": "apnews.com",
         "enabled": true,
-        "limit": 5
+        "limit": 50
       },
       {
         "url": "https://feeds.npr.org/1004/rss.xml",
@@ -18,7 +18,7 @@
         "name": "NPR Politics",
         "site_domain": "npr.org",
         "enabled": true,
-        "limit": 5
+        "limit": 50
       },
       {
         "url": "https://www.politico.com/rss/politicopicks.xml",
@@ -27,7 +27,7 @@
         "name": "Politico Top Picks",
         "site_domain": "politico.com",
         "enabled": true,
-        "limit": 5
+        "limit": 50
       },
       {
         "url": "https://thehill.com/feed/",
@@ -36,7 +36,7 @@
         "name": "The Hill",
         "site_domain": "thehill.com",
         "enabled": true,
-        "limit": 5
+        "limit": 50
       },
       {
         "url": "https://www.reuters.com/world/us/rss",
@@ -45,7 +45,7 @@
         "name": "Reuters US",
         "site_domain": "reuters.com",
         "enabled": true,
-        "limit": 5
+        "limit": 50
       },
       {
         "url": "https://www.propublica.org/feeds/propublica/main",
@@ -54,7 +54,7 @@
         "name": "ProPublica",
         "site_domain": "propublica.org",
         "enabled": true,
-        "limit": 5
+        "limit": 50
       },
       {
         "url": "https://www.democracynow.org/democracynow.rss",
@@ -63,7 +63,7 @@
         "name": "Democracy Now",
         "site_domain": "democracynow.org",
         "enabled": true,
-        "limit": 5
+        "limit": 50
       },
       {
         "url": "https://reason.com/feed/",
@@ -72,7 +72,7 @@
         "name": "Reason Magazine",
         "site_domain": "reason.com",
         "enabled": true,
-        "limit": 5
+        "limit": 50
       },
       {
         "url": "https://www.whitehouse.gov/briefing-room/statements-releases/feed/",
@@ -81,7 +81,7 @@
         "name": "White House Press Releases",
         "site_domain": "whitehouse.gov",
         "enabled": true,
-        "limit": 5
+        "limit": 50
       },
       {
         "url": "https://www.supremecourt.gov/rss/opinions.xml",
@@ -90,7 +90,7 @@
         "name": "Supreme Court Opinions",
         "site_domain": "supremecourt.gov",
         "enabled": true,
-        "limit": 5
+        "limit": 50
       },
       {
         "url": "https://www.justice.gov/feeds/press_releases/rss.xml",
@@ -99,7 +99,197 @@
         "name": "DOJ Press Releases",
         "site_domain": "justice.gov",
         "enabled": true,
-        "limit": 5
+        "limit": 50
+      },
+      {
+        "url": "https://www.cnn.com/politics",
+        "type": "archive",
+        "bias": "center-left",
+        "name": "CNN Politics (Archive)",
+        "archive_url": "https://www.cnn.com/politics",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.foxnews.com/politics",
+        "type": "archive",
+        "bias": "right",
+        "name": "Fox News Politics (Archive)",
+        "archive_url": "https://www.foxnews.com/politics",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.washingtonpost.com/sitemap/politics/",
+        "type": "sitemap",
+        "bias": "center-left",
+        "name": "Washington Post Politics",
+        "sitemap_url": "https://www.washingtonpost.com/sitemap-index.xml",
+        "enabled": true,
+        "limit": 50
+      },
+      {
+        "url": "https://www.nytimes.com/sitemaps/sitemap_news.xml.gz",
+        "type": "sitemap",
+        "bias": "center-left",
+        "name": "New York Times",
+        "enabled": true,
+        "limit": 50
+      },
+      {
+        "url": "https://www.theguardian.com/us-news/rss",
+        "type": "rss",
+        "bias": "center-left",
+        "name": "The Guardian US",
+        "enabled": true,
+        "limit": 50
+      },
+      {
+        "url": "https://www.wsj.com/xml/rss/3_7085.xml",
+        "type": "rss",
+        "bias": "center-right",
+        "name": "Wall Street Journal Politics",
+        "enabled": true,
+        "limit": 50
+      },
+      {
+        "url": "https://www.axios.com/feeds/politics.xml",
+        "type": "rss",
+        "bias": "center",
+        "name": "Axios Politics",
+        "enabled": true,
+        "limit": 50
+      },
+      {
+        "url": "https://www.vox.com/rss/policy-and-politics/index.xml",
+        "type": "rss",
+        "bias": "center-left",
+        "name": "Vox Policy & Politics",
+        "enabled": true,
+        "limit": 50
+      },
+      {
+        "url": "https://www.buzzfeednews.com/section/politics.xml",
+        "type": "rss",
+        "bias": "center-left",
+        "name": "BuzzFeed News Politics",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.nbcnews.com/politics",
+        "type": "archive",
+        "bias": "center-left",
+        "name": "NBC News Politics (Archive)",
+        "archive_url": "https://www.nbcnews.com/politics",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://abcnews.go.com/Politics",
+        "type": "archive",
+        "bias": "center",
+        "name": "ABC News Politics (Archive)",
+        "archive_url": "https://abcnews.go.com/Politics",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.cbsnews.com/politics/",
+        "type": "archive",
+        "bias": "center",
+        "name": "CBS News Politics (Archive)",
+        "archive_url": "https://www.cbsnews.com/politics/",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.uscourts.gov/news/rss/all",
+        "type": "rss",
+        "bias": "official",
+        "name": "US Courts News",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.congress.gov/rss/most-viewed-bills.xml",
+        "type": "rss",
+        "bias": "official",
+        "name": "Congress Most Viewed Bills",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.state.gov/rss-feed/",
+        "type": "rss",
+        "bias": "official",
+        "name": "State Department",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.defense.gov/DesktopModules/ArticleCS/RSS.ashx?max=10&ContentType=1&Site=945",
+        "type": "rss",
+        "bias": "official",
+        "name": "Department of Defense",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.dhs.gov/news_and_updates/rss.xml",
+        "type": "rss",
+        "bias": "official",
+        "name": "Homeland Security",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://theintercept.com/feed/?lang=en",
+        "type": "rss",
+        "bias": "left",
+        "name": "The Intercept",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.motherjones.com/politics/feed/",
+        "type": "rss",
+        "bias": "left",
+        "name": "Mother Jones Politics",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.breitbart.com/politics/feed/",
+        "type": "rss",
+        "bias": "right",
+        "name": "Breitbart Politics",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.nationalreview.com/feed/",
+        "type": "rss",
+        "bias": "right",
+        "name": "National Review",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://fivethirtyeight.com/politics/feed/",
+        "type": "rss",
+        "bias": "center",
+        "name": "FiveThirtyEight Politics",
+        "enabled": true,
+        "limit": 30
+      },
+      {
+        "url": "https://www.realclearpolitics.com/index.xml",
+        "type": "rss",
+        "bias": "center-right",
+        "name": "RealClearPolitics",
+        "enabled": true,
+        "limit": 30
       }
     ],
     "govt_keywords": [
@@ -116,7 +306,90 @@
       "election",
       "democracy",
       "biden",
-      "trump"
+      "trump",
+      "policy",
+      "legislation",
+      "judiciary",
+      "department",
+      "agency",
+      "regulation",
+      "constitutional",
+      "vote",
+      "campaign",
+      "executive",
+      "legislative",
+      "judicial",
+      "cabinet",
+      "committee",
+      "investigation",
+      "impeachment",
+      "filibuster",
+      "nomination",
+      "confirmation",
+      "veto",
+      "executive action",
+      "federal judge",
+      "attorney general",
+      "secretary of state",
+      "national security",
+      "homeland security",
+      "state department",
+      "justice department",
+      "pentagon",
+      "intelligence",
+      "fbi",
+      "cia",
+      "nsa",
+      "oversight",
+      "accountability",
+      "transparency",
+      "freedom",
+      "rights",
+      "civil liberties",
+      "constitution",
+      "amendment",
+      "bill of rights",
+      "checks and balances",
+      "separation of powers",
+      "rule of law",
+      "due process",
+      "equal protection",
+      "voting rights",
+      "gerrymandering",
+      "redistricting",
+      "election integrity",
+      "voter suppression",
+      "disinformation",
+      "misinformation",
+      "propaganda",
+      "censorship",
+      "free speech",
+      "free press",
+      "authoritarian",
+      "autocracy",
+      "oligarchy",
+      "corruption",
+      "abuse of power",
+      "constitutional crisis",
+      "democratic norms",
+      "peaceful transfer",
+      "coup",
+      "insurrection",
+      "sedition",
+      "martial law",
+      "emergency powers",
+      "executive privilege",
+      "immunity",
+      "pardon",
+      "clemency",
+      "special counsel",
+      "independent counsel",
+      "whistleblower",
+      "leak",
+      "classified",
+      "declassified",
+      "national emergency",
+      "state of emergency"
     ],
     "request_timeout": 45,
     "delay_between_requests": 2.0
