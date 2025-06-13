@@ -62,11 +62,11 @@ class LMStudioProvider:
                     return {"error": "No model selected and no models available"}
 
             payload = {
+                "model": self.model,  # IMPORTANT: model must be first in the payload for LM Studio
                 "prompt": prompt,
                 "max_tokens": max_tokens,
                 "temperature": temperature,
-                "stream": bool(stream),
-                "model": self.model  # Always include model
+                "stream": bool(stream)
             }
 
             self.logger.debug(f"Sending request to LM Studio with model: {self.model}")
