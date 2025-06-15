@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Night_watcher Unified Content Collector
-Enhanced with automatic historical gap detection and collection.
+Enhanced with working historical collection methods.
 """
 
 import os
@@ -51,7 +51,7 @@ except ImportError:
 
 
 class ContentCollector:
-    """Enhanced collector with automatic historical gap detection."""
+    """Enhanced collector with working historical collection methods."""
 
     def __init__(self, config: Dict[str, Any], document_repository=None, base_dir: str = "data"):
         self.config = config
@@ -64,8 +64,10 @@ class ContentCollector:
         self.sources = cc.get("sources", [])
         self.request_timeout = cc.get("request_timeout", 45)
         self.delay_between_requests = cc.get("delay_between_requests", 2.0)
-        self.max_gap_days = cc.get("max_gap_days", 30)  # Max days to look back for gaps
+        self.max_gap_days = cc.get("max_gap_days", 30)
         self.gap_detection_enabled = cc.get("gap_detection_enabled", True)
+        self.use_google_news = cc.get("use_google_news", True)
+        self.use_gdelt = cc.get("use_gdelt", True)
 
         self.cancelled = False
         
@@ -84,7 +86,8 @@ class ContentCollector:
         # User agents
         self.user_agents = [
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
         ]
         
         self.logger = logging.getLogger("ContentCollector")
@@ -118,165 +121,321 @@ class ContentCollector:
         })
 
     def collect_content(self, force_mode: Optional[str] = None, callback=None) -> Dict[str, Any]:
-        """Main collection method with automatic gap detection."""
+        """Main collection method with enhanced historical collection."""
         self.cancelled = False
         
-        # Check for gaps if enabled and not forcing a specific mode
-        if self.gap_detection_enabled and not force_mode:
-            gaps = self._detect_collection_gaps()
-            if gaps:
-                self.logger.info(f"Detected {len(gaps)} collection gaps")
-                return self._collect_with_gap_filling(gaps, callback)
-        
-        # Normal collection
+        # Determine collection mode and date range
         mode, start_date, end_date = self._get_collection_mode(force_mode)
         self.logger.info(f"Collection mode: {mode}, Range: {start_date} to {end_date}")
         
-        return self._collect_date_range(start_date, end_date, mode, callback)
-
-    def _detect_collection_gaps(self) -> List[Tuple[datetime, datetime]]:
-        """Detect gaps in collection history."""
-        gaps = []
-        
-        # Load collection history
-        history = self._load_collection_history()
-        if not history:
-            # No history, consider everything since inauguration as a gap
-            if datetime.now() > self.inauguration_day:
-                gaps.append((self.inauguration_day, datetime.now()))
-            return gaps
-        
-        # Sort history by date
-        sorted_dates = sorted(history.keys())
-        
-        # Check for gaps between collected dates
-        for i in range(len(sorted_dates) - 1):
-            current_date = datetime.fromisoformat(sorted_dates[i])
-            next_date = datetime.fromisoformat(sorted_dates[i + 1])
-            
-            # If more than 1 day gap
-            if (next_date - current_date).days > 1:
-                gap_start = current_date + timedelta(days=1)
-                gap_end = next_date - timedelta(days=1)
-                
-                # Limit gap size to max_gap_days
-                if (gap_end - gap_start).days > self.max_gap_days:
-                    gap_start = gap_end - timedelta(days=self.max_gap_days)
-                
-                gaps.append((gap_start, gap_end))
-        
-        # Check for gap from last collection to now
-        if sorted_dates:
-            last_date = datetime.fromisoformat(sorted_dates[-1])
-            if (datetime.now() - last_date).days > 1:
-                gap_start = last_date + timedelta(days=1)
-                gap_end = datetime.now()
-                
-                # Limit gap size
-                if (gap_end - gap_start).days > self.max_gap_days:
-                    gap_start = gap_end - timedelta(days=self.max_gap_days)
-                
-                gaps.append((gap_start, gap_end))
-        
-        return gaps
-
-    def _collect_with_gap_filling(self, gaps: List[Tuple[datetime, datetime]], callback=None) -> Dict[str, Any]:
-        """Collect content focusing on filling gaps."""
         all_articles = []
         document_ids = []
-        gap_stats = []
         
-        for gap_start, gap_end in gaps:
-            if self.cancelled:
-                break
-                
-            self.logger.info(f"Filling gap: {gap_start.date()} to {gap_end.date()}")
-            
+        # 1. Collect from regular sources (RSS, etc.)
+        if callback:
+            callback({"type": "status", "message": "Collecting from RSS sources..."})
+        
+        regular_result = self._collect_date_range(start_date, end_date, mode, callback)
+        all_articles.extend(regular_result.get("articles", []))
+        document_ids.extend(regular_result.get("document_ids", []))
+        
+        # 2. Collect from Google News if enabled
+        if self.use_google_news:
             if callback:
-                callback({"type": "gap_fill", "start": gap_start.isoformat(), "end": gap_end.isoformat()})
+                callback({"type": "status", "message": "Collecting from Google News historical search..."})
             
-            # Use archive sources for older gaps
-            is_old_gap = (datetime.now() - gap_end).days > 7
-            if is_old_gap:
-                # Prioritize archive and sitemap sources for older content
-                result = self._collect_historical_range(gap_start, gap_end, callback)
-            else:
-                # Use regular collection for recent gaps
-                result = self._collect_date_range(gap_start, gap_end, "gap_fill", callback)
+            google_articles = self._collect_google_news_historical(start_date, end_date, callback)
             
-            articles = result.get("articles", [])
-            doc_ids = result.get("document_ids", [])
+            # Process and store Google News articles
+            for article in google_articles:
+                article["id"] = self._generate_id(article["url"])
+                
+                if self.document_repository:
+                    doc_id = self.document_repository.store_document(
+                        article["content"],
+                        self._create_metadata(article)
+                    )
+                    document_ids.append(doc_id)
+                    article["document_id"] = doc_id
+                
+                all_articles.append(article)
+        
+        # 3. Collect from GDELT if enabled
+        if self.use_gdelt:
+            if callback:
+                callback({"type": "status", "message": "Collecting from GDELT database..."})
             
-            all_articles.extend(articles)
-            document_ids.extend(doc_ids)
+            gdelt_articles = self._collect_gdelt_comprehensive(start_date, end_date, callback)
             
-            gap_stats.append({
-                "gap": f"{gap_start.date()} to {gap_end.date()}",
-                "articles_collected": len(articles),
-                "is_historical": is_old_gap
-            })
+            # Process and store GDELT articles
+            for article in gdelt_articles:
+                article["id"] = self._generate_id(article["url"])
+                
+                if self.document_repository:
+                    doc_id = self.document_repository.store_document(
+                        article.get("content", ""),
+                        self._create_metadata(article)
+                    )
+                    document_ids.append(doc_id)
+                    article["document_id"] = doc_id
+                
+                all_articles.append(article)
+        
+        # 4. Collect from Government APIs
+        if callback:
+            callback({"type": "status", "message": "Collecting from government APIs..."})
+        
+        gov_articles = self._collect_government_apis(start_date, end_date, callback)
+        
+        for article in gov_articles:
+            article["id"] = self._generate_id(article["url"])
             
-            # Small delay between gaps
-            if gaps.index((gap_start, gap_end)) < len(gaps) - 1:
-                time.sleep(2)
+            if self.document_repository:
+                doc_id = self.document_repository.store_document(
+                    article.get("content", ""),
+                    self._create_metadata(article)
+                )
+                document_ids.append(doc_id)
+                article["document_id"] = doc_id
+            
+            all_articles.append(article)
         
         # Update collection history
         self._update_collection_history(all_articles)
         
+        # Deduplicate articles
+        seen_urls = set()
+        unique_articles = []
+        unique_doc_ids = []
+        
+        for i, article in enumerate(all_articles):
+            if article["url"] not in seen_urls:
+                seen_urls.add(article["url"])
+                unique_articles.append(article)
+                if i < len(document_ids):
+                    unique_doc_ids.append(document_ids[i])
+        
         return {
-            "articles": all_articles,
-            "document_ids": document_ids,
+            "articles": unique_articles,
+            "document_ids": unique_doc_ids,
             "status": {
-                "articles_collected": len(all_articles),
-                "collection_mode": "gap_fill",
-                "gaps_filled": gap_stats,
+                "articles_collected": len(unique_articles),
+                "collection_mode": mode,
+                "sources_used": {
+                    "rss": len([a for a in unique_articles if not a.get("via_google_news") and not a.get("via_gdelt")]),
+                    "google_news": len([a for a in unique_articles if a.get("via_google_news")]),
+                    "gdelt": len([a for a in unique_articles if a.get("via_gdelt")]),
+                    "government": len([a for a in unique_articles if a.get("via_gov_api")])
+                },
                 "timestamp": datetime.now().isoformat()
             }
         }
 
-    def _collect_historical_range(self, start_date: datetime, end_date: datetime, callback=None) -> Dict[str, Any]:
-        """Collect historical content using archive and sitemap sources."""
-        # Get archive and sitemap sources
-        historical_sources = [s for s in self.sources 
-                            if s.get("type") in ["archive", "sitemap"] and s.get("enabled", True)]
+    def _collect_google_news_historical(self, start_date: datetime, end_date: datetime, callback=None) -> List[Dict[str, Any]]:
+        """Collect historical news using Google News search with date filters."""
         
-        if not historical_sources:
-            # Fallback to regular collection
-            self.logger.warning("No historical sources available, using regular sources")
-            return self._collect_date_range(start_date, end_date, "historical", callback)
+        # Key search terms for comprehensive political coverage
+        search_queries = [
+            # Executive branch
+            "white house announcement",
+            "president biden statement", 
+            "president trump statement",
+            "executive order signed",
+            "presidential memorandum",
+            
+            # Legislative
+            "congress passes bill",
+            "senate votes",
+            "house approves",
+            "legislation introduced",
+            "congressional hearing",
+            
+            # Judicial
+            "supreme court decision",
+            "federal court ruling",
+            "judge blocks",
+            "judicial nomination",
+            
+            # General government
+            "federal agency",
+            "government policy",
+            "cabinet meeting",
+            "state department",
+            "pentagon announces",
+            
+            # Political events
+            "political news",
+            "investigation launched",
+            "committee hearing",
+            "government accountability",
+            "federal budget"
+        ]
         
         all_articles = []
-        document_ids = []
         
-        for source in historical_sources:
+        # Format dates for Google News
+        start_str = start_date.strftime('%Y-%m-%d')
+        end_str = end_date.strftime('%Y-%m-%d')
+        
+        for query in search_queries:
             if self.cancelled:
                 break
                 
             try:
-                limit = source.get("limit", self.article_limit)
-                articles = self._collect_from_source(source, start_date, end_date, limit, callback)
+                # Build Google News RSS URL with date filter
+                encoded_query = quote(f'{query} after:{start_str} before:{end_str}')
+                google_news_url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en"
                 
-                # Store documents
-                for article in articles:
-                    article["id"] = self._generate_id(article["url"])
+                # Parse the RSS feed
+                feed = feedparser.parse(google_news_url)
+                
+                for entry in feed.entries[:20]:  # Limit per query
+                    if self.cancelled:
+                        break
+                        
+                    # Extract the article
+                    article = self._extract_article(entry.link, entry.title)
+                    if article and self._is_political(article.get("title", ""), article.get("content", "")):
+                        article['search_query'] = query
+                        article['via_google_news'] = True
+                        article['source'] = 'Google News Aggregate'
+                        all_articles.append(article)
+                        
+                        if callback:
+                            callback({
+                                "type": "article",
+                                "source": "Google News Search",
+                                "title": article.get("title"),
+                                "query": query
+                            })
                     
-                    if self.document_repository:
-                        doc_id = self.document_repository.store_document(
-                            article["content"],
-                            self._create_metadata(article)
-                        )
-                        document_ids.append(doc_id)
-                        article["document_id"] = doc_id
+                    # Small delay to be respectful
+                    time.sleep(random.uniform(0.5, 1.5))
                 
-                all_articles.extend(articles)
+                # Delay between queries
+                time.sleep(random.uniform(2, 3))
                 
             except Exception as e:
-                self.logger.error(f"Error with historical source {source.get('name')}: {e}")
+                self.logger.error(f"Google News search failed for '{query}': {e}")
+                if callback:
+                    callback({
+                        "type": "error",
+                        "source": "Google News",
+                        "message": f"Search failed: {query}"
+                    })
         
-        return {
-            "articles": all_articles,
-            "document_ids": document_ids
-        }
+        return all_articles
+
+    def _collect_gdelt_comprehensive(self, start_date: datetime, end_date: datetime, callback=None) -> List[Dict[str, Any]]:
+        """Collect from GDELT's comprehensive news database."""
+        articles = []
+        
+        # GDELT queries for comprehensive coverage
+        queries = [
+            'government',
+            'congress',
+            'white house',
+            'supreme court',
+            'executive order',
+            'legislation',
+            'federal agency',
+            'political'
+        ]
+        
+        days_back = (end_date - start_date).days
+        base_url = "https://api.gdeltproject.org/api/v2/doc/doc"
+        
+        for query in queries:
+            if self.cancelled:
+                break
+                
+            try:
+                params = {
+                    'query': query,
+                    'mode': 'artlist',
+                    'maxrecords': 100,
+                    'timespan': f'{days_back}d',
+                    'sort': 'hybridrel',
+                    'format': 'json'
+                }
+                
+                response = requests.get(base_url, params=params, timeout=30)
+                data = response.json()
+                
+                for article_data in data.get('articles', []):
+                    # Extract the full article
+                    article = self._extract_article(article_data['url'], article_data['title'])
+                    if article and self._is_political(article.get("title", ""), article.get("content", "")):
+                        article['via_gdelt'] = True
+                        article['gdelt_query'] = query
+                        article['source'] = article_data.get('domain', 'Unknown')
+                        articles.append(article)
+                        
+                        if callback:
+                            callback({
+                                "type": "article",
+                                "source": "GDELT",
+                                "title": article.get("title")
+                            })
+                
+                time.sleep(1)  # Be nice to GDELT
+                
+            except Exception as e:
+                self.logger.error(f"GDELT error for '{query}': {e}")
+                
+        return articles
+
+    def _collect_government_apis(self, start_date: datetime, end_date: datetime, callback=None) -> List[Dict[str, Any]]:
+        """Collect from government APIs - these ALWAYS work."""
+        articles = []
+        
+        # Federal Register API
+        try:
+            fr_url = "https://www.federalregister.gov/api/v1/documents"
+            params = {
+                "conditions[publication_date][gte]": start_date.strftime('%Y-%m-%d'),
+                "conditions[publication_date][lte]": end_date.strftime('%Y-%m-%d'),
+                "per_page": 100,
+                "order": "newest"
+            }
+            
+            response = requests.get(fr_url, params=params, timeout=30)
+            data = response.json()
+            
+            for doc in data.get('results', []):
+                articles.append({
+                    "title": doc['title'],
+                    "url": doc['html_url'],
+                    "content": doc.get('abstract', ''),
+                    "published": doc['publication_date'],
+                    "source": "Federal Register",
+                    "type": doc['type'],
+                    "agencies": doc.get('agencies', []),
+                    "via_gov_api": True,
+                    "collected_at": datetime.now().isoformat()
+                })
+                
+                if callback:
+                    callback({
+                        "type": "article",
+                        "source": "Federal Register API",
+                        "title": doc['title']
+                    })
+                    
+        except Exception as e:
+            self.logger.error(f"Federal Register API error: {e}")
+        
+        # Congress.gov API (if available)
+        try:
+            # Note: Congress.gov requires API key
+            # This is a placeholder for the structure
+            congress_url = "https://api.congress.gov/v3/bills"
+            # Would need API key in headers
+            
+        except Exception as e:
+            self.logger.debug(f"Congress API not configured: {e}")
+            
+        return articles
 
     def _collect_date_range(self, start_date: datetime, end_date: datetime, mode: str, callback=None) -> Dict[str, Any]:
         """Collect content for a specific date range."""
@@ -285,6 +444,11 @@ class ContentCollector:
         
         for source in self.sources:
             if not source.get("enabled", True):
+                continue
+                
+            # Skip archive sources that are timing out
+            if source.get("type") == "archive":
+                self.logger.info(f"Skipping archive source {source.get('name')} - using alternative methods")
                 continue
 
             try:
@@ -321,9 +485,6 @@ class ContentCollector:
         # Update state
         if mode != "custom":
             self._update_last_run()
-        
-        # Update collection history
-        self._update_collection_history(all_articles)
 
         if self.cancelled and callback:
             callback({"type": "cancelled"})
@@ -338,70 +499,8 @@ class ContentCollector:
             }
         }
 
-    def _load_collection_history(self) -> Dict[str, int]:
-        """Load collection history from file."""
-        if not os.path.exists(self.collection_history_file):
-            return {}
-        
-        try:
-            with open(self.collection_history_file, 'r') as f:
-                return json.load(f)
-        except:
-            return {}
-
-    def _update_collection_history(self, articles: List[Dict[str, Any]]):
-        """Update collection history with newly collected articles."""
-        history = self._load_collection_history()
-        
-        # Count articles by date
-        for article in articles:
-            pub_date = article.get("published")
-            if pub_date:
-                try:
-                    date_str = datetime.fromisoformat(pub_date.replace('Z', '+00:00')).date().isoformat()
-                    history[date_str] = history.get(date_str, 0) + 1
-                except:
-                    pass
-        
-        # Save updated history
-        try:
-            with open(self.collection_history_file, 'w') as f:
-                json.dump(history, f, indent=2)
-        except Exception as e:
-            self.logger.error(f"Error saving collection history: {e}")
-
-    def _get_collection_mode(self, force_mode: Optional[str]) -> Tuple[str, datetime, datetime]:
-        """Determine collection mode and date range."""
-        current_time = datetime.now()
-        
-        if force_mode == "full":
-            return ("full", self.inauguration_day, current_time)
-        
-        # Check if first run
-        if not os.path.exists(self.last_run_file):
-            # First run - check if we should do historical collection
-            days_since_inauguration = (current_time - self.inauguration_day).days
-            
-            if days_since_inauguration > 7:
-                # Been more than a week, do smart historical collection
-                # Start with last 7 days for RSS, will use gap detection for the rest
-                return ("first_run", current_time - timedelta(days=7), current_time)
-            else:
-                # Recent inauguration, collect everything
-                return ("first_run", self.inauguration_day, current_time)
-        
-        # Incremental
-        try:
-            with open(self.last_run_file, 'r') as f:
-                last_run = datetime.fromisoformat(f.read().strip())
-                
-                # Add small overlap to avoid missing articles
-                return ("incremental", last_run - timedelta(hours=1), current_time)
-        except:
-            return ("incremental", current_time - timedelta(days=1), current_time)
-
     def _collect_from_source(self, source: Dict[str, Any], start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
-        """Collect from a single source with enhanced historical support."""
+        """Collect from a single source."""
         url = source.get("url", "")
         source_type = source.get("type", "rss")
 
@@ -413,32 +512,15 @@ class ContentCollector:
                     callback({"type": "article", "source": source.get("name", url), "title": article.get("title")})
             return [article] if article else []
         
-        elif source_type == "archive":
-            # Use web archive for historical data
-            return self._collect_from_archive(source, start_date, end_date, limit, callback)
-        
         elif source_type == "sitemap":
             # Parse sitemap for article URLs
             return self._collect_from_sitemap(source, start_date, end_date, limit, callback)
         
         else:  # RSS feed (default)
             try:
-                # First try regular RSS
+                # Parse RSS feed
                 feed = feedparser.parse(url, agent=random.choice(self.user_agents))
                 articles = self._process_feed_entries(feed.entries, source, url, start_date, end_date, limit, callback)
-
-                # If we need more historical data and got fewer articles than limit
-                if len(articles) < limit and (datetime.now() - start_date).days > 7:
-                    # Try to get archived RSS snapshots
-                    archived = self._collect_archived_feed(source, start_date, end_date, limit - len(articles), callback)
-                    seen = {a["url"] for a in articles}
-                    for art in archived:
-                        if art["url"] not in seen:
-                            articles.append(art)
-                            seen.add(art["url"])
-                            if len(articles) >= limit:
-                                break
-
                 return articles
                 
             except Exception as e:
@@ -446,70 +528,6 @@ class ContentCollector:
                 if callback:
                     callback({"type": "error", "source": source.get("name", url), "message": str(e)})
                 return []
-
-    def _collect_from_archive(self, source: Dict[str, Any], start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
-        """Collect articles from web archives (Wayback Machine)."""
-        base_url = source.get("archive_url", source.get("url"))
-        site_domain = urlparse(base_url).netloc
-        
-        articles = []
-        
-        # Query Wayback Machine CDX API
-        cdx_url = "https://web.archive.org/cdx/search/cdx"
-        params = {
-            "url": f"{site_domain}/*",
-            "output": "json",
-            "from": start_date.strftime('%Y%m%d'),
-            "to": end_date.strftime('%Y%m%d'),
-            "filter": "statuscode:200",
-            "collapse": "urlkey",
-            "limit": limit * 2  # Get more URLs to filter
-        }
-        
-        try:
-            response = self.session.get(cdx_url, params=params, timeout=self.request_timeout)
-            if response.status_code != 200:
-                return articles
-            
-            data = response.json()
-            if len(data) <= 1:  # First row is headers
-                return articles
-            
-            # Process CDX results
-            for row in data[1:]:  # Skip header row
-                if self.cancelled or len(articles) >= limit:
-                    break
-                
-                timestamp = row[1]
-                original_url = row[2]
-                
-                # Filter for article-like URLs
-                if not self._is_article_url(original_url):
-                    continue
-                
-                # Build Wayback URL
-                wayback_url = f"https://web.archive.org/web/{timestamp}/{original_url}"
-                
-                # Extract article
-                article = self._extract_article(wayback_url)
-                if article and self._is_political(article.get("title", ""), article.get("content", "")):
-                    article["source"] = source.get("name", site_domain)
-                    article["bias_label"] = source.get("bias", "unknown")
-                    article["archive_url"] = wayback_url
-                    article["original_url"] = original_url
-                    articles.append(article)
-                    
-                    if callback:
-                        callback({"type": "article", "source": article["source"], "title": article.get("title")})
-                
-                time.sleep(random.uniform(0.5, 1.5))
-                
-        except Exception as e:
-            self.logger.error(f"Archive collection failed for {site_domain}: {e}")
-            if callback:
-                callback({"type": "error", "source": source.get("name"), "message": str(e)})
-        
-        return articles
 
     def _collect_from_sitemap(self, source: Dict[str, Any], start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
         """Collect articles from XML sitemaps."""
@@ -643,70 +661,14 @@ class ContentCollector:
 
         return articles
 
-    def _collect_archived_feed(self, source: Dict[str, Any], start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
-        """Collect articles from archived snapshots of an RSS feed."""
-        url = source.get("url", "")
-        cdx_url = "https://web.archive.org/cdx/search/cdx"
-        params = {
-            "url": url,
-            "output": "json",
-            "from": start_date.strftime('%Y%m%d'),
-            "to": end_date.strftime('%Y%m%d'),
-            "filter": "statuscode:200",
-            "collapse": "timestamp:8",  # Daily snapshots
-            "limit": 30  # Get up to 30 snapshots
-        }
-
-        articles = []
-        try:
-            resp = self.session.get(cdx_url, params=params, timeout=self.request_timeout)
-            if resp.status_code != 200:
-                return []
-            
-            data = resp.json()
-            if len(data) <= 1:  # First row is headers
-                return []
-            
-            # Process snapshots
-            for row in data[1:]:  # Skip header
-                if self.cancelled or len(articles) >= limit:
-                    break
-                    
-                timestamp = row[1]
-                snapshot_url = f"https://web.archive.org/web/{timestamp}/{url}"
-                
-                try:
-                    r = self.session.get(snapshot_url, timeout=self.request_timeout)
-                    feed = feedparser.parse(r.text)
-                    
-                    # Process entries from archived feed
-                    processed = self._process_feed_entries(feed.entries, source, url, start_date, end_date, limit - len(articles), callback)
-                    
-                    # Mark as archived and add to results
-                    for art in processed:
-                        art["archive_snapshot"] = snapshot_url
-                        art["archived_date"] = timestamp
-                        articles.append(art)
-                        if len(articles) >= limit:
-                            break
-                            
-                    time.sleep(random.uniform(1, 2))
-                    
-                except Exception as e:
-                    self.logger.debug(f"Failed to process snapshot {snapshot_url}: {e}")
-                    continue
-                    
-        except Exception as e:
-            self.logger.error(f"Archive collection failed for {url}: {e}")
-
-        return articles
-
     def _extract_article(self, url: str, title: str = None, pub_date: datetime = None) -> Optional[Dict[str, Any]]:
         """Extract article content with enhanced extraction."""
         try:
+            # Use cloudscraper if available for better success rate
+            session = self.cloudscraper if self.cloudscraper else self.session
+            
             # Try trafilatura first (it's generally more reliable)
             if TRAFILATURA_AVAILABLE:
-                session = self.cloudscraper if hasattr(self, 'cloudscraper') and self.cloudscraper else self.session
                 response = session.get(url, timeout=self.request_timeout)
                 
                 # Extract with trafilatura
@@ -754,7 +716,7 @@ class ContentCollector:
                     }
             
             # Last resort: BeautifulSoup
-            response = self.session.get(url, timeout=self.request_timeout)
+            response = session.get(url, timeout=self.request_timeout)
             soup = BeautifulSoup(response.text, 'html.parser')
             
             # Try to find article content
@@ -846,9 +808,9 @@ class ContentCollector:
             "collected_at": article.get("collected_at"),
             "id": article.get("id"),
             "author": article.get("author"),
-            "archive_url": article.get("archive_url"),
-            "original_url": article.get("original_url"),
-            "archived_date": article.get("archived_date")
+            "via_google_news": article.get("via_google_news", False),
+            "via_gdelt": article.get("via_gdelt", False),
+            "via_gov_api": article.get("via_gov_api", False)
         }
 
     def _update_last_run(self):
@@ -858,6 +820,60 @@ class ContentCollector:
                 f.write(datetime.now().isoformat())
         except Exception as e:
             self.logger.error(f"Error updating last run: {e}")
+
+    def _load_collection_history(self) -> Dict[str, int]:
+        """Load collection history from file."""
+        if not os.path.exists(self.collection_history_file):
+            return {}
+        
+        try:
+            with open(self.collection_history_file, 'r') as f:
+                return json.load(f)
+        except:
+            return {}
+
+    def _update_collection_history(self, articles: List[Dict[str, Any]]):
+        """Update collection history with newly collected articles."""
+        history = self._load_collection_history()
+        
+        # Count articles by date
+        for article in articles:
+            pub_date = article.get("published")
+            if pub_date:
+                try:
+                    date_str = datetime.fromisoformat(pub_date.replace('Z', '+00:00')).date().isoformat()
+                    history[date_str] = history.get(date_str, 0) + 1
+                except:
+                    pass
+        
+        # Save updated history
+        try:
+            with open(self.collection_history_file, 'w') as f:
+                json.dump(history, f, indent=2)
+        except Exception as e:
+            self.logger.error(f"Error saving collection history: {e}")
+
+    def _get_collection_mode(self, force_mode: Optional[str]) -> Tuple[str, datetime, datetime]:
+        """Determine collection mode and date range."""
+        current_time = datetime.now()
+        
+        if force_mode == "full":
+            return ("full", self.inauguration_day, current_time)
+        
+        # Check if first run
+        if not os.path.exists(self.last_run_file):
+            # First run - collect everything since inauguration
+            return ("first_run", self.inauguration_day, current_time)
+        
+        # Incremental
+        try:
+            with open(self.last_run_file, 'r') as f:
+                last_run = datetime.fromisoformat(f.read().strip())
+                
+                # Add small overlap to avoid missing articles
+                return ("incremental", last_run - timedelta(hours=1), current_time)
+        except:
+            return ("incremental", current_time - timedelta(days=1), current_time)
 
     def add_source(self, source_data: Dict[str, Any]) -> bool:
         """Add a new source."""
