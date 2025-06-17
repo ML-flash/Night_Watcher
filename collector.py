@@ -41,6 +41,14 @@ try:
 except ImportError:
     CLOUDSCRAPER_AVAILABLE = False
 
+try:
+    from googlenewsdecoder import gnewsdecoder
+    GOOGLENEWSDECODER_AVAILABLE = True
+except ImportError:
+    GOOGLENEWSDECODER_AVAILABLE = False
+    print("Warning: googlenewsdecoder not installed. Google News URL decoding will be limited.")
+    print("Install with: pip install googlenewsdecoder")
+
 logger = logging.getLogger(__name__)
 
 # Import for document repository if needed
@@ -71,6 +79,8 @@ class CollectionStats:
         self.source_errors = {}
         self.extraction_methods = {'trafilatura': 0, 'newspaper': 0, 'beautifulsoup': 0}
         self.filter_reasons = {}
+        self.google_news_decoded = 0
+        self.google_news_failed = 0
         
     def log_source_error(self, source_name, error):
         if source_name not in self.source_errors:
@@ -100,6 +110,11 @@ class CollectionStats:
                 'extraction_success_rate': f"{(self.articles_extracted/max(1,self.urls_attempted)*100):.1f}%",
                 'political_articles': self.political_articles,
                 'filtered_out': self.articles_filtered_out
+            },
+            'google_news': {
+                'decoded_successfully': self.google_news_decoded,
+                'decode_failures': self.google_news_failed,
+                'decode_success_rate': f"{(self.google_news_decoded/max(1,self.google_news_decoded+self.google_news_failed)*100):.1f}%"
             },
             'extraction_methods': self.extraction_methods,
             'filter_reasons': self.filter_reasons,
@@ -148,6 +163,9 @@ class ContentCollector:
             'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
         ]
         
+        # Cache for decoded URLs
+        self._decoded_url_cache = {}
+        
         self.logger = logging.getLogger("ContentCollector")
         
         # Setup detailed logging
@@ -156,6 +174,7 @@ class ContentCollector:
         
         self.logger.info(f"Collector initialized with {len(self.sources)} sources")
         self.logger.info(f"Political keywords: {len(self.govt_keywords)} loaded")
+        self.logger.info(f"Google News decoder available: {GOOGLENEWSDECODER_AVAILABLE}")
 
     def _setup_debug_logging(self):
         """Setup detailed logging for debugging collection issues."""
@@ -183,6 +202,15 @@ class ContentCollector:
         self.session.mount("https://", HTTPAdapter(max_retries=retry))
         self._rotate_headers()
         
+        # Sites that need special handling
+        self.problematic_sites = {
+            'washingtonpost.com': {'timeout': 15, 'delay': 3},
+            'nytimes.com': {'timeout': 15, 'delay': 3},
+            'wsj.com': {'timeout': 20, 'delay': 4},
+            'cnn.com': {'timeout': 10, 'delay': 2},
+            'foxnews.com': {'timeout': 10, 'delay': 2}
+        }
+        
         if CLOUDSCRAPER_AVAILABLE:
             try:
                 self.cloudscraper = cloudscraper.create_scraper()
@@ -208,6 +236,336 @@ class ContentCollector:
             'DNT': '1'
         })
         self.logger.debug(f"Rotated to User-Agent: {user_agent[:50]}...")
+
+    def _resolve_google_news_url(self, google_url: str) -> Optional[str]:
+        """Resolve Google News redirect URL to actual article URL using googlenewsdecoder."""
+        # Check cache first
+        if google_url in self._decoded_url_cache:
+            cached_url = self._decoded_url_cache[google_url]
+            self.logger.debug(f"Using cached decoded URL: {cached_url}")
+            return cached_url
+        
+        if GOOGLENEWSDECODER_AVAILABLE:
+            try:
+                self.logger.debug(f"Attempting to decode Google News URL with googlenewsdecoder: {google_url}")
+                
+                # Use googlenewsdecoder with appropriate delay
+                result = gnewsdecoder(google_url, interval=2)
+                
+                if result.get("status") and result.get("decoded_url"):
+                    decoded_url = result["decoded_url"]
+                    self.logger.debug(f"Successfully decoded Google News URL: {google_url} -> {decoded_url}")
+                    
+                    # Cache the result
+                    self._decoded_url_cache[google_url] = decoded_url
+                    self.stats.google_news_decoded += 1
+                    
+                    return decoded_url
+                else:
+                    self.logger.warning(f"googlenewsdecoder failed for {google_url}: {result.get('message', 'Unknown error')}")
+                    self.stats.google_news_failed += 1
+                    
+            except Exception as e:
+                self.logger.error(f"Error using googlenewsdecoder for {google_url}: {e}")
+                self.stats.google_news_failed += 1
+        
+        # Fallback to manual decoding methods
+        self.logger.debug("Falling back to manual Google News URL resolution methods")
+        
+        try:
+            # Try manual base64 decoding for older URLs
+            if "/articles/" in google_url:
+                import base64
+                
+                # Extract the article ID part
+                article_id = google_url.split("/articles/")[1].split("?")[0]
+                
+                # Add padding and try to decode
+                encoded_part = article_id + "==="
+                
+                try:
+                    decoded_bytes = base64.urlsafe_b64decode(encoded_part)
+                    
+                    # Look for URL pattern in decoded bytes
+                    # Google News uses protocol buffer encoding
+                    if decoded_bytes.startswith(b'\x08\x13\x22'):
+                        decoded_bytes = decoded_bytes[3:]  # Remove prefix
+                        if decoded_bytes.endswith(b'\xd2\x01\x00'):
+                            decoded_bytes = decoded_bytes[:-3]  # Remove suffix
+                        
+                        # Extract URL based on length prefix
+                        length = decoded_bytes[0]
+                        if length < 0x80:
+                            decoded_url = decoded_bytes[1:length+1].decode('utf-8')
+                            self.logger.debug(f"Manual decode successful: {decoded_url}")
+                            self._decoded_url_cache[google_url] = decoded_url
+                            self.stats.google_news_decoded += 1
+                            return decoded_url
+                            
+                except Exception as e:
+                    self.logger.debug(f"Manual base64 decode failed: {e}")
+                    
+        except Exception as e:
+            self.logger.debug(f"URL parsing failed: {e}")
+        
+        # If all else fails, try following redirects with session
+        try:
+            session = self.cloudscraper if self.cloudscraper else self.session
+            
+            # Browser-like headers for Google
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Encoding': 'gzip, deflate',
+                'DNT': '1',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1',
+            }
+            
+            response = session.get(google_url, headers=headers, allow_redirects=True, timeout=15)
+            
+            if response.url and response.url != google_url and not response.url.startswith('https://news.google.com'):
+                self.logger.debug(f"Redirect resolution successful: {google_url} -> {response.url}")
+                self._decoded_url_cache[google_url] = response.url
+                self.stats.google_news_decoded += 1
+                return response.url
+                
+        except Exception as e:
+            self.logger.debug(f"Redirect resolution failed: {e}")
+        
+        self.logger.warning(f"All Google News URL resolution methods failed for: {google_url}")
+        self.stats.google_news_failed += 1
+        return None
+
+    def _extract_article(self, url: str, title: str = None, pub_date: datetime = None) -> Optional[Dict[str, Any]]:
+        """Extract article content with enhanced logging."""
+        self.logger.debug(f"Starting article extraction from: {url}")
+        
+        # Handle Google News redirect URLs
+        if "news.google.com" in url:
+            self.logger.debug("Detected Google News URL, resolving redirect...")
+            actual_url = self._resolve_google_news_url(url)
+            if actual_url and actual_url != url:
+                self.logger.debug(f"Resolved to actual URL: {actual_url}")
+                url = actual_url
+            else:
+                self.logger.warning(f"Failed to resolve Google News URL: {url}")
+                return None
+        
+        # Check for problematic sites and adjust timeout/delay
+        domain = urlparse(url).netloc.replace('www.', '')
+        site_config = self.problematic_sites.get(domain, {})
+        timeout = site_config.get('timeout', self.request_timeout)
+        delay = site_config.get('delay', 0)
+        
+        if site_config:
+            self.logger.debug(f"Using special config for {domain}: timeout={timeout}s, delay={delay}s")
+            time.sleep(delay)  # Pre-request delay for problematic sites
+        
+        try:
+            # Use cloudscraper if available for better success rate
+            session = self.cloudscraper if self.cloudscraper else self.session
+            session_type = "cloudscraper" if self.cloudscraper else "requests"
+            
+            self.logger.debug(f"Using {session_type} for extraction")
+            
+            # Try trafilatura first (it's generally more reliable)
+            if TRAFILATURA_AVAILABLE:
+                self.logger.debug("Trying trafilatura extraction")
+                try:
+                    response = session.get(url, timeout=timeout)
+                    self.logger.debug(f"HTTP response: {response.status_code}")
+                    
+                    if response.status_code != 200:
+                        self.logger.warning(f"HTTP {response.status_code} for {url}")
+                        # Don't return yet, try other methods
+                    else:
+                        # Extract with trafilatura
+                        content = trafilatura.extract(
+                            response.text, 
+                            favor_precision=True,
+                            include_comments=False,
+                            include_tables=True,
+                            deduplicate=True
+                        )
+                        
+                        # Also try to get metadata
+                        metadata = trafilatura.extract_metadata(response.text)
+                        
+                        if content and len(content) > 200:
+                            self.stats.extraction_methods['trafilatura'] += 1
+                            self.logger.debug(f"Trafilatura success: {len(content)} chars extracted")
+                            
+                            # Check if content is political
+                            if not self._is_political(title or '', content):
+                                self.logger.debug("Content not political, skipping")
+                                self.stats.log_filter_reason("content_not_political")
+                                return None
+                            
+                            self.stats.political_articles += 1
+                            
+                            # Handle date properly - trafilatura may return string or datetime
+                            published_date = None
+                            if metadata and metadata.date:
+                                if isinstance(metadata.date, str):
+                                    published_date = metadata.date
+                                elif hasattr(metadata.date, 'isoformat'):
+                                    published_date = metadata.date.isoformat()
+                                else:
+                                    published_date = str(metadata.date)
+                            elif pub_date:
+                                if isinstance(pub_date, str):
+                                    published_date = pub_date
+                                elif hasattr(pub_date, 'isoformat'):
+                                    published_date = pub_date.isoformat()
+                                else:
+                                    published_date = str(pub_date)
+                            
+                            return {
+                                "title": title or (metadata.title if metadata else self._extract_title(response.text)),
+                                "url": url,
+                                "content": content,
+                                "published": published_date,
+                                "collected_at": datetime.now().isoformat(),
+                                "author": metadata.author if metadata else None,
+                                "description": metadata.description if metadata else None,
+                                "extraction_method": "trafilatura"
+                            }
+                        else:
+                            self.logger.debug(f"Trafilatura extracted insufficient content: {len(content) if content else 0} chars")
+                
+                except requests.exceptions.Timeout:
+                    self.logger.debug(f"Trafilatura timed out after {timeout}s")
+                except Exception as e:
+                    self.logger.debug(f"Trafilatura extraction failed: {e}")
+            
+            # Fallback to newspaper3k
+            if NEWSPAPER_AVAILABLE:
+                self.logger.debug("Trying newspaper3k extraction")
+                try:
+                    config = Config()
+                    config.browser_user_agent = random.choice(self.user_agents)
+                    config.request_timeout = self.request_timeout
+                    config.fetch_images = False  # Skip images to speed up
+                    config.memoize_articles = False  # Don't cache
+                    
+                    article = Article(url, config=config)
+                    
+                    # Try with existing session first (faster if it works)
+                    try:
+                        article.download(input_html=response.text if 'response' in locals() else None)
+                    except:
+                        # If that fails, let newspaper3k download it itself
+                        article.download()
+                    
+                    article.parse()
+                    
+                    if article.text and len(article.text) > 200:
+                        self.stats.extraction_methods['newspaper'] += 1
+                        self.logger.debug(f"Newspaper3k success: {len(article.text)} chars extracted")
+                        
+                        # Check if content is political
+                        if not self._is_political(title or article.title, article.text):
+                            self.logger.debug("Content not political, skipping")
+                            self.stats.log_filter_reason("content_not_political")
+                            return None
+                        
+                        self.stats.political_articles += 1
+                        
+                        # Handle date properly - may be string or datetime
+                        published_date = None
+                        if article.publish_date:
+                            if isinstance(article.publish_date, str):
+                                published_date = article.publish_date
+                            elif hasattr(article.publish_date, 'isoformat'):
+                                published_date = article.publish_date.isoformat()
+                            else:
+                                published_date = str(article.publish_date)
+                        elif pub_date:
+                            if isinstance(pub_date, str):
+                                published_date = pub_date
+                            elif hasattr(pub_date, 'isoformat'):
+                                published_date = pub_date.isoformat()
+                            else:
+                                published_date = str(pub_date)
+                        
+                        return {
+                            "title": title or article.title,
+                            "url": url,
+                            "content": article.text,
+                            "published": published_date,
+                            "collected_at": datetime.now().isoformat(),
+                            "author": ", ".join(article.authors) if article.authors else None,
+                            "top_image": article.top_image,
+                            "extraction_method": "newspaper3k"
+                        }
+                    else:
+                        self.logger.debug(f"Newspaper3k extracted insufficient content: {len(article.text) if article.text else 0} chars")
+                        
+                except Exception as e:
+                    self.logger.debug(f"Newspaper3k extraction failed: {e}")
+            
+            # Last resort: BeautifulSoup
+            self.logger.debug("Trying BeautifulSoup extraction")
+            try:
+                response = session.get(url, timeout=timeout)
+                soup = BeautifulSoup(response.text, 'html.parser')
+                
+                # Try to find article content
+                content = ""
+                for selector in ['article', 'main', '.article-content', '.entry-content', '.post-content', 
+                                '[class*="article-body"]', '[class*="story-body"]', '.content-body']:
+                    elem = soup.select_one(selector)
+                    if elem:
+                        content = elem.get_text(separator='\n', strip=True)
+                        self.logger.debug(f"BeautifulSoup found content with selector '{selector}': {len(content)} chars")
+                        break
+                
+                if content and len(content) > 200:
+                    self.stats.extraction_methods['beautifulsoup'] += 1
+                    self.logger.debug(f"BeautifulSoup success: {len(content)} chars extracted")
+                    
+                    # Check if content is political
+                    if not self._is_political(title or '', content):
+                        self.logger.debug("Content not political, skipping")
+                        self.stats.log_filter_reason("content_not_political")
+                        return None
+                    
+                    self.stats.political_articles += 1
+                    
+                    # Handle date properly
+                    published_date = None
+                    if pub_date:
+                        if isinstance(pub_date, str):
+                            published_date = pub_date
+                        elif hasattr(pub_date, 'isoformat'):
+                            published_date = pub_date.isoformat()
+                        else:
+                            published_date = str(pub_date)
+                    
+                    return {
+                        "title": title or self._extract_title(response.text),
+                        "url": url,
+                        "content": content,
+                        "published": published_date,
+                        "collected_at": datetime.now().isoformat(),
+                        "extraction_method": "beautifulsoup"
+                    }
+                else:
+                    self.logger.debug(f"BeautifulSoup extracted insufficient content: {len(content)} chars")
+                    
+            except requests.exceptions.Timeout:
+                self.logger.debug(f"BeautifulSoup timed out after {timeout}s")
+            except Exception as e:
+                self.logger.debug(f"BeautifulSoup extraction failed: {e}")
+                    
+        except Exception as e:
+            self.logger.error(f"Article extraction completely failed for {url}: {e}")
+            self.logger.debug(f"Full extraction error:", exc_info=True)
+        
+        self.logger.warning(f"All extraction methods failed for {url}")
+        return None
 
     def collect_content(self, force_mode: Optional[str] = None, callback=None) -> Dict[str, Any]:
         """Main collection method with enhanced logging."""
@@ -328,6 +686,7 @@ class ContentCollector:
         self.logger.info(f"Duplicates removed: {duplicates_removed}")
         self.logger.info(f"Source success rate: {stats_summary['sources']['success_rate']}")
         self.logger.info(f"Article extraction success rate: {stats_summary['articles']['extraction_success_rate']}")
+        self.logger.info(f"Google News decode success rate: {stats_summary['google_news']['decode_success_rate']}")
         
         # Log detailed statistics
         self.logger.info("=== DETAILED STATISTICS ===")
@@ -531,37 +890,12 @@ class ContentCollector:
 
             self.stats.feed_entries_processed += 1
             
-            # Log entry details with debugging for Google News
+            # Log entry details
             entry_title = getattr(entry, 'title', 'No title')
             entry_link = getattr(entry, 'link', None)
             
             self.logger.debug(f"Entry {i+1}/{len(entries)}: {entry_title}")
             self.logger.debug(f"Link: {entry_link}")
-            
-            # DEBUG: For Google News feeds, check what other fields are available
-            if "news.google.com" in base_url:
-                self.logger.debug("=== GOOGLE NEWS ENTRY DEBUG ===")
-                
-                # Check all available fields in the entry
-                available_fields = [attr for attr in dir(entry) if not attr.startswith('_')]
-                self.logger.debug(f"Available entry fields: {available_fields}")
-                
-                # Check for alternative URL fields
-                for field in ['link', 'id', 'guid', 'feedburner_origlink', 'comments']:
-                    if hasattr(entry, field):
-                        value = getattr(entry, field)
-                        self.logger.debug(f"  {field}: {value}")
-                
-                # Check if there are any links in the entry that aren't Google News URLs
-                if hasattr(entry, 'links'):
-                    self.logger.debug(f"  All links: {entry.links}")
-                    for link in entry.links:
-                        if hasattr(link, 'href') and not link.href.startswith('https://news.google.com'):
-                            self.logger.debug(f"  *** FOUND NON-GOOGLE LINK: {link.href} ***")
-                            entry_link = link.href  # Use this instead!
-                            break
-                
-                self.logger.debug("=== END GOOGLE NEWS DEBUG ===")
 
             if not entry_link:
                 self.logger.debug("Skipping entry: no link found")
@@ -611,253 +945,6 @@ class ContentCollector:
 
         self.logger.info(f"Feed entry processing complete: {len(articles)} articles from {len(entries)} entries")
         return articles
-
-    def _extract_article(self, url: str, title: str = None, pub_date: datetime = None) -> Optional[Dict[str, Any]]:
-        """Extract article content with enhanced logging."""
-        self.logger.debug(f"Starting article extraction from: {url}")
-        
-        # Handle Google News redirect URLs
-        if "news.google.com" in url:
-            self.logger.debug("Detected Google News URL, resolving redirect...")
-            actual_url = self._resolve_google_news_url(url)
-            if actual_url and actual_url != url:
-                self.logger.debug(f"Resolved to actual URL: {actual_url}")
-                url = actual_url
-            else:
-                self.logger.warning(f"Failed to resolve Google News URL: {url}")
-                return None
-        
-        try:
-            # Use cloudscraper if available for better success rate
-            session = self.cloudscraper if self.cloudscraper else self.session
-            session_type = "cloudscraper" if self.cloudscraper else "requests"
-            
-            self.logger.debug(f"Using {session_type} for extraction")
-            
-            # Try trafilatura first (it's generally more reliable)
-            if TRAFILATURA_AVAILABLE:
-                self.logger.debug("Trying trafilatura extraction")
-                try:
-                    response = session.get(url, timeout=self.request_timeout)
-                    self.logger.debug(f"HTTP response: {response.status_code}")
-                    
-                    if response.status_code != 200:
-                        self.logger.warning(f"HTTP {response.status_code} for {url}")
-                        # Don't return yet, try other methods
-                    else:
-                        # Extract with trafilatura
-                        content = trafilatura.extract(
-                            response.text, 
-                            favor_precision=True,
-                            include_comments=False,
-                            include_tables=True,
-                            deduplicate=True
-                        )
-                        
-                        # Also try to get metadata
-                        metadata = trafilatura.extract_metadata(response.text)
-                        
-                        if content and len(content) > 200:
-                            self.stats.extraction_methods['trafilatura'] += 1
-                            self.logger.debug(f"Trafilatura success: {len(content)} chars extracted")
-                            
-                            # Check if content is political
-                            if not self._is_political(title or '', content):
-                                self.logger.debug("Content not political, skipping")
-                                self.stats.log_filter_reason("content_not_political")
-                                return None
-                            
-                            self.stats.political_articles += 1
-                            
-                            return {
-                                "title": title or (metadata.title if metadata else self._extract_title(response.text)),
-                                "url": url,
-                                "content": content,
-                                "published": (metadata.date if metadata and metadata.date else pub_date).isoformat() if (metadata and metadata.date) or pub_date else None,
-                                "collected_at": datetime.now().isoformat(),
-                                "author": metadata.author if metadata else None,
-                                "description": metadata.description if metadata else None,
-                                "extraction_method": "trafilatura"
-                            }
-                        else:
-                            self.logger.debug(f"Trafilatura extracted insufficient content: {len(content) if content else 0} chars")
-                
-                except Exception as e:
-                    self.logger.debug(f"Trafilatura extraction failed: {e}")
-            
-            # Fallback to newspaper3k
-            if NEWSPAPER_AVAILABLE:
-                self.logger.debug("Trying newspaper3k extraction")
-                try:
-                    config = Config()
-                    config.browser_user_agent = random.choice(self.user_agents)
-                    config.request_timeout = self.request_timeout
-                    
-                    article = Article(url, config=config)
-                    article.download()
-                    article.parse()
-                    
-                    if article.text and len(article.text) > 200:
-                        self.stats.extraction_methods['newspaper'] += 1
-                        self.logger.debug(f"Newspaper3k success: {len(article.text)} chars extracted")
-                        
-                        # Check if content is political
-                        if not self._is_political(title or article.title, article.text):
-                            self.logger.debug("Content not political, skipping")
-                            self.stats.log_filter_reason("content_not_political")
-                            return None
-                        
-                        self.stats.political_articles += 1
-                        
-                        return {
-                            "title": title or article.title,
-                            "url": url,
-                            "content": article.text,
-                            "published": (article.publish_date or pub_date).isoformat() if (article.publish_date or pub_date) else None,
-                            "collected_at": datetime.now().isoformat(),
-                            "author": ", ".join(article.authors) if article.authors else None,
-                            "top_image": article.top_image,
-                            "extraction_method": "newspaper3k"
-                        }
-                    else:
-                        self.logger.debug(f"Newspaper3k extracted insufficient content: {len(article.text) if article.text else 0} chars")
-                        
-                except Exception as e:
-                    self.logger.debug(f"Newspaper3k extraction failed: {e}")
-            
-            # Last resort: BeautifulSoup
-            self.logger.debug("Trying BeautifulSoup extraction")
-            try:
-                response = session.get(url, timeout=self.request_timeout)
-                soup = BeautifulSoup(response.text, 'html.parser')
-                
-                # Try to find article content
-                content = ""
-                for selector in ['article', 'main', '.article-content', '.entry-content', '.post-content']:
-                    elem = soup.select_one(selector)
-                    if elem:
-                        content = elem.get_text(separator='\n', strip=True)
-                        self.logger.debug(f"BeautifulSoup found content with selector '{selector}': {len(content)} chars")
-                        break
-                
-                if content and len(content) > 200:
-                    self.stats.extraction_methods['beautifulsoup'] += 1
-                    self.logger.debug(f"BeautifulSoup success: {len(content)} chars extracted")
-                    
-                    # Check if content is political
-                    if not self._is_political(title or '', content):
-                        self.logger.debug("Content not political, skipping")
-                        self.stats.log_filter_reason("content_not_political")
-                        return None
-                    
-                    self.stats.political_articles += 1
-                    
-                    return {
-                        "title": title or self._extract_title(response.text),
-                        "url": url,
-                        "content": content,
-                        "published": pub_date.isoformat() if pub_date else None,
-                        "collected_at": datetime.now().isoformat(),
-                        "extraction_method": "beautifulsoup"
-                    }
-                else:
-                    self.logger.debug(f"BeautifulSoup extracted insufficient content: {len(content)} chars")
-                    
-            except Exception as e:
-                self.logger.debug(f"BeautifulSoup extraction failed: {e}")
-                    
-        except Exception as e:
-            self.logger.error(f"Article extraction completely failed for {url}: {e}")
-            self.logger.debug(f"Full extraction error:", exc_info=True)
-        
-        self.logger.warning(f"All extraction methods failed for {url}")
-        return None
-
-    def _resolve_google_news_url(self, google_url: str) -> Optional[str]:
-        """Resolve Google News redirect URL to actual article URL."""
-        try:
-            # Try multiple methods to resolve Google News URLs
-            
-            # Method 1: Try to decode the URL from the Google News structure
-            if "/articles/" in google_url:
-                # Some Google News URLs contain base64 encoded data
-                import base64
-                try:
-                    # Extract the article ID part
-                    article_id = google_url.split("/articles/")[1].split("?")[0]
-                    
-                    # Try to decode if it looks like base64
-                    if len(article_id) > 20:  # Reasonable length check
-                        try:
-                            decoded = base64.b64decode(article_id + "==")  # Add padding
-                            decoded_str = decoded.decode('utf-8', errors='ignore')
-                            
-                            # Look for URLs in the decoded content
-                            import re
-                            url_pattern = r'https?://[^\s<>"\']*'
-                            urls = re.findall(url_pattern, decoded_str)
-                            
-                            for url in urls:
-                                if not url.startswith('https://news.google.com'):
-                                    self.logger.debug(f"Decoded URL from Google News: {url}")
-                                    return url.rstrip('.,;')  # Clean trailing punctuation
-                                    
-                        except Exception as e:
-                            self.logger.debug(f"Base64 decode failed: {e}")
-                            
-                except Exception as e:
-                    self.logger.debug(f"URL parsing failed: {e}")
-            
-            # Method 2: Follow redirects with browser-like headers
-            session = self.cloudscraper if self.cloudscraper else self.session
-            
-            # Set browser-like headers to avoid being blocked
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.5',
-                'Accept-Encoding': 'gzip, deflate',
-                'DNT': '1',
-                'Connection': 'keep-alive',
-                'Upgrade-Insecure-Requests': '1',
-            }
-            
-            # Try GET request with full browser simulation
-            response = session.get(google_url, headers=headers, allow_redirects=True, timeout=15)
-            
-            # Check if we got redirected to a different domain
-            if response.url and response.url != google_url and not response.url.startswith('https://news.google.com'):
-                self.logger.debug(f"Google News redirect resolved via browser simulation: {google_url} -> {response.url}")
-                return response.url
-            
-            # Method 3: Try to extract link from the response content
-            if response.status_code == 200:
-                from bs4 import BeautifulSoup
-                soup = BeautifulSoup(response.content, 'html.parser')
-                
-                # Look for canonical link
-                canonical = soup.find('link', rel='canonical')
-                if canonical and canonical.get('href'):
-                    href = canonical['href']
-                    if not href.startswith('https://news.google.com'):
-                        self.logger.debug(f"Found canonical URL: {href}")
-                        return href
-                
-                # Look for any external links that might be the article
-                for link in soup.find_all('a', href=True):
-                    href = link['href']
-                    if href.startswith('http') and not href.startswith('https://news.google.com') and not href.startswith('https://google.com'):
-                        # Basic validation - should look like a news article URL
-                        if any(domain in href for domain in ['cnn.com', 'reuters.com', 'apnews.com', 'politico.com', 'washingtonpost.com', 'nytimes.com']):
-                            self.logger.debug(f"Found article link in page: {href}")
-                            return href
-            
-            self.logger.warning(f"All methods failed to resolve Google News URL: {google_url}")
-            return None
-            
-        except Exception as e:
-            self.logger.error(f"Error resolving Google News URL {google_url}: {e}")
-            return None
 
     def _is_political(self, title: str, content: str) -> bool:
         """Check if content is political with logging."""
@@ -1121,7 +1208,7 @@ class ContentCollector:
         self.logger.info(f"Government API collection complete: {len(articles)} documents")
         return articles
 
-    # ... (rest of the methods remain the same but with added logging where appropriate)
+    # ... (rest of the methods remain the same)
 
     def _collect_from_sitemap(self, source: Dict[str, Any], start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
         """Collect articles from XML sitemaps with detailed logging."""
