@@ -70,7 +70,8 @@ python Night_Watcher.py --web
 
 ## 🎯 Key Features
 
- - **Multi-source collection** from verified news outlets and official government feeds
+- **Multi-source collection** from verified news outlets and official government feeds
+- **Government scraping** for executive orders and congressional bills when APIs are unavailable
 - **7-round analysis pipeline** for deep content understanding
 - **Knowledge graph** tracking entities and relationships
 - **Vector search** for finding similar patterns
