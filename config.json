@@ -3,6 +3,7 @@
     "article_limit": 10,
     "use_google_news": true,
     "use_gdelt": true,
+    "use_gov_scrapers": true,
     "sources": [
       {
         "url": "https://api.gdeltproject.org/api/v2/doc/doc?query=white%20house%20OR%20congress%20OR%20supreme%20court&mode=artlist&format=rss&maxrecords=250",

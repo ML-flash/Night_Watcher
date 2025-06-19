@@ -61,6 +61,7 @@ After running this command, open your browser to `http://localhost:5000` to acce
 Once the dashboard is open, you can perform all major tasks without additional command line steps:
 
 - **Collect Content**: Gather political news articles from the configured sources.
+- **Scrape Government Sources**: Download executive orders and bills when APIs are unavailable.
 - **Analyze Content**: Run multi‑round analysis to detect manipulation techniques and extract key entities. The analysis pipeline includes seven rounds as described in the README【F:README.md†L158-L167】.
 - **Review Queue**: Validate and approve analysis results.
 - **Manage Sources**: Enable or disable RSS feeds and add new ones.

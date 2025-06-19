@@ -21,6 +21,11 @@ import feedparser
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from gov_scrapers import (
+    scrape_federal_register,
+    scrape_white_house_actions,
+    scrape_congress_bills,
+)
 
 # Optional imports
 try:
@@ -141,6 +146,7 @@ class ContentCollector:
         self.gap_detection_enabled = cc.get("gap_detection_enabled", True)
         self.use_google_news = cc.get("use_google_news", True)
         self.use_gdelt = cc.get("use_gdelt", True)
+        self.use_gov_scrapers = cc.get("use_gov_scrapers", True)
 
         self.cancelled = False
         
@@ -640,13 +646,16 @@ class ContentCollector:
                 
                 all_articles.append(article)
         
-        # 4. Collect from Government APIs
-        self.logger.info("=== PHASE 4: GOVERNMENT APIS ===")
+        # 4. Collect from government websites
+        self.logger.info("=== PHASE 4: GOVERNMENT SOURCES ===")
         if callback:
-            callback({"type": "status", "message": "Collecting from government APIs..."})
-        
-        gov_articles = self._collect_government_apis(start_date, end_date, callback)
-        self.logger.info(f"Government APIs returned {len(gov_articles)} articles")
+            callback({"type": "status", "message": "Collecting from government sources..."})
+
+        if self.use_gov_scrapers:
+            gov_articles = self._collect_government_scrapers(start_date, end_date, callback)
+        else:
+            gov_articles = self._collect_government_apis(start_date, end_date, callback)
+        self.logger.info(f"Government sources returned {len(gov_articles)} articles")
         
         for article in gov_articles:
             article["id"] = self._generate_id(article["url"])
@@ -1206,6 +1215,48 @@ class ContentCollector:
         self.logger.debug("Congress.gov API not configured (requires API key)")
         
         self.logger.info(f"Government API collection complete: {len(articles)} documents")
+        return articles
+
+    def _collect_government_scrapers(self, start_date: datetime, end_date: datetime, callback=None) -> List[Dict[str, Any]]:
+        """Collect from government websites via scraping."""
+        self.logger.info("Starting government website scraping")
+
+        articles: List[Dict[str, Any]] = []
+
+        # Federal Register
+        try:
+            fr_docs = scrape_federal_register(start_date, end_date, limit=50)
+            for doc in fr_docs:
+                doc["via_gov_scraper"] = True
+                articles.append(doc)
+                if callback:
+                    callback({"type": "article", "source": "Federal Register", "title": doc["title"]})
+        except Exception as exc:
+            self.logger.error(f"Federal Register scraping failed: {exc}")
+
+        # White House presidential actions
+        try:
+            wh_docs = scrape_white_house_actions(start_date, end_date, limit=50)
+            for doc in wh_docs:
+                doc["via_gov_scraper"] = True
+                articles.append(doc)
+                if callback:
+                    callback({"type": "article", "source": "White House", "title": doc["title"]})
+        except Exception as exc:
+            self.logger.error(f"White House scraping failed: {exc}")
+
+        # Congress bills
+        try:
+            bill_docs = scrape_congress_bills(start_date, end_date, limit=50)
+            for doc in bill_docs:
+                doc["via_gov_scraper"] = True
+                articles.append(doc)
+                if callback:
+                    callback({"type": "article", "source": "Congress.gov", "title": doc["title"]})
+        except Exception as exc:
+            self.logger.error(f"Congress bill scraping failed: {exc}")
+
+        self.logger.info(f"Government scraping complete: {len(articles)} documents")
         return articles
 
     # ... (rest of the methods remain the same)
