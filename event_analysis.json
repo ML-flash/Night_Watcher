@@ -1,7 +1,7 @@
 {
     "name": "events_analysis_v2",
     "description": "Event-focused analysis that works with Night_watcher's pipeline",
-    "status": "TESTING",
+    "status": "PRODUCTION",
     "version": "2.0",
     "created": "2025-01-01",
     "rounds": [
