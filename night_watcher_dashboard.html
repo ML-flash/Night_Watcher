@@ -616,7 +616,6 @@
                             <input type="number" id="max-analyze" value="20" min="1" max="100">
                         </div>
                         <button class="btn btn-primary" onclick="startAnalysis()">Start Analysis</button>
-                        <button class="btn btn-warning btn-small" onclick="validateSelectedTemplates()">Validate Templates</button>
                     </div>
                 </div>
 
@@ -627,10 +626,7 @@
                 <h3>Review Queue <span style="font-size: 0.8rem; color: #a0aec0;">(Testing Templates Only)</span></h3>
 
                 <div id="template-review-controls" style="margin-bottom: 0.5rem;">
-                    <div id="review-template-list" style="margin-bottom: 0.5rem;"></div>
-                    <button class="btn btn-success btn-small" onclick="approveSelectedTemplates()">Validate Selected Templates</button>
-                    <button class="btn btn-danger btn-small" onclick="rejectSelectedTemplates()">Reject Selected Templates</button>
-
+                    <button class="btn btn-success btn-small" onclick="approveSelectedTemplates()">Approve Selected Templates</button>
                 </div>
                 <div id="review-queue-container" style="margin-bottom: 2rem;">
                     <div class="empty-state">
@@ -1054,7 +1050,6 @@
                 // Update template selectors
                 const selectors = [
                     'analysis-template',
-                    'validate-template-select',
                     'test-template-select'
                 ];
                 
@@ -1132,51 +1127,6 @@
             logMessage('task-log', 'success', 'Templates refreshed');
         }
 
-        async function validateSelectedTemplates() {
-            const selected = document.querySelectorAll('.template-checkbox:checked');
-            if (selected.length === 0) {
-                alert('Please select at least one template');
-                return;
-            }
-
-            for (const cb of selected) {
-                try {
-                    const result = await apiCall('/validate-template', {
-                        method: 'POST',
-                        body: JSON.stringify({ template: cb.value })
-                    });
-                    logMessage('analyzer-log', result.valid ? 'success' : 'warning', `${cb.value}: ${result.valid ? 'Valid' : 'Issues found'}`);
-                } catch (error) {
-                    logMessage('analyzer-log', 'error', `Validation failed for ${cb.value}: ${error.message}`);
-                }
-            }
-        }
-
-        async function validateTemplate() {
-            const template = document.getElementById('validate-template-select').value;
-            const resultsDiv = document.getElementById('validation-results');
-            
-            try {
-                const result = await apiCall('/validate-template', {
-                    method: 'POST',
-                    body: JSON.stringify({ template })
-                });
-                
-                resultsDiv.innerHTML = `
-                    <h4>Validation Results</h4>
-                    <p><strong>Valid:</strong> ${result.valid ? '✅ Yes' : '❌ No'}</p>
-                    ${result.issues.length > 0 ? `
-                        <p><strong>Issues:</strong></p>
-                        <ul>
-                            ${result.issues.map(issue => `<li>${issue}</li>`).join('')}
-                        </ul>
-                    ` : '<p>No issues found!</p>'}
-                `;
-                
-            } catch (error) {
-                resultsDiv.innerHTML = `<p class="error">Validation failed: ${error.message}</p>`;
-            }
-        }
 
         async function testTemplate() {
             const template = document.getElementById('test-template-select').value;
@@ -1316,8 +1266,6 @@
             try {
                 const queue = await apiCall('/review-queue');
                 const container = document.getElementById('review-queue-container');
-                const templateList = document.getElementById('review-template-list');
-                if (templateList) templateList.innerHTML = '';
 
                 if (queue.length === 0) {
                     container.innerHTML = `
@@ -1329,20 +1277,6 @@
                     return;
                 }
 
-                // Populate template checkboxes from queue
-                const templateSet = new Set(queue.map(q => q.template_name));
-                templateSet.forEach(name => {
-                    if (!templateList) return;
-                    const label = document.createElement('label');
-                    label.style.marginRight = '0.5rem';
-                    const cb = document.createElement('input');
-                    cb.type = 'checkbox';
-                    cb.className = 'review-template';
-                    cb.value = name;
-                    label.appendChild(cb);
-                    label.appendChild(document.createTextNode(' ' + name));
-                    templateList.appendChild(label);
-                });
 
                 container.innerHTML = '';
                 queue.forEach((item, index) => {
@@ -1360,7 +1294,7 @@
             div.className = 'analysis-item';
             div.innerHTML = `
                 <div class="analysis-header">
-                    <input type="checkbox" class="review-select" data-id="${item.id}" style="margin-right:0.5rem;">
+                    <input type="checkbox" class="review-select" data-id="${item.id}" data-template="${item.template_name}" style="margin-right:0.5rem;">
                     <div>
                         <strong>${item.article.title}</strong>
                         <div style="margin-top: 0.5rem;">
@@ -1410,30 +1344,6 @@
             }
         }
 
-        async function rejectTemplate(templateName) {
-            try {
-                const templates = await apiCall('/templates');
-                const allTemplates = [...(templates.approved || []), ...(templates.unapproved || [])];
-                const template = allTemplates.find(t => t.name === templateName);
-
-                if (!template) {
-                    alert('Template not found');
-                    return;
-                }
-
-                await apiCall('/template/reject', {
-                    method: 'POST',
-                    body: JSON.stringify({ template: template.filename })
-                });
-
-                logMessage('task-log', 'warning', `Template rejected: ${templateName}`);
-                await loadTemplates();
-                await refreshReviewQueue();
-
-            } catch (error) {
-                logMessage('task-log', 'error', `Failed to reject template: ${error.message}`);
-            }
-        }
 
         async function approveAnalysis(id) {
             try {
@@ -1469,28 +1379,22 @@
 
 
         async function approveSelectedTemplates() {
-            const selected = document.querySelectorAll('.review-template:checked');
+            const selected = document.querySelectorAll('.review-select:checked');
             if (selected.length === 0) {
-                alert('Please select at least one template');
+                alert('Please select at least one analysis');
                 return;
             }
-            for (const cb of selected) {
-                await approveTemplate(cb.value);
-            }
-            await refreshReviewQueue();
-            await loadTemplates();
-            refreshStatus();
-        }
 
-        async function rejectSelectedTemplates() {
-            const selected = document.querySelectorAll('.review-template:checked');
-            if (selected.length === 0) {
-                alert('Please select at least one template');
-                return;
+            const templateNames = new Set();
+            selected.forEach(cb => {
+                const name = cb.getAttribute('data-template');
+                if (name) templateNames.add(name);
+            });
+
+            for (const name of templateNames) {
+                await approveTemplate(name);
             }
-            for (const cb of selected) {
-                await rejectTemplate(cb.value);
-            }
+
             await refreshReviewQueue();
             await loadTemplates();
             refreshStatus();
