@@ -7,12 +7,14 @@
     "rounds": [
         {
             "name": "fact_extraction",
+
             "prompt": "Extract events and temporal facts from this article.\n\nFocus on:\n- Specific events that occurred or are planned\n- Dates and temporal sequences\n- Causal relationships between events\n- Key actors and their actions\n\nYour response MUST be a valid JSON object:\n{\n  \"publication_date\": \"{publication_date}\",\n  \"facts\": [\n    \"On [date], [actor] did [action]\",\n    \"This event caused/enabled/prevented [other event]\",\n    \"The sequence was: [event1] → [event2] → [event3]\"\n  ],\n  \"events\": [\n    {\n      \"name\": \"Event name\",\n      \"date\": \"YYYY-MM-DD or N/A\",\n      \"description\": \"What happened\"\n    }\n  ],\n  \"direct_quotes\": [\n    \"Quote about an event\",\n    \"Quote about timing or sequence\"\n  ]\n}\n\nExtract ALL events and temporal relationships. Use \"N/A\" for unknown dates.\n\nCONTENT:\n{article_content}",
             "max_tokens": 2500
         },
         {
             "name": "article_analysis",
             "prompt": "Analyze the temporal and causal patterns in these events.\n\nFacts extracted:\n{facts}\n\nProvide analysis of:\n\n1. TEMPORAL PATTERNS\n   - Event clustering (multiple events in short time)\n   - Acceleration/deceleration of activity\n   - Strategic timing choices\n   - Deadline-driven events\n\n2. CAUSAL CHAINS\n   - Which events directly caused others?\n   - What feedback loops exist?\n   - Are there cascade effects?\n   - What are the trigger events?\n\n3. DEMOCRATIC IMPACT\n   - How do these events affect democratic norms?\n   - Is there a pattern of escalation?\n   - What institutions are being tested?\n   - Rate the urgency (1-10)\n\n4. PREDICTIVE INDICATORS\n   - What events are likely to follow?\n   - What are the warning signs?\n   - Where are intervention points?\n\n5. MANIPULATION & FRAMING\n   - How are events being framed?\n   - What narratives justify these actions?\n   - Is timing being used strategically?\n\nProvide thorough analysis with specific examples.",
+
             "max_tokens": 2500
         },
         {

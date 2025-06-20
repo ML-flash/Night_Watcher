@@ -1291,7 +1291,7 @@
 
         function createReviewItem(item, index) {
             const div = document.createElement('div');
-            div.className = 'analysis-item';
+            div.className = 'analysis-item expanded';
             div.innerHTML = `
                 <div class="analysis-header">
                     <input type="checkbox" class="review-select" data-id="${item.id}" data-template="${item.template_name}" style="margin-right:0.5rem;">
@@ -1311,10 +1311,16 @@
                     <p><strong>Manipulation Score:</strong> ${item.manipulation_score || 'N/A'}/10</p>
                     <p><strong>Concern Level:</strong> ${item.concern_level || 'N/A'}</p>
                     <div style="margin-top: 1rem;">
+                        <button class="btn btn-success btn-small" onclick="approveAnalysis('${item.id}')">Approve</button>
+                        <button class="btn btn-danger btn-small" onclick="rejectAnalysis('${item.id}')">Reject</button>
                         <button class="btn btn-primary btn-small" onclick="viewFullAnalysis('${item.id}')">View Full</button>
                     </div>
                 </div>
             `;
+            div.addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+                div.classList.toggle('expanded');
+            });
             return div;
         }
 
