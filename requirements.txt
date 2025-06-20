@@ -14,6 +14,7 @@ flask-cors>=4.0.0
 # Article extraction (at least one recommended)
 newspaper3k>=0.2.8
 trafilatura>=1.6.0
+googlenewsdecoder>=0.1.7
 lxml>=4.9.0
 
 # Vector Store (required for full functionality)
