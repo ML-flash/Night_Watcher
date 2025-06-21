@@ -42,6 +42,30 @@ REVIEW_QUEUE_FILE = "data/review_queue.json"
 # Public key storage
 PUBLIC_KEY_FILE = "data/export_keys/public_key.pem"
 
+# Event aggregation cache
+EVENT_CACHE_FILE = "data/event_cache/latest_events.json"
+
+
+def cache_aggregation_results(result):
+    """Persist latest event aggregation results to disk."""
+    try:
+        os.makedirs(os.path.dirname(EVENT_CACHE_FILE), exist_ok=True)
+        with open(EVENT_CACHE_FILE, "w", encoding="utf-8") as f:
+            json.dump(result, f, indent=2)
+    except Exception as e:
+        logger.error(f"Failed to cache aggregation results: {e}")
+
+
+def load_latest_aggregation():
+    """Load most recent aggregation results if available."""
+    if os.path.exists(EVENT_CACHE_FILE):
+        try:
+            with open(EVENT_CACHE_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error(f"Failed to load aggregation results: {e}")
+    return {}
+
 
 def init_night_watcher():
     """Initialize Night_watcher instance."""
@@ -214,6 +238,15 @@ def api_status():
 
         # Add vector count
         status["vector_count"] = status.get("vector_store", {}).get("total_vectors", 0)
+
+        # Add latest event aggregation stats
+        latest_events = load_latest_aggregation()
+        status["event_stats"] = {
+            "unique_events": latest_events.get("event_count", 0),
+            "cross_source_events": len(latest_events.get("cross_source_events", [])),
+            "active_campaigns": len(latest_events.get("coordinated_campaigns", [])),
+            "threat_level": latest_events.get("authoritarian_escalation", {}).get("overall_threat_level", 0),
+        }
 
         # Add task status
         status["task_status"] = {
@@ -915,6 +948,45 @@ def api_export_history():
     orchestrator = night_watcher.get_export_orchestrator()
     history = orchestrator.version_mgr.get_export_history()
     return jsonify(history)
+
+
+# ---------------------------------------------------------------------------
+# Event aggregation endpoints
+# ---------------------------------------------------------------------------
+
+@app.route("/api/aggregate-events", methods=["POST"])
+def api_aggregate_events():
+    """Run event aggregation across recent analyses."""
+    init_night_watcher()
+    data = request.json or {}
+    window = int(data.get("analysis_window", 7))
+
+    result = night_watcher.aggregate_events(analysis_window=window)
+    cache_aggregation_results(result)
+    return jsonify(result)
+
+
+@app.route("/api/events/latest")
+def api_latest_events():
+    """Return most recent aggregation results."""
+    latest = load_latest_aggregation()
+    return jsonify(latest)
+
+
+@app.route("/api/events/timeline")
+def api_event_timeline():
+    """Timeline-ready list of events sorted by date."""
+    latest = load_latest_aggregation()
+    events = latest.get("events", [])
+    events.sort(key=lambda e: e.get("date") or "")
+    return jsonify(events)
+
+
+@app.route("/api/events/campaigns")
+def api_campaigns():
+    """Return details on detected coordinated campaigns."""
+    latest = load_latest_aggregation()
+    return jsonify(latest.get("coordinated_campaigns", []))
 
 
 @app.route("/api/config", methods=["GET", "POST"])
