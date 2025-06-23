@@ -680,7 +680,10 @@ class EventAggregator:
     
     def _analyze_bias_correlation(self, events: List[Dict]) -> Dict[str, Any]:
         """Analyze how bias correlates with event reporting."""
-        bias_patterns = defaultdict(lambda: defaultdict(int))
+        # Track how many events each bias reports and which sources mention
+        # those events. The default entry contains a count and a set for
+        # storing unique sources.
+        bias_patterns = defaultdict(lambda: {"event_count": 0, "sources": set()})
         
         for event in events:
             if "source_perspectives" in event:
