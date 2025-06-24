@@ -1,6 +1,6 @@
 {
   "content_collection": {
-    "article_limit": 10,
+    "article_limit": 2,
     "use_google_news": true,
     "use_gdelt": true,
     "use_gov_scrapers": true,
@@ -11,7 +11,7 @@
         "name": "GDELT Comprehensive Politics",
         "bias": "aggregate",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.federalregister.gov/api/v1/documents.rss?conditions[publication_date][gte]=2025-01-20",
@@ -19,7 +19,7 @@
         "name": "Federal Register Complete",
         "bias": "official",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.govinfo.gov/rss/bills.xml",
@@ -27,7 +27,7 @@
         "name": "GovInfo Bills Feed",
         "bias": "official",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.memeorandum.com/feed.xml",
@@ -35,7 +35,7 @@
         "name": "Memeorandum Politics",
         "bias": "aggregate",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://rss.app/feeds/8ZLRA1MIdInNK9TW.xml",
@@ -44,7 +44,7 @@
         "name": "AP News Politics",
         "site_domain": "apnews.com",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://feeds.npr.org/1004/rss.xml",
@@ -53,7 +53,7 @@
         "name": "NPR Politics",
         "site_domain": "npr.org",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.politico.com/rss/politicopicks.xml",
@@ -62,7 +62,7 @@
         "name": "Politico Top Picks",
         "site_domain": "politico.com",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://thehill.com/feed/",
@@ -71,7 +71,7 @@
         "name": "The Hill",
         "site_domain": "thehill.com",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.reuters.com/world/us/rss",
@@ -80,7 +80,7 @@
         "name": "Reuters US",
         "site_domain": "reuters.com",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.propublica.org/feeds/propublica/main",
@@ -89,7 +89,7 @@
         "name": "ProPublica",
         "site_domain": "propublica.org",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.democracynow.org/democracynow.rss",
@@ -98,7 +98,7 @@
         "name": "Democracy Now",
         "site_domain": "democracynow.org",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://reason.com/feed/",
@@ -107,7 +107,7 @@
         "name": "Reason Magazine",
         "site_domain": "reason.com",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.whitehouse.gov/briefing-room/statements-releases/feed/",
@@ -116,7 +116,7 @@
         "name": "White House Press Releases",
         "site_domain": "whitehouse.gov",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.supremecourt.gov/rss/opinions.xml",
@@ -125,7 +125,7 @@
         "name": "Supreme Court Opinions",
         "site_domain": "supremecourt.gov",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.justice.gov/feeds/press_releases/rss.xml",
@@ -134,7 +134,7 @@
         "name": "DOJ Press Releases",
         "site_domain": "justice.gov",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.cnn.com/politics",
@@ -143,7 +143,7 @@
         "name": "CNN Politics (Archive)",
         "archive_url": "https://www.cnn.com/politics",
         "enabled": false,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.foxnews.com/politics",
@@ -152,7 +152,7 @@
         "name": "Fox News Politics (Archive)",
         "archive_url": "https://www.foxnews.com/politics",
         "enabled": false,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.washingtonpost.com/sitemap/politics/",
@@ -161,7 +161,7 @@
         "name": "Washington Post Politics",
         "sitemap_url": "https://www.washingtonpost.com/sitemap-index.xml",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.nytimes.com/sitemaps/sitemap_news.xml.gz",
@@ -169,7 +169,7 @@
         "bias": "center-left",
         "name": "New York Times",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.theguardian.com/us-news/rss",
@@ -177,7 +177,7 @@
         "bias": "center-left",
         "name": "The Guardian US",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.wsj.com/xml/rss/3_7085.xml",
@@ -185,7 +185,7 @@
         "bias": "center-right",
         "name": "Wall Street Journal Politics",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.axios.com/feeds/politics.xml",
@@ -193,7 +193,7 @@
         "bias": "center",
         "name": "Axios Politics",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.vox.com/rss/policy-and-politics/index.xml",
@@ -201,7 +201,7 @@
         "bias": "center-left",
         "name": "Vox Policy & Politics",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.buzzfeednews.com/section/politics.xml",
@@ -209,7 +209,7 @@
         "bias": "center-left",
         "name": "BuzzFeed News Politics",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.nbcnews.com/politics",
@@ -218,7 +218,7 @@
         "name": "NBC News Politics (Archive)",
         "archive_url": "https://www.nbcnews.com/politics",
         "enabled": false,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://abcnews.go.com/Politics",
@@ -227,7 +227,7 @@
         "name": "ABC News Politics (Archive)",
         "archive_url": "https://abcnews.go.com/Politics",
         "enabled": false,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.cbsnews.com/politics/",
@@ -236,7 +236,7 @@
         "name": "CBS News Politics (Archive)",
         "archive_url": "https://www.cbsnews.com/politics/",
         "enabled": false,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.uscourts.gov/news/rss/all",
@@ -244,7 +244,7 @@
         "bias": "official",
         "name": "US Courts News",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.congress.gov/rss/most-viewed-bills.xml",
@@ -252,7 +252,7 @@
         "bias": "official",
         "name": "Congress Most Viewed Bills",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.state.gov/rss-feed/",
@@ -260,7 +260,7 @@
         "bias": "official",
         "name": "State Department",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.defense.gov/DesktopModules/ArticleCS/RSS.ashx?max=10&ContentType=1&Site=945",
@@ -268,7 +268,7 @@
         "bias": "official",
         "name": "Department of Defense",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.dhs.gov/news_and_updates/rss.xml",
@@ -276,7 +276,7 @@
         "bias": "official",
         "name": "Homeland Security",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://theintercept.com/feed/?lang=en",
@@ -284,7 +284,7 @@
         "bias": "left",
         "name": "The Intercept",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.motherjones.com/politics/feed/",
@@ -292,7 +292,7 @@
         "bias": "left",
         "name": "Mother Jones Politics",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.breitbart.com/politics/feed/",
@@ -300,7 +300,7 @@
         "bias": "right",
         "name": "Breitbart Politics",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.nationalreview.com/feed/",
@@ -308,7 +308,7 @@
         "bias": "right",
         "name": "National Review",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://fivethirtyeight.com/politics/feed/",
@@ -316,7 +316,7 @@
         "bias": "center",
         "name": "FiveThirtyEight Politics",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://www.realclearpolitics.com/index.xml",
@@ -324,7 +324,7 @@
         "bias": "center-right",
         "name": "RealClearPolitics",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://news.google.com/rss/search?q=site:cnn.com+politics+after:2025-01-20&hl=en-US&gl=US&ceid=US:en",
@@ -332,7 +332,7 @@
         "name": "CNN via Google News",
         "bias": "center-left",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://news.google.com/rss/search?q=site:foxnews.com+politics+after:2025-01-20&hl=en-US&gl=US&ceid=US:en",
@@ -340,7 +340,7 @@
         "name": "Fox News via Google News",
         "bias": "right",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://news.google.com/rss/search?q=white+house+executive+order+after:2025-01-20&hl=en-US&gl=US&ceid=US:en",
@@ -348,7 +348,7 @@
         "name": "Executive Orders Search",
         "bias": "aggregate",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       },
       {
         "url": "https://news.google.com/rss/search?q=congress+legislation+passed+after:2025-01-20&hl=en-US&gl=US&ceid=US:en",
@@ -356,7 +356,7 @@
         "name": "Congressional Activity",
         "bias": "aggregate",
         "enabled": true,
-        "limit": 10
+        "limit": 2
       }
     ],
     "govt_keywords": [
@@ -462,8 +462,8 @@
     "delay_between_requests": 2.0
   },
   "llm_provider": {
-    "type": "anthropic",
-    "model": "qwen3-14b"
+    "type": "lm_studio",
+    "model": "qwen/qwen3-30b-a3b"
   },
   "analysis": {
     "max_articles": 20
