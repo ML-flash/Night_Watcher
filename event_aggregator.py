@@ -200,31 +200,34 @@ class EventAggregator:
         # Merge similar events
         merged_events = self._merge_similar_events(raw_events)
         
+        # Assign IDs FIRST - before any analysis that needs them
+        for event in merged_events:
+            event_id = self._generate_event_id(event)
+            event["event_id"] = event_id
+            event["reporting_variance"] = self._calculate_reporting_variance(event)
+        
         # Pattern analysis
         pattern_analysis = self._analyze_event_patterns(merged_events)
         
         # Detect coordinated campaigns
         campaigns = self._detect_coordinated_campaigns(merged_events, all_actors, all_narratives)
         
-        # Calculate urgency scores
+        # Calculate urgency scores - now events have IDs
         urgency_analysis = self._calculate_urgency_scores(merged_events, campaigns)
         
-        # Assign IDs and build final event records
+        # Build final event records
         for event in merged_events:
-            event_id = self._generate_event_id(event)
-            event["event_id"] = event_id
-            event["reporting_variance"] = self._calculate_reporting_variance(event)
             event["campaigns"] = [c for c in campaigns if event["name"] in c["events"]]
-            self.events[event_id] = event
+            self.events[event["event_id"]] = event
             
             # Track which articles mentioned this event
             for article_id in event["article_ids"]:
-                self.article_to_events[article_id].add(event_id)
+                self.article_to_events[article_id].add(event["event_id"])
         
         return {
             "events": list(self.events.values()),
             "event_count": len(self.events),
-            "article_event_map": dict(self.article_to_events),
+            "article_event_map": {k: list(v) for k, v in self.article_to_events.items()},  # Convert sets to lists
             "cross_source_events": self._identify_cross_source_events(),
             "pattern_analysis": pattern_analysis,
             "coordinated_campaigns": campaigns,
@@ -356,12 +359,28 @@ class EventAggregator:
             for key, value in event.get("attributes", {}).items():
                 all_attributes[key].append(value)
         
-        # Consolidate attributes
+        # Consolidate attributes - FIX: Handle unhashable types
         consolidated_attributes = {}
         for key, values in all_attributes.items():
-            # For now, just take the most common value
-            if values:
-                consolidated_attributes[key] = max(set(values), key=values.count)
+            if not values:
+                continue
+            
+            # If all values are the same, just use the first one
+            if len(values) == 1:
+                consolidated_attributes[key] = values[0]
+            elif all(json.dumps(v, sort_keys=True) == json.dumps(values[0], sort_keys=True) for v in values):
+                consolidated_attributes[key] = values[0]
+            else:
+                # For different values, check if they're simple types
+                if all(isinstance(v, (str, int, float, bool, type(None))) for v in values):
+                    # Find most common value
+                    value_counts = defaultdict(int)
+                    for v in values:
+                        value_counts[v] += 1
+                    consolidated_attributes[key] = max(value_counts.keys(), key=lambda k: value_counts[k])
+                else:
+                    # For complex types (lists, dicts), keep all values
+                    consolidated_attributes[key] = values
         
         base_event["attributes"] = consolidated_attributes
         
