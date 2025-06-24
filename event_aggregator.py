@@ -20,6 +20,74 @@ class EventAggregator:
         self.similarity_threshold = similarity_threshold
         self.events = {}  # event_id -> merged event data
         self.article_to_events = defaultdict(set)  # article_id -> set of event_ids
+
+        # Storage for consolidated knowledge graph data
+        self.node_index: Dict[Tuple[str, str], str] = {}
+        self.nodes: Dict[str, Dict[str, Any]] = {}
+        self.edges: Dict[Tuple[str, str, str], Dict[str, Any]] = {}
+        self._node_counter = 0
+
+    def _add_nodes(self, nodes: List[Dict[str, Any]], source_doc: str) -> Dict[str, str]:
+        """Add nodes from a single analysis to the consolidated store."""
+        id_map = {}
+        for node in nodes:
+            node_type = node.get("node_type")
+            name = node.get("name")
+            if not node_type or not name:
+                continue
+
+            key = (node_type, name.lower())
+            if key in self.node_index:
+                node_id = self.node_index[key]
+                existing = self.nodes[node_id]
+                existing.setdefault("evidence_sources", []).append(source_doc)
+                # Merge attributes conservatively
+                for k, v in (node.get("attributes") or {}).items():
+                    if k not in existing.get("attributes", {}):
+                        existing.setdefault("attributes", {})[k] = v
+            else:
+                self._node_counter += 1
+                node_id = f"agg_node_{self._node_counter}"
+                self.node_index[key] = node_id
+                self.nodes[node_id] = {
+                    "id": node_id,
+                    "node_type": node_type,
+                    "name": name,
+                    "attributes": node.get("attributes", {}),
+                    "evidence_sources": [source_doc],
+                }
+            original_id = node.get("id")
+            if original_id:
+                id_map[original_id] = node_id
+        return id_map
+
+    def _add_edges(self, edges: List[Dict[str, Any]], id_map: Dict[str, str], source_doc: str) -> None:
+        """Add edges from a single analysis using consolidated node IDs."""
+        for edge in edges:
+            src_orig = edge.get("source_id")
+            tgt_orig = edge.get("target_id")
+            relation = edge.get("relation")
+            if not src_orig or not tgt_orig or not relation:
+                continue
+
+            src = id_map.get(src_orig)
+            tgt = id_map.get(tgt_orig)
+            if not src or not tgt:
+                continue
+
+            key = (src, tgt, relation)
+            if key not in self.edges:
+                self.edges[key] = {
+                    "source": src,
+                    "target": tgt,
+                    "relationship": relation,
+                    "weight": 1,
+                    "evidence_sources": [source_doc],
+                }
+            else:
+                self.edges[key]["weight"] += 1
+                self.edges[key]["evidence_sources"].append(source_doc)
+
         
     def process_analysis_batch(self, analyses: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
@@ -64,6 +132,10 @@ class EventAggregator:
             kg_payload = analysis.get("kg_payload", {})
             nodes = kg_payload.get("nodes", [])
             edges = kg_payload.get("edges", [])
+
+            # Consolidate nodes and edges for master KG payload
+            id_map = self._add_nodes(nodes, article_id)
+            self._add_edges(edges, id_map, article_id)
             
             for node in nodes:
                 node_type = node.get("node_type")
@@ -143,7 +215,11 @@ class EventAggregator:
             "actor_network": self._build_actor_network(all_actors),
             "narrative_tracking": self._track_narrative_evolution(all_narratives),
             "manipulation_analysis": self._analyze_manipulation_patterns(manipulation_patterns),
-            "authoritarian_escalation": self._track_authoritarian_escalation(authoritarian_indicators)
+            "authoritarian_escalation": self._track_authoritarian_escalation(authoritarian_indicators),
+            "kg_payload": {
+                "nodes": list(self.nodes.values()),
+                "edges": list(self.edges.values()),
+            }
         }
     
     def _merge_similar_events(self, raw_events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

@@ -311,14 +311,45 @@ class NightWatcher:
         # Create event-centric knowledge graph nodes
         event_nodes = aggregator.create_event_nodes()
         event_edges = aggregator.create_event_relationships()
-        
-        # Add to knowledge graph
+
+        # Consolidated KG payload from aggregator
+        master_kg = results.get("kg_payload", {})
+        kg_nodes = master_kg.get("nodes", [])
+        kg_edges = master_kg.get("edges", [])
+
+        # Add nodes to knowledge graph and track mapping
+        id_map = {}
+        for node in kg_nodes:
+            kg_id = self.knowledge_graph.add_node(
+                node_type=node.get("node_type"),
+                name=node.get("name"),
+                attributes={**node.get("attributes", {}), "evidence_sources": node.get("evidence_sources", [])}
+            )
+            id_map[node["id"]] = kg_id
+
+        # Add edges from consolidated payload
+        for edge in kg_edges:
+            src = id_map.get(edge.get("source"))
+            tgt = id_map.get(edge.get("target"))
+            if not src or not tgt:
+                continue
+            self.knowledge_graph.add_edge(
+                source_id=src,
+                relation=edge.get("relationship"),
+                target_id=tgt,
+                attributes={
+                    "weight": edge.get("weight", 1),
+                    "evidence_sources": edge.get("evidence_sources", [])
+                }
+            )
+
+        # Add event nodes/edges for aggregated events
         for node in event_nodes:
             self.knowledge_graph.graph.add_node(node["id"], **node)
-        
+
         for edge in event_edges:
             self.knowledge_graph.graph.add_edge(
-                edge["source_id"], 
+                edge["source_id"],
                 edge["target_id"],
                 relation=edge["relation"],
                 **edge.get("attributes", {})
