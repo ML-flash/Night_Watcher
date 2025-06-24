@@ -723,10 +723,13 @@ class KnowledgeGraph:
                     continue
 
                 # Add node to graph
+                node_attrs = node.get("attributes", {}).copy()
+                if node.get("citations"):
+                    node_attrs["citations"] = node.get("citations")
                 node_id = self.add_node(
                     node_type=node.get("node_type"),
                     name=node.get("name"),
-                    attributes=node.get("attributes", {}),
+                    attributes=node_attrs,
                     timestamp=node.get("timestamp", publication_date),
                     source_document_id=document_id,
                     source_sentence=node.get("source_sentence")
@@ -754,6 +757,9 @@ class KnowledgeGraph:
                     continue
 
                 # Add edge to graph
+                edge_attrs = edge.get("attributes", {}).copy()
+                if edge.get("citations"):
+                    edge_attrs["citations"] = edge.get("citations")
                 self.add_edge(
                     source_id=source_id,
                     relation=edge.get("relation"),
@@ -761,7 +767,7 @@ class KnowledgeGraph:
                     timestamp=edge.get("timestamp", publication_date),
                     evidence_quote=edge.get("evidence_quote"),
                     source_document_id=document_id,
-                    attributes=edge.get("attributes", {})
+                    attributes=edge_attrs
                 )
                 edges_added += 1
 
