@@ -1,44 +1,44 @@
 {
-    "name": "events_analysis_v4",
-    "description": "Enhanced event-focused analysis with authoritarian pattern detection",
-    "status": "PRODUCTION",
-    "version": "3.0",
-    "created": "2025-01-01",
-    "rounds": [
-        {
-            "name": "fact_extraction",
-            "prompt": "Extract events and temporal facts from this article.\n\nFocus on:\n- Specific events that occurred or are planned\n- Dates and temporal sequences\n- Causal relationships between events\n- Key actors and their actions\n- AUTHORITARIAN INDICATORS: Elite capture, narrative weaponization, legitimacy attacks\n\nYour response MUST be a valid JSON object in exactly this format:\n\n{{\n  \"publication_date\": \"YYYY-MM-DD\",\n  \"facts\": [\"Fact 1\", \"Fact 2\", \"Fact 3\"],\n  \"events\": [\n    {{\n      \"name\": \"Event name\",\n      \"date\": \"YYYY-MM-DD or N/A\",\n      \"description\": \"What happened\",\n      \"authoritarian_indicators\": [\"elite_capture\", \"narrative_weaponization\", \"legitimacy_attack\"]\n    }}\n  ],\n  \"direct_quotes\": [\"Quote 1\", \"Quote 2\"]\n}}\n\nDo not include any text before or after the JSON. Use \"N/A\" for unknown dates. Include at least one item in each array.\n\nCONTENT:\n{article_content}",
-            "max_tokens": 2500
-        },
-        {
-            "name": "article_analysis",
-            "prompt": "Analyze the temporal and causal patterns in these events, with special focus on authoritarian indicators.\n\nFacts extracted: {facts}\n\nProvide analysis of:\n\n1. TEMPORAL PATTERNS\n   - Event clustering and strategic timing\n   - Acceleration/deceleration patterns\n   - Crisis-response cycles\n\n2. AUTHORITARIAN PATTERN ANALYSIS\n   - ELITE CAPTURE: How are existing institutions/leaders being co-opted?\n   - NARRATIVE WEAPONIZATION: What fears/threats justify power expansion?\n   - LEGITIMACY ATTACKS: How are democratic processes being undermined?\n   - SYSTEMATIC APPROACH: Is this coordinated or opportunistic?\n\n3. CAUSAL CHAINS & FEEDBACK LOOPS\n   - Which events directly enabled authoritarian consolidation?\n   - What reinforcing cycles exist?\n   - Where are the critical intervention points?\n\n4. DEMOCRATIC IMPACT ASSESSMENT\n   - Rate urgency (1-10) for each pattern type\n   - Which institutions are most vulnerable?\n   - What norms are being eroded?\n\n5. PREDICTIVE INDICATORS\n   - What authoritarian escalations are likely?\n   - Where will the next pressure points emerge?\n   - What are the warning signs to watch?\n\nProvide specific examples and evidence for each authoritarian pattern identified.",
-            "max_tokens": 3000
-        },
-        {
-            "name": "node_extraction",
-            "prompt": "Extract nodes for the knowledge graph, focusing on events, actors, and AUTHORITARIAN MECHANISMS.\n\nBased on the facts: {facts}\n\nExtract nodes for:\n1. Events (node_type: \"event\") - with authoritarian_pattern attributes\n2. Actors (node_type: \"actor\") - with capture_status, influence_methods\n3. Institutions (node_type: \"institution\") - with vulnerability_level, capture_degree\n4. Narratives (node_type: \"narrative\") - weaponized stories/fears\n5. Legitimacy attacks (node_type: \"legitimacy_attack\") - attacks on democratic processes\n6. Elite capture mechanisms (node_type: \"elite_capture\") - specific co-optation methods\n7. Temporal patterns (node_type: \"temporal_pattern\") - recurring sequences\n8. Causal chains (node_type: \"causal_chain\") - linked event sequences\n\nYour ENTIRE response must be ONLY a valid JSON array. Do not include any text before or after the JSON array.\n\nExample format:\n[\n  {{\n    \"node_type\": \"event\",\n    \"name\": \"Senate Vote Pattern\",\n    \"attributes\": {{\n      \"date\": \"2025-01-20\",\n      \"event_type\": \"legislative_action\",\n      \"authoritarian_patterns\": [\"elite_capture\"],\n      \"urgency\": \"medium\",\n      \"democratic_impact\": 6\n    }},\n    \"timestamp\": \"2025-01-20\",\n    \"source_sentence\": \"Senators voted in unusual pattern\"\n  }}\n]\n\nCONTENT:\n{article_content}",
-            "max_tokens": 3500
-        },
-        {
-            "name": "node_deduplication",
-            "prompt": "Deduplicate nodes and assign IDs.\n\nNodes: {nodes}\n\nPublication date: {publication_date}\n\nMerge duplicate nodes (same type + similar name) and assign sequential IDs. Preserve all authoritarian pattern attributes.\n\nYour ENTIRE response must be ONLY a valid JSON array:\n[\n  {{\n    \"id\": 1,\n    \"node_type\": \"event\",\n    \"name\": \"Senate Vote Pattern\",\n    \"attributes\": {{\n      \"date\": \"2025-01-20\",\n      \"event_type\": \"legislative_action\",\n      \"authoritarian_patterns\": [\"elite_capture\"],\n      \"democratic_impact\": 6\n    }},\n    \"timestamp\": \"2025-01-20\"\n  }}\n]\n\nDo not include any text before or after the JSON array. Start with [ and end with ].",
-            "max_tokens": 3000
-        },
-        {
-            "name": "edge_extraction",
-            "prompt": "Extract temporal and causal relationships between nodes.\n\nNodes (with IDs): {nodes}\n\nOriginal facts: {facts}\n\nExtract edges using these relationship types:\n- precedes, follows, causes, enables, triggers\n- weaponizes, captures, co_opts, delegitimizes, justifies\n- enforces_loyalty, eliminates_resistance, normalizes\n- part_of_pattern, exemplifies\n\nYour ENTIRE response must be ONLY a valid JSON array:\n[\n  {{\n    \"source_id\": 1,\n    \"relation\": \"causes\",\n    \"target_id\": 2,\n    \"timestamp\": \"2025-01-20\",\n    \"evidence_quote\": \"Event A caused Event B\"\n  }}\n]\n\nDo not include any text before or after the JSON array. If no relationships found, return [].",
-            "max_tokens": 3500
-        },
-        {
-            "name": "edge_enrichment",
-            "prompt": "Enrich edges with impact assessment.\n\nEdges: {edges}\n\nFor each edge, add:\n- severity: 0.0-1.0 (impact on democracy)\n- is_decayable: true if effect fades over time\n- reasoning: why this relationship matters\n\nYour ENTIRE response must be ONLY a valid JSON array with ALL original fields plus new ones:\n[\n  {{\n    \"source_id\": 1,\n    \"relation\": \"causes\",\n    \"target_id\": 2,\n    \"timestamp\": \"2025-01-20\",\n    \"evidence_quote\": \"Event A caused Event B\",\n    \"severity\": 0.7,\n    \"is_decayable\": false,\n    \"reasoning\": \"This relationship undermines democratic norms\"\n  }}\n]\n\nIf input is [], output [].",
-            "max_tokens": 3500
-        },
-        {
-            "name": "package_ingestion",
-            "prompt": "Create final knowledge graph package.\n\nNodes: {nodes}\n\nEdges: {edges}\n\nCombine into a single JSON object with this exact structure:\n{{\n  \"nodes\": [...],\n  \"edges\": [...]\n}}\n\nYour ENTIRE response must be ONLY this JSON object. Copy the nodes array and edges array exactly as provided.",
-            "max_tokens": 3500
-        }
-    ]
+  "name": "event_analysis_v4",
+  "description": "Event-centric analysis focusing on what happened vs how it's reported",
+  "status": "TESTING",
+  "version": "1.0",
+  "created": "2025-01-24",
+  "rounds": [
+    {
+      "name": "event_extraction",
+      "prompt": "Extract ONLY concrete events - things that actually happened.\n\nYour response MUST be ONLY valid JSON:\n{{\n  \"publication_date\": \"YYYY-MM-DD\",\n  \"concrete_events\": [\n    {{\n      \"what\": \"Specific action/decision that occurred\",\n      \"who\": {{\n        \"actor\": \"Person/organization who did it\",\n        \"role\": \"Their official position\"\n      }},\n      \"when\": \"YYYY-MM-DD or time description\",\n      \"where\": {{\n        \"location\": \"Geographic location\",\n        \"institution\": \"Government branch/agency\",\n        \"level\": \"federal|state|local\"\n      }},\n      \"how\": \"Mechanism used (order/law/ruling/etc)\",\n      \"targets\": [\"Who/what was affected\"],\n      \"stated_reason\": \"Official justification given\",\n      \"evidence\": \"Quote proving this happened\"\n    }}\n  ],\n  \"mentioned_but_not_events\": [\"Opinions, predictions, or analysis mentioned\"]\n}}\n\nSeparate actual events from commentary. Use \"N/A\" for unknowns.\n\nARTICLE:\n{article_content}",
+      "max_tokens": 3000
+    },
+    {
+      "name": "event_pattern_analysis",
+      "prompt": "Analyze patterns across these events that concern you.\n\nConsider:\n- What chain of actions do these events represent?\n- What precedents are being set or broken?\n- How do these events shift power balances?\n- What historical patterns do you recognize?\n- What might these events enable in the future?\n\nDon't use rigid categories. Draw from your full knowledge of democratic erosion and authoritarian tactics globally. Be specific about why patterns concern you.\n\nEVENTS:\n{concrete_events}\n\nProvide narrative analysis focusing on systemic implications.",
+      "max_tokens": 3000
+    },
+    {
+      "name": "framing_vs_reality",
+      "prompt": "Compare how events are framed vs what actually happened.\n\nYour response MUST be ONLY valid JSON:\n{{\n  \"framing_analysis\": [\n    {{\n      \"event\": \"Brief description of the event\",\n      \"objective_reality\": \"What factually occurred\",\n      \"media_framing\": \"How it's being presented\",\n      \"narrative_techniques\": [\"Spin methods used\"],\n      \"omitted_context\": [\"Important context left out\"],\n      \"emotional_triggers\": [\"Fear/anger/pride appeals\"],\n      \"alternative_framings\": [\"Other ways this could be presented\"]\n    }}\n  ],\n  \"overall_narrative_strategy\": \"What story is being constructed and why\"\n}}\n\nFocus on gaps between reality and narrative.\n\nEVENTS:\n{concrete_events}\n\nPATTERN ANALYSIS:\n{event_pattern_analysis}",
+      "max_tokens": 2500
+    },
+    {
+      "name": "actor_network_extraction",
+      "prompt": "Extract actors and their relationships from events.\n\nYour response MUST be ONLY valid JSON:\n{{\n  \"actors\": [\n    {{\n      \"id\": 1,\n      \"name\": \"Person/Organization\",\n      \"type\": \"individual|institution|group\",\n      \"role\": \"Official position/function\",\n      \"actions_taken\": [\"What they did in these events\"],\n      \"power_position\": \"How these events affected their power\",\n      \"democratic_role\": \"Guardian|neutral|threat|unclear\"\n    }}\n  ],\n  \"relationships\": [\n    {{\n      \"actor_1_id\": 1,\n      \"relationship\": \"coordinates_with|opposes|controls|enables\",\n      \"actor_2_id\": 2,\n      \"evidence\": \"How we know this relationship exists\"\n    }}\n  ]\n}}\n\nAssign sequential IDs starting from 1.\n\nEVENTS AND PATTERNS:\n{concrete_events}\n{event_pattern_analysis}",
+      "max_tokens": 2500
+    },
+    {
+      "name": "causal_chain_mapping",
+      "prompt": "Map causal relationships between events.\n\nYour response MUST be ONLY valid JSON array:\n[\n  {{\n    \"cause\": \"Event that enabled/triggered something\",\n    \"effect\": \"What it led to\",\n    \"mechanism\": \"How the cause led to the effect\",\n    \"time_lag\": \"immediate|days|weeks|months\",\n    \"confidence\": 0.0-1.0,\n    \"democratic_impact\": \"How this causal chain affects democracy\"\n  }}\n]\n\nLook for:\n- Events that create conditions for future actions\n- Manufactured crises justifying responses\n- Cascade effects across institutions\n- Precedents enabling escalation\n\nEVENTS:\n{concrete_events}\n\nFRAMING:\n{framing_analysis}",
+      "max_tokens": 2500
+    },
+    {
+      "name": "threat_assessment",
+      "prompt": "Assess democratic threats revealed by this analysis.\n\nYour response MUST be ONLY valid JSON:\n{{\n  \"threat_indicators\": [\n    {{\n      \"pattern\": \"Specific concerning pattern\",\n      \"severity\": 0.0-1.0,\n      \"trajectory\": \"improving|stable|deteriorating|critical\",\n      \"supporting_events\": [\"Events showing this pattern\"],\n      \"historical_parallel\": \"Similar pattern from history\",\n      \"potential_next_steps\": [\"What might come next\"]\n    }}\n  ],\n  \"systemic_vulnerabilities\": [\n    {{\n      \"vulnerability\": \"Weakness being exploited\",\n      \"exploitation_method\": \"How it's being exploited\",\n      \"defending_institutions\": [\"Who could stop this\"],\n      \"defense_status\": \"strong|weakened|captured|absent\"\n    }}\n  ],\n  \"overall_assessment\": {{\n    \"democratic_health\": 0.0-1.0,\n    \"trajectory\": \"improving|stable|deteriorating|critical\",\n    \"time_horizon\": \"Urgency of threat\",\n    \"key_concern\": \"Most critical issue identified\"\n  }}\n}}\n\nALL ANALYSIS:\nEVENTS: {concrete_events}\nPATTERNS: {event_pattern_analysis}\nCAUSAL CHAINS: {causal_chain_mapping}",
+      "max_tokens": 3000
+    },
+    {
+      "name": "intelligence_package",
+      "prompt": "Create final intelligence package for knowledge graph.\n\nYour response MUST be ONLY valid JSON:\n{{\n  \"nodes\": [\n    {{\n      \"id\": 1,\n      \"node_type\": \"event|actor|institution|narrative|tactic\",\n      \"name\": \"Name\",\n      \"attributes\": {{\n        \"description\": \"What this is\",\n        \"significance\": \"Why it matters\",\n        \"threat_level\": \"low|medium|high|critical\"\n      }},\n      \"timestamp\": \"YYYY-MM-DD or N/A\"\n    }}\n  ],\n  \"edges\": [\n    {{\n      \"source_id\": 1,\n      \"relation\": \"enables|triggers|opposes|etc\",\n      \"target_id\": 2,\n      \"timestamp\": \"When this relationship existed\",\n      \"evidence_quote\": \"Proof of relationship\",\n      \"severity\": 0.0-1.0,\n      \"is_decayable\": true/false,\n      \"reasoning\": \"Impact assessment\"\n    }}\n  ],\n  \"event_summary\": {{\n    \"total_events\": number,\n    \"threat_level\": \"low|medium|high|critical\",\n    \"key_patterns\": [\"Main patterns identified\"],\n    \"monitoring_priorities\": [\"What to watch next\"]\n  }}\n}}\n\nCombine all actors and events into nodes. Map all relationships as edges.\n\nACTORS: {actors}\nRELATIONSHIPS: {relationships}\nEVENTS: {concrete_events}\nTHREATS: {threat_indicators}",
+      "max_tokens": 4000
+    }
+  ]
 }
