@@ -61,8 +61,21 @@ class EventAggregator:
                 id_map[original_id] = node_id
         return id_map
 
-    def _add_edges(self, edges: List[Dict[str, Any]], id_map: Dict[str, str], source_doc: str) -> None:
-        """Add edges from a single analysis using consolidated node IDs."""
+    def _add_edges(
+        self,
+        edges: List[Dict[str, Any]],
+        id_map: Dict[str, str],
+        source_doc: str,
+        source_name: str,
+    ) -> None:
+        """Add edges from a single analysis using consolidated node IDs.
+
+        Args:
+            edges: Edge list from the analysis payload.
+            id_map: Mapping from original node IDs to consolidated IDs.
+            source_doc: Document identifier for provenance tracking.
+            source_name: Human friendly source name for diversity metrics.
+        """
         for edge in edges:
             src_orig = edge.get("source_id")
             tgt_orig = edge.get("target_id")
@@ -83,10 +96,15 @@ class EventAggregator:
                     "relationship": relation,
                     "weight": 1,
                     "evidence_sources": [source_doc],
+                    "sources": {source_name},
+                    "source_diversity": 1,
                 }
             else:
-                self.edges[key]["weight"] += 1
-                self.edges[key]["evidence_sources"].append(source_doc)
+                edge_entry = self.edges[key]
+                edge_entry["weight"] += 1
+                edge_entry["evidence_sources"].append(source_doc)
+                edge_entry.setdefault("sources", set()).add(source_name)
+                edge_entry["source_diversity"] = len(edge_entry["sources"])
 
         
     def process_analysis_batch(self, analyses: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -135,7 +153,7 @@ class EventAggregator:
 
             # Consolidate nodes and edges for master KG payload
             id_map = self._add_nodes(nodes, article_id)
-            self._add_edges(edges, id_map, article_id)
+            self._add_edges(edges, id_map, article_id, article_source)
             
             for node in nodes:
                 node_type = node.get("node_type")
@@ -218,7 +236,13 @@ class EventAggregator:
             "authoritarian_escalation": self._track_authoritarian_escalation(authoritarian_indicators),
             "kg_payload": {
                 "nodes": list(self.nodes.values()),
-                "edges": list(self.edges.values()),
+                "edges": [
+                    {
+                        **{k: v for k, v in edge.items() if k != "sources"},
+                        "sources": list(edge.get("sources", [])),
+                    }
+                    for edge in self.edges.values()
+                ],
             }
         }
     
