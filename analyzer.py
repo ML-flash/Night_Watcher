@@ -125,7 +125,8 @@ class ContentAnalyzer:
             "article_title": article.get("title", ""),
             "article_url": article.get("url", ""),
             "article_source": article.get("source", ""),
-            "published_date": article.get("published", "")
+            "published_date": article.get("published", ""),
+            "document_id": article.get("document_id")
         }
 
         # Initialize analysis data
@@ -135,10 +136,18 @@ class ContentAnalyzer:
                 "url": article.get("url", ""),
                 "source": article.get("source", ""),
                 "published": article.get("published", ""),
+                "document_id": article.get("document_id"),
                 "content_length": len(content)
             },
             "rounds": {},
-            "analyzed_at": datetime.now().isoformat()
+            "analyzed_at": datetime.now().isoformat(),
+            "citation_summary": {
+                "total_citations": 0,
+                "exact_matches": 0,
+                "fuzzy_matches": 0,
+                "unmatched": 0,
+                "avg_confidence": 0.0
+            }
         }
 
         # Track prompt chain for debugging
@@ -182,6 +191,20 @@ class ContentAnalyzer:
                 # Process round-specific data for next rounds
                 processed_data = self._process_round_output(round_name, response, round_data)
                 round_data.update(processed_data)
+                if processed_data.get("citation_summary"):
+                    cs = processed_data["citation_summary"]
+                    cs_total = analysis_data["citation_summary"]
+                    prev_total = cs_total["total_citations"]
+                    new_total = prev_total + cs.get("total_citations", 0)
+                    cs_total["exact_matches"] += cs.get("exact_matches", 0)
+                    cs_total["fuzzy_matches"] += cs.get("fuzzy_matches", 0)
+                    cs_total["unmatched"] += cs.get("unmatched", 0)
+                    if new_total > 0:
+                        prev_conf_sum = cs_total.get("avg_confidence", 0) * prev_total
+                        new_conf_sum = cs.get("avg_confidence", 0) * cs.get("total_citations", 0)
+                        cs_total["avg_confidence"] = (prev_conf_sum + new_conf_sum) / new_total
+                    cs_total["total_citations"] = new_total
+                    analysis_data["citation_summary"] = cs_total
 
                 # Store in analysis
                 analysis_data["rounds"][round_name] = {
@@ -273,7 +296,100 @@ class ContentAnalyzer:
             else:
                 self._log_json_failure(round_name, response)
 
+        # Add citation metadata if possible
+        article_text = current_data.get("article_content", "")
+        doc_id = current_data.get("document_id")
+        if article_text and doc_id:
+            processed = self.add_citations(processed, article_text, doc_id)
+
         return processed
+
+    def add_citations(self, processed_data: Dict[str, Any], source_text: str, doc_id: str) -> Dict[str, Any]:
+        """Add citation metadata to extracted items using exact text matching."""
+        summary = {
+            "total_citations": 0,
+            "exact_matches": 0,
+            "fuzzy_matches": 0,
+            "unmatched": 0,
+            "avg_confidence": 0.0
+        }
+        conf_sum = 0.0
+
+        def create_citation(text: str):
+            if not text:
+                return None
+            idx = source_text.lower().find(text.lower())
+            if idx >= 0:
+                para_num = source_text[:idx].count("\n\n") + 1
+                sent_num = source_text[:idx].count(".") + 1
+                return {
+                    "doc_id": doc_id,
+                    "source_text": source_text[idx: idx + len(text)],
+                    "paragraph_num": para_num,
+                    "sentence_num": sent_num,
+                    "char_start": idx,
+                    "char_end": idx + len(text),
+                    "match_confidence": 1.0,
+                    "match_type": "exact"
+                }
+            return None
+
+        # Process nodes
+        for node in processed_data.get("nodes_data", []):
+            citation = create_citation(node.get("name"))
+            summary["total_citations"] += 1
+            if citation:
+                node.setdefault("citations", []).append(citation)
+                summary["exact_matches"] += 1
+                conf_sum += 1.0
+            else:
+                summary["unmatched"] += 1
+
+        for node in processed_data.get("unique_nodes_data", []):
+            citation = create_citation(node.get("name"))
+            summary["total_citations"] += 1
+            if citation:
+                node.setdefault("citations", []).append(citation)
+                summary["exact_matches"] += 1
+                conf_sum += 1.0
+            else:
+                summary["unmatched"] += 1
+
+        # Process edges
+        for edge in processed_data.get("edges_data", []):
+            citation = create_citation(edge.get("evidence_quote"))
+            summary["total_citations"] += 1
+            if citation:
+                edge.setdefault("citations", []).append(citation)
+                summary["exact_matches"] += 1
+                conf_sum += 1.0
+            else:
+                summary["unmatched"] += 1
+
+        # Process facts
+        facts = processed_data.get("facts_data")
+        if isinstance(facts, dict):
+            facts_citations = {}
+            for k, v in facts.items():
+                if isinstance(v, str):
+                    citation = create_citation(v)
+                    summary["total_citations"] += 1
+                    if citation:
+                        facts_citations[k] = citation
+                        summary["exact_matches"] += 1
+                        conf_sum += 1.0
+                    else:
+                        summary["unmatched"] += 1
+            if facts_citations:
+                processed_data["facts_citations"] = facts_citations
+
+        if summary["total_citations"] > 0:
+            summary["avg_confidence"] = conf_sum / summary["total_citations"]
+
+        if summary["total_citations"] > 0:
+            processed_data["citation_summary"] = summary
+
+        return processed_data
 
     def _extract_legacy_fields(self, analysis_data: Dict[str, Any], round_data: Dict[str, Any]):
         """Extract legacy fields for backward compatibility."""
