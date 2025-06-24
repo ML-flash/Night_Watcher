@@ -96,17 +96,22 @@ class EventAggregator:
                     "relationship": relation,
                     "weight": 1,
                     "evidence_sources": [source_doc],
-                    "sources": {source_name},
+                    "sources": [source_name],  # Changed from set to list
                     "source_diversity": 1,
                 }
             else:
                 edge_entry = self.edges[key]
                 edge_entry["weight"] += 1
                 edge_entry["evidence_sources"].append(source_doc)
-                edge_entry.setdefault("sources", set()).add(source_name)
-                edge_entry["source_diversity"] = len(edge_entry["sources"])
+                # Convert to list, add item, remove duplicates
+                sources_list = edge_entry.get("sources", [])
+                if isinstance(sources_list, set):
+                    sources_list = list(sources_list)
+                if source_name not in sources_list:
+                    sources_list.append(source_name)
+                edge_entry["sources"] = sources_list
+                edge_entry["source_diversity"] = len(sources_list)
 
-        
     def process_analysis_batch(self, analyses: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Process a batch of article analyses to extract events AND couple analyses together.
@@ -180,7 +185,7 @@ class EventAggregator:
                         "source": article_source,
                         "actions": self._extract_actor_actions(node, edges)
                     }
-                    all_actors[node["name"]].append(actor_data)
+                    all_actors[node.get("name")].append(actor_data)
                     
                 elif node_type == "narrative":
                     narrative_data = {
@@ -188,34 +193,28 @@ class EventAggregator:
                         "attributes": node.get("attributes", {}),
                         "article_id": article_id,
                         "source": article_source,
-                        "weaponization_level": node.get("attributes", {}).get("weaponization_level", 0)
+                        "timestamp": node.get("timestamp", "N/A")
                     }
-                    all_narratives[node["name"]].append(narrative_data)
+                    all_narratives[node.get("name")].append(narrative_data)
         
         # Merge similar events
         merged_events = self._merge_similar_events(raw_events)
         
-        # Analyze cross-source patterns
-        pattern_analysis = self._analyze_cross_source_patterns(
-            merged_events, all_actors, all_narratives, manipulation_patterns
-        )
+        # Pattern analysis
+        pattern_analysis = self._analyze_event_patterns(merged_events)
         
         # Detect coordinated campaigns
-        campaigns = self._detect_coordinated_campaigns(
-            merged_events, all_narratives, authoritarian_indicators
-        )
+        campaigns = self._detect_coordinated_campaigns(merged_events, all_actors, all_narratives)
         
         # Calculate urgency scores
-        urgency_analysis = self._calculate_urgency_scores(
-            merged_events, authoritarian_indicators, pattern_analysis
-        )
+        urgency_analysis = self._calculate_urgency_scores(merged_events, campaigns)
         
-        # Generate event IDs and build comprehensive index
+        # Assign IDs and build final event records
         for event in merged_events:
             event_id = self._generate_event_id(event)
             event["event_id"] = event_id
-            event["urgency_score"] = urgency_analysis.get(event["name"], 0)
-            event["campaign_associations"] = [c["id"] for c in campaigns if event["name"] in c["events"]]
+            event["reporting_variance"] = self._calculate_reporting_variance(event)
+            event["campaigns"] = [c for c in campaigns if event["name"] in c["events"]]
             self.events[event_id] = event
             
             # Track which articles mentioned this event
@@ -236,14 +235,11 @@ class EventAggregator:
             "authoritarian_escalation": self._track_authoritarian_escalation(authoritarian_indicators),
             "kg_payload": {
                 "nodes": list(self.nodes.values()),
-                "edges": [
-                    {
-                        **{k: v for k, v in edge.items() if k != "sources"},
-                        "sources": list(edge.get("sources", [])),
-                    }
-                    for edge in self.edges.values()
-                ],
-            }
+                "edges": list(self.edges.values())  # Now safe for JSON serialization
+            },
+            "analyses_processed": len(analyses),
+            "unique_events": len(self.events),
+            "status": "success"
         }
     
     def _merge_similar_events(self, raw_events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -303,128 +299,183 @@ class EventAggregator:
         return clusters
     
     def _events_similar(self, event1: Dict[str, Any], event2: Dict[str, Any]) -> bool:
-        """Determine if two events are similar enough to merge."""
-        # Extract key terms from event names
-        terms1 = set(event1["name"].lower().split())
-        terms2 = set(event2["name"].lower().split())
+        """Check if two events are similar enough to merge."""
+        # Simple name similarity check
+        name1 = event1.get("name", "").lower()
+        name2 = event2.get("name", "").lower()
         
-        # Remove common words
-        stopwords = {"the", "a", "an", "in", "on", "at", "to", "for", "of", "and", "or"}
-        terms1 -= stopwords
-        terms2 -= stopwords
+        # Check for common key terms
+        terms1 = set(name1.split())
+        terms2 = set(name2.split())
         
-        # Calculate Jaccard similarity
         if not terms1 or not terms2:
             return False
-            
-        intersection = len(terms1 & terms2)
-        union = len(terms1 | terms2)
-        similarity = intersection / union
         
-        # Check if events share key entities or actions
-        entities1 = self._extract_entities(event1)
-        entities2 = self._extract_entities(event2)
+        overlap = len(terms1 & terms2)
+        min_size = min(len(terms1), len(terms2))
         
-        if entities1 & entities2:  # Share at least one entity
-            similarity += 0.3
-        
-        return similarity >= self.similarity_threshold
-    
-    def _extract_entities(self, event: Dict[str, Any]) -> Set[str]:
-        """Extract entity names from event data."""
-        entities = set()
-        
-        # From name
-        name_parts = event["name"].split()
-        for part in name_parts:
-            if part[0].isupper() and len(part) > 2:
-                entities.add(part.lower())
-        
-        # From attributes
-        attrs = event.get("attributes", {})
-        if "actors" in attrs:
-            entities.update(str(attrs["actors"]).lower().split())
-        if "institution" in attrs:
-            entities.add(attrs["institution"].lower())
-            
-        return entities
+        return (overlap / min_size) >= self.similarity_threshold
     
     def _merge_event_cluster(self, cluster: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Merge a cluster of similar events into one."""
-        # Start with the most detailed event
-        base_event = max(cluster, key=lambda e: len(e.get("attributes", {})))
+        if not cluster:
+            return {}
         
-        merged = {
-            "name": base_event["name"],
-            "date": base_event["date"],
-            "attributes": base_event["attributes"].copy(),
-            "article_ids": [],
-            "sources": [],
-            "source_perspectives": {},
-            "reporting_variance": {}
-        }
+        if len(cluster) == 1:
+            # Single event, just format it
+            event = cluster[0]
+            return {
+                **event,
+                "sources": [event["article_source"]],
+                "article_ids": [event["article_id"]],
+                "bias_distribution": {event.get("article_bias", "Unknown"): 1}
+            }
         
-        # Merge data from all events
-        all_dates = []
-        all_attributes = defaultdict(list)
+        # Multiple events to merge
+        base_event = cluster[0].copy()
+        
+        # Collect all sources and IDs
+        sources = []
+        article_ids = []
+        bias_counts = defaultdict(int)
         
         for event in cluster:
-            # Collect article references
-            merged["article_ids"].append(event["article_id"])
-            
-            # Track source perspectives
-            source = event["article_source"]
-            bias = event["article_bias"]
-            merged["sources"].append(source)
-            merged["source_perspectives"][source] = {
-                "bias": bias,
-                "description": event.get("source_sentence", "")
-            }
-            
-            # Collect dates
-            if event["date"] != "N/A":
-                all_dates.append(event["date"])
-            
-            # Collect all attribute values
+            sources.append(event["article_source"])
+            article_ids.append(event["article_id"])
+            bias_counts[event.get("article_bias", "Unknown")] += 1
+        
+        # Update base event
+        base_event["sources"] = list(set(sources))
+        base_event["article_ids"] = article_ids
+        base_event["bias_distribution"] = dict(bias_counts)
+        base_event["source_count"] = len(set(sources))
+        
+        # Merge attributes
+        all_attributes = defaultdict(list)
+        for event in cluster:
             for key, value in event.get("attributes", {}).items():
-                if value not in all_attributes[key]:
-                    all_attributes[key].append(value)
+                all_attributes[key].append(value)
         
-        # Resolve date conflicts (use earliest)
-        if all_dates:
-            merged["date"] = min(all_dates)
-            if len(set(all_dates)) > 1:
-                merged["reporting_variance"]["dates"] = list(set(all_dates))
-        
-        # Merge attributes (keep all unique values)
+        # Consolidate attributes
+        consolidated_attributes = {}
         for key, values in all_attributes.items():
-            if len(values) == 1:
-                merged["attributes"][key] = values[0]
-            else:
-                merged["attributes"][key] = values
-                merged["reporting_variance"][key] = values
+            # For now, just take the most common value
+            if values:
+                consolidated_attributes[key] = max(set(values), key=values.count)
         
-        # Analyze cross-source patterns
-        if len(merged["sources"]) > 1:
-            merged["cross_source_analysis"] = self._analyze_cross_source(merged)
+        base_event["attributes"] = consolidated_attributes
         
-        return merged
+        return base_event
     
-    def _analyze_cross_source(self, event: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze how different sources report the same event."""
-        sources = event["source_perspectives"]
-        bias_spectrum = {"left": -2, "center-left": -1, "center": 0, "center-right": 1, "right": 2}
+    def _analyze_event_patterns(self, events: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze patterns in the aggregated events."""
+        if not events:
+            return {"status": "no_events"}
         
-        # Calculate bias spread
-        biases = [bias_spectrum.get(s["bias"], 0) for s in sources.values()]
-        bias_variance = max(biases) - min(biases) if biases else 0
+        # Temporal clustering
+        temporal_clusters = self._find_temporal_clusters(events)
+        
+        # Topic clustering (simple keyword-based)
+        topic_clusters = self._find_topic_clusters(events)
+        
+        # Source diversity analysis
+        source_patterns = self._analyze_source_patterns(events)
         
         return {
-            "source_count": len(sources),
-            "bias_variance": bias_variance,
-            "unanimous": bias_variance == 0,
-            "controversial": bias_variance >= 3
+            "temporal_clusters": temporal_clusters,
+            "topic_clusters": topic_clusters,
+            "source_patterns": source_patterns,
+            "event_density": self._calculate_event_density(events)
         }
+    
+    def _detect_coordinated_campaigns(self, events: List[Dict[str, Any]], 
+                                    actors: Dict[str, List], 
+                                    narratives: Dict[str, List]) -> List[Dict[str, Any]]:
+        """Detect potential coordinated campaigns."""
+        campaigns = []
+        
+        # Look for events that:
+        # 1. Happen close in time
+        # 2. Share actors or narratives
+        # 3. Appear across multiple sources
+        
+        for i, event1 in enumerate(events):
+            if event1.get("source_count", 0) < 2:
+                continue
+                
+            campaign_events = [event1["name"]]
+            campaign_actors = set()
+            campaign_narratives = set()
+            
+            event1_date = self._parse_date(event1.get("date", ""))
+            if not event1_date:
+                continue
+            
+            for event2 in events[i+1:]:
+                event2_date = self._parse_date(event2.get("date", ""))
+                if not event2_date:
+                    continue
+                
+                # Check temporal proximity (within 7 days)
+                if abs((event2_date - event1_date).days) <= 7:
+                    # Check for shared elements
+                    if self._events_connected(event1, event2, actors, narratives):
+                        campaign_events.append(event2["name"])
+            
+            if len(campaign_events) >= 2:
+                campaigns.append({
+                    "events": campaign_events,
+                    "time_span": "7 days",
+                    "sources_involved": self._get_campaign_sources(campaign_events, events),
+                    "confidence": "medium"
+                })
+        
+        return campaigns
+    
+    def _calculate_urgency_scores(self, events: List[Dict[str, Any]], 
+                                campaigns: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Calculate urgency scores for events and campaigns."""
+        scores = {}
+        
+        # Factors:
+        # 1. Recency
+        # 2. Source count
+        # 3. Manipulation score
+        # 4. Part of campaign
+        
+        current_date = datetime.now()
+        
+        for event in events:
+            event_date = self._parse_date(event.get("date", ""))
+            if not event_date:
+                continue
+            
+            # Base score from recency (0-10)
+            days_old = (current_date - event_date).days
+            recency_score = max(0, 10 - (days_old / 3))
+            
+            # Source multiplier
+            source_mult = min(event.get("source_count", 1), 3)
+            
+            # Manipulation modifier
+            manip_score = event.get("manipulation_score", 0)
+            
+            # Campaign modifier
+            campaign_boost = 2 if any(event["name"] in c["events"] for c in campaigns) else 1
+            
+            urgency = (recency_score * source_mult + manip_score) * campaign_boost
+            
+            scores[event["event_id"]] = {
+                "score": round(urgency, 2),
+                "factors": {
+                    "recency": round(recency_score, 2),
+                    "sources": source_mult,
+                    "manipulation": manip_score,
+                    "campaign": campaign_boost > 1
+                }
+            }
+        
+        return scores
     
     def _identify_cross_source_events(self) -> List[str]:
         """Identify events reported by multiple sources."""
@@ -491,368 +542,290 @@ class EventAggregator:
         """Extract specific manipulation techniques from analysis."""
         techniques = []
         
-        # Look in the article analysis text
-        analysis_text = analysis.get("article_analysis", "").lower()
+        # Look in rounds for manipulation analysis
+        for round_name, round_data in analysis.get("rounds", {}).items():
+            if "manipulation" in round_name.lower():
+                response = round_data.get("response", "")
+                # Simple extraction - could be enhanced
+                if "disinformation" in response.lower():
+                    techniques.append("disinformation")
+                if "fear" in response.lower():
+                    techniques.append("fear-mongering")
+                if "division" in response.lower():
+                    techniques.append("divisive rhetoric")
         
-        technique_patterns = {
-            "fear_mongering": ["fear", "threat", "danger", "crisis"],
-            "false_dichotomy": ["only choice", "either or", "no alternative"],
-            "scapegoating": ["blame", "fault of", "caused by"],
-            "appeal_to_authority": ["must trust", "experts say", "officials confirm"],
-            "emotional_manipulation": ["outrage", "anger", "betrayal"]
-        }
-        
-        for technique, patterns in technique_patterns.items():
-            if any(pattern in analysis_text for pattern in patterns):
-                techniques.append(technique)
-                
         return techniques
     
     def _extract_actor_actions(self, actor_node: Dict[str, Any], edges: List[Dict[str, Any]]) -> List[str]:
-        """Extract what actions an actor took from edges."""
+        """Extract actions performed by an actor from edges."""
         actions = []
         actor_id = actor_node.get("id")
         
         for edge in edges:
             if edge.get("source_id") == actor_id:
                 actions.append(edge.get("relation", "unknown"))
-                
+        
         return actions
     
-    def _analyze_cross_source_patterns(self, events: List[Dict], actors: Dict, 
-                                     narratives: Dict, manipulation: Dict) -> Dict[str, Any]:
-        """Analyze patterns across different sources."""
+    def _calculate_reporting_variance(self, event: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculate how reporting varies across sources."""
+        if len(event.get("sources", [])) < 2:
+            return {"variance": "single_source"}
+        
         return {
-            "synchronized_messaging": self._detect_synchronized_messaging(events),
-            "narrative_coordination": self._analyze_narrative_coordination(narratives),
-            "manipulation_consistency": self._analyze_manipulation_consistency(manipulation),
-            "actor_prominence": self._calculate_actor_prominence(actors),
-            "bias_correlation": self._analyze_bias_correlation(events)
+            "source_count": len(event["sources"]),
+            "bias_spread": event.get("bias_distribution", {}),
+            "variance": "multi_source"
         }
     
-    def _detect_synchronized_messaging(self, events: List[Dict]) -> Dict[str, Any]:
-        """Detect when multiple sources report same events simultaneously."""
-        time_clusters = defaultdict(list)
+    def _find_temporal_clusters(self, events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Find clusters of events happening close in time."""
+        clusters = []
         
-        for event in events:
-            if event["date"] != "N/A":
-                # Group by date
-                time_clusters[event["date"]].append(event)
+        # Sort events by date
+        dated_events = [e for e in events if self._parse_date(e.get("date", ""))]
+        dated_events.sort(key=lambda e: self._parse_date(e["date"]))
         
-        synchronized = []
-        for date, cluster in time_clusters.items():
-            if len(cluster) > 2:  # Multiple sources on same day
-                sources = set()
-                for evt in cluster:
-                    sources.update(evt.get("sources", []))
-                
-                if len(sources) > 2:
-                    synchronized.append({
-                        "date": date,
-                        "event_count": len(cluster),
-                        "source_count": len(sources),
-                        "events": [e["name"] for e in cluster]
+        if not dated_events:
+            return clusters
+        
+        # Find clusters within 3-day windows
+        current_cluster = [dated_events[0]]
+        cluster_start = self._parse_date(dated_events[0]["date"])
+        
+        for event in dated_events[1:]:
+            event_date = self._parse_date(event["date"])
+            if (event_date - cluster_start).days <= 3:
+                current_cluster.append(event)
+            else:
+                if len(current_cluster) >= 3:
+                    clusters.append({
+                        "start_date": cluster_start.isoformat(),
+                        "end_date": self._parse_date(current_cluster[-1]["date"]).isoformat(),
+                        "event_count": len(current_cluster),
+                        "events": [e["name"] for e in current_cluster]
                     })
+                current_cluster = [event]
+                cluster_start = event_date
         
-        return {
-            "synchronized_days": len(synchronized),
-            "instances": synchronized
+        # Don't forget last cluster
+        if len(current_cluster) >= 3:
+            clusters.append({
+                "start_date": cluster_start.isoformat(),
+                "end_date": self._parse_date(current_cluster[-1]["date"]).isoformat(),
+                "event_count": len(current_cluster),
+                "events": [e["name"] for e in current_cluster]
+            })
+        
+        return clusters
+    
+    def _find_topic_clusters(self, events: List[Dict[str, Any]]) -> Dict[str, List[str]]:
+        """Group events by topic keywords."""
+        topic_groups = defaultdict(list)
+        
+        # Simple keyword-based clustering
+        keywords_map = {
+            "legislative": ["bill", "vote", "senate", "house", "congress", "law"],
+            "judicial": ["court", "judge", "ruling", "decision", "legal"],
+            "executive": ["executive", "order", "president", "administration"],
+            "media": ["media", "press", "journalist", "coverage", "report"],
+            "protest": ["protest", "rally", "demonstration", "march"],
+            "election": ["election", "voting", "ballot", "campaign"]
         }
-    
-    def _detect_coordinated_campaigns(self, events: List[Dict], narratives: Dict, 
-                                    indicators: Dict) -> List[Dict[str, Any]]:
-        """Detect potential coordinated information campaigns."""
-        campaigns = []
-        
-        # Look for narrative + event + indicator clusters
-        for narrative, instances in narratives.items():
-            if len(instances) < 3:  # Need multiple sources
-                continue
-                
-            # Find events that coincide with this narrative
-            related_events = []
-            for event in events:
-                if any(narrative.lower() in str(e).lower() for e in event.values()):
-                    related_events.append(event["name"])
-            
-            # Check for authoritarian indicators
-            related_indicators = []
-            for indicator, occurrences in indicators.items():
-                if len(occurrences) > 1:
-                    related_indicators.append(indicator)
-            
-            if related_events and related_indicators:
-                campaigns.append({
-                    "id": f"campaign_{hashlib.md5(narrative.encode()).hexdigest()[:8]}",
-                    "narrative": narrative,
-                    "events": related_events,
-                    "indicators": related_indicators,
-                    "source_count": len(set(inst["source"] for inst in instances)),
-                    "intensity": len(instances)
-                })
-        
-        return campaigns
-    
-    def _calculate_urgency_scores(self, events: List[Dict], indicators: Dict, 
-                                patterns: Dict) -> Dict[str, float]:
-        """Calculate urgency score for each event based on authoritarian risk."""
-        scores = {}
         
         for event in events:
-            score = 0.0
+            event_name = event.get("name", "").lower()
             
-            # Base score from manipulation
-            score += event.get("manipulation_score", 0) * 0.1
-            
-            # Concern level multiplier
-            concern_multipliers = {"High": 2.0, "Moderate": 1.5, "Low": 1.0, "None": 0.5}
-            score *= concern_multipliers.get(event.get("concern_level", "Unknown"), 1.0)
-            
-            # Cross-source amplification
-            if len(event.get("sources", [])) > 2:
-                score *= 1.5
-            
-            # Campaign association
-            if event.get("campaign_associations"):
-                score *= 1.3
-            
-            # Temporal clustering (rapid events)
-            # This would need temporal analysis from the events list
-            
-            scores[event["name"]] = min(score, 10.0)  # Cap at 10
-            
-        return scores
+            for topic, keywords in keywords_map.items():
+                if any(kw in event_name for kw in keywords):
+                    topic_groups[topic].append(event["name"])
+        
+        return dict(topic_groups)
     
-    def _build_actor_network(self, actors: Dict[str, List]) -> Dict[str, Any]:
-        """Build network showing actor relationships and influence."""
+    def _analyze_source_patterns(self, events: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze patterns in source reporting."""
+        source_stats = defaultdict(lambda: {"event_count": 0, "bias": None})
+        
+        for event in events:
+            for source in event.get("sources", []):
+                source_stats[source]["event_count"] += 1
+                # Track bias if available
+                if "bias_distribution" in event:
+                    # Simplified - just note the bias
+                    for bias in event["bias_distribution"]:
+                        source_stats[source]["bias"] = bias
+                        break
+        
+        return dict(source_stats)
+    
+    def _calculate_event_density(self, events: List[Dict[str, Any]]) -> float:
+        """Calculate events per day metric."""
+        dated_events = [e for e in events if self._parse_date(e.get("date", ""))]
+        
+        if len(dated_events) < 2:
+            return 0.0
+        
+        dates = [self._parse_date(e["date"]) for e in dated_events]
+        date_range = (max(dates) - min(dates)).days + 1
+        
+        return round(len(dated_events) / date_range, 2)
+    
+    def _events_connected(self, event1: Dict[str, Any], event2: Dict[str, Any],
+                         actors: Dict[str, List], narratives: Dict[str, List]) -> bool:
+        """Check if two events share actors or narratives."""
+        # Get article IDs for both events
+        ids1 = set(event1.get("article_ids", []))
+        ids2 = set(event2.get("article_ids", []))
+        
+        # Check actors
+        for actor, occurrences in actors.items():
+            actor_articles = {occ["article_id"] for occ in occurrences}
+            if ids1 & actor_articles and ids2 & actor_articles:
+                return True
+        
+        # Check narratives
+        for narrative, occurrences in narratives.items():
+            narrative_articles = {occ["article_id"] for occ in occurrences}
+            if ids1 & narrative_articles and ids2 & narrative_articles:
+                return True
+        
+        return False
+    
+    def _get_campaign_sources(self, event_names: List[str], 
+                            all_events: List[Dict[str, Any]]) -> List[str]:
+        """Get all sources involved in a campaign."""
+        sources = set()
+        
+        for event in all_events:
+            if event["name"] in event_names:
+                sources.update(event.get("sources", []))
+        
+        return list(sources)
+    
+    def _build_actor_network(self, actors: Dict[str, List[Dict[str, Any]]]) -> Dict[str, Any]:
+        """Build network analysis of actors."""
         network = {
             "nodes": [],
             "edges": [],
-            "influence_scores": {}
+            "centrality": {}
         }
         
-        for actor_name, instances in actors.items():
-            # Calculate influence based on mentions and actions
-            influence = len(instances) * sum(len(inst.get("actions", [])) for inst in instances)
-            
-            network["nodes"].append({
+        # Create nodes for each actor
+        for actor_name, occurrences in actors.items():
+            node = {
                 "id": actor_name,
-                "type": "actor",
-                "mention_count": len(instances),
-                "influence": influence
-            })
-            
-            network["influence_scores"][actor_name] = influence
+                "occurrences": len(occurrences),
+                "sources": list(set(occ["source"] for occ in occurrences)),
+                "actions": list(set(action for occ in occurrences for action in occ.get("actions", [])))
+            }
+            network["nodes"].append(node)
+        
+        # Simple centrality based on occurrence count
+        total_occurrences = sum(len(occs) for occs in actors.values())
+        for actor_name, occurrences in actors.items():
+            network["centrality"][actor_name] = round(len(occurrences) / total_occurrences, 3)
         
         return network
     
-    def _track_narrative_evolution(self, narratives: Dict[str, List]) -> Dict[str, Any]:
-        """Track how narratives evolve across sources and time."""
+    def _track_narrative_evolution(self, narratives: Dict[str, List[Dict[str, Any]]]) -> Dict[str, Any]:
+        """Track how narratives evolve over time."""
         evolution = {}
         
-        for narrative, instances in narratives.items():
-            # Sort by article date (would need date from article metadata)
-            instances_by_source = defaultdict(list)
+        for narrative, occurrences in narratives.items():
+            # Sort by date
+            dated_occs = [occ for occ in occurrences if self._parse_date(occ.get("timestamp", ""))]
+            dated_occs.sort(key=lambda x: self._parse_date(x["timestamp"]))
             
-            for inst in instances:
-                instances_by_source[inst["source"]].append(inst)
-            
-            evolution[narrative] = {
-                "source_spread": len(instances_by_source),
-                "total_instances": len(instances),
-                "weaponization_trend": self._calculate_weaponization_trend(instances),
-                "source_breakdown": dict(instances_by_source)
-            }
+            if dated_occs:
+                evolution[narrative] = {
+                    "first_seen": dated_occs[0]["timestamp"],
+                    "last_seen": dated_occs[-1]["timestamp"],
+                    "source_progression": [occ["source"] for occ in dated_occs],
+                    "occurrence_count": len(occurrences)
+                }
         
         return evolution
     
-    def _calculate_weaponization_trend(self, instances: List[Dict]) -> str:
-        """Determine if narrative weaponization is increasing."""
-        if not instances:
-            return "stable"
-            
-        weaponization_levels = [inst.get("weaponization_level", 0) for inst in instances]
+    def _analyze_manipulation_patterns(self, patterns: Dict[str, List[Dict[str, Any]]]) -> Dict[str, Any]:
+        """Analyze manipulation patterns by source."""
+        analysis = {}
         
-        if len(weaponization_levels) < 2:
-            return "insufficient_data"
-        
-        # Simple trend detection
-        first_half = sum(weaponization_levels[:len(weaponization_levels)//2])
-        second_half = sum(weaponization_levels[len(weaponization_levels)//2:])
-        
-        if second_half > first_half * 1.2:
-            return "increasing"
-        elif second_half < first_half * 0.8:
-            return "decreasing"
-        else:
-            return "stable"
-    
-    def _analyze_manipulation_patterns(self, manipulation: Dict[str, List]) -> Dict[str, Any]:
-        """Analyze manipulation patterns across sources."""
-        return {
-            "average_scores_by_source": {
-                source: sum(m["score"] for m in instances) / len(instances)
-                for source, instances in manipulation.items()
-                if instances
-            },
-            "technique_frequency": self._count_technique_frequency(manipulation),
-            "high_manipulation_sources": [
-                source for source, instances in manipulation.items()
-                if any(m["score"] >= 7 for m in instances)
-            ]
-        }
-    
-    def _count_technique_frequency(self, manipulation: Dict[str, List]) -> Dict[str, int]:
-        """Count frequency of manipulation techniques."""
-        technique_counts = defaultdict(int)
-        
-        for instances in manipulation.values():
-            for inst in instances:
-                for technique in inst.get("techniques", []):
-                    technique_counts[technique] += 1
-                    
-        return dict(technique_counts)
-    
-    def _analyze_manipulation_consistency(self, manipulation: Dict[str, List]) -> Dict[str, Any]:
-        """Check if sources consistently use similar manipulation levels."""
-        consistency = {}
-        
-        for source, instances in manipulation.items():
-            if len(instances) < 2:
-                continue
+        for source, instances in patterns.items():
+            if instances:
+                scores = [inst["score"] for inst in instances]
+                techniques_lists = [inst["techniques"] for inst in instances]
+                all_techniques = [t for sublist in techniques_lists for t in sublist]
                 
-            scores = [m["score"] for m in instances]
-            avg = sum(scores) / len(scores)
-            variance = sum((s - avg) ** 2 for s in scores) / len(scores)
-            
-            consistency[source] = {
-                "average": avg,
-                "variance": variance,
-                "consistent": variance < 2.0  # Low variance = consistent
-            }
-            
-        return consistency
-    
-    def _analyze_narrative_coordination(self, narratives: Dict[str, List]) -> Dict[str, Any]:
-        """Detect coordinated narrative deployment."""
-        coordination_indicators = []
-        
-        for narrative, instances in narratives.items():
-            if len(instances) < 3:
-                continue
-                
-            sources = [inst["source"] for inst in instances]
-            unique_sources = set(sources)
-            
-            # Check for rapid deployment (would need timestamps)
-            if len(unique_sources) >= 3:
-                coordination_indicators.append({
-                    "narrative": narrative,
-                    "sources": list(unique_sources),
+                analysis[source] = {
+                    "average_score": round(sum(scores) / len(scores), 2),
+                    "max_score": max(scores),
                     "instance_count": len(instances),
-                    "coordination_score": len(unique_sources) / len(instances)
-                })
+                    "common_techniques": list(set(all_techniques))
+                }
         
-        return {
-            "coordinated_narratives": len(coordination_indicators),
-            "instances": coordination_indicators
-        }
+        return analysis
     
-    def _calculate_actor_prominence(self, actors: Dict[str, List]) -> Dict[str, Any]:
-        """Calculate which actors are most prominent across sources."""
-        prominence = {}
-        
-        for actor, instances in actors.items():
-            sources = set(inst["source"] for inst in instances)
-            actions = []
-            for inst in instances:
-                actions.extend(inst.get("actions", []))
-            
-            prominence[actor] = {
-                "mention_count": len(instances),
-                "source_diversity": len(sources),
-                "action_count": len(actions),
-                "prominence_score": len(instances) * len(sources)
-            }
-        
-        # Sort by prominence
-        return dict(sorted(prominence.items(), key=lambda x: x[1]["prominence_score"], reverse=True))
-    
-    def _analyze_bias_correlation(self, events: List[Dict]) -> Dict[str, Any]:
-        """Analyze how bias correlates with event reporting."""
-        # Track how many events each bias reports and which sources mention
-        # those events. The default entry contains a count and a set for
-        # storing unique sources.
-        bias_patterns = defaultdict(lambda: {"event_count": 0, "sources": set()})
-        
-        for event in events:
-            if "source_perspectives" in event:
-                for source, perspective in event["source_perspectives"].items():
-                    bias = perspective.get("bias", "unknown")
-                    bias_patterns[bias]["event_count"] += 1
-                    bias_patterns[bias]["sources"].add(source)
-        
-        return {
-            bias: {
-                "events_reported": data["event_count"],
-                "unique_sources": len(data.get("sources", set()))
-            }
-            for bias, data in bias_patterns.items()
-        }
-    
-    def _track_authoritarian_escalation(self, indicators: Dict[str, List]) -> Dict[str, Any]:
-        """Track escalation patterns in authoritarian indicators."""
-        escalation_analysis = {
+    def _track_authoritarian_escalation(self, indicators: Dict[str, List[Dict[str, Any]]]) -> Dict[str, Any]:
+        """Track escalation of authoritarian indicators."""
+        escalation = {
             "indicator_frequency": {},
-            "high_concern_sources": [],
-            "escalation_timeline": []
+            "source_breakdown": defaultdict(list),
+            "concern_levels": defaultdict(int),
+            "timeline": []
         }
         
         for indicator, occurrences in indicators.items():
-            escalation_analysis["indicator_frequency"][indicator] = len(occurrences)
+            escalation["indicator_frequency"][indicator] = len(occurrences)
             
-            # Track high concern instances
-            high_concern = [occ for occ in occurrences if occ.get("concern_level") == "High"]
-            if high_concern:
-                sources = set(occ["source"] for occ in high_concern)
-                escalation_analysis["high_concern_sources"].extend(sources)
+            for occ in occurrences:
+                escalation["source_breakdown"][occ["source"]].append(indicator)
+                escalation["concern_levels"][occ["concern_level"]] += 1
         
-        escalation_analysis["high_concern_sources"] = list(set(escalation_analysis["high_concern_sources"]))
+        # Convert defaultdicts to regular dicts
+        escalation["source_breakdown"] = dict(escalation["source_breakdown"])
+        escalation["concern_levels"] = dict(escalation["concern_levels"])
         
-        # Identify escalation patterns (would need temporal data)
-        total_indicators = sum(len(occs) for occs in indicators.values())
-        escalation_analysis["overall_threat_level"] = min(total_indicators / 10, 10.0)  # Scale to 10
-        
-        return escalation_analysis
+        return escalation
     
     def create_event_relationships(self) -> List[Dict[str, Any]]:
-        """Create edges showing event relationships."""
+        """
+        Create edges between aggregated events based on temporal and thematic relationships.
+        """
         edges = []
+        events_list = list(self.events.values())
         
-        # Sort events by date
-        sorted_events = sorted(
-            [(eid, e) for eid, e in self.events.items() if e["date"] != "N/A"],
-            key=lambda x: x[1]["date"]
-        )
-        
-        # Connect events in temporal sequence
-        for i in range(len(sorted_events) - 1):
-            event1_id, event1 = sorted_events[i]
-            event2_id, event2 = sorted_events[i + 1]
-            
-            # Check if events are within 7 days
-            date1 = self._parse_date(event1["date"])
-            date2 = self._parse_date(event2["date"])
-            
-            if date1 and date2 and (date2 - date1).days <= 7:
-                edges.append({
-                    "source_id": event1_id,
-                    "relation": "precedes", 
-                    "target_id": event2_id,
-                    "attributes": {
-                        "days_between": (date2 - date1).days,
-                        "temporal_proximity": "close"
+        for i, event1 in enumerate(events_list):
+            event1_date = self._parse_date(event1.get("date", ""))
+            if not event1_date:
+                continue
+                
+            for event2 in events_list[i+1:]:
+                event2_date = self._parse_date(event2.get("date", ""))
+                if not event2_date:
+                    continue
+                
+                # Check temporal relationship
+                days_diff = (event2_date - event1_date).days
+                
+                if 0 < days_diff <= 7:
+                    # Events within a week might be related
+                    edge = {
+                        "source_id": event1["event_id"],
+                        "target_id": event2["event_id"], 
+                        "relation": "precedes",
+                        "attributes": {
+                            "days_apart": days_diff,
+                            "shared_sources": list(set(event1["sources"]) & set(event2["sources"]))
+                        }
                     }
-                })
+                    
+                    # Check for shared campaign
+                    shared_campaigns = set(c["events"] for c in event1.get("campaigns", [])) & \
+                                     set(c["events"] for c in event2.get("campaigns", []))
+                    if shared_campaigns:
+                        edge["relation"] = "part_of_campaign"
+                        edge["attributes"]["campaign"] = True
+                    
+                    edges.append(edge)
         
         return edges
