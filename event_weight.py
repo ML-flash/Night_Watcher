@@ -5,6 +5,7 @@ calculating weights, and managing event observations.
 """
 
 import logging
+import json
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -80,9 +81,10 @@ class EventSignature:
 class EventMatcher:
     """Find matching events using signatures and optional LLM assistance."""
 
-    def __init__(self, llm_provider=None):
+    def __init__(self, llm_provider=None, db=None):
         self.signature_gen = EventSignature()
         self.llm = llm_provider
+        self.db = db
         self.match_cache: Dict[str, Optional[str]] = {}
 
     def find_matching_event(self, new_event: Dict, existing_events: List[Dict]) -> Optional[str]:
@@ -99,26 +101,90 @@ class EventMatcher:
         return None
 
     def resolve_with_llm(self, new_event: Dict, potential_matches: List[Dict]) -> Optional[str]:
-        cache_key = str((new_event, tuple(m["event_id"] for m in potential_matches)))
+        cache_key = self._get_cache_key(new_event, potential_matches)
         if cache_key in self.match_cache:
             return self.match_cache[cache_key]
+
         for match in potential_matches:
-            prompt = (
-                "Are these two events the same?\n\n"
-                f"Event 1 actor: {new_event.get('primary_actor')} action: {new_event.get('action')} date: {new_event.get('date')}\n"
-                f"Event 2 actor: {match['event_id']}\n"
-            )
+            existing_event = self.db.get_event(match["event_id"])
+            if not existing_event:
+                continue
+            existing_attrs = existing_event.get("core_attributes", {})
+
+            prompt = f"""Determine if these news events describe the SAME specific incident.
+
+Event 1:
+- Actor: {new_event.get('primary_actor', 'Unknown')}
+- Action: {new_event.get('action', 'Unknown')}
+- Date: {new_event.get('date', 'Unknown')}
+- Location: {new_event.get('location', 'Unknown')}
+- Context: {new_event.get('context', 'None provided')}
+
+Event 2:
+- Actor: {existing_attrs.get('primary_actor', 'Unknown')}
+- Action: {existing_attrs.get('action', 'Unknown')}
+- Date: {existing_attrs.get('date', 'Unknown')}
+- Location: {existing_attrs.get('location', 'Unknown')}
+- Context: {existing_attrs.get('context', 'None provided')}
+
+Consider:
+- Could date differences be due to timezone or reporting delays?
+- Are different names/titles referring to the same person?
+- Do action variations describe the same act?
+- Is the location the same despite different descriptions?
+
+Respond with ONLY one of these words followed by a brief reason:
+SAME - if these describe the exact same incident
+DIFFERENT - if these are separate incidents
+RELATED - if connected but distinct events
+
+Response:"""
+
             try:
-                response = self.llm.complete(prompt, max_tokens=20)
+                response = self.llm.complete(prompt, max_tokens=150, temperature=0.1)
+                decision, reasoning = self._parse_llm_response(response)
+                self._cache_decision(cache_key, decision, reasoning, prompt, response)
+                if decision == "SAME":
+                    return match["event_id"]
             except Exception as e:
-                logger.error(f"LLM error: {e}")
-                response = "DIFFERENT"
-            decision = response.strip().split()[0].upper()
-            self.match_cache[cache_key] = match["event_id"] if decision == "SAME" else None
-            if decision == "SAME":
-                return match["event_id"]
+                logger.error(f"LLM resolution error: {e}")
+                continue
+
         self.match_cache[cache_key] = None
         return None
+
+    def _get_cache_key(self, new_event: Dict, matches: List[Dict]) -> str:
+        return str((json.dumps(new_event, sort_keys=True), tuple(m["event_id"] for m in matches)))
+
+    def _parse_llm_response(self, text: str) -> (str, str):
+        first_line = text.strip().split("\n")[0]
+        parts = first_line.split(None, 1)
+        decision = parts[0].upper() if parts else "DIFFERENT"
+        reasoning = parts[1].strip() if len(parts) > 1 else ""
+        return decision, reasoning
+
+    def _cache_decision(self, key: str, decision: str, reasoning: str, prompt: str, response: str) -> None:
+        self.match_cache[key] = None if decision != "SAME" else decision
+        try:
+            decision_id = f"dec_{datetime.utcnow().strftime('%Y%m%d_%H%M%S%f')}"
+            self.db.execute(
+                """INSERT INTO match_decisions (decision_id, signature_1, signature_2, decision, confidence, method, reasoning, decided_at, llm_prompt, llm_response)
+                    VALUES (?,?,?,?,?,?,?,?,?,?)""",
+                [
+                    decision_id,
+                    key,
+                    '',
+                    decision,
+                    None,
+                    'llm',
+                    reasoning,
+                    datetime.utcnow().isoformat() + 'Z',
+                    prompt,
+                    response,
+                ],
+            )
+        except Exception as e:
+            logger.error(f"Failed to cache decision: {e}")
 
 
 class EventWeightCalculator:
@@ -151,7 +217,7 @@ class EventManager:
 
     def __init__(self, db_connection, llm_provider=None):
         self.db = db_connection
-        self.matcher = EventMatcher(llm_provider)
+        self.matcher = EventMatcher(llm_provider, db_connection)
         self.weight_calc = EventWeightCalculator()
 
     def add_event_observation(self, event_data: Dict, source_doc: Dict, analysis_id: str) -> str:
@@ -186,35 +252,45 @@ class EventManager:
         signature = self.matcher.signature_gen.generate_signature(event_data)
         now = datetime.utcnow().isoformat() + "Z"
         self.db.execute(
-            "INSERT INTO events (event_id, event_signature, event_type, first_seen, last_updated, weight) VALUES (?,?,?,?,?,?)",
-            [event_id, signature, event_data.get("action"), now, now, 1],
+            "INSERT INTO events (event_id, event_signature, event_type, first_seen, last_updated, weight, core_attributes) VALUES (?,?,?,?,?,?,?)",
+            [
+                event_id,
+                signature,
+                event_data.get("action"),
+                now,
+                now,
+                1,
+                json.dumps(event_data),
+            ],
         )
         return event_id
 
     def save_observation(self, observation: Dict) -> None:
         self.db.execute(
-            "INSERT INTO observations (event_id, source_doc_id, source_name, source_bias, observed_at, data, analysis_id) VALUES (?,?,?,?,?,?,?)",
+            "INSERT INTO event_observations (observation_id, event_id, source_doc_id, source_name, source_bias, observed_at, extracted_data, analysis_id, citations) VALUES (?,?,?,?,?,?,?,?,?)",
             [
+                f"obs_{datetime.utcnow().strftime('%Y%m%d_%H%M%S%f')}",
                 observation["event_id"],
                 observation["source_doc_id"],
                 observation["source_name"],
                 observation.get("source_bias"),
                 datetime.utcnow().isoformat() + "Z",
-                str(observation.get("extracted_data")),
+                json.dumps(observation.get("extracted_data", {})),
                 observation["analysis_id"],
+                json.dumps(observation.get("citations", [])),
             ],
         )
 
     def update_event_weight(self, event_id: str) -> None:
         observations = self.db.query(
-            "SELECT source_name, source_bias, data FROM observations WHERE event_id=?",
+            "SELECT source_name, source_bias, extracted_data FROM event_observations WHERE event_id=?",
             [event_id],
         )
         obs_list = [
             {
-                "source_name": o[0],
-                "source_bias": o[1],
-                "extracted_data": eval(o[2]),
+                "source_name": o["source_name"],
+                "source_bias": o["source_bias"],
+                "extracted_data": json.loads(o["extracted_data"]),
             }
             for o in observations
         ]

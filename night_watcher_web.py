@@ -464,6 +464,70 @@ def api_recent_analyses():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/events")
+def api_events():
+    """Get weighted events."""
+    try:
+        init_night_watcher()
+
+        min_weight = float(request.args.get("min_weight", 2.0))
+        limit = int(request.args.get("limit", 100))
+
+        if not night_watcher.event_manager:
+            return jsonify({"error": "Event tracking not available"}), 503
+
+        events = night_watcher.event_manager.get_weighted_events(min_weight)
+
+        for event in events[:limit]:
+            event['core_attributes'] = json.loads(event['core_attributes'])
+            observations = night_watcher.event_manager.db.query(
+                "SELECT COUNT(*) as count FROM event_observations WHERE event_id = ?",
+                [event['event_id']]
+            )
+            event['observation_count'] = observations[0]['count'] if observations else 0
+
+        return jsonify({
+            "events": events[:limit],
+            "total": len(events),
+            "min_weight": min_weight
+        })
+
+    except Exception as e:
+        logger.error(f"Error fetching events: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/events/<event_id>")
+def api_event_details(event_id):
+    """Get detailed information about a specific event."""
+    try:
+        init_night_watcher()
+
+        if not night_watcher.event_manager:
+            return jsonify({"error": "Event tracking not available"}), 503
+
+        event = night_watcher.event_manager.db.get_event(event_id)
+        if not event:
+            return jsonify({"error": "Event not found"}), 404
+
+        observations = night_watcher.event_manager.db.query(
+            """SELECT * FROM event_observations 
+               WHERE event_id = ? 
+               ORDER BY observed_at DESC""",
+            [event_id]
+        )
+
+        for obs in observations:
+            obs['extracted_data'] = json.loads(obs['extracted_data'])
+            obs['citations'] = json.loads(obs['citations']) if obs['citations'] else []
+
+        return jsonify({"event": event, "observations": observations})
+
+    except Exception as e:
+        logger.error(f"Error fetching event details: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/collect", methods=["POST"])
 def api_collect():
     """Start content collection."""
