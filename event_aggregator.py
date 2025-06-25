@@ -303,21 +303,72 @@ class EventAggregator:
     
     def _events_similar(self, event1: Dict[str, Any], event2: Dict[str, Any]) -> bool:
         """Check if two events are similar enough to merge."""
-        # Simple name similarity check
-        name1 = event1.get("name", "").lower()
-        name2 = event2.get("name", "").lower()
-        
-        # Check for common key terms
-        terms1 = set(name1.split())
-        terms2 = set(name2.split())
-        
-        if not terms1 or not terms2:
-            return False
-        
-        overlap = len(terms1 & terms2)
-        min_size = min(len(terms1), len(terms2))
-        
-        return (overlap / min_size) >= self.similarity_threshold
+        name1 = event1.get("name", "") or ""
+        name2 = event2.get("name", "") or ""
+
+        desc1 = (event1.get("attributes", {}).get("description") or "")
+        desc2 = (event2.get("attributes", {}).get("description") or "")
+
+        name_score = self._fuzzy_ratio(name1.lower(), name2.lower())
+        desc_score = self._fuzzy_ratio(desc1.lower(), desc2.lower())
+
+        date_score = self._temporal_score(event1.get("date"), event2.get("date"))
+        loc_score = self._location_score(
+            event1.get("attributes", {}).get("location"),
+            event2.get("attributes", {}).get("location"),
+        )
+
+        # Weighted sum of scores
+        total = (
+            0.6 * name_score
+            + 0.2 * desc_score
+            + 0.1 * date_score
+            + 0.1 * loc_score
+        )
+
+        return total >= self.similarity_threshold
+
+    @staticmethod
+    def _fuzzy_ratio(text1: str, text2: str) -> float:
+        """Return a simple fuzzy match ratio between 0 and 1."""
+        if not text1 or not text2:
+            return 0.0
+        from difflib import SequenceMatcher
+
+        return SequenceMatcher(None, text1, text2).ratio()
+
+    def _temporal_score(self, d1: str, d2: str) -> float:
+        """Score temporal proximity between two dates."""
+        date1 = self._parse_date(d1)
+        date2 = self._parse_date(d2)
+        if not date1 or not date2:
+            return 0.0
+        diff = abs((date1 - date2).days)
+        if diff == 0:
+            return 1.0
+        if diff == 1:
+            return 0.8
+        if diff <= 2:
+            return 0.6
+        return 0.0
+
+    def _location_score(self, loc1: str, loc2: str) -> float:
+        """Score similarity between two location strings."""
+        if not loc1 or not loc2:
+            return 0.0
+
+        parts1 = [p.strip().lower() for p in loc1.split(",")]
+        parts2 = [p.strip().lower() for p in loc2.split(",")]
+        if parts1 == parts2:
+            return 1.0
+
+        if len(parts1) >= 2 and len(parts2) >= 2 and parts1[-2:] == parts2[-2:]:
+            return 0.6
+
+        if parts1 and parts2 and parts1[-1] == parts2[-1]:
+            return 0.3
+
+        return 0.0
     
     def _merge_event_cluster(self, cluster: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Merge a cluster of similar events into one."""
