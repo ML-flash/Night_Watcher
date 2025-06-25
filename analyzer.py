@@ -517,6 +517,54 @@ class ContentAnalyzer:
 
         return processed_data
 
+    def _extract_events_from_analysis(self, analysis_data: Dict[str, Any]) -> List[Dict]:
+        """Extract event data from analysis for event tracking."""
+        events = []
+
+        facts = analysis_data.get("facts_data", {})
+        if isinstance(facts, dict):
+            for event in facts.get("events", []):
+                events.append({
+                    "primary_actor": self._extract_primary_actor(event),
+                    "action": event.get("name", ""),
+                    "date": event.get("date", "N/A"),
+                    "location": event.get("location", ""),
+                    "description": event.get("description", ""),
+                    "context": event.get("description", ""),
+                    "citations": analysis_data.get("citation_summary", {})
+                })
+
+        kg_payload = analysis_data.get("kg_payload", {})
+        for node in kg_payload.get("nodes", []):
+            if node.get("node_type") == "event":
+                events.append({
+                    "primary_actor": self._extract_actor_from_event(node),
+                    "action": node.get("name", ""),
+                    "date": node.get("timestamp", "N/A"),
+                    "location": node.get("attributes", {}).get("location", ""),
+                    "description": node.get("name", ""),
+                    "context": node.get("source_sentence", ""),
+                    "citations": node.get("citations", [])
+                })
+
+        return events
+
+    def _extract_primary_actor(self, event: Dict) -> str:
+        actors = event.get("actors", [])
+        if actors and isinstance(actors, list):
+            return actors[0]
+        desc = event.get("description", "")
+        if " arrested " in desc:
+            return desc.split(" arrested ")[0].strip()
+        return "Unknown"
+
+    def _extract_actor_from_event(self, node: Dict) -> str:
+        attrs = node.get("attributes", {})
+        actor = attrs.get("actor") or attrs.get("primary_actor")
+        if isinstance(actor, list):
+            return actor[0] if actor else "Unknown"
+        return actor or "Unknown"
+
     def _extract_legacy_fields(self, analysis_data: Dict[str, Any], round_data: Dict[str, Any]):
         """Extract legacy fields for backward compatibility."""
         # Copy key fields to top level

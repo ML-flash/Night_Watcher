@@ -864,6 +864,8 @@
                 <!-- Event Timeline -->
                 <div id="event-timeline" class="timeline-container"></div>
 
+                <div id="weighted-events-container"></div>
+
                 <!-- Pattern Analysis -->
                 <div id="pattern-analysis" class="analysis-container">
                     <h3>Cross-Source Patterns</h3>
@@ -901,6 +903,7 @@
             loadLLMModels();
             loadLLMProvider();
             loadPublicKey();
+            loadWeightedEvents();
 
             const targetSelect = document.getElementById('analysis-target');
             if (targetSelect) {
@@ -938,6 +941,8 @@
             } else if (sectionId === 'export') {
                 loadExportStatus();
                 loadStaging();
+            } else if (sectionId === 'events') {
+                loadWeightedEvents();
             }
         }
 
@@ -1927,6 +1932,46 @@
                 node.title = ev.name;
                 container.appendChild(node);
             });
+        }
+
+        function loadWeightedEvents() {
+            fetch('/api/events?min_weight=2.0&limit=20')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('weighted-events-container');
+                    container.innerHTML = '';
+                    data.events.forEach(ev => {
+                        const card = createEventCard(ev);
+                        container.appendChild(card);
+                    });
+                    document.getElementById('high-weight-events').textContent = data.events.filter(e => e.weight > 5).length;
+                });
+        }
+
+        function createEventCard(event) {
+            const card = document.createElement('div');
+            card.className = 'event-card';
+            card.innerHTML = `
+                <div class="event-header">
+                    <span class="event-weight">${event.weight.toFixed(1)}</span>
+                    <span class="event-confidence">${(event.confidence_score * 100).toFixed(0)}%</span>
+                </div>
+                <div class="event-content">
+                    <h4>${event.core_attributes.primary_actor}</h4>
+                    <p>${event.core_attributes.action}</p>
+                    <div class="event-meta">
+                        <span>📅 ${event.core_attributes.date}</span>
+                        <span>📰 ${event.source_count} sources</span>
+                        <span>🌐 ${(event.source_diversity * 100).toFixed(0)}% diversity</span>
+                    </div>
+                </div>
+            `;
+            card.onclick = () => showEventDetails(event.event_id);
+            return card;
+        }
+
+        function showEventDetails(id) {
+            window.open(`/api/events/${id}`, '_blank');
         }
 
         function renderPatternAnalysis(patterns) {

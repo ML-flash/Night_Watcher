@@ -63,6 +63,17 @@ class NightWatcher:
         self.vector_store = VectorStore(
             base_dir=f"{self.base_dir}/vector_store"
         )
+
+        # Initialize event tracking
+        try:
+            from event_weight import EventManager
+            from event_database import EventDatabase
+            event_db_path = os.path.join(self.base_dir, "events.db")
+            self.event_manager = EventManager(EventDatabase(event_db_path), self.llm_provider)
+            self.logger.info("Event tracking system initialized")
+        except Exception as e:
+            self.logger.warning(f"Event tracking not available: {e}")
+            self.event_manager = None
     
     def _load_config(self) -> Dict[str, Any]:
         """Load or create configuration."""
@@ -175,6 +186,7 @@ class NightWatcher:
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         total_analyses = 0
+        analysis_files = []
         
         # Run each template
         for template in templates:
@@ -186,8 +198,11 @@ class NightWatcher:
                 base = os.path.splitext(os.path.basename(template))[0]
                 analysis_id = f"analysis_{doc_id}_{base}_{timestamp}"
                 
-                with open(f"{self.base_dir}/analyzed/{analysis_id}.json", 'w') as f:
+                file_path = f"{self.base_dir}/analyzed/{analysis_id}.json"
+                analysis["analysis_id"] = analysis_id
+                with open(file_path, 'w') as f:
                     json.dump(analysis, f, indent=2)
+                analysis_files.append(file_path)
                 
                 self.document_repository.store_analysis_provenance(
                     analysis_id=analysis_id,
@@ -204,12 +219,38 @@ class NightWatcher:
                 
                 total_analyses += 1
         
-        return {
+        result = {
             "status": "completed",
             "analyzed": total_analyses,
             "templates": templates,
-            "target": target
+            "target": target,
+            "analyzed_files": analysis_files,
         }
+
+        if self.event_manager and result.get("status") == "completed":
+            for analysis_file in analysis_files:
+                try:
+                    with open(analysis_file, 'r') as f:
+                        analysis = json.load(f)
+                    events = self.analyzer._extract_events_from_analysis(analysis)
+                    article = analysis.get("article", {})
+                    for event in events:
+                        event_id = self.event_manager.add_event_observation(
+                            event_data=event,
+                            source_doc={
+                                "doc_id": article.get("document_id", ""),
+                                "source": article.get("source", ""),
+                                "bias_label": article.get("bias_label", ""),
+                            },
+                            analysis_id=analysis.get("analysis_id", analysis_id),
+                        )
+                        event["event_id"] = event_id
+                    with open(analysis_file, 'w') as f:
+                        json.dump(analysis, f, indent=2)
+                except Exception as e:
+                    self.logger.error(f"Error tracking events from {analysis_file}: {e}")
+
+        return result
     
     def _get_docs_since(self, since_date: datetime) -> List[str]:
         """Get document IDs collected since a given date."""
@@ -500,6 +541,8 @@ def main():
     parser.add_argument("--analyze", action="store_true", help="Run analysis")
     parser.add_argument("--build-kg", action="store_true", help="Build knowledge graph")
     parser.add_argument("--aggregate-events", action="store_true", help="Aggregate events from analyses")
+    parser.add_argument("--show-events", action="store_true", help="Show weighted events")
+    parser.add_argument("--event-details", help="Show details for specific event ID")
     parser.add_argument("--sync-vectors", action="store_true", help="Sync vectors")
     parser.add_argument("--full", action="store_true", help="Run full pipeline")
     parser.add_argument("--status", action="store_true", help="Show status")
@@ -551,6 +594,31 @@ def main():
             print(f"✓ Found {result['cross_source_events']} cross-source events")
             if result.get('coordinated_campaigns'):
                 print(f"✓ Detected {len(result['coordinated_campaigns'])} coordinated campaigns")
+
+        elif args.show_events:
+            if nw.event_manager:
+                events = nw.event_manager.get_weighted_events()
+                print(f"\n=== Weighted Events (Total: {len(events)}) ===")
+                for event in events[:10]:
+                    attrs = json.loads(event['core_attributes'])
+                    print(f"\nEvent: {event['event_id']}")
+                    print(f"  Weight: {event['weight']:.1f} | Confidence: {event['confidence_score']:.2%}")
+                    print(f"  Actor: {attrs.get('primary_actor', 'Unknown')}")
+                    print(f"  Action: {attrs.get('action', 'Unknown')}")
+                    print(f"  Date: {attrs.get('date', 'Unknown')}")
+                    print(f"  Sources: {event['source_count']} | Diversity: {event['source_diversity']:.2%}")
+            else:
+                print("Event tracking not available")
+
+        elif args.event_details:
+            if nw.event_manager:
+                ev = nw.event_manager.db.get_event(args.event_details)
+                if not ev:
+                    print("Event not found")
+                else:
+                    print(json.dumps(ev, indent=2))
+            else:
+                print("Event tracking not available")
         
         elif args.build_kg:
             result = nw.build_kg()
