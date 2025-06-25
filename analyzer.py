@@ -52,6 +52,11 @@ class ContentAnalyzer:
 
         return template
 
+    def get_document_id(self, content: str) -> str:
+        """Generate a document ID using SHA-256 hash of the content."""
+        import hashlib
+        return hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
+
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process a batch of articles with template-based analysis.
@@ -128,6 +133,12 @@ class ContentAnalyzer:
             "published_date": article.get("published", ""),
             "document_id": article.get("document_id")
         }
+
+        # Ensure document_id is set
+        if not round_data.get("document_id"):
+            doc_id = self.get_document_id(article.get("content", ""))
+            article["document_id"] = doc_id
+            round_data["document_id"] = doc_id
 
         # Initialize analysis data
         analysis_data = {
@@ -304,8 +315,118 @@ class ContentAnalyzer:
 
         return processed
 
+    def _create_citation_at_position(self, idx: int, length: int, source_text: str, doc_id: str) -> Dict[str, Any]:
+        """Create a citation object with context window."""
+        para_num = source_text[:idx].count("\n\n") + 1
+        sent_num = source_text[:idx].count(".") + 1
+        context_start = max(0, idx - 50)
+        context_end = min(len(source_text), idx + length + 50)
+        return {
+            "doc_id": doc_id,
+            "source_text": source_text[idx: idx + length],
+            "context": source_text[context_start:context_end],
+            "paragraph_num": para_num,
+            "sentence_num": sent_num,
+            "char_start": idx,
+            "char_end": idx + length,
+            "match_confidence": 1.0,
+            "match_type": "exact",
+        }
+
+    def _exact_match_citation(self, text: str, source_text: str, doc_id: str):
+        idx = source_text.lower().find(text.lower())
+        if idx >= 0:
+            return self._create_citation_at_position(idx, len(text), source_text, doc_id)
+        return None
+
+    def _normalized_match_citation(self, text: str, source_text: str, doc_id: str):
+        import re
+        normalized_text = re.sub(r"[^\w\s]", "", text.lower()).strip()
+        normalized_text = " ".join(normalized_text.split())
+        words = [re.escape(w) for w in normalized_text.split()]
+        if not words:
+            return None
+        pattern = r"\b" + r"\W*".join(words) + r"\b"
+        match = re.search(pattern, source_text, flags=re.IGNORECASE)
+        if match:
+            return self._create_citation_at_position(match.start(), match.end() - match.start(), source_text, doc_id)
+        return None
+
+    def _partial_entity_match(self, entity_name: str, source_text: str, doc_id: str):
+        name_parts = entity_name.split()
+        if len(name_parts) > 1:
+            last_name = name_parts[-1]
+            if len(last_name) > 3:
+                citation = self._exact_match_citation(last_name, source_text, doc_id)
+                if citation:
+                    return citation
+        if len(name_parts) > 2:
+            short_name = f"{name_parts[0]} {name_parts[-1]}"
+            citation = self._exact_match_citation(short_name, source_text, doc_id)
+            if citation:
+                return citation
+        return None
+
+    def _fuzzy_quote_match(self, quote: str, source_text: str, doc_id: str):
+        from difflib import SequenceMatcher
+        cleaned = quote.strip('"\n ')
+        length = len(cleaned)
+        if length == 0:
+            return None
+        best_ratio = 0.0
+        best_idx = -1
+        for i in range(0, len(source_text) - length + 1):
+            window = source_text[i:i + length]
+            ratio = SequenceMatcher(None, cleaned.lower(), window.lower()).ratio()
+            if ratio > 0.85 and ratio > best_ratio:
+                best_ratio = ratio
+                best_idx = i
+                if ratio > 0.9:
+                    break
+        if best_idx >= 0:
+            citation = self._create_citation_at_position(best_idx, length, source_text, doc_id)
+            citation["match_type"] = "fuzzy"
+            citation["match_confidence"] = best_ratio
+            return citation
+        return None
+
+    def create_citation(self, text: str, source_text: str, doc_id: str, match_context: str = None):
+        """Create a citation using multiple matching strategies."""
+        if not text:
+            return None
+        citation = self._exact_match_citation(text, source_text, doc_id)
+        if citation:
+            return citation
+        citation = self._normalized_match_citation(text, source_text, doc_id)
+        if citation:
+            citation["match_type"] = "normalized"
+            citation["match_confidence"] = 0.9
+            return citation
+        if match_context == "entity_name":
+            citation = self._partial_entity_match(text, source_text, doc_id)
+            if citation:
+                citation["match_type"] = "partial"
+                citation["match_confidence"] = 0.8
+                return citation
+        if match_context == "quote":
+            citation = self._fuzzy_quote_match(text, source_text, doc_id)
+            if citation:
+                return citation
+        return None
+
+    def find_all_citations(self, text: str, source_text: str, doc_id: str, max_citations: int = 5):
+        citations = []
+        search_start = 0
+        while len(citations) < max_citations:
+            idx = source_text.lower().find(text.lower(), search_start)
+            if idx == -1:
+                break
+            citations.append(self._create_citation_at_position(idx, len(text), source_text, doc_id))
+            search_start = idx + 1
+        return citations
+
     def add_citations(self, processed_data: Dict[str, Any], source_text: str, doc_id: str) -> Dict[str, Any]:
-        """Add citation metadata to extracted items using exact text matching."""
+        """Add citation metadata to extracted items using multiple matching strategies."""
         summary = {
             "total_citations": 0,
             "exact_matches": 0,
@@ -315,54 +436,56 @@ class ContentAnalyzer:
         }
         conf_sum = 0.0
 
-        def create_citation(text: str):
-            if not text:
-                return None
-            idx = source_text.lower().find(text.lower())
-            if idx >= 0:
-                para_num = source_text[:idx].count("\n\n") + 1
-                sent_num = source_text[:idx].count(".") + 1
-                return {
-                    "doc_id": doc_id,
-                    "source_text": source_text[idx: idx + len(text)],
-                    "paragraph_num": para_num,
-                    "sentence_num": sent_num,
-                    "char_start": idx,
-                    "char_end": idx + len(text),
-                    "match_confidence": 1.0,
-                    "match_type": "exact"
-                }
-            return None
+        def create_citation(text: str, context: str = None):
+            citation = self.create_citation(text, source_text, doc_id, context)
+            return citation
 
         # Process nodes
         for node in processed_data.get("nodes_data", []):
-            citation = create_citation(node.get("name"))
+            citation = None
+            if node.get("source_sentence"):
+                citation = create_citation(node.get("source_sentence"), "quote")
+            if not citation and node.get("name"):
+                citation = create_citation(node.get("name"), "entity_name")
             summary["total_citations"] += 1
             if citation:
                 node.setdefault("citations", []).append(citation)
-                summary["exact_matches"] += 1
-                conf_sum += 1.0
+                if citation.get("match_type") == "exact":
+                    summary["exact_matches"] += 1
+                else:
+                    summary["fuzzy_matches"] += 1
+                conf_sum += citation.get("match_confidence", 1.0)
             else:
                 summary["unmatched"] += 1
 
         for node in processed_data.get("unique_nodes_data", []):
-            citation = create_citation(node.get("name"))
+            citation = None
+            if node.get("source_sentence"):
+                citation = create_citation(node.get("source_sentence"), "quote")
+            if not citation and node.get("name"):
+                citation = create_citation(node.get("name"), "entity_name")
             summary["total_citations"] += 1
             if citation:
                 node.setdefault("citations", []).append(citation)
-                summary["exact_matches"] += 1
-                conf_sum += 1.0
+                if citation.get("match_type") == "exact":
+                    summary["exact_matches"] += 1
+                else:
+                    summary["fuzzy_matches"] += 1
+                conf_sum += citation.get("match_confidence", 1.0)
             else:
                 summary["unmatched"] += 1
 
         # Process edges
         for edge in processed_data.get("edges_data", []):
-            citation = create_citation(edge.get("evidence_quote"))
+            citation = create_citation(edge.get("evidence_quote"), "quote")
             summary["total_citations"] += 1
             if citation:
                 edge.setdefault("citations", []).append(citation)
-                summary["exact_matches"] += 1
-                conf_sum += 1.0
+                if citation.get("match_type") == "exact":
+                    summary["exact_matches"] += 1
+                else:
+                    summary["fuzzy_matches"] += 1
+                conf_sum += citation.get("match_confidence", 1.0)
             else:
                 summary["unmatched"] += 1
 
@@ -372,12 +495,15 @@ class ContentAnalyzer:
             facts_citations = {}
             for k, v in facts.items():
                 if isinstance(v, str):
-                    citation = create_citation(v)
+                    citation = create_citation(v, "quote")
                     summary["total_citations"] += 1
                     if citation:
                         facts_citations[k] = citation
-                        summary["exact_matches"] += 1
-                        conf_sum += 1.0
+                        if citation.get("match_type") == "exact":
+                            summary["exact_matches"] += 1
+                        else:
+                            summary["fuzzy_matches"] += 1
+                        conf_sum += citation.get("match_confidence", 1.0)
                     else:
                         summary["unmatched"] += 1
             if facts_citations:
