@@ -19,6 +19,7 @@ from analyzer import ContentAnalyzer
 from knowledge_graph import KnowledgeGraph
 from vector_store import VectorStore
 from document_repository import DocumentRepository
+from document_aggregator import aggregate_document_analyses
 import providers
 
 # Configure logging
@@ -187,6 +188,8 @@ class NightWatcher:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         total_analyses = 0
         analysis_files = []
+        # Keep analyses grouped by document for later aggregation
+        doc_analyses: Dict[str, List[Dict[str, Any]]] = {a["document_id"]: [] for a in articles}
         
         # Run each template
         for template in templates:
@@ -203,6 +206,8 @@ class NightWatcher:
                 with open(file_path, 'w') as f:
                     json.dump(analysis, f, indent=2)
                 analysis_files.append(file_path)
+                # store for document-level aggregation
+                doc_analyses[doc_id].append(analysis)
                 
                 self.document_repository.store_analysis_provenance(
                     analysis_id=analysis_id,
@@ -219,36 +224,70 @@ class NightWatcher:
                 
                 total_analyses += 1
         
+        # Aggregate analyses for each document when multiple templates are used
+        aggregated_files = []
+        if len(templates) > 1:
+            for doc_id, analyses_list in doc_analyses.items():
+                if len(analyses_list) > 1:
+                    aggregated = aggregate_document_analyses(doc_id, analyses_list)
+                    agg_id = f"aggregation_{doc_id}_{timestamp}"
+                    aggregated["aggregation_id"] = agg_id
+                    agg_path = f"{self.base_dir}/analyzed/{agg_id}.json"
+                    with open(agg_path, 'w') as f:
+                        json.dump(aggregated, f, indent=2)
+                    analysis_files.append(agg_path)
+                    aggregated_files.append(agg_path)
+                    doc_analyses[doc_id] = [aggregated]
+
         result = {
             "status": "completed",
             "analyzed": total_analyses,
             "templates": templates,
             "target": target,
             "analyzed_files": analysis_files,
+            "aggregated_files": aggregated_files,
         }
 
         if self.event_manager and result.get("status") == "completed":
-            for analysis_file in analysis_files:
+            for analyses_list in doc_analyses.values():
+                analysis = analyses_list[0]
                 try:
-                    with open(analysis_file, 'r') as f:
-                        analysis = json.load(f)
-                    events = self.analyzer._extract_events_from_analysis(analysis)
-                    article = analysis.get("article", {})
-                    for event in events:
-                        event_id = self.event_manager.add_event_observation(
-                            event_data=event,
-                            source_doc={
-                                "doc_id": article.get("document_id", ""),
-                                "source": article.get("source", ""),
-                                "bias_label": article.get("bias_label", ""),
-                            },
-                            analysis_id=analysis.get("analysis_id", analysis_id),
-                        )
-                        event["event_id"] = event_id
-                    with open(analysis_file, 'w') as f:
-                        json.dump(analysis, f, indent=2)
+                    if "aggregation_id" in analysis:
+                        events = analysis.get("events", [])
+                        article_info = next((a for a in articles if a["document_id"] == analysis["document_id"]), {})
+                        for event in events:
+                            mapped_event = {
+                                "primary_actor": (event.get("actors") or ["Unknown"])[0],
+                                "action": event.get("action", event.get("name", "")),
+                                "date": event.get("date", ""),
+                                "location": event.get("location", ""),
+                                "description": event.get("description", ""),
+                                "context": event.get("description", ""),
+                            }
+                            self.event_manager.add_event_observation(
+                                event_data=mapped_event,
+                                source_doc={
+                                    "doc_id": analysis["document_id"],
+                                    "source": article_info.get("source", ""),
+                                    "bias_label": article_info.get("bias_label", ""),
+                                },
+                                analysis_id=analysis.get("aggregation_id"),
+                            )
+                    else:
+                        events = self.analyzer._extract_events_from_analysis(analysis)
+                        article = analysis.get("article", {})
+                        for event in events:
+                            self.event_manager.add_event_observation(
+                                event_data=event,
+                                source_doc={
+                                    "doc_id": article.get("document_id", ""),
+                                    "source": article.get("source", ""),
+                                    "bias_label": article.get("bias_label", ""),
+                                },
+                                analysis_id=analysis.get("analysis_id"),
+                            )
                 except Exception as e:
-                    self.logger.error(f"Error tracking events from {analysis_file}: {e}")
+                    self.logger.error(f"Error tracking events from {analysis.get('analysis_id', 'aggregation')}: {e}")
 
         return result
     
