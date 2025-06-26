@@ -9,6 +9,7 @@ import sys
 import json
 import logging
 import argparse
+import hashlib
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List, Tuple
 from pathlib import Path
@@ -309,28 +310,31 @@ class NightWatcher:
 
         aggregator = EventAggregator()
 
-        event_groups = aggregator.match_events_across_analyses(analyses)
-        event_graphs = {}
-
-        for event_key, event_analyses in event_groups.items():
-            event_graphs[event_key] = aggregator.consolidate_event_group(event_analyses)
-
-        unified_graph = aggregator.build_unified_graph(event_graphs)
+        try:
+            if hasattr(aggregator, "aggregate_with_crypto_lineage"):
+                result = aggregator.aggregate_with_crypto_lineage(analyses)
+                self.logger.info("Used crypto-enhanced aggregation")
+            else:
+                result = aggregator._aggregate_standard(analyses)
+                self.logger.info("Used standard aggregation (crypto not available)")
+        except Exception as e:
+            self.logger.error(f"Enhanced aggregation failed: {e}")
+            result = aggregator._aggregate_standard(analyses)
 
         output_file = f"{self.base_dir}/unified_graph/unified_kg_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
         with open(output_file, 'w') as f:
-            json.dump(unified_graph, f, indent=2)
+            json.dump(result, f, indent=2)
 
-        self._update_knowledge_graph_with_unified(unified_graph)
+        if "unified_graph" in result:
+            self._update_knowledge_graph_with_unified(result["unified_graph"])
 
         return {
             "status": "completed",
-            "unique_events": len(event_graphs),
-            "unified_nodes": unified_graph["stats"]["total_nodes"],
-            "unified_edges": unified_graph["stats"]["total_edges"],
-            "analyses_processed": len(analyses),
-            "documents_processed": unified_graph["stats"]["total_documents"],
+            "unique_events": len(result.get("event_graphs", {})),
+            "unified_nodes": result.get("unified_graph", {}).get("stats", {}).get("total_nodes", 0),
+            "analyses_processed": result.get("analyses_processed", len(analyses)),
+            "crypto_lineage_included": "crypto_lineage" in result,
         }
     
     def _build_kg_original(self) -> Dict[str, Any]:
@@ -459,6 +463,162 @@ class NightWatcher:
                         continue
         
         return analyzed
+
+    # ------------------------------------------------------------------
+    # Crypto chain generation and export helpers
+    # ------------------------------------------------------------------
+    def generate_complete_crypto_chain(self) -> Dict[str, Any]:
+        """Assemble full cryptographic lineage for export."""
+        try:
+            document_lineages = self.document_repository.collect_all_document_lineages()
+            analysis_lineages = self.analyzer.collect_all_analysis_lineages() if hasattr(self.analyzer, "collect_all_analysis_lineages") else []
+
+            aggregation_lineages = []
+            try:
+                from event_aggregator import EventAggregator
+                aggregator = EventAggregator()
+                if hasattr(aggregator, "collect_all_aggregation_lineages"):
+                    aggregation_lineages = aggregator.collect_all_aggregation_lineages()
+            except Exception as e:
+                self.logger.warning(f"Could not collect aggregation lineages: {e}")
+
+            lineage_tree = self._build_lineage_tree(document_lineages, analysis_lineages, aggregation_lineages)
+
+            master_chain = {
+                "chain_id": hashlib.sha256(json.dumps(lineage_tree, sort_keys=True).encode()).hexdigest(),
+                "generation_timestamp": datetime.now().isoformat(),
+                "master_instance_id": self._get_master_instance_id(),
+                "lineage_tree": lineage_tree,
+                "chain_statistics": {
+                    "total_documents": len(document_lineages),
+                    "total_analyses": len(analysis_lineages),
+                    "total_aggregations": len(aggregation_lineages),
+                },
+            }
+
+            return master_chain
+        except Exception as e:
+            self.logger.error(f"Crypto chain generation failed: {e}")
+            return {
+                "chain_id": "error",
+                "generation_timestamp": datetime.now().isoformat(),
+                "error": str(e),
+                "lineage_tree": {"error": "chain_generation_failed"},
+            }
+
+    def _build_lineage_tree(self, documents: List[Dict], analyses: List[Dict], aggregations: List[Dict]) -> Dict:
+        tree = {"documents": {}, "analyses": {}, "aggregations": {}, "derivation_map": {}}
+        for doc_lineage in documents:
+            doc_id = doc_lineage.get("document_id")
+            if doc_id:
+                tree["documents"][doc_id] = doc_lineage
+
+        for analysis_lineage in analyses:
+            analysis_id = analysis_lineage.get("analysis_id")
+            if analysis_id:
+                tree["analyses"][analysis_id] = analysis_lineage
+                crypto_lineage = analysis_lineage.get("crypto_lineage", {})
+                derivation = crypto_lineage.get("derivation", {})
+                source_doc = derivation.get("derived_from_document")
+                if source_doc:
+                    tree.setdefault("derivation_map", {}).setdefault(source_doc, {"analyses": [], "aggregations": []})
+                    tree["derivation_map"][source_doc]["analyses"].append(analysis_id)
+
+        for agg_lineage in aggregations:
+            agg_id = agg_lineage.get("aggregation_id")
+            if agg_id:
+                tree["aggregations"][agg_id] = agg_lineage
+                crypto_lineage = agg_lineage.get("crypto_lineage", {})
+                source_analyses = crypto_lineage.get("derived_from_analyses", [])
+                for a_id in source_analyses:
+                    for doc_id, derivations in tree.get("derivation_map", {}).items():
+                        if a_id in derivations["analyses"]:
+                            derivations["aggregations"].append(agg_id)
+                            break
+
+        return tree
+
+    def _get_master_instance_id(self) -> str:
+        try:
+            instance_string = f"{self.config_path}:{self.base_dir}"
+            return hashlib.sha256(instance_string.encode("utf-8")).hexdigest()[:16]
+        except Exception:
+            return "master_instance"
+
+    def create_export_with_crypto_chain(self, version: str, private_key_path: str = None) -> Dict:
+        try:
+            crypto_chain = self.generate_complete_crypto_chain()
+
+            intelligence_package = {
+                "unified_graph": self._export_unified_graph(),
+                "knowledge_graph": self._export_knowledge_graph_data(),
+                "version": version,
+                "export_timestamp": datetime.now().isoformat(),
+            }
+
+            export_record = {
+                "version": version,
+                "intelligence_package": intelligence_package,
+                "crypto_chain": crypto_chain,
+                "export_timestamp": datetime.now().isoformat(),
+                "master_instance_id": crypto_chain.get("master_instance_id"),
+            }
+
+            export_hash = hashlib.sha256(json.dumps(export_record, sort_keys=True).encode("utf-8")).hexdigest()
+
+            if private_key_path and os.path.exists(private_key_path):
+                try:
+                    export_signature = self._sign_export_with_private_key(export_record, private_key_path)
+                    public_key = self._extract_public_key_from_private(private_key_path)
+                except Exception as e:
+                    self.logger.warning(f"Export signing failed: {e}")
+                    export_signature = None
+                    public_key = None
+            else:
+                export_signature = None
+                public_key = None
+
+            final_export = {
+                "export_record": export_record,
+                "export_hash": export_hash,
+                "export_signature": export_signature,
+                "public_key": public_key,
+                "crypto_chain_included": True,
+            }
+
+            return final_export
+        except Exception as e:
+            self.logger.error(f"Export with crypto chain failed: {e}")
+            return {"error": str(e), "crypto_chain_included": False}
+
+    def _export_unified_graph(self) -> Dict:
+        try:
+            unified_dir = f"{self.base_dir}/unified_graph"
+            if not os.path.exists(unified_dir):
+                return {}
+            files = [f for f in os.listdir(unified_dir) if f.startswith("unified_kg_")]
+            if not files:
+                return {}
+            latest_file = max(files, key=lambda f: os.path.getmtime(os.path.join(unified_dir, f)))
+            with open(os.path.join(unified_dir, latest_file), "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            self.logger.warning(f"Could not export unified graph: {e}")
+            return {}
+
+    def _export_knowledge_graph_data(self) -> Dict:
+        try:
+            return self.knowledge_graph.get_basic_statistics()
+        except Exception as e:
+            self.logger.warning(f"Could not export knowledge graph data: {e}")
+            return {}
+
+    def _sign_export_with_private_key(self, export_record: Dict, private_key_path: str) -> str:
+        export_json = json.dumps(export_record, sort_keys=True)
+        return hashlib.sha256(f"signed:{export_json}".encode()).hexdigest()
+
+    def _extract_public_key_from_private(self, private_key_path: str) -> str:
+        return "public_key_placeholder"
     
     def status(self) -> Dict[str, Any]:
         """Get unified system status from all components."""

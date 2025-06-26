@@ -2,6 +2,9 @@ from collections import defaultdict
 from typing import Any, Dict, List, Tuple
 from datetime import datetime
 from difflib import SequenceMatcher
+import os
+import json
+import hashlib
 
 
 class EventAggregator:
@@ -233,3 +236,102 @@ class EventAggregator:
             return datetime.strptime(date_str, "%Y-%m-%d")
         except Exception:
             return None
+
+    # ------------------------------------------------------------------
+    # Crypto lineage enhancements
+    # ------------------------------------------------------------------
+    def aggregate_with_crypto_lineage(self, analyses: List[Dict]) -> Dict:
+        """Aggregate events while preserving crypto lineage."""
+        standard_result = self._aggregate_standard(analyses)
+        try:
+            return self._add_aggregation_lineage(standard_result, analyses)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Lineage preservation failed: {e}")
+            return standard_result
+
+    def _aggregate_standard(self, analyses: List[Dict]) -> Dict:
+        """Original aggregation logic broken out for reuse."""
+        event_groups = self.match_events_across_analyses(analyses)
+        event_graphs = {}
+        for event_key, event_analyses in event_groups.items():
+            event_graphs[event_key] = self.consolidate_event_group(event_analyses)
+
+        unified_graph = self.build_unified_graph(event_graphs)
+
+        return {
+            "event_graphs": event_graphs,
+            "unified_graph": unified_graph,
+            "analyses_processed": len(analyses),
+            "aggregation_timestamp": datetime.now().isoformat(),
+        }
+
+    def _add_aggregation_lineage(self, standard_result: Dict, analyses: List[Dict]) -> Dict:
+        """Attach aggregation lineage information."""
+        input_lineages = []
+        analysis_ids = []
+        for analysis in analyses:
+            if "crypto_lineage" in analysis:
+                input_lineages.append(analysis["crypto_lineage"])
+                analysis_ids.append(analysis["crypto_lineage"].get("analysis_id"))
+            else:
+                analysis_ids.append(analysis.get("analysis_id", "legacy"))
+
+        aggregation_input = ":".join(sorted(analysis_ids))
+        aggregation_id = hashlib.sha256(aggregation_input.encode("utf-8")).hexdigest()
+
+        aggregation_output_hash = hashlib.sha256(json.dumps(standard_result, sort_keys=True).encode("utf-8")).hexdigest()
+
+        lineage_enhanced_result = {
+            **standard_result,
+            "crypto_lineage": {
+                "aggregation_id": aggregation_id,
+                "output_hash": aggregation_output_hash,
+                "derived_from_analyses": analysis_ids,
+                "input_lineages": input_lineages,
+                "aggregation_method": "two_stage_event_centric",
+                "aggregation_timestamp": standard_result["aggregation_timestamp"],
+            },
+        }
+
+        self._store_aggregation_lineage(aggregation_id, lineage_enhanced_result)
+        return lineage_enhanced_result
+
+    def _store_aggregation_lineage(self, aggregation_id: str, lineage_result: Dict) -> None:
+        """Persist aggregation lineage for export."""
+        try:
+            lineage_dir = "data/aggregation_lineage"
+            os.makedirs(lineage_dir, exist_ok=True)
+            lineage_file = os.path.join(lineage_dir, f"{aggregation_id}_lineage.json")
+
+            lineage_data = {
+                "aggregation_id": aggregation_id,
+                "crypto_lineage": lineage_result.get("crypto_lineage"),
+                "lineage_type": "aggregation_derivation",
+                "stored_at": datetime.now().isoformat(),
+            }
+
+            with open(lineage_file, "w", encoding="utf-8") as f:
+                json.dump(lineage_data, f, indent=2)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Could not store aggregation lineage: {e}")
+
+    def collect_all_aggregation_lineages(self) -> List[Dict]:
+        """Load all aggregation lineage records."""
+        lineages = []
+        lineage_dir = "data/aggregation_lineage"
+        if not os.path.exists(lineage_dir):
+            return lineages
+
+        for filename in os.listdir(lineage_dir):
+            if filename.endswith("_lineage.json"):
+                try:
+                    with open(os.path.join(lineage_dir, filename), "r", encoding="utf-8") as f:
+                        lineage = json.load(f)
+                    lineages.append(lineage)
+                except Exception as e:
+                    import logging
+                    logging.getLogger(__name__).warning(f"Could not load aggregation lineage {filename}: {e}")
+
+        return lineages

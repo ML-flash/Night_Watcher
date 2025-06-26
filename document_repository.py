@@ -407,3 +407,79 @@ class DocumentRepository:
                 results["analyses"] += 1
 
         return results
+
+    # ------------------------------------------------------------------
+    # Crypto chain generation enhancements
+    # ------------------------------------------------------------------
+    def store_document_with_crypto_chain(self, content: str, metadata: Dict[str, Any]) -> str:
+        """Store document and create crypto lineage for export generation."""
+        # Immutable ID from content hash
+        content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+        # Store document using existing logic
+        doc_id = self.store_document(content, metadata)
+
+        # Build crypto lineage record
+        crypto_record = {
+            "document_id": content_hash,
+            "content_hash": content_hash,
+            "collection_timestamp": datetime.now().isoformat(),
+            "source_metadata": metadata,
+            "collector_version": self._get_system_version(),
+            "collection_method": metadata.get("collection_method", "unknown"),
+            "original_url": metadata.get("url"),
+            "stored_doc_id": doc_id,
+        }
+
+        try:
+            collection_signature = self._generate_collection_signature(crypto_record)
+            self._store_crypto_lineage(content_hash, crypto_record, collection_signature)
+        except Exception as e:
+            self.logger.warning(f"Could not store crypto lineage for {doc_id}: {e}")
+
+        return doc_id
+
+    def _store_crypto_lineage(self, doc_id: str, crypto_record: Dict, signature: str) -> None:
+        """Persist crypto lineage data for later export."""
+        crypto_dir = os.path.join(self.base_dir, "crypto_lineage")
+        os.makedirs(crypto_dir, exist_ok=True)
+
+        lineage_file = os.path.join(crypto_dir, f"{doc_id}_lineage.json")
+        lineage_data = {
+            "document_id": doc_id,
+            "crypto_record": crypto_record,
+            "collection_signature": signature,
+            "lineage_type": "document_collection",
+            "created_at": datetime.now().isoformat(),
+        }
+
+        with open(lineage_file, "w", encoding="utf-8") as f:
+            json.dump(lineage_data, f, indent=2)
+
+    def _generate_collection_signature(self, record: Dict) -> str:
+        """Generate HMAC signature for collection record."""
+        record_json = json.dumps(record, sort_keys=True)
+        signature = hmac.new(self.key, record_json.encode("utf-8"), hashlib.sha256).digest()
+        return base64.b64encode(signature).decode("utf-8")
+
+    def _get_system_version(self) -> str:
+        """Return system version string for lineage records."""
+        return getattr(self, "_system_version", "1.0.0")
+
+    def collect_all_document_lineages(self) -> List[Dict]:
+        """Load all stored document lineage records."""
+        lineages: List[Dict] = []
+        crypto_dir = os.path.join(self.base_dir, "crypto_lineage")
+        if not os.path.exists(crypto_dir):
+            return lineages
+
+        for filename in os.listdir(crypto_dir):
+            if filename.endswith("_lineage.json"):
+                try:
+                    with open(os.path.join(crypto_dir, filename), "r", encoding="utf-8") as f:
+                        lineage = json.load(f)
+                    lineages.append(lineage)
+                except Exception as e:
+                    self.logger.warning(f"Could not load lineage {filename}: {e}")
+
+        return lineages
