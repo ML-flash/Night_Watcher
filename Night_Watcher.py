@@ -614,11 +614,33 @@ class NightWatcher:
             return {}
 
     def _sign_export_with_private_key(self, export_record: Dict, private_key_path: str) -> str:
-        export_json = json.dumps(export_record, sort_keys=True)
-        return hashlib.sha256(f"signed:{export_json}".encode()).hexdigest()
+
+        from cryptography.hazmat.primitives import serialization, hashes
+        from cryptography.hazmat.primitives.asymmetric import padding
+
+        export_json = json.dumps(export_record, sort_keys=True).encode()
+        with open(private_key_path, "rb") as f:
+            private_key = serialization.load_pem_private_key(f.read(), password=None)
+
+        signature = private_key.sign(
+            export_json,
+            padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+            hashes.SHA256(),
+        )
+
+        return base64.b64encode(signature).decode("utf-8")
 
     def _extract_public_key_from_private(self, private_key_path: str) -> str:
-        return "public_key_placeholder"
+        from cryptography.hazmat.primitives import serialization
+
+        with open(private_key_path, "rb") as f:
+            private_key = serialization.load_pem_private_key(f.read(), password=None)
+        pub_bytes = private_key.public_key().public_bytes(
+            serialization.Encoding.PEM,
+            serialization.PublicFormat.SubjectPublicKeyInfo,
+        )
+        return pub_bytes.decode("utf-8")
+
     
     def status(self) -> Dict[str, Any]:
         """Get unified system status from all components."""

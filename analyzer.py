@@ -949,7 +949,10 @@ STOP IMMEDIATELY after the closing bracket. Do not continue writing.
         for article in articles:
             doc_id = article["document_id"]
             for template_name in templates:
-                analysis = self._analyze_single(article, template_name)
+                if hasattr(self, "analyze_with_crypto_derivation"):
+                    analysis = self.analyze_with_crypto_derivation(article, template_name)
+                else:
+                    analysis = self._analyze_single(article, template_name)
                 analysis["template_name"] = template_name.replace(".json", "")
                 analysis["analysis_id"] = f"{doc_id}_{analysis['template_name']}"
                 results["analyses"].append(analysis)
