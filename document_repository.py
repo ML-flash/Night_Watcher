@@ -5,6 +5,7 @@ Consolidated version that handles both documents and analysis provenance.
 
 import os
 import json
+from file_utils import safe_json_load, safe_json_save
 import hashlib
 import hmac
 import base64
@@ -62,8 +63,7 @@ class DocumentRepository:
             
             # Store metadata
             metadata_path = os.path.join(self.metadata_dir, f"{doc_id}.json")
-            with open(metadata_path, "w", encoding="utf-8") as f:
-                json.dump(metadata, f, indent=2, ensure_ascii=False)
+            safe_json_save(metadata_path, metadata)
             
             # Create signature
             self._create_signature(doc_id, content, metadata)
@@ -90,8 +90,7 @@ class DocumentRepository:
         # Load metadata
         metadata_path = os.path.join(self.metadata_dir, f"{doc_id}.json")
         if os.path.exists(metadata_path):
-            with open(metadata_path, "r", encoding="utf-8") as f:
-                metadata = json.load(f)
+            metadata = safe_json_load(metadata_path)
         
         # Verify if requested
         if verify and content:
@@ -155,8 +154,7 @@ class DocumentRepository:
         }
         
         record_path = os.path.join(self.analysis_dir, f"{analysis_id}.json")
-        with open(record_path, "w", encoding="utf-8") as f:
-            json.dump(provenance_record, f, indent=2, ensure_ascii=False)
+        safe_json_save(record_path, provenance_record)
         
         self.logger.info(f"Stored analysis provenance for {analysis_id}")
         return provenance_record
@@ -172,8 +170,9 @@ class DocumentRepository:
             }
         
         try:
-            with open(record_path, "r", encoding="utf-8") as f:
-                provenance_record = json.load(f)
+            provenance_record = safe_json_load(record_path, default=None)
+            if provenance_record is None:
+                return {"verified": False, "reason": "Invalid provenance file"}
             
             analysis_record = provenance_record.get("analysis_record", {})
             sig_data = provenance_record.get("signature", {})
@@ -269,8 +268,7 @@ class DocumentRepository:
         
         # Save signature
         sig_path = os.path.join(self.signatures_dir, f"{doc_id}.sig.json")
-        with open(sig_path, "w", encoding="utf-8") as f:
-            json.dump(sig_data, f, indent=2)
+        safe_json_save(sig_path, sig_data)
 
     def _verify_signature(self, doc_id: str, content: str, metadata: Dict[str, Any]) -> bool:
         """Verify document signature."""
@@ -279,8 +277,7 @@ class DocumentRepository:
             return False
         
         try:
-            with open(sig_path, "r", encoding="utf-8") as f:
-                sig_data = json.load(f)
+            sig_data = safe_json_load(sig_path)
             
             # Check content hash
             content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()

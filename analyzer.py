@@ -7,6 +7,8 @@ import json
 import logging
 import re
 import os
+import gc
+import psutil
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Tuple
 
@@ -35,6 +37,23 @@ class ContentAnalyzer:
         os.makedirs("data/logs", exist_ok=True)
 
         self.logger.info(f"Loaded template: {self.template.get('name')} (status: {self.template.get('status')})")
+
+    def check_memory_usage(self, threshold_mb: int = 1024) -> bool:
+        """Check memory usage and trigger cleanup if threshold exceeded."""
+        try:
+            process = psutil.Process()
+            memory_mb = process.memory_info().rss / 1024 / 1024
+            if memory_mb > threshold_mb:
+                self.logger.warning(f"High memory usage: {memory_mb:.1f}MB")
+                gc.collect()
+                if hasattr(self, '_decoded_url_cache'):
+                    if len(self._decoded_url_cache) > 1000:
+                        self._decoded_url_cache.clear()
+                        self.logger.info("Cleared URL cache")
+                return True
+        except Exception as e:
+            self.logger.debug(f"Memory check failed: {e}")
+        return False
 
     def _load_template(self, template_file: str) -> Dict[str, Any]:
         """Load analysis template from JSON file."""
@@ -717,8 +736,9 @@ class ContentAnalyzer:
             result = json.loads(cleaned_text)
             if expected_type is None or isinstance(result, expected_type):
                 return result
-        except:
-            pass
+        except (json.JSONDecodeError, TypeError, KeyError, ValueError) as e:
+            self.logger.debug(f"JSON parsing failed: {e}")
+            # continue to other strategies
 
         # Strategy 3: Extract JSON-like structures more aggressively
         if expected_type == list:
@@ -729,7 +749,8 @@ class ContentAnalyzer:
                     result = json.loads(match)
                     if isinstance(result, list) and len(result) > 0:
                         return result
-                except:
+                except (json.JSONDecodeError, TypeError, KeyError, ValueError) as e:
+                    self.logger.debug(f"JSON parsing failed: {e}")
                     continue
 
         elif expected_type == dict:
@@ -740,7 +761,8 @@ class ContentAnalyzer:
                     result = json.loads(match)
                     if isinstance(result, dict):
                         return result
-                except:
+                except (json.JSONDecodeError, TypeError, KeyError, ValueError) as e:
+                    self.logger.debug(f"JSON parsing failed: {e}")
                     continue
 
         # Strategy 4: If we expect specific structure, try to build it
@@ -883,7 +905,8 @@ STOP IMMEDIATELY after the closing bracket. Do not continue writing.
             if matches:
                 try:
                     return float(matches[0])
-                except:
+                except (ValueError, TypeError) as e:
+                    self.logger.debug(f"Score parsing failed: {e}")
                     continue
 
         return 0.0
