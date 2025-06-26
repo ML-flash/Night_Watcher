@@ -614,10 +614,7 @@ class ContentCollector:
                 article["id"] = self._generate_id(article["url"])
                 
                 if self.document_repository:
-                    doc_id = self.document_repository.store_document(
-                        article["content"],
-                        self._create_metadata(article)
-                    )
+                    doc_id = self._store_article(article)
                     document_ids.append(doc_id)
                     article["document_id"] = doc_id
                 
@@ -637,10 +634,7 @@ class ContentCollector:
                 article["id"] = self._generate_id(article["url"])
                 
                 if self.document_repository:
-                    doc_id = self.document_repository.store_document(
-                        article.get("content", ""),
-                        self._create_metadata(article)
-                    )
+                    doc_id = self._store_article(article)
                     document_ids.append(doc_id)
                     article["document_id"] = doc_id
                 
@@ -661,10 +655,7 @@ class ContentCollector:
             article["id"] = self._generate_id(article["url"])
             
             if self.document_repository:
-                doc_id = self.document_repository.store_document(
-                    article.get("content", ""),
-                    self._create_metadata(article)
-                )
+                doc_id = self._store_article(article)
                 document_ids.append(doc_id)
                 article["document_id"] = doc_id
             
@@ -777,10 +768,7 @@ class ContentCollector:
                     article["id"] = self._generate_id(article["url"])
                     
                     if self.document_repository:
-                        doc_id = self.document_repository.store_document(
-                            article["content"],
-                            self._create_metadata(article)
-                        )
+                        doc_id = self._store_article(article)
                         document_ids.append(doc_id)
                         article["document_id"] = doc_id
                 
@@ -1451,6 +1439,26 @@ class ContentCollector:
             "via_gov_api": article.get("via_gov_api", False),
             "extraction_method": article.get("extraction_method")
         }
+
+    def _store_article(self, article: Dict[str, Any]) -> str:
+        """Store an article and return document ID, using crypto lineage if available."""
+        if not self.document_repository:
+            return ""
+
+        content = article.get("content", "")
+        metadata = self._create_metadata(article)
+
+        try:
+            if hasattr(self.document_repository, "store_document_with_crypto_chain"):
+                doc_id = self.document_repository.store_document_with_crypto_chain(content, metadata)
+                self.logger.debug(f"Stored document {doc_id} with crypto chain")
+            else:
+                doc_id = self.document_repository.store_document(content, metadata)
+                self.logger.debug(f"Stored document {doc_id} (legacy)")
+            return doc_id
+        except Exception as e:
+            self.logger.warning(f"Crypto storage failed: {e}")
+            return self.document_repository.store_document(content, metadata)
 
     def _update_last_run(self):
         """Update last run timestamp."""
