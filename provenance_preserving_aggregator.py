@@ -28,6 +28,12 @@ class ProvenancePreservingAggregator:
 
     def _extract_complete_kg(self, analysis: Dict[str, Any]) -> Dict[str, Any]:
         payload = analysis.get("kg_payload") or {"nodes": [], "edges": []}
+
+        if isinstance(payload.get("nodes"), dict):
+            payload["nodes"] = list(payload["nodes"].values())
+        if isinstance(payload.get("edges"), dict):
+            payload["edges"] = list(payload["edges"].values())
+
         payload.setdefault("source_info", analysis.get("article", {}))
         payload["analysis_id"] = analysis.get("analysis_id")
         return payload

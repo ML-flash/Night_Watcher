@@ -966,3 +966,49 @@ STOP IMMEDIATELY after the closing bracket. Do not continue writing.
             concern_level = "LOW"
 
         return indicators, concern_level
+
+    def _analyze_single(self, article: Dict[str, Any], template_name: str) -> Dict[str, Any]:
+        """Run analysis for a single template without altering global state."""
+        original_template = self.template
+        original_file = self.template_file
+
+        try:
+            self.template = self._load_template(template_name)
+            self.template_file = template_name
+        except Exception as e:
+            self.logger.error(f"Failed to load template {template_name}: {e}")
+            return {"error": str(e), "template_name": template_name}
+
+        try:
+            result = self.analyze_article(article)
+        finally:
+            self.template = original_template
+            self.template_file = original_file
+        return result
+
+    def _save_analysis(self, analysis: Dict[str, Any], filename: str) -> None:
+        """Persist analysis to disk."""
+        try:
+            path = os.path.join("data", "analyzed", filename)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(analysis, f, indent=2)
+        except Exception as e:
+            self.logger.error(f"Failed to save analysis {filename}: {e}")
+
+    def process_multi_template(self, articles: List[Dict], templates: List[str]) -> Dict:
+        """Analyze articles with multiple templates."""
+        results = {"analyses": [], "document_ids": []}
+
+        for article in articles:
+            doc_id = article["document_id"]
+            for template_name in templates:
+                analysis = self._analyze_single(article, template_name)
+                analysis["template_name"] = template_name.replace(".json", "")
+                analysis["analysis_id"] = f"{doc_id}_{analysis['template_name']}"
+                results["analyses"].append(analysis)
+
+                filename = f"analysis_{doc_id}_{analysis['template_name']}.json"
+                self._save_analysis(analysis, filename)
+
+        return results
