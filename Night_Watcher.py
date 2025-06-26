@@ -10,7 +10,7 @@ import json
 import logging
 import argparse
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Tuple
 from pathlib import Path
 
 # Core imports
@@ -294,116 +294,43 @@ class NightWatcher:
         else:
             return {"error": "No analysis produced"}
     
-    def aggregate_events(self, analysis_window: int = 7) -> Dict[str, Any]:
-        """
-        Aggregate events from recent analyses.
-        
-        Args:
-            analysis_window: Days of analyses to include
-            
-        Returns:
-            Aggregation results
-        """
+    def aggregate_events(self, analysis_window: int = 7, templates: List[str] = None) -> Dict[str, Any]:
+        """Two-stage event-centric aggregation."""
+
+        if not templates:
+            templates = ["standard_analysis.json"]
+
         from event_aggregator import EventAggregator
-        
-        # Load recent analyses
-        analyses = []
-        analyzed_dir = f"{self.base_dir}/analyzed"
-        cutoff_date = datetime.now() - timedelta(days=analysis_window)
-        
-        for filename in os.listdir(analyzed_dir):
-            if not filename.startswith("analysis_"):
-                continue
-                
-            filepath = os.path.join(analyzed_dir, filename)
-            try:
-                # Check file date
-                mtime = datetime.fromtimestamp(os.path.getmtime(filepath))
-                if mtime < cutoff_date:
-                    continue
-                    
-                with open(filepath, 'r') as f:
-                    analysis = json.load(f)
-                    
-                # Only include if it has KG payload
-                if analysis.get("kg_payload"):
-                    analyses.append(analysis)
-                    
-            except Exception as e:
-                self.logger.error(f"Error loading {filename}: {e}")
-        
+
+        analyses = self._load_recent_multi_template_analyses(analysis_window, templates)
+
         if not analyses:
             return {"status": "no_analyses", "events": []}
-        
-        # Aggregate events
+
         aggregator = EventAggregator()
-        results = aggregator.process_analysis_batch(analyses)
-        
-        # Save aggregation results
-        output_file = f"{self.base_dir}/analyzed/event_aggregation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+
+        event_groups = aggregator.match_events_across_analyses(analyses)
+        event_graphs = {}
+
+        for event_key, event_analyses in event_groups.items():
+            event_graphs[event_key] = aggregator.consolidate_event_group(event_analyses)
+
+        unified_graph = aggregator.build_unified_graph(event_graphs)
+
+        output_file = f"{self.base_dir}/unified_graph/unified_kg_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
         with open(output_file, 'w') as f:
-            json.dump(results, f, indent=2)
-        
-        self.logger.info(f"Aggregated {results['event_count']} unique events from {len(analyses)} analyses")
-        
-        # Create event-centric knowledge graph nodes
-        event_nodes = aggregator.create_event_nodes()
-        event_edges = aggregator.create_event_relationships()
+            json.dump(unified_graph, f, indent=2)
 
-        # Consolidated KG payload from aggregator
-        master_kg = results.get("kg_payload", {})
-        kg_nodes = master_kg.get("nodes", [])
-        kg_edges = master_kg.get("edges", [])
+        self._update_knowledge_graph_with_unified(unified_graph)
 
-        # Add nodes to knowledge graph and track mapping
-        id_map = {}
-        for node in kg_nodes:
-            kg_id = self.knowledge_graph.add_node(
-                node_type=node.get("node_type"),
-                name=node.get("name"),
-                attributes={**node.get("attributes", {}), "evidence_sources": node.get("evidence_sources", [])}
-            )
-            id_map[node["id"]] = kg_id
-
-        # Add edges from consolidated payload
-        for edge in kg_edges:
-            src = id_map.get(edge.get("source"))
-            tgt = id_map.get(edge.get("target"))
-            if not src or not tgt:
-                continue
-            self.knowledge_graph.add_edge(
-                source_id=src,
-                relation=edge.get("relationship"),
-                target_id=tgt,
-                attributes={
-                    "weight": edge.get("weight", 1),
-                    "evidence_sources": edge.get("evidence_sources", [])
-                }
-            )
-
-        # Add event nodes/edges for aggregated events
-        for node in event_nodes:
-            self.knowledge_graph.graph.add_node(node["id"], **node)
-
-        for edge in event_edges:
-            self.knowledge_graph.graph.add_edge(
-                edge["source_id"],
-                edge["target_id"],
-                relation=edge["relation"],
-                **edge.get("attributes", {})
-            )
-        
-        self.knowledge_graph.save_graph()
-        
         return {
             "status": "completed",
-            "unique_events": results["event_count"],
-            "cross_source_events": len(results["cross_source_events"]),
+            "unique_events": len(event_graphs),
+            "unified_nodes": unified_graph["stats"]["total_nodes"],
+            "unified_edges": unified_graph["stats"]["total_edges"],
             "analyses_processed": len(analyses),
-            "pattern_analysis": results.get("pattern_analysis", {}),
-            "coordinated_campaigns": results.get("coordinated_campaigns", []),
-            "urgency_scores": results.get("urgency_scores", {}),
-            "authoritarian_escalation": results.get("authoritarian_escalation", {})
+            "documents_processed": unified_graph["stats"]["total_documents"],
         }
     
     def _build_kg_original(self) -> Dict[str, Any]:
@@ -451,6 +378,68 @@ class NightWatcher:
         """Sync vector store with knowledge graph."""
         stats = self.vector_store.sync_with_knowledge_graph(self.knowledge_graph)
         return stats
+
+    def _load_recent_multi_template_analyses(self, window_days: int, templates: List[str]) -> List[Dict]:
+        """Load multi-template analyses within time window."""
+        analyses: List[Dict] = []
+        analyzed_dir = f"{self.base_dir}/analyzed"
+        cutoff_date = datetime.now() - timedelta(days=window_days)
+
+        if not os.path.exists(analyzed_dir):
+            return analyses
+
+        for filename in os.listdir(analyzed_dir):
+            if not filename.startswith("analysis_"):
+                continue
+
+            filepath = os.path.join(analyzed_dir, filename)
+            mtime = datetime.fromtimestamp(os.path.getmtime(filepath))
+            if mtime < cutoff_date:
+                continue
+
+            try:
+                with open(filepath, "r") as f:
+                    analysis = json.load(f)
+                analyses.append(analysis)
+            except Exception as e:
+                self.logger.error(f"Error loading {filename}: {e}")
+
+        return analyses
+
+    def _update_knowledge_graph_with_unified(self, unified_graph: Dict[str, Any]) -> None:
+        """Add unified graph data into the knowledge graph."""
+        id_map: Dict[Tuple[str, str], str] = {}
+
+        for node_key, node in unified_graph.get("nodes", {}).items():
+            kg_id = self.knowledge_graph.add_node(
+                node_type=node.get("node_type"),
+                name=node.get("name"),
+                attributes={
+                    **node.get("attributes", {}),
+                    "total_weight": node.get("total_weight"),
+                    "event_appearances": node.get("event_appearances"),
+                    "event_linkages": node.get("event_linkages", []),
+                },
+            )
+            id_map[node_key] = kg_id
+
+        for edge_key, edge in unified_graph.get("edges", {}).items():
+            src_id = id_map.get(edge_key[0])
+            tgt_id = id_map.get(edge_key[2])
+            if not src_id or not tgt_id:
+                continue
+            self.knowledge_graph.add_edge(
+                source_id=src_id,
+                relation=edge.get("relation"),
+                target_id=tgt_id,
+                attributes={
+                    "total_weight": edge.get("total_weight"),
+                    "event_appearances": edge.get("event_appearances"),
+                    "event_linkages": edge.get("event_linkages", []),
+                },
+            )
+
+        self.knowledge_graph.save_graph()
     
     def _get_analyzed_docs(self) -> set:
         """Get set of analyzed document IDs."""

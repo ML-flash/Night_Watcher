@@ -1020,12 +1020,13 @@ def api_export_history():
 
 @app.route("/api/aggregate-events", methods=["POST"])
 def api_aggregate_events():
-    """Run event aggregation across recent analyses."""
+    """Run two-stage event aggregation."""
     init_night_watcher()
     data = request.json or {}
     window = int(data.get("analysis_window", 7))
+    templates = data.get("templates", ["standard_analysis.json"])
 
-    result = night_watcher.aggregate_events(analysis_window=window)
+    result = night_watcher.aggregate_events(analysis_window=window, templates=templates)
     cache_aggregation_results(result)
     return jsonify(result)
 
@@ -1051,6 +1052,25 @@ def api_campaigns():
     """Return details on detected coordinated campaigns."""
     latest = load_latest_aggregation()
     return jsonify(latest.get("coordinated_campaigns", []))
+
+
+@app.route("/api/unified-graph/stats")
+def api_unified_graph_stats():
+    """Get unified knowledge graph statistics."""
+    unified_dir = "data/unified_graph"
+    if not os.path.exists(unified_dir):
+        return jsonify({"error": "No unified graph available"})
+
+    files = [f for f in os.listdir(unified_dir) if f.startswith("unified_kg_")]
+    if not files:
+        return jsonify({"error": "No unified graph files"})
+
+    latest_file = max(files, key=lambda f: os.path.getmtime(os.path.join(unified_dir, f)))
+
+    with open(os.path.join(unified_dir, latest_file), "r") as f:
+        unified_graph = json.load(f)
+
+    return jsonify(unified_graph.get("stats", {}))
 
 
 @app.route("/api/config", methods=["GET", "POST"])
