@@ -614,6 +614,7 @@ class NightWatcher:
             return {}
 
     def _sign_export_with_private_key(self, export_record: Dict, private_key_path: str) -> str:
+
         from cryptography.hazmat.primitives import serialization, hashes
         from cryptography.hazmat.primitives.asymmetric import padding
 
@@ -639,6 +640,7 @@ class NightWatcher:
             serialization.PublicFormat.SubjectPublicKeyInfo,
         )
         return pub_bytes.decode("utf-8")
+
     
     def status(self) -> Dict[str, Any]:
         """Get unified system status from all components."""
