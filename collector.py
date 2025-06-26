@@ -18,6 +18,8 @@ import traceback
 
 import requests
 import feedparser
+import gc
+import psutil
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -232,6 +234,23 @@ class ContentCollector:
         self.cancelled = True
         self.logger.info("Collection cancellation requested")
 
+    def check_memory_usage(self, threshold_mb: int = 1024) -> bool:
+        """Check memory usage and trigger cleanup if needed."""
+        try:
+            process = psutil.Process()
+            memory_mb = process.memory_info().rss / 1024 / 1024
+            if memory_mb > threshold_mb:
+                self.logger.warning(f"High memory usage: {memory_mb:.1f}MB")
+                gc.collect()
+                if hasattr(self, '_decoded_url_cache'):
+                    if len(self._decoded_url_cache) > 1000:
+                        self._decoded_url_cache.clear()
+                        self.logger.info("Cleared URL cache")
+                return True
+        except Exception as e:
+            self.logger.debug(f"Memory check failed: {e}")
+        return False
+
     def _rotate_headers(self):
         """Rotate session headers."""
         user_agent = random.choice(self.user_agents)
@@ -380,7 +399,16 @@ class ContentCollector:
             if TRAFILATURA_AVAILABLE:
                 self.logger.debug("Trying trafilatura extraction")
                 try:
-                    response = session.get(url, timeout=timeout)
+                    timeout_config = {
+                        'connect_timeout': 10,
+                        'read_timeout': 30,
+                        'total_timeout': 45,
+                    }
+                    response = session.get(
+                        url,
+                        timeout=(timeout_config['connect_timeout'], timeout_config['read_timeout']),
+                        allow_redirects=True,
+                    )
                     self.logger.debug(f"HTTP response: {response.status_code}")
                     
                     if response.status_code != 200:
@@ -441,8 +469,15 @@ class ContentCollector:
                         else:
                             self.logger.debug(f"Trafilatura extracted insufficient content: {len(content) if content else 0} chars")
                 
+                except requests.exceptions.ConnectTimeout:
+                    self.logger.warning(f"Connection timeout for {url}")
+                    return None
+                except requests.exceptions.ReadTimeout:
+                    self.logger.warning(f"Read timeout for {url}")
+                    return None
                 except requests.exceptions.Timeout:
-                    self.logger.debug(f"Trafilatura timed out after {timeout}s")
+                    self.logger.warning(f"General timeout for {url}")
+                    return None
                 except Exception as e:
                     self.logger.debug(f"Trafilatura extraction failed: {e}")
             
@@ -515,7 +550,16 @@ class ContentCollector:
             # Last resort: BeautifulSoup
             self.logger.debug("Trying BeautifulSoup extraction")
             try:
-                response = session.get(url, timeout=timeout)
+                timeout_config = {
+                    'connect_timeout': 10,
+                    'read_timeout': 30,
+                    'total_timeout': 45,
+                }
+                response = session.get(
+                    url,
+                    timeout=(timeout_config['connect_timeout'], timeout_config['read_timeout']),
+                    allow_redirects=True,
+                )
                 soup = BeautifulSoup(response.text, 'html.parser')
                 
                 # Try to find article content
@@ -561,8 +605,15 @@ class ContentCollector:
                 else:
                     self.logger.debug(f"BeautifulSoup extracted insufficient content: {len(content)} chars")
                     
+            except requests.exceptions.ConnectTimeout:
+                self.logger.warning(f"Connection timeout for {url}")
+                return None
+            except requests.exceptions.ReadTimeout:
+                self.logger.warning(f"Read timeout for {url}")
+                return None
             except requests.exceptions.Timeout:
-                self.logger.debug(f"BeautifulSoup timed out after {timeout}s")
+                self.logger.warning(f"General timeout for {url}")
+                return None
             except Exception as e:
                 self.logger.debug(f"BeautifulSoup extraction failed: {e}")
                     
@@ -858,7 +909,15 @@ class ContentCollector:
                     self.logger.warning(f"No entries found in RSS feed {url}")
                     return []
                 
-                articles = self._process_feed_entries(feed.entries, source, url, start_date, end_date, limit, callback)
+                articles = self._process_feed_entries_with_circuit_breaker(
+                    feed.entries,
+                    source,
+                    url,
+                    start_date,
+                    end_date,
+                    limit,
+                    callback,
+                )
                 self.logger.info(f"Feed processing complete: {len(articles)} articles extracted from {entries_count} entries")
                 return articles
                 
@@ -941,6 +1000,42 @@ class ContentCollector:
             time.sleep(random.uniform(0.5, 1.5))
 
         self.logger.info(f"Feed entry processing complete: {len(articles)} articles from {len(entries)} entries")
+        return articles
+
+    def _process_feed_entries_with_circuit_breaker(self, entries: List[Any], source: Dict[str, Any], base_url: str,
+                                                   start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
+        """Process RSS feed entries with circuit breaker protection."""
+        articles = []
+        source_name = source.get("name", urlparse(base_url).netloc)
+
+        max_consecutive_failures = 5
+        consecutive_failures = 0
+
+        for i, entry in enumerate(entries):
+            if self.cancelled or len(articles) >= limit:
+                break
+
+            try:
+                article = self._process_single_entry(entry, source, start_date, end_date)
+                if article:
+                    articles.append(article)
+                    consecutive_failures = 0
+                else:
+                    consecutive_failures += 1
+
+                if consecutive_failures >= max_consecutive_failures:
+                    self.logger.warning(
+                        f"Circuit breaker triggered for {source_name} after {consecutive_failures} consecutive failures")
+                    break
+
+            except Exception as e:
+                consecutive_failures += 1
+                self.logger.error(f"Entry processing failed: {e}")
+
+                if consecutive_failures >= max_consecutive_failures:
+                    self.logger.error(f"Too many failures for {source_name}, stopping")
+                    break
+
         return articles
 
     def _is_political(self, title: str, content: str) -> bool:

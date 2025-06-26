@@ -7,6 +7,7 @@ Streamlined entry point with reduced complexity.
 import os
 import sys
 import json
+from file_utils import safe_json_load, safe_json_save
 import logging
 import argparse
 import hashlib
@@ -55,7 +56,15 @@ class NightWatcher:
         )
         
         self.llm_provider = providers.initialize_llm_provider(self.config)
-        self.analyzer = ContentAnalyzer(self.llm_provider) if self.llm_provider else None
+        if not self.llm_provider:
+            self.logger.error("No LLM provider available - analysis will be disabled")
+            self.analyzer = None
+        else:
+            try:
+                self.analyzer = ContentAnalyzer(self.llm_provider)
+            except Exception as e:
+                self.logger.error(f"Failed to initialize analyzer: {e}")
+                self.analyzer = None
         
         self.knowledge_graph = KnowledgeGraph(
             graph_file=f"{self.base_dir}/knowledge_graph/graph.json",
@@ -80,8 +89,9 @@ class NightWatcher:
     def _load_config(self) -> Dict[str, Any]:
         """Load or create configuration."""
         if os.path.exists(self.config_path):
-            with open(self.config_path, 'r') as f:
-                return json.load(f)
+            config = safe_json_load(self.config_path, default=None)
+            if config is not None:
+                return config
         
         # Create default config
         config = {
@@ -113,8 +123,7 @@ class NightWatcher:
             }
         }
         
-        with open(self.config_path, 'w') as f:
-            json.dump(config, f, indent=2)
+        safe_json_save(self.config_path, config)
         
         return config
     
@@ -123,10 +132,32 @@ class NightWatcher:
         dirs = ["collected", "analyzed", "documents", "knowledge_graph", "vector_store", "logs"]
         for d in dirs:
             os.makedirs(f"{self.base_dir}/{d}", exist_ok=True)
+
+    def validate_system_state(self) -> List[str]:
+        """Validate system is ready for operations."""
+        issues = []
+        if not self.llm_provider:
+            issues.append("No LLM provider available")
+        if not self.analyzer:
+            issues.append("Content analyzer not initialized")
+        required_dirs = [
+            f"{self.base_dir}/documents",
+            f"{self.base_dir}/analyzed",
+            f"{self.base_dir}/knowledge_graph",
+        ]
+        for dir_path in required_dirs:
+            if not os.path.exists(dir_path):
+                issues.append(f"Required directory missing: {dir_path}")
+        if not os.path.exists("standard_analysis.json"):
+            issues.append("No analysis templates found")
+        return issues
     
     def collect(self, mode: str = "auto", callback=None) -> Dict[str, Any]:
         """Run content collection."""
         self.logger.info(f"Starting collection (mode: {mode})")
+        issues = self.validate_system_state()
+        if issues:
+            self.logger.warning(f"System issues detected: {issues}")
         return self.collector.collect_content(force_mode=mode if mode != "auto" else None, callback=callback)
     
     def analyze(self, max_articles: int = 20, templates: List[str] = None, 
@@ -141,6 +172,13 @@ class NightWatcher:
         """
         if not self.analyzer:
             raise Exception("Analyzer not available - check LLM provider")
+
+        validation_issues = self.validate_system_state()
+        if validation_issues:
+            self.logger.error("System validation failed:")
+            for issue in validation_issues:
+                self.logger.error(f"  - {issue}")
+            return {"error": "System not ready for analysis", "issues": validation_issues}
         
         templates = templates or ["standard_analysis.json"]
         
@@ -367,6 +405,9 @@ class NightWatcher:
     
     def build_kg(self) -> Dict[str, Any]:
         """Enhanced KG build that includes event aggregation."""
+        issues = self.validate_system_state()
+        if issues:
+            self.logger.warning(f"System issues detected: {issues}")
         # First, do regular KG build from analyses
         regular_result = self._build_kg_original()
         
@@ -380,6 +421,9 @@ class NightWatcher:
     
     def sync_vectors(self) -> Dict[str, Any]:
         """Sync vector store with knowledge graph."""
+        issues = self.validate_system_state()
+        if issues:
+            self.logger.warning(f"System issues detected: {issues}")
         stats = self.vector_store.sync_with_knowledge_graph(self.knowledge_graph)
         return stats
 
