@@ -5,6 +5,7 @@ Intelligent token allocation and model-specific configuration management.
 
 import os
 import json
+from file_utils import safe_json_load, safe_json_save
 import requests
 import logging
 from typing import Dict, Any, Optional, List, Tuple
@@ -55,10 +56,10 @@ class ModelConfig:
 
         if config_path.exists():
             try:
-                with open(config_path, 'r') as f:
-                    config = json.load(f)
-                self.logger.info(f"Loaded config for {model_name}")
-                return config
+                config = safe_json_load(str(config_path), default=None)
+                if config is not None:
+                    self.logger.info(f"Loaded config for {model_name}")
+                    return config
             except Exception as e:
                 self.logger.error(f"Failed to load config for {model_name}: {e}")
 
@@ -70,9 +71,8 @@ class ModelConfig:
         config_path = self.get_config_path(model_name)
 
         try:
-            with open(config_path, 'w') as f:
-                json.dump(config, f, indent=2)
-            self.logger.info(f"Saved config for {model_name}")
+            if safe_json_save(str(config_path), config):
+                self.logger.info(f"Saved config for {model_name}")
         except Exception as e:
             self.logger.error(f"Failed to save config for {model_name}: {e}")
 

@@ -7,6 +7,7 @@ Builds and updates the knowledge graph from analyzed articles.
 import os
 import sys
 import json
+from file_utils import safe_json_load
 import logging
 import glob
 import re
@@ -54,8 +55,9 @@ def load_and_process_analyses(kg: KnowledgeGraph, analyses_dir: str, pattern: st
     
     for file_path in files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                analysis = json.load(f)
+            analysis = safe_json_load(file_path, default=None)
+            if analysis is None:
+                raise ValueError("invalid json")
             
             # Check if this is a kg_analysis or a regular analysis
             # KG analysis has kg_payload directly

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 import json
+from file_utils import safe_json_load
 import tarfile
 import tempfile
 import hashlib
@@ -27,7 +28,7 @@ def install_genesis_client(artifact_path: str, install_dir: str = "nw_client"):
         prov_path = os.path.join(tmpdir, "provenance.json")
         if not os.path.exists(prov_path):
             raise RuntimeError("provenance.json missing")
-        provenance = json.load(open(prov_path))
+        provenance = safe_json_load(prov_path, default={})
         if not provenance.get("genesis"):
             raise RuntimeError("Artifact is not genesis")
 

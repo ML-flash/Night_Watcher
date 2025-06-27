@@ -11,6 +11,7 @@ import hashlib
 import re
 import random
 import json
+from file_utils import safe_json_load, safe_json_save
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional, Tuple
 from urllib.parse import urlparse, urljoin, quote
@@ -18,13 +19,15 @@ import traceback
 
 import requests
 import feedparser
+import gc
+import psutil
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from gov_scrapers import (
-    scrape_federal_register,
-    scrape_white_house_actions,
-    scrape_congress_bills,
+    fetch_federal_register_api,
+    fetch_white_house_actions_api,
+    fetch_govinfo_bills_api,
 )
 
 # Optional imports
@@ -147,7 +150,9 @@ class ContentCollector:
         self.use_google_news = cc.get("use_google_news", True)
         self.use_gdelt = cc.get("use_gdelt", True)
         self.use_gov_scrapers = cc.get("use_gov_scrapers", True)
+
         self.use_wayback = cc.get("use_wayback", True)
+
 
         self.cancelled = False
         
@@ -232,6 +237,23 @@ class ContentCollector:
         """Signal to stop collection."""
         self.cancelled = True
         self.logger.info("Collection cancellation requested")
+
+    def check_memory_usage(self, threshold_mb: int = 1024) -> bool:
+        """Check memory usage and trigger cleanup if needed."""
+        try:
+            process = psutil.Process()
+            memory_mb = process.memory_info().rss / 1024 / 1024
+            if memory_mb > threshold_mb:
+                self.logger.warning(f"High memory usage: {memory_mb:.1f}MB")
+                gc.collect()
+                if hasattr(self, '_decoded_url_cache'):
+                    if len(self._decoded_url_cache) > 1000:
+                        self._decoded_url_cache.clear()
+                        self.logger.info("Cleared URL cache")
+                return True
+        except Exception as e:
+            self.logger.debug(f"Memory check failed: {e}")
+        return False
 
     def _rotate_headers(self):
         """Rotate session headers."""
@@ -381,7 +403,16 @@ class ContentCollector:
             if TRAFILATURA_AVAILABLE:
                 self.logger.debug("Trying trafilatura extraction")
                 try:
-                    response = session.get(url, timeout=timeout)
+                    timeout_config = {
+                        'connect_timeout': 10,
+                        'read_timeout': 30,
+                        'total_timeout': 45,
+                    }
+                    response = session.get(
+                        url,
+                        timeout=(timeout_config['connect_timeout'], timeout_config['read_timeout']),
+                        allow_redirects=True,
+                    )
                     self.logger.debug(f"HTTP response: {response.status_code}")
                     
                     if response.status_code != 200:
@@ -442,8 +473,15 @@ class ContentCollector:
                         else:
                             self.logger.debug(f"Trafilatura extracted insufficient content: {len(content) if content else 0} chars")
                 
+                except requests.exceptions.ConnectTimeout:
+                    self.logger.warning(f"Connection timeout for {url}")
+                    return None
+                except requests.exceptions.ReadTimeout:
+                    self.logger.warning(f"Read timeout for {url}")
+                    return None
                 except requests.exceptions.Timeout:
-                    self.logger.debug(f"Trafilatura timed out after {timeout}s")
+                    self.logger.warning(f"General timeout for {url}")
+                    return None
                 except Exception as e:
                     self.logger.debug(f"Trafilatura extraction failed: {e}")
             
@@ -516,7 +554,16 @@ class ContentCollector:
             # Last resort: BeautifulSoup
             self.logger.debug("Trying BeautifulSoup extraction")
             try:
-                response = session.get(url, timeout=timeout)
+                timeout_config = {
+                    'connect_timeout': 10,
+                    'read_timeout': 30,
+                    'total_timeout': 45,
+                }
+                response = session.get(
+                    url,
+                    timeout=(timeout_config['connect_timeout'], timeout_config['read_timeout']),
+                    allow_redirects=True,
+                )
                 soup = BeautifulSoup(response.text, 'html.parser')
                 
                 # Try to find article content
@@ -562,8 +609,15 @@ class ContentCollector:
                 else:
                     self.logger.debug(f"BeautifulSoup extracted insufficient content: {len(content)} chars")
                     
+            except requests.exceptions.ConnectTimeout:
+                self.logger.warning(f"Connection timeout for {url}")
+                return None
+            except requests.exceptions.ReadTimeout:
+                self.logger.warning(f"Read timeout for {url}")
+                return None
             except requests.exceptions.Timeout:
-                self.logger.debug(f"BeautifulSoup timed out after {timeout}s")
+                self.logger.warning(f"General timeout for {url}")
+                return None
             except Exception as e:
                 self.logger.debug(f"BeautifulSoup extraction failed: {e}")
                     
@@ -615,10 +669,7 @@ class ContentCollector:
                 article["id"] = self._generate_id(article["url"])
                 
                 if self.document_repository:
-                    doc_id = self.document_repository.store_document(
-                        article["content"],
-                        self._create_metadata(article)
-                    )
+                    doc_id = self._store_article(article)
                     document_ids.append(doc_id)
                     article["document_id"] = doc_id
                 
@@ -638,10 +689,7 @@ class ContentCollector:
                 article["id"] = self._generate_id(article["url"])
                 
                 if self.document_repository:
-                    doc_id = self.document_repository.store_document(
-                        article.get("content", ""),
-                        self._create_metadata(article)
-                    )
+                    doc_id = self._store_article(article)
                     document_ids.append(doc_id)
                     article["document_id"] = doc_id
                 
@@ -662,10 +710,7 @@ class ContentCollector:
             article["id"] = self._generate_id(article["url"])
             
             if self.document_repository:
-                doc_id = self.document_repository.store_document(
-                    article.get("content", ""),
-                    self._create_metadata(article)
-                )
+                doc_id = self._store_article(article)
                 document_ids.append(doc_id)
                 article["document_id"] = doc_id
             
@@ -801,10 +846,7 @@ class ContentCollector:
                     article["id"] = self._generate_id(article["url"])
                     
                     if self.document_repository:
-                        doc_id = self.document_repository.store_document(
-                            article["content"],
-                            self._create_metadata(article)
-                        )
+                        doc_id = self._store_article(article)
                         document_ids.append(doc_id)
                         article["document_id"] = doc_id
                 
@@ -894,7 +936,15 @@ class ContentCollector:
                     self.logger.warning(f"No entries found in RSS feed {url}")
                     return []
                 
-                articles = self._process_feed_entries(feed.entries, source, url, start_date, end_date, limit, callback)
+                articles = self._process_feed_entries_with_circuit_breaker(
+                    feed.entries,
+                    source,
+                    url,
+                    start_date,
+                    end_date,
+                    limit,
+                    callback,
+                )
                 self.logger.info(f"Feed processing complete: {len(articles)} articles extracted from {entries_count} entries")
                 return articles
                 
@@ -977,6 +1027,92 @@ class ContentCollector:
             time.sleep(random.uniform(0.5, 1.5))
 
         self.logger.info(f"Feed entry processing complete: {len(articles)} articles from {len(entries)} entries")
+        return articles
+
+    def _process_single_entry(self, entry: Any, source: Dict[str, Any], start_date: datetime, end_date: datetime) -> Optional[Dict[str, Any]]:
+        """Process a single RSS feed entry into an article record."""
+        source_url = source.get("url", "")
+        source_name = source.get("name", urlparse(source_url).netloc if source_url else "Unknown")
+
+        self.stats.feed_entries_processed += 1
+
+        entry_title = getattr(entry, 'title', 'No title')
+        entry_link = getattr(entry, 'link', None)
+
+        self.logger.debug(f"Processing entry: {entry_title}")
+        self.logger.debug(f"Link: {entry_link}")
+
+        if not entry_link:
+            self.logger.debug("Skipping entry: no link found")
+            self.stats.log_filter_reason("no_link")
+            return None
+
+        pub_date = self._parse_date(entry)
+        if pub_date:
+            self.logger.debug(f"Publication date: {pub_date}")
+            if pub_date < start_date or pub_date > end_date:
+                self.logger.debug(
+                    f"Skipping entry: outside date range ({start_date} to {end_date})")
+                self.stats.log_filter_reason("outside_date_range")
+                return None
+        else:
+            self.logger.debug("No publication date found, including anyway")
+
+        entry_summary = getattr(entry, 'summary', '')
+        if not self._is_political(entry_title, entry_summary):
+            self.logger.debug("Skipping entry: not political")
+            self.stats.log_filter_reason("not_political")
+            return None
+
+        self.logger.debug(f"Attempting to extract article from: {entry_link}")
+        self.stats.urls_attempted += 1
+
+        article = self._extract_article(entry_link, entry_title, pub_date)
+        if article:
+            self.stats.articles_extracted += 1
+            article["source"] = source_name
+            article["bias_label"] = source.get("bias", "unknown")
+            self.logger.debug(f"Successfully extracted article: {article.get('title')}")
+        else:
+            self.stats.extraction_failures += 1
+            self.logger.warning(f"Failed to extract article from {entry_link}")
+        time.sleep(random.uniform(0.5, 1.5))
+        return article
+
+    def _process_feed_entries_with_circuit_breaker(self, entries: List[Any], source: Dict[str, Any], base_url: str,
+                                                   start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
+        """Process RSS feed entries with circuit breaker protection."""
+        articles = []
+        source_name = source.get("name", urlparse(base_url).netloc)
+
+        max_consecutive_failures = 5
+        consecutive_failures = 0
+
+        for i, entry in enumerate(entries):
+            if self.cancelled or len(articles) >= limit:
+                break
+
+            try:
+                article = self._process_single_entry(entry, source, start_date, end_date)
+                if article:
+                    articles.append(article)
+                    consecutive_failures = 0
+                else:
+                    consecutive_failures += 1
+
+                if consecutive_failures >= max_consecutive_failures:
+                    self.logger.warning(
+                        f"Circuit breaker triggered for {source_name} after {consecutive_failures} consecutive failures")
+                    break
+
+            except Exception as e:
+                consecutive_failures += 1
+                self.logger.error(f"Entry processing failed: {e}")
+
+                if consecutive_failures >= max_consecutive_failures:
+                    self.logger.error(f"Too many failures for {source_name}, stopping")
+                    break
+
         return articles
 
     def _is_political(self, title: str, content: str) -> bool:
@@ -1285,7 +1421,7 @@ class ContentCollector:
 
         # Federal Register
         try:
-            fr_docs = scrape_federal_register(start_date, end_date, limit=50)
+            fr_docs = fetch_federal_register_api(start_date, end_date, limit=self.gov_article_limit)
             for doc in fr_docs:
                 doc["via_gov_scraper"] = True
                 articles.append(doc)
@@ -1296,7 +1432,7 @@ class ContentCollector:
 
         # White House presidential actions
         try:
-            wh_docs = scrape_white_house_actions(start_date, end_date, limit=50)
+            wh_docs = fetch_white_house_actions_api(start_date, end_date, limit=self.gov_article_limit)
             for doc in wh_docs:
                 doc["via_gov_scraper"] = True
                 articles.append(doc)
@@ -1307,7 +1443,7 @@ class ContentCollector:
 
         # Congress bills
         try:
-            bill_docs = scrape_congress_bills(start_date, end_date, limit=50)
+            bill_docs = fetch_govinfo_bills_api(start_date, end_date, api_key=self.govinfo_api_key, limit=self.gov_article_limit)
             for doc in bill_docs:
                 doc["via_gov_scraper"] = True
                 articles.append(doc)
@@ -1512,6 +1648,26 @@ class ContentCollector:
             "extraction_method": article.get("extraction_method")
         }
 
+    def _store_article(self, article: Dict[str, Any]) -> str:
+        """Store an article and return document ID, using crypto lineage if available."""
+        if not self.document_repository:
+            return ""
+
+        content = article.get("content", "")
+        metadata = self._create_metadata(article)
+
+        try:
+            if hasattr(self.document_repository, "store_document_with_crypto_chain"):
+                doc_id = self.document_repository.store_document_with_crypto_chain(content, metadata)
+                self.logger.debug(f"Stored document {doc_id} with crypto chain")
+            else:
+                doc_id = self.document_repository.store_document(content, metadata)
+                self.logger.debug(f"Stored document {doc_id} (legacy)")
+            return doc_id
+        except Exception as e:
+            self.logger.warning(f"Crypto storage failed: {e}")
+            return self.document_repository.store_document(content, metadata)
+
     def _update_last_run(self):
         """Update last run timestamp."""
         try:
@@ -1526,8 +1682,10 @@ class ContentCollector:
             return {}
         
         try:
-            with open(self.collection_history_file, 'r') as f:
-                return json.load(f)
+            data = safe_json_load(self.collection_history_file, default=None)
+            if data is not None:
+                return data
+            return {}
         except:
             return {}
 
@@ -1547,8 +1705,8 @@ class ContentCollector:
         
         # Save updated history
         try:
-            with open(self.collection_history_file, 'w') as f:
-                json.dump(history, f, indent=2)
+            if not safe_json_save(self.collection_history_file, history):
+                raise IOError("save_failed")
         except Exception as e:
             self.logger.error(f"Error saving collection history: {e}")
 

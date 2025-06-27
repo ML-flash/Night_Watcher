@@ -5,6 +5,7 @@ Utility to manage model-specific configurations and test context windows.
 """
 
 import json
+from file_utils import safe_json_load
 import logging
 import argparse
 from pathlib import Path
@@ -117,8 +118,9 @@ def list_model_configs():
         model_name = config_file.stem.replace("_", "/")
 
         try:
-            with open(config_file, 'r') as f:
-                config = json.load(f)
+            config = safe_json_load(str(config_file), default=None)
+            if config is None:
+                continue
 
             logger.info(f"\n{model_name}:")
             logger.info(f"  Context window: {config.get('context_window', 'unknown')}")

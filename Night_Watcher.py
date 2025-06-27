@@ -7,11 +7,14 @@ Streamlined entry point with reduced complexity.
 import os
 import sys
 import json
+from file_utils import safe_json_load, safe_json_save
 import logging
 import argparse
+
 import glob
+
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Tuple
 from pathlib import Path
 
 # Core imports
@@ -22,6 +25,7 @@ from vector_store import VectorStore
 from document_repository import DocumentRepository
 from document_aggregator import aggregate_document_analyses
 import providers
+import base64
 
 # Configure logging
 logging.basicConfig(
@@ -55,7 +59,15 @@ class NightWatcher:
         )
         
         self.llm_provider = providers.initialize_llm_provider(self.config)
-        self.analyzer = ContentAnalyzer(self.llm_provider) if self.llm_provider else None
+        if not self.llm_provider:
+            self.logger.error("No LLM provider available - analysis will be disabled")
+            self.analyzer = None
+        else:
+            try:
+                self.analyzer = ContentAnalyzer(self.llm_provider)
+            except Exception as e:
+                self.logger.error(f"Failed to initialize analyzer: {e}")
+                self.analyzer = None
         
         self.knowledge_graph = KnowledgeGraph(
             graph_file=f"{self.base_dir}/knowledge_graph/graph.json",
@@ -80,8 +92,9 @@ class NightWatcher:
     def _load_config(self) -> Dict[str, Any]:
         """Load or create configuration."""
         if os.path.exists(self.config_path):
-            with open(self.config_path, 'r') as f:
-                return json.load(f)
+            config = safe_json_load(self.config_path, default=None)
+            if config is not None:
+                return config
         
         # Create default config
         config = {
@@ -113,8 +126,7 @@ class NightWatcher:
             }
         }
         
-        with open(self.config_path, 'w') as f:
-            json.dump(config, f, indent=2)
+        safe_json_save(self.config_path, config)
         
         return config
     
@@ -123,10 +135,32 @@ class NightWatcher:
         dirs = ["collected", "analyzed", "documents", "knowledge_graph", "vector_store", "logs"]
         for d in dirs:
             os.makedirs(f"{self.base_dir}/{d}", exist_ok=True)
+
+    def validate_system_state(self) -> List[str]:
+        """Validate system is ready for operations."""
+        issues = []
+        if not self.llm_provider:
+            issues.append("No LLM provider available")
+        if not self.analyzer:
+            issues.append("Content analyzer not initialized")
+        required_dirs = [
+            f"{self.base_dir}/documents",
+            f"{self.base_dir}/analyzed",
+            f"{self.base_dir}/knowledge_graph",
+        ]
+        for dir_path in required_dirs:
+            if not os.path.exists(dir_path):
+                issues.append(f"Required directory missing: {dir_path}")
+        if not os.path.exists("standard_analysis.json"):
+            issues.append("No analysis templates found")
+        return issues
     
     def collect(self, mode: str = "auto", callback=None) -> Dict[str, Any]:
         """Run content collection."""
         self.logger.info(f"Starting collection (mode: {mode})")
+        issues = self.validate_system_state()
+        if issues:
+            self.logger.warning(f"System issues detected: {issues}")
         return self.collector.collect_content(force_mode=mode if mode != "auto" else None, callback=callback)
     
     def analyze(self, max_articles: int = 20, templates: List[str] = None, 
@@ -141,6 +175,13 @@ class NightWatcher:
         """
         if not self.analyzer:
             raise Exception("Analyzer not available - check LLM provider")
+
+        validation_issues = self.validate_system_state()
+        if validation_issues:
+            self.logger.error("System validation failed:")
+            for issue in validation_issues:
+                self.logger.error(f"  - {issue}")
+            return {"error": "System not ready for analysis", "issues": validation_issues}
         
         templates = templates or ["standard_analysis.json"]
         
@@ -241,8 +282,10 @@ class NightWatcher:
                 results.append(aggregated)
                 analyzed_count += 1
 
+
             except Exception as e:
                 self.logger.error(f"Error analyzing document {doc['id']}: {e}")
+
 
         return {
             "status": "completed",
@@ -308,116 +351,46 @@ class NightWatcher:
         else:
             return {"error": "No analysis produced"}
     
-    def aggregate_events(self, analysis_window: int = 7) -> Dict[str, Any]:
-        """
-        Aggregate events from recent analyses.
-        
-        Args:
-            analysis_window: Days of analyses to include
-            
-        Returns:
-            Aggregation results
-        """
+    def aggregate_events(self, analysis_window: int = 7, templates: List[str] = None) -> Dict[str, Any]:
+        """Two-stage event-centric aggregation."""
+
+        if not templates:
+            templates = ["standard_analysis.json"]
+
         from event_aggregator import EventAggregator
-        
-        # Load recent analyses
-        analyses = []
-        analyzed_dir = f"{self.base_dir}/analyzed"
-        cutoff_date = datetime.now() - timedelta(days=analysis_window)
-        
-        for filename in os.listdir(analyzed_dir):
-            if not filename.startswith("analysis_"):
-                continue
-                
-            filepath = os.path.join(analyzed_dir, filename)
-            try:
-                # Check file date
-                mtime = datetime.fromtimestamp(os.path.getmtime(filepath))
-                if mtime < cutoff_date:
-                    continue
-                    
-                with open(filepath, 'r') as f:
-                    analysis = json.load(f)
-                    
-                # Only include if it has KG payload
-                if analysis.get("kg_payload"):
-                    analyses.append(analysis)
-                    
-            except Exception as e:
-                self.logger.error(f"Error loading {filename}: {e}")
-        
+
+        analyses = self._load_recent_multi_template_analyses(analysis_window, templates)
+
         if not analyses:
             return {"status": "no_analyses", "events": []}
-        
-        # Aggregate events
+
         aggregator = EventAggregator()
-        results = aggregator.process_analysis_batch(analyses)
-        
-        # Save aggregation results
-        output_file = f"{self.base_dir}/analyzed/event_aggregation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+
+        try:
+            if hasattr(aggregator, "aggregate_with_crypto_lineage"):
+                result = aggregator.aggregate_with_crypto_lineage(analyses)
+                self.logger.info("Used crypto-enhanced aggregation")
+            else:
+                result = aggregator._aggregate_standard(analyses)
+                self.logger.info("Used standard aggregation (crypto not available)")
+        except Exception as e:
+            self.logger.error(f"Enhanced aggregation failed: {e}")
+            result = aggregator._aggregate_standard(analyses)
+
+        output_file = f"{self.base_dir}/unified_graph/unified_kg_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
         with open(output_file, 'w') as f:
-            json.dump(results, f, indent=2)
-        
-        self.logger.info(f"Aggregated {results['event_count']} unique events from {len(analyses)} analyses")
-        
-        # Create event-centric knowledge graph nodes
-        event_nodes = aggregator.create_event_nodes()
-        event_edges = aggregator.create_event_relationships()
+            json.dump(result, f, indent=2)
 
-        # Consolidated KG payload from aggregator
-        master_kg = results.get("kg_payload", {})
-        kg_nodes = master_kg.get("nodes", [])
-        kg_edges = master_kg.get("edges", [])
+        if "unified_graph" in result:
+            self._update_knowledge_graph_with_unified(result["unified_graph"])
 
-        # Add nodes to knowledge graph and track mapping
-        id_map = {}
-        for node in kg_nodes:
-            kg_id = self.knowledge_graph.add_node(
-                node_type=node.get("node_type"),
-                name=node.get("name"),
-                attributes={**node.get("attributes", {}), "evidence_sources": node.get("evidence_sources", [])}
-            )
-            id_map[node["id"]] = kg_id
-
-        # Add edges from consolidated payload
-        for edge in kg_edges:
-            src = id_map.get(edge.get("source"))
-            tgt = id_map.get(edge.get("target"))
-            if not src or not tgt:
-                continue
-            self.knowledge_graph.add_edge(
-                source_id=src,
-                relation=edge.get("relationship"),
-                target_id=tgt,
-                attributes={
-                    "weight": edge.get("weight", 1),
-                    "evidence_sources": edge.get("evidence_sources", [])
-                }
-            )
-
-        # Add event nodes/edges for aggregated events
-        for node in event_nodes:
-            self.knowledge_graph.graph.add_node(node["id"], **node)
-
-        for edge in event_edges:
-            self.knowledge_graph.graph.add_edge(
-                edge["source_id"],
-                edge["target_id"],
-                relation=edge["relation"],
-                **edge.get("attributes", {})
-            )
-        
-        self.knowledge_graph.save_graph()
-        
         return {
             "status": "completed",
-            "unique_events": results["event_count"],
-            "cross_source_events": len(results["cross_source_events"]),
-            "analyses_processed": len(analyses),
-            "pattern_analysis": results.get("pattern_analysis", {}),
-            "coordinated_campaigns": results.get("coordinated_campaigns", []),
-            "urgency_scores": results.get("urgency_scores", {}),
-            "authoritarian_escalation": results.get("authoritarian_escalation", {})
+            "unique_events": len(result.get("event_graphs", {})),
+            "unified_nodes": result.get("unified_graph", {}).get("stats", {}).get("total_nodes", 0),
+            "analyses_processed": result.get("analyses_processed", len(analyses)),
+            "crypto_lineage_included": "crypto_lineage" in result,
         }
     
     def _build_kg_original(self) -> Dict[str, Any]:
@@ -430,8 +403,10 @@ class NightWatcher:
         for filename in os.listdir(analyses_dir):
             if filename.startswith("analysis_"):
                 try:
-                    with open(f"{analyses_dir}/{filename}", 'r') as f:
-                        analysis = json.load(f)
+                    analysis_path = f"{analyses_dir}/{filename}"
+                    analysis = safe_json_load(analysis_path, default=None)
+                    if analysis is None:
+                        raise ValueError("invalid json")
                     
                     article = analysis.get("article", {})
                     if article and analysis.get("kg_payload"):
@@ -450,6 +425,9 @@ class NightWatcher:
     
     def build_kg(self) -> Dict[str, Any]:
         """Enhanced KG build that includes event aggregation."""
+        issues = self.validate_system_state()
+        if issues:
+            self.logger.warning(f"System issues detected: {issues}")
         # First, do regular KG build from analyses
         regular_result = self._build_kg_original()
         
@@ -463,8 +441,12 @@ class NightWatcher:
     
     def sync_vectors(self) -> Dict[str, Any]:
         """Sync vector store with knowledge graph."""
+        issues = self.validate_system_state()
+        if issues:
+            self.logger.warning(f"System issues detected: {issues}")
         stats = self.vector_store.sync_with_knowledge_graph(self.knowledge_graph)
         return stats
+
 
     def run_historical_pipeline(self) -> Dict[str, Any]:
         """Run full pipeline on all data using production templates."""
@@ -497,6 +479,7 @@ class NightWatcher:
             "knowledge_graph": kg_result,
             "vector_sync": vector_result,
         }
+
     
     def _get_analyzed_docs(self) -> set:
         """Get set of analyzed document IDs."""
@@ -507,8 +490,10 @@ class NightWatcher:
             for filename in os.listdir(analyzed_dir):
                 if filename.startswith("analysis_"):
                     try:
-                        with open(f"{analyzed_dir}/{filename}", 'r') as f:
-                            analysis = json.load(f)
+                        analysis_path = f"{analyzed_dir}/{filename}"
+                        analysis = safe_json_load(analysis_path, default=None)
+                        if analysis is None:
+                            raise ValueError("invalid json")
                         doc_id = analysis.get("article", {}).get("document_id")
                         if doc_id:
                             analyzed.add(doc_id)
@@ -516,6 +501,187 @@ class NightWatcher:
                         continue
         
         return analyzed
+
+    # ------------------------------------------------------------------
+    # Crypto chain generation and export helpers
+    # ------------------------------------------------------------------
+    def generate_complete_crypto_chain(self) -> Dict[str, Any]:
+        """Assemble full cryptographic lineage for export."""
+        try:
+            document_lineages = self.document_repository.collect_all_document_lineages()
+            analysis_lineages = self.analyzer.collect_all_analysis_lineages() if hasattr(self.analyzer, "collect_all_analysis_lineages") else []
+
+            aggregation_lineages = []
+            try:
+                from event_aggregator import EventAggregator
+                aggregator = EventAggregator()
+                if hasattr(aggregator, "collect_all_aggregation_lineages"):
+                    aggregation_lineages = aggregator.collect_all_aggregation_lineages()
+            except Exception as e:
+                self.logger.warning(f"Could not collect aggregation lineages: {e}")
+
+            lineage_tree = self._build_lineage_tree(document_lineages, analysis_lineages, aggregation_lineages)
+
+            master_chain = {
+                "chain_id": hashlib.sha256(json.dumps(lineage_tree, sort_keys=True).encode()).hexdigest(),
+                "generation_timestamp": datetime.now().isoformat(),
+                "master_instance_id": self._get_master_instance_id(),
+                "lineage_tree": lineage_tree,
+                "chain_statistics": {
+                    "total_documents": len(document_lineages),
+                    "total_analyses": len(analysis_lineages),
+                    "total_aggregations": len(aggregation_lineages),
+                },
+            }
+
+            return master_chain
+        except Exception as e:
+            self.logger.error(f"Crypto chain generation failed: {e}")
+            return {
+                "chain_id": "error",
+                "generation_timestamp": datetime.now().isoformat(),
+                "error": str(e),
+                "lineage_tree": {"error": "chain_generation_failed"},
+            }
+
+    def _build_lineage_tree(self, documents: List[Dict], analyses: List[Dict], aggregations: List[Dict]) -> Dict:
+        tree = {"documents": {}, "analyses": {}, "aggregations": {}, "derivation_map": {}}
+        for doc_lineage in documents:
+            doc_id = doc_lineage.get("document_id")
+            if doc_id:
+                tree["documents"][doc_id] = doc_lineage
+
+        for analysis_lineage in analyses:
+            analysis_id = analysis_lineage.get("analysis_id")
+            if analysis_id:
+                tree["analyses"][analysis_id] = analysis_lineage
+                crypto_lineage = analysis_lineage.get("crypto_lineage", {})
+                derivation = crypto_lineage.get("derivation", {})
+                source_doc = derivation.get("derived_from_document")
+                if source_doc:
+                    tree.setdefault("derivation_map", {}).setdefault(source_doc, {"analyses": [], "aggregations": []})
+                    tree["derivation_map"][source_doc]["analyses"].append(analysis_id)
+
+        for agg_lineage in aggregations:
+            agg_id = agg_lineage.get("aggregation_id")
+            if agg_id:
+                tree["aggregations"][agg_id] = agg_lineage
+                crypto_lineage = agg_lineage.get("crypto_lineage", {})
+                source_analyses = crypto_lineage.get("derived_from_analyses", [])
+                for a_id in source_analyses:
+                    for doc_id, derivations in tree.get("derivation_map", {}).items():
+                        if a_id in derivations["analyses"]:
+                            derivations["aggregations"].append(agg_id)
+                            break
+
+        return tree
+
+    def _get_master_instance_id(self) -> str:
+        try:
+            instance_string = f"{self.config_path}:{self.base_dir}"
+            return hashlib.sha256(instance_string.encode("utf-8")).hexdigest()[:16]
+        except Exception:
+            return "master_instance"
+
+    def create_export_with_crypto_chain(self, version: str, private_key_path: str = None) -> Dict:
+        try:
+            crypto_chain = self.generate_complete_crypto_chain()
+
+            intelligence_package = {
+                "unified_graph": self._export_unified_graph(),
+                "knowledge_graph": self._export_knowledge_graph_data(),
+                "version": version,
+                "export_timestamp": datetime.now().isoformat(),
+            }
+
+            export_record = {
+                "version": version,
+                "intelligence_package": intelligence_package,
+                "crypto_chain": crypto_chain,
+                "export_timestamp": datetime.now().isoformat(),
+                "master_instance_id": crypto_chain.get("master_instance_id"),
+            }
+
+            export_hash = hashlib.sha256(json.dumps(export_record, sort_keys=True).encode("utf-8")).hexdigest()
+
+            if private_key_path and os.path.exists(private_key_path):
+                try:
+                    export_signature = self._sign_export_with_private_key(export_record, private_key_path)
+                    public_key = self._extract_public_key_from_private(private_key_path)
+                except Exception as e:
+                    self.logger.warning(f"Export signing failed: {e}")
+                    export_signature = None
+                    public_key = None
+            else:
+                export_signature = None
+                public_key = None
+
+            final_export = {
+                "export_record": export_record,
+                "export_hash": export_hash,
+                "export_signature": export_signature,
+                "public_key": public_key,
+                "crypto_chain_included": True,
+            }
+
+            return final_export
+        except Exception as e:
+            self.logger.error(f"Export with crypto chain failed: {e}")
+            return {"error": str(e), "crypto_chain_included": False}
+
+    def _export_unified_graph(self) -> Dict:
+        try:
+            unified_dir = f"{self.base_dir}/unified_graph"
+            if not os.path.exists(unified_dir):
+                return {}
+            files = [f for f in os.listdir(unified_dir) if f.startswith("unified_kg_")]
+            if not files:
+                return {}
+            latest_file = max(files, key=lambda f: os.path.getmtime(os.path.join(unified_dir, f)))
+            latest_path = os.path.join(unified_dir, latest_file)
+            data = safe_json_load(latest_path, default=None)
+            if data is not None:
+                return data
+            return {}
+        except Exception as e:
+            self.logger.warning(f"Could not export unified graph: {e}")
+            return {}
+
+    def _export_knowledge_graph_data(self) -> Dict:
+        try:
+            return self.knowledge_graph.get_basic_statistics()
+        except Exception as e:
+            self.logger.warning(f"Could not export knowledge graph data: {e}")
+            return {}
+
+    def _sign_export_with_private_key(self, export_record: Dict, private_key_path: str) -> str:
+
+        from cryptography.hazmat.primitives import serialization, hashes
+        from cryptography.hazmat.primitives.asymmetric import padding
+
+        export_json = json.dumps(export_record, sort_keys=True).encode()
+        with open(private_key_path, "rb") as f:
+            private_key = serialization.load_pem_private_key(f.read(), password=None)
+
+        signature = private_key.sign(
+            export_json,
+            padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+            hashes.SHA256(),
+        )
+
+        return base64.b64encode(signature).decode("utf-8")
+
+    def _extract_public_key_from_private(self, private_key_path: str) -> str:
+        from cryptography.hazmat.primitives import serialization
+
+        with open(private_key_path, "rb") as f:
+            private_key = serialization.load_pem_private_key(f.read(), password=None)
+        pub_bytes = private_key.public_key().public_bytes(
+            serialization.Encoding.PEM,
+            serialization.PublicFormat.SubjectPublicKeyInfo,
+        )
+        return pub_bytes.decode("utf-8")
+
     
     def status(self) -> Dict[str, Any]:
         """Get unified system status from all components."""

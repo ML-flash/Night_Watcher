@@ -5,10 +5,12 @@ Consolidated version that handles both documents and analysis provenance.
 
 import os
 import json
+from file_utils import safe_json_load
 import hashlib
 import hmac
 import base64
 import logging
+import secrets
 from datetime import datetime
 from typing import Dict, Any, Optional, List, Tuple
 
@@ -16,29 +18,44 @@ from typing import Dict, Any, Optional, List, Tuple
 class DocumentRepository:
     """Unified document and analysis storage with cryptographic provenance."""
 
-    def __init__(self, base_dir: str = "data/documents", dev_mode: bool = True):
+    def __init__(self, base_dir: str = "data/documents", dev_mode: bool = True, config: Optional[Dict[str, Any]] = None):
         self.base_dir = base_dir
         self.content_dir = os.path.join(base_dir, "content")
         self.metadata_dir = os.path.join(base_dir, "metadata")
         self.signatures_dir = os.path.join(base_dir, "signatures")
         self.analysis_dir = os.path.join(base_dir, "analysis_provenance")
+        self.config = config or {}
         
         # Create directories
         for d in [self.content_dir, self.metadata_dir, self.signatures_dir, self.analysis_dir]:
             os.makedirs(d, exist_ok=True)
-        
-        # Simple key derivation for dev mode
-        self.key = hashlib.pbkdf2_hmac(
-            "sha256",
-            b"night_watcher_dev",
-            b"fixed_salt",
-            100000,
-            dklen=32
-        )
+
+        # Load crypto key (dev mode defaults still apply)
+        self._load_crypto_key()
         
         self.logger = logging.getLogger("DocumentRepository")
         if dev_mode:
             self.logger.info("Using development mode (simplified crypto)")
+
+    def _load_crypto_key(self) -> None:
+        """Derive or generate the repository HMAC key."""
+        secret = os.environ.get("NIGHT_WATCHER_SECRET") or self.config.get("repo_secret") or "night_watcher_dev"
+        salt_path = os.path.join(self.base_dir, "repo_salt")
+        if not os.path.exists(salt_path):
+            salt = secrets.token_bytes(16)
+            with open(salt_path, "wb") as f:
+                f.write(salt)
+        else:
+            with open(salt_path, "rb") as f:
+                salt = f.read()
+
+        self.key = hashlib.pbkdf2_hmac(
+            "sha256",
+            secret.encode("utf-8"),
+            salt,
+            100000,
+            dklen=32,
+        )
 
     def store_document(self, content: str, metadata: Dict[str, Any]) -> str:
         """Store document with provenance."""
@@ -90,8 +107,7 @@ class DocumentRepository:
         # Load metadata
         metadata_path = os.path.join(self.metadata_dir, f"{doc_id}.json")
         if os.path.exists(metadata_path):
-            with open(metadata_path, "r", encoding="utf-8") as f:
-                metadata = json.load(f)
+            metadata = safe_json_load(metadata_path, default=None)
         
         # Verify if requested
         if verify and content:
@@ -172,8 +188,9 @@ class DocumentRepository:
             }
         
         try:
-            with open(record_path, "r", encoding="utf-8") as f:
-                provenance_record = json.load(f)
+            provenance_record = safe_json_load(record_path, default=None)
+            if provenance_record is None:
+                raise ValueError("invalid json")
             
             analysis_record = provenance_record.get("analysis_record", {})
             sig_data = provenance_record.get("signature", {})
@@ -279,8 +296,9 @@ class DocumentRepository:
             return False
         
         try:
-            with open(sig_path, "r", encoding="utf-8") as f:
-                sig_data = json.load(f)
+            sig_data = safe_json_load(sig_path, default=None)
+            if sig_data is None:
+                raise ValueError("invalid json")
             
             # Check content hash
             content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()

@@ -7,6 +7,7 @@ Flask-based API and dashboard server for Night_watcher control.
 import os
 import sys
 import json
+from file_utils import safe_json_load
 import logging
 import threading
 import time
@@ -60,8 +61,9 @@ def load_latest_aggregation():
     """Load most recent aggregation results if available."""
     if os.path.exists(EVENT_CACHE_FILE):
         try:
-            with open(EVENT_CACHE_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
+            data = safe_json_load(EVENT_CACHE_FILE, default=None)
+            if data is not None:
+                return data
         except Exception as e:
             logger.error(f"Failed to load aggregation results: {e}")
     return {}
@@ -125,9 +127,10 @@ def load_review_queue():
     """Load review queue from file."""
     if os.path.exists(REVIEW_QUEUE_FILE):
         try:
-            with open(REVIEW_QUEUE_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except:
+            data = safe_json_load(REVIEW_QUEUE_FILE, default=None)
+            if data is not None:
+                return data
+        except Exception:
             return []
     return []
 
@@ -156,8 +159,9 @@ def scan_for_review_items():
 
         try:
             filepath = os.path.join(analyzed_dir, filename)
-            with open(filepath, "r", encoding="utf-8") as f:
-                analysis = json.load(f)
+            analysis = safe_json_load(filepath, default=None)
+            if analysis is None:
+                continue
 
             validation = analysis.get("validation", {})
             if validation.get("status") == "REVIEW":
@@ -285,8 +289,9 @@ def api_templates():
 
         for filename in template_files:
             try:
-                with open(filename, "r", encoding="utf-8") as f:
-                    template_data = json.load(f)
+                template_data = safe_json_load(filename, default=None)
+                if template_data is None:
+                    continue
 
                 template_info = {
                     "filename": filename,
@@ -322,8 +327,9 @@ def api_approve_template():
             return jsonify({"error": "Template not found"}), 404
 
         # Load template
-        with open(template_file, "r", encoding="utf-8") as f:
-            template_data = json.load(f)
+        template_data = safe_json_load(template_file, default=None)
+        if template_data is None:
+            return jsonify({"error": "Invalid template"}), 400
 
         template_name = template_data.get("name", os.path.basename(template_file))
 
@@ -345,8 +351,9 @@ def api_approve_template():
                     continue
                 filepath = os.path.join(analyzed_dir, filename)
                 try:
-                    with open(filepath, "r", encoding="utf-8") as af:
-                        analysis = json.load(af)
+                    analysis = safe_json_load(filepath, default=None)
+                    if analysis is None:
+                        continue
                     if analysis.get("template_info", {}).get("name") != template_name:
                         continue
                     if analysis.get("validation", {}).get("status") == "REVIEW":
@@ -398,8 +405,9 @@ def api_get_analysis(analysis_id):
         if not os.path.exists(filepath):
             return jsonify({"error": "Analysis not found"}), 404
 
-        with open(filepath, "r", encoding="utf-8") as f:
-            analysis = json.load(f)
+        analysis = safe_json_load(filepath, default=None)
+        if analysis is None:
+            return jsonify({"error": "Invalid analysis"}), 400
 
         return jsonify(analysis)
 
@@ -431,8 +439,9 @@ def api_recent_analyses():
         # Get top 20
         for filename, filepath, mtime in files[:20]:
             try:
-                with open(filepath, "r", encoding="utf-8") as f:
-                    analysis = json.load(f)
+                analysis = safe_json_load(filepath, default=None)
+                if analysis is None:
+                    continue
 
                 analyses.append(
                     {
@@ -687,8 +696,9 @@ def api_approve_analysis():
         if not os.path.exists(filepath):
             return jsonify({"error": "Analysis not found"}), 404
 
-        with open(filepath, "r", encoding="utf-8") as f:
-            analysis = json.load(f)
+        analysis = safe_json_load(filepath, default=None)
+        if analysis is None:
+            return jsonify({"error": "Invalid analysis"}), 400
 
         # Update validation status
         analysis["validation"]["status"] = "VALID"
@@ -722,8 +732,9 @@ def api_reject_analysis():
         if not os.path.exists(filepath):
             return jsonify({"error": "Analysis not found"}), 404
 
-        with open(filepath, "r", encoding="utf-8") as f:
-            analysis = json.load(f)
+        analysis = safe_json_load(filepath, default=None)
+        if analysis is None:
+            return jsonify({"error": "Invalid analysis"}), 400
 
         # Update validation status
         analysis["validation"]["status"] = "REJECTED"
@@ -1020,12 +1031,13 @@ def api_export_history():
 
 @app.route("/api/aggregate-events", methods=["POST"])
 def api_aggregate_events():
-    """Run event aggregation across recent analyses."""
+    """Run two-stage event aggregation."""
     init_night_watcher()
     data = request.json or {}
     window = int(data.get("analysis_window", 7))
+    templates = data.get("templates", ["standard_analysis.json"])
 
-    result = night_watcher.aggregate_events(analysis_window=window)
+    result = night_watcher.aggregate_events(analysis_window=window, templates=templates)
     cache_aggregation_results(result)
     return jsonify(result)
 
@@ -1051,6 +1063,27 @@ def api_campaigns():
     """Return details on detected coordinated campaigns."""
     latest = load_latest_aggregation()
     return jsonify(latest.get("coordinated_campaigns", []))
+
+
+@app.route("/api/unified-graph/stats")
+def api_unified_graph_stats():
+    """Get unified knowledge graph statistics."""
+    unified_dir = "data/unified_graph"
+    if not os.path.exists(unified_dir):
+        return jsonify({"error": "No unified graph available"})
+
+    files = [f for f in os.listdir(unified_dir) if f.startswith("unified_kg_")]
+    if not files:
+        return jsonify({"error": "No unified graph files"})
+
+    latest_file = max(files, key=lambda f: os.path.getmtime(os.path.join(unified_dir, f)))
+
+    unified_path = os.path.join(unified_dir, latest_file)
+    unified_graph = safe_json_load(unified_path, default=None)
+    if unified_graph is None:
+        return jsonify({"error": "Invalid graph"}), 400
+
+    return jsonify(unified_graph.get("stats", {}))
 
 
 @app.route("/api/config", methods=["GET", "POST"])

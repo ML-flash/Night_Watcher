@@ -4,9 +4,13 @@ Uses JSON template files to run multi-round analysis pipelines with intelligent 
 """
 
 import json
+from file_utils import safe_json_load
 import logging
 import re
 import os
+import gc
+import psutil
+import hashlib
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Tuple
 
@@ -36,13 +40,31 @@ class ContentAnalyzer:
 
         self.logger.info(f"Loaded template: {self.template.get('name')} (status: {self.template.get('status')})")
 
+    def check_memory_usage(self, threshold_mb: int = 1024) -> bool:
+        """Check memory usage and trigger cleanup if threshold exceeded."""
+        try:
+            process = psutil.Process()
+            memory_mb = process.memory_info().rss / 1024 / 1024
+            if memory_mb > threshold_mb:
+                self.logger.warning(f"High memory usage: {memory_mb:.1f}MB")
+                gc.collect()
+                if hasattr(self, '_decoded_url_cache'):
+                    if len(self._decoded_url_cache) > 1000:
+                        self._decoded_url_cache.clear()
+                        self.logger.info("Cleared URL cache")
+                return True
+        except Exception as e:
+            self.logger.debug(f"Memory check failed: {e}")
+        return False
+
     def _load_template(self, template_file: str) -> Dict[str, Any]:
         """Load analysis template from JSON file."""
         if not os.path.exists(template_file):
             raise FileNotFoundError(f"Template file not found: {template_file}")
 
-        with open(template_file, 'r') as f:
-            template = json.load(f)
+        template = safe_json_load(template_file, default=None)
+        if template is None:
+            raise ValueError(f"Invalid template JSON: {template_file}")
 
         # Validate template structure
         required_fields = ["name", "status", "rounds"]
@@ -56,60 +78,6 @@ class ContentAnalyzer:
         """Generate a document ID using SHA-256 hash of the content."""
         import hashlib
         return hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
-
-    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Process a batch of articles with template-based analysis.
-
-        Args:
-            input_data: Dictionary with 'articles' list and 'document_ids' list
-
-        Returns:
-            Dictionary with 'analyses' list and metadata
-        """
-        articles = input_data.get("articles", [])
-        document_ids = input_data.get("document_ids", [])
-
-        if not articles:
-            return {"analyses": [], "error": "No articles provided"}
-
-        analyses = []
-
-        for i, article in enumerate(articles):
-            self.logger.info(f"Analyzing article {i+1}/{len(articles)}: {article.get('title', 'Untitled')[:50]}...")
-
-            try:
-                analysis = self.analyze_article(article)
-
-                # Add metadata
-                analysis["template_info"] = {
-                    "name": self.template.get("name"),
-                    "version": self.template.get("version"),
-                    "status": self.template.get("status"),
-                    "file": self.template_file
-                }
-
-                # Add document ID if provided
-                if i < len(document_ids):
-                    analysis["document_id"] = document_ids[i]
-
-                analyses.append(analysis)
-
-            except Exception as e:
-                self.logger.error(f"Error analyzing article {i+1}: {e}")
-                analyses.append({
-                    "error": str(e),
-                    "article_title": article.get("title", "Unknown"),
-                    "document_id": document_ids[i] if i < len(document_ids) else None
-                })
-
-        return {
-            "analyses": analyses,
-            "template": self.template.get("name"),
-            "processed_at": datetime.now().isoformat(),
-            "total_articles": len(articles),
-            "successful_analyses": len([a for a in analyses if "error" not in a])
-        }
 
     def analyze_article(self, article: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -771,8 +739,9 @@ class ContentAnalyzer:
             result = json.loads(cleaned_text)
             if expected_type is None or isinstance(result, expected_type):
                 return result
-        except:
-            pass
+        except (json.JSONDecodeError, TypeError, KeyError, ValueError) as e:
+            self.logger.debug(f"JSON parsing failed: {e}")
+            # continue to other strategies
 
         # Strategy 3: Extract JSON-like structures more aggressively
         if expected_type == list:
@@ -783,7 +752,8 @@ class ContentAnalyzer:
                     result = json.loads(match)
                     if isinstance(result, list) and len(result) > 0:
                         return result
-                except:
+                except (json.JSONDecodeError, TypeError, KeyError, ValueError) as e:
+                    self.logger.debug(f"JSON parsing failed: {e}")
                     continue
 
         elif expected_type == dict:
@@ -794,7 +764,8 @@ class ContentAnalyzer:
                     result = json.loads(match)
                     if isinstance(result, dict):
                         return result
-                except:
+                except (json.JSONDecodeError, TypeError, KeyError, ValueError) as e:
+                    self.logger.debug(f"JSON parsing failed: {e}")
                     continue
 
         # Strategy 4: If we expect specific structure, try to build it
@@ -937,7 +908,8 @@ STOP IMMEDIATELY after the closing bracket. Do not continue writing.
             if matches:
                 try:
                     return float(matches[0])
-                except:
+                except (ValueError, TypeError) as e:
+                    self.logger.debug(f"Score parsing failed: {e}")
                     continue
 
         return 0.0
@@ -966,3 +938,173 @@ STOP IMMEDIATELY after the closing bracket. Do not continue writing.
             concern_level = "LOW"
 
         return indicators, concern_level
+
+    def _analyze_single(self, article: Dict[str, Any], template_name: str) -> Dict[str, Any]:
+        """Run analysis for a single template without altering global state."""
+        original_template = self.template
+        original_file = self.template_file
+
+        try:
+            self.template = self._load_template(template_name)
+            self.template_file = template_name
+        except Exception as e:
+            self.logger.error(f"Failed to load template {template_name}: {e}")
+            return {"error": str(e), "template_name": template_name}
+
+        try:
+            result = self.analyze_article(article)
+        finally:
+            self.template = original_template
+            self.template_file = original_file
+        return result
+
+    def _save_analysis(self, analysis: Dict[str, Any], filename: str) -> None:
+        """Persist analysis to disk."""
+        try:
+            path = os.path.join("data", "analyzed", filename)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(analysis, f, indent=2)
+        except Exception as e:
+            self.logger.error(f"Failed to save analysis {filename}: {e}")
+
+    def process_multi_template(self, articles: List[Dict], templates: List[str]) -> Dict:
+        """Analyze articles with multiple templates."""
+        results = {"analyses": [], "document_ids": []}
+
+        for article in articles:
+            doc_id = article["document_id"]
+            for template_name in templates:
+                if hasattr(self, "analyze_with_crypto_derivation"):
+                    analysis = self.analyze_with_crypto_derivation(article, template_name)
+                else:
+                    analysis = self._analyze_single(article, template_name)
+                analysis["template_name"] = template_name.replace(".json", "")
+                analysis["analysis_id"] = f"{doc_id}_{analysis['template_name']}"
+                results["analyses"].append(analysis)
+
+                filename = f"analysis_{doc_id}_{analysis['template_name']}.json"
+                self._save_analysis(analysis, filename)
+
+        return results
+
+    # ------------------------------------------------------------------
+    # Crypto lineage enhancements
+    # ------------------------------------------------------------------
+    def analyze_with_crypto_derivation(self, article_data: Dict[str, Any], template_file: str = None) -> Dict[str, Any]:
+        """Run analysis and attach cryptographic derivation information."""
+        if template_file is None:
+            template_file = self.template_file
+
+        standard_result = self._analyze_article_standard(article_data, template_file)
+        try:
+            crypto_result = self._add_crypto_derivation(standard_result, article_data, template_file)
+            return crypto_result
+        except Exception as e:
+            self.logger.warning(f"Crypto derivation failed: {e}")
+            return standard_result
+
+    def _analyze_article_standard(self, article_data: Dict[str, Any], template_file: str) -> Dict[str, Any]:
+        """Run the standard analysis flow using the given template."""
+        if template_file != self.template_file:
+            return self._analyze_single(article_data, template_file)
+        return self.analyze_article(article_data)
+
+    def _add_crypto_derivation(self, standard_result: Dict, article_data: Dict, template_file: str) -> Dict[str, Any]:
+        """Attach cryptographic derivation info to analysis result."""
+        doc_id = article_data.get("document_id")
+        template_content = self._load_template_content(template_file)
+        template_hash = hashlib.sha256(template_content.encode("utf-8")).hexdigest()
+
+        analysis_input = f"{doc_id}:{template_hash}:{standard_result['timestamp']}"
+        analysis_id = hashlib.sha256(analysis_input.encode("utf-8")).hexdigest()
+
+        crypto_derivation = {
+            "analysis_id": analysis_id,
+            "derived_from_document": doc_id,
+            "derived_from_template": template_hash,
+            "template_file": template_file,
+            "analysis_timestamp": standard_result["timestamp"],
+            "analyzer_version": "1.0.0",
+        }
+
+        output_hash = hashlib.sha256(json.dumps(standard_result, sort_keys=True).encode("utf-8")).hexdigest()
+
+        crypto_enhanced_result = {
+            **standard_result,
+            "crypto_lineage": {
+                "analysis_id": analysis_id,
+                "output_hash": output_hash,
+                "derivation": crypto_derivation,
+            },
+        }
+
+        self._store_analysis_lineage(analysis_id, crypto_enhanced_result)
+
+        return crypto_enhanced_result
+
+    def _load_template_content(self, template_file: str) -> str:
+        """Load template file text for hashing."""
+        try:
+            with open(template_file, "r", encoding="utf-8") as f:
+                return f.read()
+        except Exception as e:
+            self.logger.warning(f"Could not load template content: {e}")
+            return f"template_file:{template_file}"
+
+    def _store_analysis_lineage(self, analysis_id: str, crypto_result: Dict) -> None:
+        """Persist analysis lineage for export."""
+        try:
+            lineage_dir = "data/analysis_lineage"
+            os.makedirs(lineage_dir, exist_ok=True)
+            lineage_file = os.path.join(lineage_dir, f"{analysis_id}_lineage.json")
+
+            lineage_data = {
+                "analysis_id": analysis_id,
+                "crypto_lineage": crypto_result.get("crypto_lineage"),
+                "lineage_type": "analysis_derivation",
+                "stored_at": datetime.now().isoformat(),
+            }
+
+            with open(lineage_file, "w", encoding="utf-8") as f:
+                json.dump(lineage_data, f, indent=2)
+        except Exception as e:
+            self.logger.warning(f"Could not store analysis lineage: {e}")
+
+    def collect_all_analysis_lineages(self) -> List[Dict]:
+        """Load all analysis lineage records."""
+        lineages = []
+        lineage_dir = "data/analysis_lineage"
+        if not os.path.exists(lineage_dir):
+            return lineages
+
+        for filename in os.listdir(lineage_dir):
+            if filename.endswith("_lineage.json"):
+                try:
+                    lineage_path = os.path.join(lineage_dir, filename)
+                    lineage = safe_json_load(lineage_path, default=None)
+                    if lineage is None:
+                        raise ValueError("invalid json")
+                    lineages.append(lineage)
+                except Exception as e:
+                    self.logger.warning(f"Could not load analysis lineage {filename}: {e}")
+
+        return lineages
+
+    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Process articles with optional crypto derivation."""
+        articles = input_data.get("articles", [])
+        results = {"analyses": [], "document_ids": []}
+
+        for article in articles:
+            try:
+                if hasattr(self, "analyze_with_crypto_derivation"):
+                    analysis_result = self.analyze_with_crypto_derivation(article)
+                else:
+                    analysis_result = self._analyze_article_standard(article, self.template_file)
+                results["analyses"].append(analysis_result)
+                results["document_ids"].append(article.get("document_id"))
+            except Exception as e:
+                self.logger.error(f"Analysis failed for article {article.get('document_id')}: {e}")
+
+        return results

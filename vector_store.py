@@ -5,6 +5,7 @@ Manages vector embeddings for semantic search and pattern detection.
 
 import os
 import json
+from file_utils import safe_json_load
 import logging
 import numpy as np
 import pickle
@@ -71,11 +72,11 @@ class VectorStore:
         """Load metadata from disk."""
         if os.path.exists(self.metadata_path):
             try:
-                with open(self.metadata_path, 'r') as f:
-                    data = json.load(f)
+                data = safe_json_load(self.metadata_path, default=None)
+                if data:
                     self.metadata = data.get('metadata', {})
                     self.id_to_index = data.get('id_to_index', {})
-                self.logger.info(f"Loaded metadata for {len(self.metadata)} items")
+                    self.logger.info(f"Loaded metadata for {len(self.metadata)} items")
             except Exception as e:
                 self.logger.error(f"Error loading metadata: {e}")
                 self.metadata = {}

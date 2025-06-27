@@ -15,6 +15,7 @@ from typing import Tuple, Optional
 
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
+from file_utils import safe_json_load, safe_json_save
 
 
 class SignedArtifactVerifier:
@@ -25,9 +26,9 @@ class SignedArtifactVerifier:
             with tarfile.open(archive_path, "r:gz") as tar:
                 tar.extractall(tmpdir)
             try:
-                manifest = json.load(open(os.path.join(tmpdir, "manifest.json")))
-                provenance = json.load(open(os.path.join(tmpdir, "provenance.json")))
-                signature = json.load(open(os.path.join(tmpdir, "signature.json")))
+                manifest = safe_json_load(os.path.join(tmpdir, "manifest.json"), default={})
+                provenance = safe_json_load(os.path.join(tmpdir, "provenance.json"), default={})
+                signature = safe_json_load(os.path.join(tmpdir, "signature.json"), default={})
                 pub_key_bytes = open(os.path.join(tmpdir, "public_key.pem"), "rb").read()
             except Exception as e:
                 return False, f"missing files: {e}", {}
@@ -74,12 +75,12 @@ class ProvenanceChain:
 
     def _load_field(self, key: str) -> Optional[str]:
         if os.path.exists(self.state_file):
-            data = json.load(open(self.state_file))
+            data = safe_json_load(self.state_file, default={})
             return data.get(key)
         return None
 
     def _write_state(self, version: str, hash_: str):
-        json.dump({"version": version, "hash": hash_}, open(self.state_file, "w"))
+        safe_json_save(self.state_file, {"version": version, "hash": hash_})
         self.current_version = version
         self.current_hash = hash_
 

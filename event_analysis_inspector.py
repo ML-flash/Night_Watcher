@@ -6,6 +6,7 @@ Standalone script to inspect analyzed files and count events.
 
 import os
 import json
+from file_utils import safe_json_load
 import glob
 from datetime import datetime
 from collections import defaultdict
@@ -51,8 +52,9 @@ def inspect_analyses(analyzed_dir: str = "data/analyzed") -> Dict[str, Any]:
             print(f"Processing file {i+1}/{len(files)}...")
             
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                analysis = json.load(f)
+            analysis = safe_json_load(filepath, default=None)
+            if analysis is None:
+                continue
             
             # Get basic info
             article = analysis.get("article", {})

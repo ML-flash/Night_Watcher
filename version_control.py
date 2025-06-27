@@ -1,5 +1,6 @@
 import os
 import json
+from file_utils import safe_json_load, safe_json_save
 import logging
 import shutil
 from datetime import datetime
@@ -52,14 +53,14 @@ class IntegratedVersionManager:
 
     def _load(self) -> Dict:
         if os.path.exists(self.version_file):
-            with open(self.version_file, 'r', encoding='utf-8') as f:
-                return json.load(f)
+            data = safe_json_load(self.version_file, default=None)
+            if data is not None:
+                return data
         return {}
 
     def _save(self, data: Dict):
         os.makedirs(os.path.dirname(self.version_file), exist_ok=True)
-        with open(self.version_file, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=2)
+        safe_json_save(self.version_file, data)
 
 
 class StagingManager:
