@@ -1,7 +1,7 @@
 {
   "name": "standard_analysis_v2",
   "description": "Enhanced analysis pipeline with open-ended pattern detection",
-  "status": "TESTING",
+  "status": "PRODUCTION",
   "version": "2.0",
   "created": "2025-01-24",
   "rounds": [
