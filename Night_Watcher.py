@@ -386,8 +386,10 @@ class NightWatcher:
         for filename in os.listdir(analyses_dir):
             if filename.startswith("analysis_"):
                 try:
-                    with open(f"{analyses_dir}/{filename}", 'r') as f:
-                        analysis = json.load(f)
+                    analysis_path = f"{analyses_dir}/{filename}"
+                    analysis = safe_json_load(analysis_path, default=None)
+                    if analysis is None:
+                        raise ValueError("invalid json")
                     
                     article = analysis.get("article", {})
                     if article and analysis.get("kg_payload"):
@@ -447,8 +449,9 @@ class NightWatcher:
                 continue
 
             try:
-                with open(filepath, "r") as f:
-                    analysis = json.load(f)
+                analysis = safe_json_load(filepath, default=None)
+                if analysis is None:
+                    raise ValueError("invalid json")
                 analyses.append(analysis)
             except Exception as e:
                 self.logger.error(f"Error loading {filename}: {e}")
@@ -499,8 +502,10 @@ class NightWatcher:
             for filename in os.listdir(analyzed_dir):
                 if filename.startswith("analysis_"):
                     try:
-                        with open(f"{analyzed_dir}/{filename}", 'r') as f:
-                            analysis = json.load(f)
+                        analysis_path = f"{analyzed_dir}/{filename}"
+                        analysis = safe_json_load(analysis_path, default=None)
+                        if analysis is None:
+                            raise ValueError("invalid json")
                         doc_id = analysis.get("article", {}).get("document_id")
                         if doc_id:
                             analyzed.add(doc_id)
@@ -645,8 +650,11 @@ class NightWatcher:
             if not files:
                 return {}
             latest_file = max(files, key=lambda f: os.path.getmtime(os.path.join(unified_dir, f)))
-            with open(os.path.join(unified_dir, latest_file), "r", encoding="utf-8") as f:
-                return json.load(f)
+            latest_path = os.path.join(unified_dir, latest_file)
+            data = safe_json_load(latest_path, default=None)
+            if data is not None:
+                return data
+            return {}
         except Exception as e:
             self.logger.warning(f"Could not export unified graph: {e}")
             return {}

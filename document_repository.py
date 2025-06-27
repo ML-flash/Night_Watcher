@@ -378,10 +378,11 @@ class DocumentRepository:
 
                 with open(src_content, "r", encoding="utf-8") as f:
                     content = f.read()
-                with open(src_meta, "r", encoding="utf-8") as f:
-                    metadata = json.load(f)
-                with open(src_sig, "r", encoding="utf-8") as f:
-                    sig_data = json.load(f)
+                metadata = safe_json_load(src_meta, default=None)
+                sig_data = safe_json_load(src_sig, default=None)
+                if metadata is None or sig_data is None:
+                    results["failed"].append(doc_id)
+                    continue
 
                 # Verify signature
                 stored_sig = sig_data.pop("signature", None)
@@ -404,8 +405,10 @@ class DocumentRepository:
                     continue
                 analysis_id = file[:-5]
                 src_path = os.path.join(analysis_dir, file)
-                with open(src_path, "r", encoding="utf-8") as f:
-                    provenance_record = json.load(f)
+                provenance_record = safe_json_load(src_path, default=None)
+                if provenance_record is None:
+                    results["failed"].append(analysis_id)
+                    continue
 
                 sig_data = provenance_record.get("signature", {})
                 stored_sig = sig_data.pop("signature", None)
@@ -489,9 +492,10 @@ class DocumentRepository:
         for filename in os.listdir(crypto_dir):
             if filename.endswith("_lineage.json"):
                 try:
-                    with open(os.path.join(crypto_dir, filename), "r", encoding="utf-8") as f:
-                        lineage = json.load(f)
-                    lineages.append(lineage)
+                    lineage_path = os.path.join(crypto_dir, filename)
+                    lineage = safe_json_load(lineage_path, default=None)
+                    if lineage is not None:
+                        lineages.append(lineage)
                 except Exception as e:
                     self.logger.warning(f"Could not load lineage {filename}: {e}")
 
