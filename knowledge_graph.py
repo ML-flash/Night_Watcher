@@ -5,6 +5,7 @@ Manages the knowledge graph for storing entities, events, and relationships with
 
 import os
 import json
+from file_utils import safe_json_load, safe_json_save
 import logging
 import csv
 import hashlib
@@ -188,8 +189,9 @@ class KnowledgeGraph:
                     filepath = os.path.join(self.nodes_dir, filename)
 
                     try:
-                        with open(filepath, 'r', encoding='utf-8') as f:
-                            node_data = json.load(f)
+                        node_data = safe_json_load(filepath, default=None)
+                        if node_data is None:
+                            continue
 
                         # Add node to graph
                         self.graph.add_node(node_id, **node_data)
@@ -217,8 +219,9 @@ class KnowledgeGraph:
                     filepath = os.path.join(self.edges_dir, filename)
 
                     try:
-                        with open(filepath, 'r', encoding='utf-8') as f:
-                            edge_data = json.load(f)
+                        edge_data = safe_json_load(filepath, default=None)
+                        if edge_data is None:
+                            continue
 
                         # Extract source and target
                         source_id = edge_data.get("source_id")
@@ -255,8 +258,9 @@ class KnowledgeGraph:
             graph_file: Path to the graph JSON file
         """
         try:
-            with open(graph_file, 'r', encoding='utf-8') as f:
-                graph_data = json.load(f)
+            graph_data = safe_json_load(graph_file, default=None)
+            if graph_data is None:
+                return
 
             # Clear existing graph
             self.graph.clear()
@@ -323,8 +327,9 @@ class KnowledgeGraph:
         provenance_file = os.path.join(self.provenance_dir, "graph_provenance.json")
         if os.path.exists(provenance_file):
             try:
-                with open(provenance_file, 'r', encoding='utf-8') as f:
-                    provenance_data = json.load(f)
+                provenance_data = safe_json_load(provenance_file, default=None)
+                if provenance_data is None:
+                    return
                 
                 self.graph_id = provenance_data.get("graph_id")
                 self.graph_version = provenance_data.get("graph_version", 1)
@@ -1064,8 +1069,9 @@ class KnowledgeGraph:
         """
         try:
             # Load the other graph
-            with open(other_graph_file, 'r', encoding='utf-8') as f:
-                other_graph_data = json.load(f)
+            other_graph_data = safe_json_load(other_graph_file, default=None)
+            if other_graph_data is None:
+                return False
                 
             # Extract metadata
             other_metadata = other_graph_data.get("metadata", {})

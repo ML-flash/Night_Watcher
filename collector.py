@@ -11,6 +11,7 @@ import hashlib
 import re
 import random
 import json
+from file_utils import safe_json_load, safe_json_save
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional, Tuple
 from urllib.parse import urlparse, urljoin, quote
@@ -1619,8 +1620,10 @@ class ContentCollector:
             return {}
         
         try:
-            with open(self.collection_history_file, 'r') as f:
-                return json.load(f)
+            data = safe_json_load(self.collection_history_file, default=None)
+            if data is not None:
+                return data
+            return {}
         except:
             return {}
 
@@ -1640,8 +1643,8 @@ class ContentCollector:
         
         # Save updated history
         try:
-            with open(self.collection_history_file, 'w') as f:
-                json.dump(history, f, indent=2)
+            if not safe_json_save(self.collection_history_file, history):
+                raise IOError("save_failed")
         except Exception as e:
             self.logger.error(f"Error saving collection history: {e}")
 

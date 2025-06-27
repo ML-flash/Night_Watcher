@@ -3,6 +3,7 @@
 
 import os
 import json
+from file_utils import safe_json_load
 import tarfile
 import hashlib
 import tempfile
@@ -36,8 +37,9 @@ def verify_manifest(directory: str) -> bool:
     manifest_path = os.path.join(directory, "manifest.json")
     if not os.path.exists(manifest_path):
         return False
-    with open(manifest_path, "r", encoding="utf-8") as f:
-        manifest = json.load(f)
+    manifest = safe_json_load(manifest_path, default=None)
+    if manifest is None:
+        return False
     for rel, expected in manifest.get("files", {}).items():
         path = os.path.join(directory, rel)
         if not os.path.exists(path) or file_hash(path) != expected:
@@ -50,10 +52,10 @@ def verify_graph_provenance(directory: str) -> bool:
     prov_path = os.path.join(directory, "graph", "graph_provenance.json")
     if not (os.path.exists(graph_path) and os.path.exists(prov_path)):
         return False
-    with open(graph_path, "r", encoding="utf-8") as f:
-        graph_data = json.load(f)
-    with open(prov_path, "r", encoding="utf-8") as f:
-        prov = json.load(f)
+    graph_data = safe_json_load(graph_path, default=None)
+    prov = safe_json_load(prov_path, default=None)
+    if graph_data is None or prov is None:
+        return False
     return graph_data.get("metadata", {}).get("graph_id") == prov.get("graph_id")
 
 

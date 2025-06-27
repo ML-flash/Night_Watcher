@@ -5,6 +5,7 @@ Consolidated version that handles both documents and analysis provenance.
 
 import os
 import json
+from file_utils import safe_json_load
 import hashlib
 import hmac
 import base64
@@ -106,8 +107,7 @@ class DocumentRepository:
         # Load metadata
         metadata_path = os.path.join(self.metadata_dir, f"{doc_id}.json")
         if os.path.exists(metadata_path):
-            with open(metadata_path, "r", encoding="utf-8") as f:
-                metadata = json.load(f)
+            metadata = safe_json_load(metadata_path, default=None)
         
         # Verify if requested
         if verify and content:
@@ -188,8 +188,9 @@ class DocumentRepository:
             }
         
         try:
-            with open(record_path, "r", encoding="utf-8") as f:
-                provenance_record = json.load(f)
+            provenance_record = safe_json_load(record_path, default=None)
+            if provenance_record is None:
+                raise ValueError("invalid json")
             
             analysis_record = provenance_record.get("analysis_record", {})
             sig_data = provenance_record.get("signature", {})
@@ -295,8 +296,9 @@ class DocumentRepository:
             return False
         
         try:
-            with open(sig_path, "r", encoding="utf-8") as f:
-                sig_data = json.load(f)
+            sig_data = safe_json_load(sig_path, default=None)
+            if sig_data is None:
+                raise ValueError("invalid json")
             
             # Check content hash
             content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()

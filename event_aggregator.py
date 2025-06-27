@@ -4,6 +4,7 @@ from datetime import datetime
 from difflib import SequenceMatcher
 import os
 import json
+from file_utils import safe_json_load
 import hashlib
 
 
@@ -327,9 +328,10 @@ class EventAggregator:
         for filename in os.listdir(lineage_dir):
             if filename.endswith("_lineage.json"):
                 try:
-                    with open(os.path.join(lineage_dir, filename), "r", encoding="utf-8") as f:
-                        lineage = json.load(f)
-                    lineages.append(lineage)
+                    lineage_path = os.path.join(lineage_dir, filename)
+                    lineage = safe_json_load(lineage_path, default=None)
+                    if lineage is not None:
+                        lineages.append(lineage)
                 except Exception as e:
                     import logging
                     logging.getLogger(__name__).warning(f"Could not load aggregation lineage {filename}: {e}")

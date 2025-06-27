@@ -4,6 +4,7 @@ Uses JSON template files to run multi-round analysis pipelines with intelligent 
 """
 
 import json
+from file_utils import safe_json_load
 import logging
 import re
 import os
@@ -60,8 +61,9 @@ class ContentAnalyzer:
         if not os.path.exists(template_file):
             raise FileNotFoundError(f"Template file not found: {template_file}")
 
-        with open(template_file, 'r') as f:
-            template = json.load(f)
+        template = safe_json_load(template_file, default=None)
+        if template is None:
+            raise ValueError(f"Invalid template JSON: {template_file}")
 
         # Validate template structure
         required_fields = ["name", "status", "rounds"]
@@ -1078,8 +1080,10 @@ STOP IMMEDIATELY after the closing bracket. Do not continue writing.
         for filename in os.listdir(lineage_dir):
             if filename.endswith("_lineage.json"):
                 try:
-                    with open(os.path.join(lineage_dir, filename), "r", encoding="utf-8") as f:
-                        lineage = json.load(f)
+                    lineage_path = os.path.join(lineage_dir, filename)
+                    lineage = safe_json_load(lineage_path, default=None)
+                    if lineage is None:
+                        raise ValueError("invalid json")
                     lineages.append(lineage)
                 except Exception as e:
                     self.logger.warning(f"Could not load analysis lineage {filename}: {e}")
