@@ -10,7 +10,9 @@ import json
 from file_utils import safe_json_load, safe_json_save
 import logging
 import argparse
-import hashlib
+
+import glob
+
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List, Tuple
 from pathlib import Path
@@ -280,8 +282,10 @@ class NightWatcher:
                 results.append(aggregated)
                 analyzed_count += 1
 
+
             except Exception as e:
                 self.logger.error(f"Error analyzing document {doc['id']}: {e}")
+
 
         return {
             "status": "completed",
@@ -304,6 +308,19 @@ class NightWatcher:
                     except:
                         pass
         return docs
+
+    def _get_production_templates(self) -> List[str]:
+        """Return all analysis templates marked as PRODUCTION."""
+        templates = []
+        for filename in glob.glob("*_analysis.json"):
+            try:
+                with open(filename, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if str(data.get("status", "")).upper() == "PRODUCTION":
+                    templates.append(filename)
+            except Exception as e:
+                self.logger.error(f"Failed reading template {filename}: {e}")
+        return templates
     
     def test_template(self, template: str, article_content: str = None, article_url: str = None) -> Dict[str, Any]:
         """Test a template with a single article."""
@@ -430,68 +447,39 @@ class NightWatcher:
         stats = self.vector_store.sync_with_knowledge_graph(self.knowledge_graph)
         return stats
 
-    def _load_recent_multi_template_analyses(self, window_days: int, templates: List[str]) -> List[Dict]:
-        """Load multi-template analyses within time window."""
-        analyses: List[Dict] = []
-        analyzed_dir = f"{self.base_dir}/analyzed"
-        cutoff_date = datetime.now() - timedelta(days=window_days)
 
-        if not os.path.exists(analyzed_dir):
-            return analyses
+    def run_historical_pipeline(self) -> Dict[str, Any]:
+        """Run full pipeline on all data using production templates."""
+        self.logger.info("Starting historical pipeline")
 
-        for filename in os.listdir(analyzed_dir):
-            if not filename.startswith("analysis_"):
-                continue
+        collect_result = self.collect(mode="full")
 
-            filepath = os.path.join(analyzed_dir, filename)
-            mtime = datetime.fromtimestamp(os.path.getmtime(filepath))
-            if mtime < cutoff_date:
-                continue
+        templates = self._get_production_templates()
+        if not templates:
+            templates = ["standard_analysis.json"]
 
-            try:
-                analysis = safe_json_load(filepath, default=None)
-                if analysis is None:
-                    raise ValueError("invalid json")
-                analyses.append(analysis)
-            except Exception as e:
-                self.logger.error(f"Error loading {filename}: {e}")
+        since = self.collector.inauguration_day.strftime("%Y-%m-%d")
+        analyze_result = self.analyze(
+            max_articles=999999,
+            templates=templates,
+            target="all",
+            since_date=since,
+        )
 
-        return analyses
+        if analyze_result.get("analyzed", 0) > 0:
+            kg_result = self.build_kg()
+            vector_result = self.sync_vectors()
+        else:
+            kg_result = {"status": "no_analyses"}
+            vector_result = {"status": "no_vectors"}
 
-    def _update_knowledge_graph_with_unified(self, unified_graph: Dict[str, Any]) -> None:
-        """Add unified graph data into the knowledge graph."""
-        id_map: Dict[Tuple[str, str], str] = {}
+        return {
+            "collection": collect_result,
+            "analysis": analyze_result,
+            "knowledge_graph": kg_result,
+            "vector_sync": vector_result,
+        }
 
-        for node_key, node in unified_graph.get("nodes", {}).items():
-            kg_id = self.knowledge_graph.add_node(
-                node_type=node.get("node_type"),
-                name=node.get("name"),
-                attributes={
-                    **node.get("attributes", {}),
-                    "total_weight": node.get("total_weight"),
-                    "event_appearances": node.get("event_appearances"),
-                    "event_linkages": node.get("event_linkages", []),
-                },
-            )
-            id_map[node_key] = kg_id
-
-        for edge_key, edge in unified_graph.get("edges", {}).items():
-            src_id = id_map.get(edge_key[0])
-            tgt_id = id_map.get(edge_key[2])
-            if not src_id or not tgt_id:
-                continue
-            self.knowledge_graph.add_edge(
-                source_id=src_id,
-                relation=edge.get("relation"),
-                target_id=tgt_id,
-                attributes={
-                    "total_weight": edge.get("total_weight"),
-                    "event_appearances": edge.get("event_appearances"),
-                    "event_linkages": edge.get("event_linkages", []),
-                },
-            )
-
-        self.knowledge_graph.save_graph()
     
     def _get_analyzed_docs(self) -> set:
         """Get set of analyzed document IDs."""
@@ -766,6 +754,7 @@ def main():
     parser.add_argument("--event-details", help="Show details for specific event ID")
     parser.add_argument("--sync-vectors", action="store_true", help="Sync vectors")
     parser.add_argument("--full", action="store_true", help="Run full pipeline")
+    parser.add_argument("--historical", action="store_true", help="Run full historical pipeline")
     parser.add_argument("--status", action="store_true", help="Show status")
     parser.add_argument("--export-signed", help="Export signed release artifact")
     parser.add_argument("--export-release", action="store_true", help="Export versioned release")
@@ -897,7 +886,15 @@ def main():
                     # Sync vectors
                     vector_result = nw.sync_vectors()
                     print(f"✓ Synced vectors")
-        
+
+        elif args.historical:
+            print("Running historical pipeline...")
+            result = nw.run_historical_pipeline()
+            print(f"✓ Collected {len(result['collection']['articles'])} articles")
+            print(f"✓ Analyzed {result['analysis'].get('analyzed',0)} documents")
+            if result['analysis'].get('analyzed',0) > 0:
+                print("✓ Knowledge graph built and vectors synced")
+
         else:
             parser.print_help()
     
