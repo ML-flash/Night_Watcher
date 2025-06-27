@@ -145,3 +145,121 @@ def scrape_congress_bills(start_date: datetime, end_date: datetime, limit: int =
             logger.error("Congress bill scrape error: %s", exc)
             break
     return results
+
+
+def fetch_federal_register_api(start_date: datetime, end_date: datetime, limit: int = 200) -> List[Dict[str, str]]:
+    """Fetch Federal Register documents via the official JSON API."""
+    results: List[Dict[str, str]] = []
+    page = 1
+    base_url = "https://www.federalregister.gov/api/v1/documents.json"
+    while len(results) < limit:
+        params = {
+            "conditions[publication_date][gte]": start_date.strftime("%Y-%m-%d"),
+            "conditions[publication_date][lte]": end_date.strftime("%Y-%m-%d"),
+            "per_page": 100,
+            "page": page,
+        }
+        try:
+            resp = requests.get(base_url, params=params, headers=HEADERS, timeout=30)
+            if resp.status_code != 200:
+                logger.warning("Federal Register API error: %s", resp.status_code)
+                break
+            data = resp.json()
+            docs = data.get("results", [])
+            if not docs:
+                break
+            for doc in docs:
+                if len(results) >= limit:
+                    break
+                results.append({
+                    "title": doc.get("title", ""),
+                    "url": doc.get("html_url", ""),
+                    "content": doc.get("abstract", ""),
+                    "published": doc.get("publication_date", ""),
+                    "source": "Federal Register",
+                })
+            page += 1
+        except Exception as exc:
+            logger.error("Federal Register API fetch error: %s", exc)
+            break
+    return results
+
+
+def fetch_white_house_actions_api(start_date: datetime, end_date: datetime, limit: int = 200) -> List[Dict[str, str]]:
+    """Fetch presidential actions via the whitehouse.gov WordPress API."""
+    results: List[Dict[str, str]] = []
+    page = 1
+    base_url = "https://www.whitehouse.gov/wp-json/wp/v2/posts"
+    after = f"{start_date.strftime('%Y-%m-%d')}T00:00:00"
+    before = f"{end_date.strftime('%Y-%m-%d')}T23:59:59"
+    while len(results) < limit:
+        params = {
+            "per_page": 100,
+            "page": page,
+            "after": after,
+            "before": before,
+        }
+        try:
+            resp = requests.get(base_url, params=params, headers=HEADERS, timeout=30)
+            if resp.status_code != 200:
+                break
+            posts = resp.json()
+            if not posts:
+                break
+            for post in posts:
+                if len(results) >= limit:
+                    break
+                link = post.get("link", "")
+                if "presidential-actions" not in link:
+                    continue
+                results.append({
+                    "title": post.get("title", {}).get("rendered", ""),
+                    "url": link,
+                    "content": BeautifulSoup(post.get("excerpt", {}).get("rendered", ""), "html.parser").get_text(strip=True),
+                    "published": post.get("date", ""),
+                    "source": "White House",
+                })
+            page += 1
+        except Exception as exc:
+            logger.error("White House API fetch error: %s", exc)
+            break
+    return results
+
+
+def fetch_govinfo_bills_api(start_date: datetime, end_date: datetime, api_key: Optional[str] = None, limit: int = 200) -> List[Dict[str, str]]:
+    """Fetch bill metadata from the govinfo API."""
+    results: List[Dict[str, str]] = []
+    key = api_key or "DEMO_KEY"
+    page = 1
+    base_url = f"https://api.govinfo.gov/collections/BILLS/{start_date.strftime('%Y-%m-%d')}..{end_date.strftime('%Y-%m-%d')}"
+    while len(results) < limit:
+        params = {
+            "page": page,
+            "pageSize": 100,
+            "api_key": key,
+        }
+        try:
+            resp = requests.get(base_url, params=params, headers=HEADERS, timeout=30)
+            if resp.status_code != 200:
+                logger.warning("govinfo API error: %s", resp.status_code)
+                break
+            data = resp.json()
+            packages = data.get("packages", [])
+            if not packages:
+                break
+            for pkg in packages:
+                if len(results) >= limit:
+                    break
+                link = pkg.get("packageLink", "")
+                results.append({
+                    "title": pkg.get("title", ""),
+                    "url": link,
+                    "content": "",
+                    "published": pkg.get("lastModified", ""),
+                    "source": "Congress.gov",
+                })
+            page += 1
+        except Exception as exc:
+            logger.error("govinfo API fetch error: %s", exc)
+            break
+    return results

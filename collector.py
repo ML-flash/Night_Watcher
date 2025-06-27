@@ -25,9 +25,9 @@ from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from gov_scrapers import (
-    scrape_federal_register,
-    scrape_white_house_actions,
-    scrape_congress_bills,
+    fetch_federal_register_api,
+    fetch_white_house_actions_api,
+    fetch_govinfo_bills_api,
 )
 
 # Optional imports
@@ -150,6 +150,8 @@ class ContentCollector:
         self.use_google_news = cc.get("use_google_news", True)
         self.use_gdelt = cc.get("use_gdelt", True)
         self.use_gov_scrapers = cc.get("use_gov_scrapers", True)
+        self.gov_article_limit = cc.get("gov_scraper_limit", self.article_limit)
+        self.govinfo_api_key = cc.get("govinfo_api_key")
 
         self.cancelled = False
         
@@ -1359,7 +1361,7 @@ class ContentCollector:
 
         # Federal Register
         try:
-            fr_docs = scrape_federal_register(start_date, end_date, limit=50)
+            fr_docs = fetch_federal_register_api(start_date, end_date, limit=self.gov_article_limit)
             for doc in fr_docs:
                 doc["via_gov_scraper"] = True
                 articles.append(doc)
@@ -1370,7 +1372,7 @@ class ContentCollector:
 
         # White House presidential actions
         try:
-            wh_docs = scrape_white_house_actions(start_date, end_date, limit=50)
+            wh_docs = fetch_white_house_actions_api(start_date, end_date, limit=self.gov_article_limit)
             for doc in wh_docs:
                 doc["via_gov_scraper"] = True
                 articles.append(doc)
@@ -1381,7 +1383,7 @@ class ContentCollector:
 
         # Congress bills
         try:
-            bill_docs = scrape_congress_bills(start_date, end_date, limit=50)
+            bill_docs = fetch_govinfo_bills_api(start_date, end_date, api_key=self.govinfo_api_key, limit=self.gov_article_limit)
             for doc in bill_docs:
                 doc["via_gov_scraper"] = True
                 articles.append(doc)
