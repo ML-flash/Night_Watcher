@@ -23,6 +23,7 @@ from vector_store import VectorStore
 from document_repository import DocumentRepository
 from document_aggregator import aggregate_document_analyses
 import providers
+import base64
 
 # Configure logging
 logging.basicConfig(
