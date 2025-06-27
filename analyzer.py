@@ -10,6 +10,7 @@ import re
 import os
 import gc
 import psutil
+import hashlib
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Tuple
 
