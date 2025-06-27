@@ -1002,6 +1002,56 @@ class ContentCollector:
         self.logger.info(f"Feed entry processing complete: {len(articles)} articles from {len(entries)} entries")
         return articles
 
+    def _process_single_entry(self, entry: Any, source: Dict[str, Any], start_date: datetime, end_date: datetime) -> Optional[Dict[str, Any]]:
+        """Process a single RSS feed entry into an article record."""
+        source_url = source.get("url", "")
+        source_name = source.get("name", urlparse(source_url).netloc if source_url else "Unknown")
+
+        self.stats.feed_entries_processed += 1
+
+        entry_title = getattr(entry, 'title', 'No title')
+        entry_link = getattr(entry, 'link', None)
+
+        self.logger.debug(f"Processing entry: {entry_title}")
+        self.logger.debug(f"Link: {entry_link}")
+
+        if not entry_link:
+            self.logger.debug("Skipping entry: no link found")
+            self.stats.log_filter_reason("no_link")
+            return None
+
+        pub_date = self._parse_date(entry)
+        if pub_date:
+            self.logger.debug(f"Publication date: {pub_date}")
+            if pub_date < start_date or pub_date > end_date:
+                self.logger.debug(
+                    f"Skipping entry: outside date range ({start_date} to {end_date})")
+                self.stats.log_filter_reason("outside_date_range")
+                return None
+        else:
+            self.logger.debug("No publication date found, including anyway")
+
+        entry_summary = getattr(entry, 'summary', '')
+        if not self._is_political(entry_title, entry_summary):
+            self.logger.debug("Skipping entry: not political")
+            self.stats.log_filter_reason("not_political")
+            return None
+
+        self.logger.debug(f"Attempting to extract article from: {entry_link}")
+        self.stats.urls_attempted += 1
+
+        article = self._extract_article(entry_link, entry_title, pub_date)
+        if article:
+            self.stats.articles_extracted += 1
+            article["source"] = source_name
+            article["bias_label"] = source.get("bias", "unknown")
+            self.logger.debug(f"Successfully extracted article: {article.get('title')}")
+        else:
+            self.stats.extraction_failures += 1
+            self.logger.warning(f"Failed to extract article from {entry_link}")
+        time.sleep(random.uniform(0.5, 1.5))
+        return article
+
     def _process_feed_entries_with_circuit_breaker(self, entries: List[Any], source: Dict[str, Any], base_url: str,
                                                    start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
         """Process RSS feed entries with circuit breaker protection."""
