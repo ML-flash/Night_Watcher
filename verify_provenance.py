@@ -9,6 +9,7 @@ import hashlib
 import hmac
 import base64
 import logging
+import secrets
 from datetime import datetime
 from typing import Dict, Any, Optional, List, Tuple
 
@@ -16,29 +17,44 @@ from typing import Dict, Any, Optional, List, Tuple
 class DocumentRepository:
     """Unified document and analysis storage with cryptographic provenance."""
 
-    def __init__(self, base_dir: str = "data/documents", dev_mode: bool = True):
+    def __init__(self, base_dir: str = "data/documents", dev_mode: bool = True, config: Optional[Dict[str, Any]] = None):
         self.base_dir = base_dir
         self.content_dir = os.path.join(base_dir, "content")
         self.metadata_dir = os.path.join(base_dir, "metadata")
         self.signatures_dir = os.path.join(base_dir, "signatures")
         self.analysis_dir = os.path.join(base_dir, "analysis_provenance")
+        self.config = config or {}
         
         # Create directories
         for d in [self.content_dir, self.metadata_dir, self.signatures_dir, self.analysis_dir]:
             os.makedirs(d, exist_ok=True)
-        
-        # Simple key derivation for dev mode
-        self.key = hashlib.pbkdf2_hmac(
-            "sha256",
-            b"night_watcher_dev",
-            b"fixed_salt",
-            100000,
-            dklen=32
-        )
+
+        # Load crypto key (dev mode defaults still apply)
+        self._load_crypto_key()
         
         self.logger = logging.getLogger("DocumentRepository")
         if dev_mode:
             self.logger.info("Using development mode (simplified crypto)")
+
+    def _load_crypto_key(self) -> None:
+        """Derive or generate the repository HMAC key."""
+        secret = os.environ.get("NIGHT_WATCHER_SECRET") or self.config.get("repo_secret") or "night_watcher_dev"
+        salt_path = os.path.join(self.base_dir, "repo_salt")
+        if not os.path.exists(salt_path):
+            salt = secrets.token_bytes(16)
+            with open(salt_path, "wb") as f:
+                f.write(salt)
+        else:
+            with open(salt_path, "rb") as f:
+                salt = f.read()
+
+        self.key = hashlib.pbkdf2_hmac(
+            "sha256",
+            secret.encode("utf-8"),
+            salt,
+            100000,
+            dklen=32,
+        )
 
     def store_document(self, content: str, metadata: Dict[str, Any]) -> str:
         """Store document with provenance."""
