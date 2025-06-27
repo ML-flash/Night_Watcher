@@ -9,6 +9,7 @@ import sys
 import json
 import logging
 import argparse
+import glob
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List
 from pathlib import Path
@@ -169,127 +170,85 @@ class NightWatcher:
         
         if not target_docs:
             return {"status": "no_documents", "analyzed": 0}
-        
-        # Prepare articles
+
         articles = []
         for doc_id in target_docs:
             content, metadata, _ = self.document_repository.get_document(doc_id)
             if content and metadata:
                 articles.append({
+                    "id": doc_id,
                     "title": metadata.get("title", ""),
                     "content": content,
                     "url": metadata.get("url", ""),
                     "source": metadata.get("source", ""),
                     "bias_label": metadata.get("bias_label", ""),
-                    "published": metadata.get("published"),
-                    "document_id": doc_id
+                    "published": metadata.get("published")
                 })
-        
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        total_analyses = 0
-        analysis_files = []
-        # Keep analyses grouped by document for later aggregation
-        doc_analyses: Dict[str, List[Dict[str, Any]]] = {a["document_id"]: [] for a in articles}
-        
-        # Run each template
-        for template in templates:
-            analyzer = ContentAnalyzer(self.llm_provider, template_file=template)
-            result = analyzer.process({"articles": articles, "document_ids": [a["document_id"] for a in articles]})
-            
-            for i, analysis in enumerate(result.get("analyses", [])):
-                doc_id = articles[i]["document_id"]
-                base = os.path.splitext(os.path.basename(template))[0]
-                analysis_id = f"analysis_{doc_id}_{base}_{timestamp}"
-                
-                file_path = f"{self.base_dir}/analyzed/{analysis_id}.json"
-                analysis["analysis_id"] = analysis_id
-                with open(file_path, 'w') as f:
-                    json.dump(analysis, f, indent=2)
-                analysis_files.append(file_path)
-                # store for document-level aggregation
-                doc_analyses[doc_id].append(analysis)
-                
-                self.document_repository.store_analysis_provenance(
-                    analysis_id=analysis_id,
-                    document_ids=[doc_id],
-                    analysis_type="content_analysis",
-                    analysis_parameters={
-                        "template": template,
-                        "max_articles": max_articles,
-                        "target": target
-                    },
-                    results=analysis,
-                    analyzer_version=analysis.get("template_info", {}).get("version", "1.0")
+
+        analyzed_count = 0
+        results = []
+
+        for doc in articles:
+            try:
+                doc_analyses = []
+                for template in templates:
+                    self.analyzer.template = self.analyzer._load_template(template)
+                    analysis = self.analyzer.analyze_article({
+                        "content": doc["content"],
+                        "title": doc["title"],
+                        "url": doc["url"],
+                        "source": doc["source"],
+                        "published": doc["published"],
+                        "document_id": doc["id"]
+                    })
+                    analysis["template_used"] = template
+                    doc_analyses.append(analysis)
+
+                if len(doc_analyses) > 1:
+                    aggregated = aggregate_document_analyses(doc["id"], doc_analyses)
+                    analysis_id = f"aggregated_{doc['id']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                    aggregated["analysis_id"] = analysis_id
+                    aggregated["sub_analyses"] = doc_analyses
+                else:
+                    aggregated = doc_analyses[0]
+
+                analysis_file = os.path.join(
+                    self.base_dir, "analyzed",
+                    f"analysis_{aggregated['analysis_id']}.json"
                 )
-                
-                total_analyses += 1
-        
-        # Aggregate analyses for each document when multiple templates are used
-        aggregated_files = []
-        if len(templates) > 1:
-            for doc_id, analyses_list in doc_analyses.items():
-                if len(analyses_list) > 1:
-                    aggregated = aggregate_document_analyses(doc_id, analyses_list)
-                    agg_id = f"aggregation_{doc_id}_{timestamp}"
-                    aggregated["aggregation_id"] = agg_id
-                    agg_path = f"{self.base_dir}/analyzed/{agg_id}.json"
-                    with open(agg_path, 'w') as f:
-                        json.dump(aggregated, f, indent=2)
-                    analysis_files.append(agg_path)
-                    aggregated_files.append(agg_path)
-                    doc_analyses[doc_id] = [aggregated]
+                with open(analysis_file, 'w') as f:
+                    json.dump(aggregated, f, indent=2)
 
-        result = {
-            "status": "completed",
-            "analyzed": total_analyses,
-            "templates": templates,
-            "target": target,
-            "analyzed_files": analysis_files,
-            "aggregated_files": aggregated_files,
-        }
-
-        if self.event_manager and result.get("status") == "completed":
-            for analyses_list in doc_analyses.values():
-                analysis = analyses_list[0]
-                try:
-                    if "aggregation_id" in analysis:
-                        events = analysis.get("events", [])
-                        article_info = next((a for a in articles if a["document_id"] == analysis["document_id"]), {})
-                        for event in events:
-                            mapped_event = {
-                                "primary_actor": (event.get("actors") or ["Unknown"])[0],
+                if self.event_manager and aggregated.get("events"):
+                    for event in aggregated["events"]:
+                        self.event_manager.add_event_observation(
+                            event_data={
+                                "primary_actor": event.get("actors", ["Unknown"])[0] if event.get("actors") else "Unknown",
                                 "action": event.get("action", event.get("name", "")),
-                                "date": event.get("date", ""),
+                                "date": event.get("date", "N/A"),
                                 "location": event.get("location", ""),
                                 "description": event.get("description", ""),
-                                "context": event.get("description", ""),
-                            }
-                            self.event_manager.add_event_observation(
-                                event_data=mapped_event,
-                                source_doc={
-                                    "doc_id": analysis["document_id"],
-                                    "source": article_info.get("source", ""),
-                                    "bias_label": article_info.get("bias_label", ""),
-                                },
-                                analysis_id=analysis.get("aggregation_id"),
-                            )
-                    else:
-                        events = self.analyzer._extract_events_from_analysis(analysis)
-                        article = analysis.get("article", {})
-                        for event in events:
-                            self.event_manager.add_event_observation(
-                                event_data=event,
-                                source_doc={
-                                    "doc_id": article.get("document_id", ""),
-                                    "source": article.get("source", ""),
-                                    "bias_label": article.get("bias_label", ""),
-                                },
-                                analysis_id=analysis.get("analysis_id"),
-                            )
-                except Exception as e:
-                    self.logger.error(f"Error tracking events from {analysis.get('analysis_id', 'aggregation')}: {e}")
+                                "context": event.get("description", "")
+                            },
+                            source_doc={
+                                "doc_id": doc["id"],
+                                "source": doc["source"],
+                                "bias_label": self._get_source_bias(doc["source"])
+                            },
+                            analysis_id=aggregated["analysis_id"]
+                        )
 
-        return result
+                results.append(aggregated)
+                analyzed_count += 1
+
+            except Exception as e:
+                self.logger.error(f"Error analyzing document {doc['id']}: {e}")
+
+        return {
+            "status": "completed",
+            "analyzed": analyzed_count,
+            "results": results
+        }
     
     def _get_docs_since(self, since_date: datetime) -> List[str]:
         """Get document IDs collected since a given date."""
@@ -306,6 +265,19 @@ class NightWatcher:
                     except:
                         pass
         return docs
+
+    def _get_production_templates(self) -> List[str]:
+        """Return all analysis templates marked as PRODUCTION."""
+        templates = []
+        for filename in glob.glob("*_analysis.json"):
+            try:
+                with open(filename, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if str(data.get("status", "")).upper() == "PRODUCTION":
+                    templates.append(filename)
+            except Exception as e:
+                self.logger.error(f"Failed reading template {filename}: {e}")
+        return templates
     
     def test_template(self, template: str, article_content: str = None, article_url: str = None) -> Dict[str, Any]:
         """Test a template with a single article."""
@@ -493,6 +465,38 @@ class NightWatcher:
         """Sync vector store with knowledge graph."""
         stats = self.vector_store.sync_with_knowledge_graph(self.knowledge_graph)
         return stats
+
+    def run_historical_pipeline(self) -> Dict[str, Any]:
+        """Run full pipeline on all data using production templates."""
+        self.logger.info("Starting historical pipeline")
+
+        collect_result = self.collect(mode="full")
+
+        templates = self._get_production_templates()
+        if not templates:
+            templates = ["standard_analysis.json"]
+
+        since = self.collector.inauguration_day.strftime("%Y-%m-%d")
+        analyze_result = self.analyze(
+            max_articles=999999,
+            templates=templates,
+            target="all",
+            since_date=since,
+        )
+
+        if analyze_result.get("analyzed", 0) > 0:
+            kg_result = self.build_kg()
+            vector_result = self.sync_vectors()
+        else:
+            kg_result = {"status": "no_analyses"}
+            vector_result = {"status": "no_vectors"}
+
+        return {
+            "collection": collect_result,
+            "analysis": analyze_result,
+            "knowledge_graph": kg_result,
+            "vector_sync": vector_result,
+        }
     
     def _get_analyzed_docs(self) -> set:
         """Get set of analyzed document IDs."""
@@ -584,6 +588,7 @@ def main():
     parser.add_argument("--event-details", help="Show details for specific event ID")
     parser.add_argument("--sync-vectors", action="store_true", help="Sync vectors")
     parser.add_argument("--full", action="store_true", help="Run full pipeline")
+    parser.add_argument("--historical", action="store_true", help="Run full historical pipeline")
     parser.add_argument("--status", action="store_true", help="Show status")
     parser.add_argument("--export-signed", help="Export signed release artifact")
     parser.add_argument("--export-release", action="store_true", help="Export versioned release")
@@ -597,6 +602,8 @@ def main():
                        default="auto", help="Collection mode")
     parser.add_argument("--max-articles", type=int, default=20, help="Max articles to analyze")
     parser.add_argument("--templates", nargs="+", help="Analysis templates to use")
+    parser.add_argument("--aggregate", action="store_true", 
+                       help="Use document aggregation for multiple templates")
     parser.add_argument("--target", choices=["unanalyzed", "recent", "all"],
                        default="unanalyzed", help="Analysis target")
     parser.add_argument("--since-date", help="Since date for target=all (ISO format)")
@@ -619,6 +626,9 @@ def main():
         
         elif args.analyze:
             templates = args.templates or ["standard_analysis.json"]
+            if args.aggregate and len(templates) > 1:
+                pass  # analyze() will handle aggregation
+
             result = nw.analyze(
                 max_articles=args.max_articles,
                 templates=templates,
@@ -710,7 +720,15 @@ def main():
                     # Sync vectors
                     vector_result = nw.sync_vectors()
                     print(f"✓ Synced vectors")
-        
+
+        elif args.historical:
+            print("Running historical pipeline...")
+            result = nw.run_historical_pipeline()
+            print(f"✓ Collected {len(result['collection']['articles'])} articles")
+            print(f"✓ Analyzed {result['analysis'].get('analyzed',0)} documents")
+            if result['analysis'].get('analyzed',0) > 0:
+                print("✓ Knowledge graph built and vectors synced")
+
         else:
             parser.print_help()
     

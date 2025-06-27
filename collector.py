@@ -147,6 +147,7 @@ class ContentCollector:
         self.use_google_news = cc.get("use_google_news", True)
         self.use_gdelt = cc.get("use_gdelt", True)
         self.use_gov_scrapers = cc.get("use_gov_scrapers", True)
+        self.use_wayback = cc.get("use_wayback", True)
 
         self.cancelled = False
         
@@ -669,6 +670,29 @@ class ContentCollector:
                 article["document_id"] = doc_id
             
             all_articles.append(article)
+
+        # 5. Collect from Wayback Machine for historical ranges
+        if self.use_wayback and (end_date - start_date).days > 5:
+            self.logger.info("=== PHASE 5: WAYBACK ARCHIVES ===")
+            if callback:
+                callback({"type": "status", "message": "Collecting from Wayback archives..."})
+
+            for source in enabled_sources:
+                url = source.get("url", "")
+                domain = source.get("site_domain") or urlparse(url).netloc
+                if not domain:
+                    continue
+                wb_articles = self._collect_wayback_archive(domain, start_date, end_date, limit=source.get("limit", self.article_limit)//2, callback=callback)
+                for wb in wb_articles:
+                    wb["id"] = self._generate_id(wb["url"])
+                    if self.document_repository:
+                        doc_id = self.document_repository.store_document(
+                            wb.get("content", ""),
+                            self._create_metadata(wb)
+                        )
+                        document_ids.append(doc_id)
+                        wb["document_id"] = doc_id
+                    all_articles.append(wb)
         
         # Update collection history
         self._update_collection_history(all_articles)
@@ -1157,6 +1181,42 @@ class ContentCollector:
                 self.logger.error(f"GDELT error for '{query}': {e}")
                 
         self.logger.info(f"GDELT collection complete: {len(articles)} articles")
+        return articles
+
+    def _collect_wayback_archive(
+        self,
+        domain: str,
+        start_date: datetime,
+        end_date: datetime,
+        limit: int = 20,
+        callback=None,
+    ) -> List[Dict[str, Any]]:
+        """Collect articles from the Internet Archive Wayback Machine."""
+        self.logger.info(f"Querying Wayback for {domain}")
+        query_url = (
+            "https://web.archive.org/cdx/search/cdx?"
+            f"url={domain}&output=json&from="
+            f"{start_date.strftime('%Y%m%d')}&to={end_date.strftime('%Y%m%d')}"
+            f"&filter=statuscode:200&collapse=digest&limit={limit}"
+        )
+        articles: List[Dict[str, Any]] = []
+        try:
+            resp = self.session.get(query_url, timeout=self.request_timeout)
+            data = resp.json()
+            for entry in data[1:]:
+                original = entry[2] if len(entry) > 2 else entry[0]
+                ts = entry[1]
+                snapshot = f"https://web.archive.org/web/{ts}/{original}"
+                article = self._extract_article(snapshot)
+                if article:
+                    article["via_wayback"] = True
+                    article["source"] = domain
+                    articles.append(article)
+                    if callback:
+                        callback({"type": "article", "source": "Wayback", "title": article.get("title")})
+        except Exception as e:
+            self.logger.error(f"Wayback query failed for {domain}: {e}")
+        self.logger.info(f"Wayback returned {len(articles)} articles for {domain}")
         return articles
 
     def _collect_government_apis(self, start_date: datetime, end_date: datetime, callback=None) -> List[Dict[str, Any]]:

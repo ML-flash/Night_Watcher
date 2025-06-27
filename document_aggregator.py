@@ -9,6 +9,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from typing import Dict, List, Any
+from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -209,10 +210,59 @@ class EventCentricGraphBuilder:
                     })
 
     def _add_targets(self, kg: Dict[str, Any], analysis: Dict[str, Any], event_map: Dict[str, int]) -> None:
-        pass
+        """Add target nodes and connect them to events."""
+
+        kg_payload = analysis.get("kg_payload", {})
+        nodes_by_id = {n.get("id"): n for n in kg_payload.get("nodes", [])}
+
+        for edge in kg_payload.get("edges", []):
+            if edge.get("relation") in ["targets", "affects", "restricts", "undermines", "opposes"]:
+                source_id = edge.get("source_id")
+                target_id = edge.get("target_id")
+
+                source_node = nodes_by_id.get(source_id, {})
+                target_node = nodes_by_id.get(target_id, {})
+
+                if source_node.get("name") in event_map:
+                    target_kg_node = self._add_or_get_node(kg, {
+                        "node_type": target_node.get("node_type", "target"),
+                        "name": target_node.get("name", "Unknown Target"),
+                        "attributes": target_node.get("attributes", {}),
+                    })
+
+                    kg["edges"].append({
+                        "source_id": event_map[source_node.get("name")],
+                        "relation": edge.get("relation"),
+                        "target_id": target_kg_node["id"],
+                        "evidence": edge.get("evidence_quote", ""),
+                        "source_analysis": analysis.get("analysis_id"),
+                    })
 
     def _add_narratives(self, kg: Dict[str, Any], analysis: Dict[str, Any], event_map: Dict[str, int]) -> None:
-        pass
+        """Add narrative nodes that frame or justify events."""
+
+        for node in analysis.get("kg_payload", {}).get("nodes", []):
+            if node.get("node_type") == "narrative":
+                narrative_node = self._add_or_get_node(kg, {
+                    "node_type": "narrative",
+                    "name": node.get("name"),
+                    "attributes": node.get("attributes", {}),
+                })
+
+                narrative_text = node.get("name", "").lower()
+                for event_name, event_id in event_map.items():
+                    if any(word in narrative_text for word in event_name.lower().split()[:3]):
+                        kg["edges"].append({
+                            "source_id": narrative_node["id"],
+                            "relation": "justifies",
+                            "target_id": event_id,
+                            "evidence": node.get("source_sentence", ""),
+                            "source_analysis": analysis.get("analysis_id"),
+                        })
+
+        if "narrative" in analysis.get("rounds", {}):
+            narrative_response = analysis["rounds"]["narrative"].get("response", "")
+            # Additional narrative processing could be implemented here
 
     def _add_relationships(self, kg: Dict[str, Any], analysis: Dict[str, Any], event_map: Dict[str, int]) -> None:
         for edge in analysis.get("kg_payload", {}).get("edges", []):
@@ -253,7 +303,35 @@ class RelationshipMapper:
         })
 
     def _infer_event_relationships(self, kg: Dict[str, Any]) -> None:
-        pass
+        """Infer relationships between events based on shared actors, timing, and context."""
+
+        event_nodes = [n for n in kg["nodes"] if n.get("node_type") == "event"]
+
+        actor_to_events = defaultdict(list)
+        for edge in kg.get("edges", []):
+            if edge.get("relation") == "performs":
+                actor_id = edge.get("source_id")
+                event_id = edge.get("target_id")
+                actor_to_events[actor_id].append(event_id)
+
+        for actor_id, event_ids in actor_to_events.items():
+            if len(event_ids) > 1:
+                events_with_dates = []
+                for eid in event_ids:
+                    event = next((n for n in event_nodes if n["id"] == eid), None)
+                    if event:
+                        events_with_dates.append((eid, event.get("timestamp", "")))
+
+                events_with_dates.sort(key=lambda x: x[1])
+
+                for i in range(len(events_with_dates) - 1):
+                    kg["edges"].append({
+                        "source_id": events_with_dates[i][0],
+                        "relation": "precedes",
+                        "target_id": events_with_dates[i + 1][0],
+                        "evidence": "Same actor involved in sequential events",
+                        "inferred": True,
+                    })
 
 
 class DocumentAggregator:

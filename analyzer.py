@@ -131,7 +131,7 @@ class ContentAnalyzer:
             "article_url": article.get("url", ""),
             "article_source": article.get("source", ""),
             "published_date": article.get("published", ""),
-            "document_id": article.get("document_id")
+            "document_id": article.get("document_id", "")  # Ensure this is set
         }
 
         # Ensure document_id is set
@@ -150,6 +150,7 @@ class ContentAnalyzer:
                 "document_id": article.get("document_id"),
                 "content_length": len(content)
             },
+            "document_id": article.get("document_id"),
             "rounds": {},
             "analyzed_at": datetime.now().isoformat(),
             "citation_summary": {
