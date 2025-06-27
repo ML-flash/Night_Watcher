@@ -197,6 +197,7 @@ Each article goes through 7 rounds of analysis:
 
 - All analysis runs locally (with LM Studio)
 - Documents stored with cryptographic signatures
+- Set `NIGHT_WATCHER_SECRET` (or `repo_secret` in `config.json`) in production to secure provenance keys
 - No data sent to external servers (unless using Anthropic)
 - Review queue ensures quality control
 
