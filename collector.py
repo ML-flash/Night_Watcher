@@ -28,6 +28,9 @@ from gov_scrapers import (
     fetch_federal_register_api,
     fetch_white_house_actions_api,
     fetch_govinfo_bills_api,
+    scrape_federal_register,
+    scrape_white_house_actions,
+    scrape_congress_bills,
 )
 
 # Optional imports
@@ -1361,7 +1364,7 @@ class ContentCollector:
 
         # Federal Register
         try:
-            fr_docs = fetch_federal_register_api(start_date, end_date, limit=self.gov_article_limit)
+            fr_docs = scrape_federal_register(start_date, end_date, limit=self.gov_article_limit)
             for doc in fr_docs:
                 doc["via_gov_scraper"] = True
                 articles.append(doc)
@@ -1372,7 +1375,7 @@ class ContentCollector:
 
         # White House presidential actions
         try:
-            wh_docs = fetch_white_house_actions_api(start_date, end_date, limit=self.gov_article_limit)
+            wh_docs = scrape_white_house_actions(start_date, end_date, limit=self.gov_article_limit)
             for doc in wh_docs:
                 doc["via_gov_scraper"] = True
                 articles.append(doc)
@@ -1383,7 +1386,7 @@ class ContentCollector:
 
         # Congress bills
         try:
-            bill_docs = fetch_govinfo_bills_api(start_date, end_date, api_key=self.govinfo_api_key, limit=self.gov_article_limit)
+            bill_docs = scrape_congress_bills(start_date, end_date, limit=self.gov_article_limit)
             for doc in bill_docs:
                 doc["via_gov_scraper"] = True
                 articles.append(doc)
