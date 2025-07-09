@@ -1,0 +1,31 @@
+{
+  "document_id": "3a585edb9fb61a6f8a407dc09e3b720958b038915b4202a5f516b327dad0dcdf",
+  "crypto_record": {
+    "document_id": "3a585edb9fb61a6f8a407dc09e3b720958b038915b4202a5f516b327dad0dcdf",
+    "content_hash": "3a585edb9fb61a6f8a407dc09e3b720958b038915b4202a5f516b327dad0dcdf",
+    "collection_timestamp": "2025-07-09T20:26:48.589026",
+    "source_metadata": {
+      "title": "Musk favorability takes nosedive amid Trump feud: DDHQ",
+      "url": "https://thehill.com/policy/technology/5392204-musk-favorability-nosedive-trump-feud-survey/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:25.398850",
+      "id": "7bd929131b6c_1752092808588",
+      "author": "Jared Gans",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7bd929131b6c_1752092808588",
+      "stored_at": "2025-07-09T20:26:48.588383"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/policy/technology/5392204-musk-favorability-nosedive-trump-feud-survey/",
+    "stored_doc_id": "7bd929131b6c_1752092808588"
+  },
+  "collection_signature": "JbxdrrgBfikhJ5eN1BqKQXw2ZMin5gbGHBse7Xc95VM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.589135"
+}

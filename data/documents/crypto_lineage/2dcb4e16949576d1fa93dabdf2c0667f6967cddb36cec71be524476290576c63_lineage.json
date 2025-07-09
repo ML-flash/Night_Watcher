@@ -1,0 +1,31 @@
+{
+  "document_id": "2dcb4e16949576d1fa93dabdf2c0667f6967cddb36cec71be524476290576c63",
+  "crypto_record": {
+    "document_id": "2dcb4e16949576d1fa93dabdf2c0667f6967cddb36cec71be524476290576c63",
+    "content_hash": "2dcb4e16949576d1fa93dabdf2c0667f6967cddb36cec71be524476290576c63",
+    "collection_timestamp": "2025-07-09T20:25:53.188535",
+    "source_metadata": {
+      "title": "What's on the table for the  5 African Presidents meeting Trump at the White House?",
+      "url": "https://www.npr.org/2025/07/09/nx-s1-5462613/africa-leaders-trump-white-house-china-minerals-oil",
+      "source": "NPR Politics",
+      "bias_label": "center-left",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:25:47.682602",
+      "id": "5f220cf87ac7_1752092753187",
+      "author": "Jewel Bright",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "5f220cf87ac7_1752092753187",
+      "stored_at": "2025-07-09T20:25:53.187878"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/07/09/nx-s1-5462613/africa-leaders-trump-white-house-china-minerals-oil",
+    "stored_doc_id": "5f220cf87ac7_1752092753187"
+  },
+  "collection_signature": "krJ0AsWg+CND49Y9NlF+yozk454tVWigs3bjZmhMM9c=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:25:53.188615"
+}

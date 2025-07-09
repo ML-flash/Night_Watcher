@@ -1,0 +1,31 @@
+{
+  "document_id": "4511d333fc350e93ccb3195d68c99341d94a981cfbf39e38c77d50f7f985529c",
+  "crypto_record": {
+    "document_id": "4511d333fc350e93ccb3195d68c99341d94a981cfbf39e38c77d50f7f985529c",
+    "content_hash": "4511d333fc350e93ccb3195d68c99341d94a981cfbf39e38c77d50f7f985529c",
+    "collection_timestamp": "2025-07-09T21:08:18.536803",
+    "source_metadata": {
+      "title": "ENHANCING NATIONAL SECURITY BY ADDRESSING RISKS AT HARVARD UNIVERSITY - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/06/enhancing-national-security-by-addressing-risks-at-harvard-university/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-04",
+      "collected_at": "2025-07-09T20:37:42.142871",
+      "id": "805ec312c945_1752095298535",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "805ec312c945_1752095298535",
+      "stored_at": "2025-07-09T21:08:18.536024"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/06/enhancing-national-security-by-addressing-risks-at-harvard-university/",
+    "stored_doc_id": "805ec312c945_1752095298535"
+  },
+  "collection_signature": "uOrOfq+r/7KK3Pf6YH0QJRPZvSzcUjsHphxAHrSnNXQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.536891"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "91509c82ae5044248893acabf935db64f94035f22a9af4b8cd50b5ed34589bfd",
+  "crypto_record": {
+    "document_id": "91509c82ae5044248893acabf935db64f94035f22a9af4b8cd50b5ed34589bfd",
+    "content_hash": "91509c82ae5044248893acabf935db64f94035f22a9af4b8cd50b5ed34589bfd",
+    "collection_timestamp": "2025-07-09T21:25:56.738841",
+    "source_metadata": {
+      "title": "  Marathi Vs Hindi  Politics In Maharashtra Turns  Tongue - Twister  For Congress As Bihar Polls Loom",
+      "url": "https://www.news18.com/politics/marathi-vs-hindi-politics-in-maharashtra-turns-tongue-twister-for-congress-as-bihar-polls-loom-9428628.html",
+      "source": "news18.com",
+      "bias_label": "unknown",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T21:11:49.112977",
+      "id": "9050a7ee8cb3_1752096356735",
+      "author": "Pathikrit Sen Gupta; Pallavi Ghosh",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "9050a7ee8cb3_1752096356735",
+      "stored_at": "2025-07-09T21:25:56.735997"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.news18.com/politics/marathi-vs-hindi-politics-in-maharashtra-turns-tongue-twister-for-congress-as-bihar-polls-loom-9428628.html",
+    "stored_doc_id": "9050a7ee8cb3_1752096356735"
+  },
+  "collection_signature": "n7d+FkKUW1rJLw67ZzfdDwzMzdaz8GkI1Y4rB4YkV8U=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.738930"
+}

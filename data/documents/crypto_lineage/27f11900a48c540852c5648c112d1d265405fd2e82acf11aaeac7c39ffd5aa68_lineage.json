@@ -1,0 +1,31 @@
+{
+  "document_id": "27f11900a48c540852c5648c112d1d265405fd2e82acf11aaeac7c39ffd5aa68",
+  "crypto_record": {
+    "document_id": "27f11900a48c540852c5648c112d1d265405fd2e82acf11aaeac7c39ffd5aa68",
+    "content_hash": "27f11900a48c540852c5648c112d1d265405fd2e82acf11aaeac7c39ffd5aa68",
+    "collection_timestamp": "2025-07-09T21:08:19.396720",
+    "source_metadata": {
+      "title": "Investigation Launched Into Historical Sexual Misconduct At Interlochen - The Ticker",
+      "url": "https://www.traverseticker.com/news/investigation-launched-into-historical-sexual-misconduct-at-interlochen/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-14",
+      "collected_at": "2025-07-09T21:05:15.200589",
+      "id": "4510c315d7a7_1752095299395",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "4510c315d7a7_1752095299395",
+      "stored_at": "2025-07-09T21:08:19.395794"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.traverseticker.com/news/investigation-launched-into-historical-sexual-misconduct-at-interlochen/",
+    "stored_doc_id": "4510c315d7a7_1752095299395"
+  },
+  "collection_signature": "GAarUaC3Y2NXcKbTU5xN8974PaZ50DHx9VHyhx/QifQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.396802"
+}

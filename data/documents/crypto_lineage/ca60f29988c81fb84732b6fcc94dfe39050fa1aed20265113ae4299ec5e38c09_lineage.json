@@ -1,0 +1,31 @@
+{
+  "document_id": "ca60f29988c81fb84732b6fcc94dfe39050fa1aed20265113ae4299ec5e38c09",
+  "crypto_record": {
+    "document_id": "ca60f29988c81fb84732b6fcc94dfe39050fa1aed20265113ae4299ec5e38c09",
+    "content_hash": "ca60f29988c81fb84732b6fcc94dfe39050fa1aed20265113ae4299ec5e38c09",
+    "collection_timestamp": "2025-07-09T20:26:48.595458",
+    "source_metadata": {
+      "title": "South Sudan confirms 8 migrants deported from US now in its custody",
+      "url": "https://thehill.com/policy/international/5392140-south-sudan-migrants-custody-trump-deportations/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:31.504673",
+      "id": "f4991d301c65_1752092808594",
+      "author": "Filip Timotija",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f4991d301c65_1752092808594",
+      "stored_at": "2025-07-09T20:26:48.594792"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/policy/international/5392140-south-sudan-migrants-custody-trump-deportations/",
+    "stored_doc_id": "f4991d301c65_1752092808594"
+  },
+  "collection_signature": "SBrkWA/h4EIJ/jXgWVCxTXgm6b1nW1icbOc+14w0to4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.595536"
+}

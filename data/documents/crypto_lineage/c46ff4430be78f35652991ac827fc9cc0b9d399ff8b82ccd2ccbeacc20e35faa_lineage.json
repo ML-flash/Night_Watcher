@@ -1,0 +1,31 @@
+{
+  "document_id": "c46ff4430be78f35652991ac827fc9cc0b9d399ff8b82ccd2ccbeacc20e35faa",
+  "crypto_record": {
+    "document_id": "c46ff4430be78f35652991ac827fc9cc0b9d399ff8b82ccd2ccbeacc20e35faa",
+    "content_hash": "c46ff4430be78f35652991ac827fc9cc0b9d399ff8b82ccd2ccbeacc20e35faa",
+    "collection_timestamp": "2025-07-09T21:08:18.522208",
+    "source_metadata": {
+      "title": "President Trump Announces Appointments to the Council of Governors - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/02/president-trump-announces-appointments-to-the-council-of-governors/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-20",
+      "collected_at": "2025-07-09T20:37:05.226079",
+      "id": "d354c709c5ec_1752095298521",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d354c709c5ec_1752095298521",
+      "stored_at": "2025-07-09T21:08:18.521565"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/02/president-trump-announces-appointments-to-the-council-of-governors/",
+    "stored_doc_id": "d354c709c5ec_1752095298521"
+  },
+  "collection_signature": "QDG6EWazyKEa346DwCTQYbjjofCexd30/uxze08+qA8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.522284"
+}

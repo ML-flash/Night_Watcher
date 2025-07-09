@@ -1,0 +1,31 @@
+{
+  "document_id": "236a39abe4fc30b115846b2498c867805ee3e22aecf636cbedd7f11489e6b909",
+  "crypto_record": {
+    "document_id": "236a39abe4fc30b115846b2498c867805ee3e22aecf636cbedd7f11489e6b909",
+    "content_hash": "236a39abe4fc30b115846b2498c867805ee3e22aecf636cbedd7f11489e6b909",
+    "collection_timestamp": "2025-07-09T21:25:56.693094",
+    "source_metadata": {
+      "title": "BBC\u5927\u54c9\u554f \uff1a \u99ac\u65af\u514b\u771f\u7684\u6703\u96e2\u958b\u653f\u5e9c\u6548\u7387\u90e8\u55ce \uff1f- \u98a8\u50b3\u5a92",
+      "url": "https://www.storm.mg/article/5363275",
+      "source": "storm.mg",
+      "bias_label": "unknown",
+      "published": "2025-04-26",
+      "collected_at": "2025-07-09T21:08:56.571279",
+      "id": "f826134b963b_1752096356692",
+      "author": "BBC News \u4e2d\u6587",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f826134b963b_1752096356692",
+      "stored_at": "2025-07-09T21:25:56.692394"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.storm.mg/article/5363275",
+    "stored_doc_id": "f826134b963b_1752096356692"
+  },
+  "collection_signature": "bYsgWSWgpEwZioN0T5xohp3NXYZMuBKy3hXgpPUfeyc=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.693180"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "61832878c08794e4c8ea8eb0534c64ce0f1212d0986813125bfd1986fed119d0",
+  "crypto_record": {
+    "document_id": "61832878c08794e4c8ea8eb0534c64ce0f1212d0986813125bfd1986fed119d0",
+    "content_hash": "61832878c08794e4c8ea8eb0534c64ce0f1212d0986813125bfd1986fed119d0",
+    "collection_timestamp": "2025-07-09T21:25:57.035537",
+    "source_metadata": {
+      "title": "Judge rules to protect transgender inmate medical care",
+      "url": "https://www.wcvb.com/article/federal-judge-transgender-inmates-hormone-therapy/64958090",
+      "source": "wcvb.com",
+      "bias_label": "unknown",
+      "published": "2025-06-03",
+      "collected_at": "2025-07-09T21:19:07.123207",
+      "id": "a450db457a41_1752096357032",
+      "author": "Associated Press",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a450db457a41_1752096357032",
+      "stored_at": "2025-07-09T21:25:57.032353"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.wcvb.com/article/federal-judge-transgender-inmates-hormone-therapy/64958090",
+    "stored_doc_id": "a450db457a41_1752096357032"
+  },
+  "collection_signature": "9Ba3sf6o6xMm7EQwI7412tVmo1k2IOGRVG3ccs6lY/g=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.035636"
+}

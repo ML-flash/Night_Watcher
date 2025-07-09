@@ -1,0 +1,31 @@
+{
+  "document_id": "33d34c1a7cc30019cd8e42257360bbe694035782b91cf7f70eac88a707bc491f",
+  "crypto_record": {
+    "document_id": "33d34c1a7cc30019cd8e42257360bbe694035782b91cf7f70eac88a707bc491f",
+    "content_hash": "33d34c1a7cc30019cd8e42257360bbe694035782b91cf7f70eac88a707bc491f",
+    "collection_timestamp": "2025-07-09T21:08:19.195160",
+    "source_metadata": {
+      "title": "ENDING THE WEAPONIZATION OF THE FEDERAL GOVERNMENT - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/01/ending-the-weaponization-of-the-federal-government/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-20",
+      "collected_at": "2025-07-09T20:59:32.562770",
+      "id": "708f51cfc98d_1752095299190",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "708f51cfc98d_1752095299190",
+      "stored_at": "2025-07-09T21:08:19.190876"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/01/ending-the-weaponization-of-the-federal-government/",
+    "stored_doc_id": "708f51cfc98d_1752095299190"
+  },
+  "collection_signature": "hDAMCZWqKMaJims0pOjuKt48fLBIT9RDcQ/yc2zqJYA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.195248"
+}

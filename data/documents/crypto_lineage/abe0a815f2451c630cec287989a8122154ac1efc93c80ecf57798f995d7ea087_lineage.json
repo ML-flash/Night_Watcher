@@ -1,0 +1,31 @@
+{
+  "document_id": "abe0a815f2451c630cec287989a8122154ac1efc93c80ecf57798f995d7ea087",
+  "crypto_record": {
+    "document_id": "abe0a815f2451c630cec287989a8122154ac1efc93c80ecf57798f995d7ea087",
+    "content_hash": "abe0a815f2451c630cec287989a8122154ac1efc93c80ecf57798f995d7ea087",
+    "collection_timestamp": "2025-07-09T21:08:19.308113",
+    "source_metadata": {
+      "title": "Which Party Should Be Worried About the Politics of the LA Protests? - Politico",
+      "url": "https://www.politico.com/news/magazine/2025/06/11/los-angeles-protests-political-fallout-interview-00398836",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": null,
+      "collected_at": "2025-07-09T21:02:56.646819",
+      "id": "55b44fb6f0f3_1752095299303",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "beautifulsoup",
+      "document_id": "55b44fb6f0f3_1752095299303",
+      "stored_at": "2025-07-09T21:08:19.303824"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.politico.com/news/magazine/2025/06/11/los-angeles-protests-political-fallout-interview-00398836",
+    "stored_doc_id": "55b44fb6f0f3_1752095299303"
+  },
+  "collection_signature": "cS7OAbhxJfVz61IHOCz9U4LaLM+6lNXQxNkTdP5spAw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.308207"
+}

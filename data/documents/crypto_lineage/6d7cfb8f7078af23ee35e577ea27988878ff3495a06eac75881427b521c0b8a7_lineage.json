@@ -1,0 +1,31 @@
+{
+  "document_id": "6d7cfb8f7078af23ee35e577ea27988878ff3495a06eac75881427b521c0b8a7",
+  "crypto_record": {
+    "document_id": "6d7cfb8f7078af23ee35e577ea27988878ff3495a06eac75881427b521c0b8a7",
+    "content_hash": "6d7cfb8f7078af23ee35e577ea27988878ff3495a06eac75881427b521c0b8a7",
+    "collection_timestamp": "2025-07-09T21:08:19.089520",
+    "source_metadata": {
+      "title": "Governor Ron DeSantis Makes Twelve Judicial Nominating Commission Appointments - Office of Governor Ron DeSantis",
+      "url": "https://www.flgov.com/eog/news/press/2025/governor-ron-desantis-makes-twelve-judicial-nominating-commission-appointments",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-01",
+      "collected_at": "2025-07-09T20:55:52.084986",
+      "id": "a5282afafd81_1752095299088",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a5282afafd81_1752095299088",
+      "stored_at": "2025-07-09T21:08:19.088290"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.flgov.com/eog/news/press/2025/governor-ron-desantis-makes-twelve-judicial-nominating-commission-appointments",
+    "stored_doc_id": "a5282afafd81_1752095299088"
+  },
+  "collection_signature": "W1dygp+UjZpCeSYPQ8zU5G+tSEj72MbTR1BLMvX/VsI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.089614"
+}

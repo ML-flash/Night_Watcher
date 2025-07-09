@@ -1,0 +1,31 @@
+{
+  "document_id": "d23a8ef331b832711580daac96869b7e7278617b2a5ba2c949506dfdb1c8c1b3",
+  "crypto_record": {
+    "document_id": "d23a8ef331b832711580daac96869b7e7278617b2a5ba2c949506dfdb1c8c1b3",
+    "content_hash": "d23a8ef331b832711580daac96869b7e7278617b2a5ba2c949506dfdb1c8c1b3",
+    "collection_timestamp": "2025-07-09T21:08:19.199721",
+    "source_metadata": {
+      "title": "President Trump Convenes Cabinet Meeting - C-SPAN",
+      "url": "https://www.c-span.org/program/white-house-event/president-trump-convenes-cabinet-meeting/658480",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-10",
+      "collected_at": "2025-07-09T20:59:44.055150",
+      "id": "1d2a06df4023_1752095299196",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "1d2a06df4023_1752095299196",
+      "stored_at": "2025-07-09T21:08:19.199025"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.c-span.org/program/white-house-event/president-trump-convenes-cabinet-meeting/658480",
+    "stored_doc_id": "1d2a06df4023_1752095299196"
+  },
+  "collection_signature": "lpFauYY0udhfBxatrMWk2P2q98T0buJM9bNppcCOXno=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.199913"
+}

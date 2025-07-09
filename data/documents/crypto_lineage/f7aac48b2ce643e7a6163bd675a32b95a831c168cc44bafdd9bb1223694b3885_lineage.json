@@ -1,0 +1,31 @@
+{
+  "document_id": "f7aac48b2ce643e7a6163bd675a32b95a831c168cc44bafdd9bb1223694b3885",
+  "crypto_record": {
+    "document_id": "f7aac48b2ce643e7a6163bd675a32b95a831c168cc44bafdd9bb1223694b3885",
+    "content_hash": "f7aac48b2ce643e7a6163bd675a32b95a831c168cc44bafdd9bb1223694b3885",
+    "collection_timestamp": "2025-07-09T20:36:43.184384",
+    "source_metadata": {
+      "title": "Congress Officially Passes Trump\u2019s Bill to Kick Millions Off Medicaid - Rolling Stone",
+      "url": "https://www.rollingstone.com/politics/politics-news/congress-passes-trump-big-beautiful-bill-cut-medicaid-1235378712/",
+      "source": "Congressional Activity",
+      "bias_label": "aggregate",
+      "published": "2025-07-03",
+      "collected_at": "2025-07-09T20:36:31.365303",
+      "id": "40c835a3085d_1752093403183",
+      "author": "Nikki McCann Ramirez",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "40c835a3085d_1752093403183",
+      "stored_at": "2025-07-09T20:36:43.183702"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.rollingstone.com/politics/politics-news/congress-passes-trump-big-beautiful-bill-cut-medicaid-1235378712/",
+    "stored_doc_id": "40c835a3085d_1752093403183"
+  },
+  "collection_signature": "DBYvg18oeZuxBykAl+eBhWIYoWUBxnBrrDiIKTrOMwY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:36:43.184459"
+}

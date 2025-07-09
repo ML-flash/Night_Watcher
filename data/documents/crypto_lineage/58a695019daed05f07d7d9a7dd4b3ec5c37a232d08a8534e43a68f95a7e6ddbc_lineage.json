@@ -1,0 +1,31 @@
+{
+  "document_id": "58a695019daed05f07d7d9a7dd4b3ec5c37a232d08a8534e43a68f95a7e6ddbc",
+  "crypto_record": {
+    "document_id": "58a695019daed05f07d7d9a7dd4b3ec5c37a232d08a8534e43a68f95a7e6ddbc",
+    "content_hash": "58a695019daed05f07d7d9a7dd4b3ec5c37a232d08a8534e43a68f95a7e6ddbc",
+    "collection_timestamp": "2025-07-09T21:08:19.180521",
+    "source_metadata": {
+      "title": "State government policy bill heads to House Floor - MN House of Representatives (.gov)",
+      "url": "https://www.house.mn.gov/sessiondaily/Story/18697",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-03",
+      "collected_at": "2025-07-09T20:59:23.367902",
+      "id": "05440422b8ae_1752095299177",
+      "author": "Mike Cook",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "05440422b8ae_1752095299177",
+      "stored_at": "2025-07-09T21:08:19.179160"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.house.mn.gov/sessiondaily/Story/18697",
+    "stored_doc_id": "05440422b8ae_1752095299177"
+  },
+  "collection_signature": "zFo2gu4g+U06Q5npI6URdUj2Tt41M/xxpfZBAJdRfCM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.180619"
+}

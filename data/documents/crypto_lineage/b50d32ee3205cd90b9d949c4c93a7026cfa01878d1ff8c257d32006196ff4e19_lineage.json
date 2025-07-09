@@ -1,0 +1,31 @@
+{
+  "document_id": "b50d32ee3205cd90b9d949c4c93a7026cfa01878d1ff8c257d32006196ff4e19",
+  "crypto_record": {
+    "document_id": "b50d32ee3205cd90b9d949c4c93a7026cfa01878d1ff8c257d32006196ff4e19",
+    "content_hash": "b50d32ee3205cd90b9d949c4c93a7026cfa01878d1ff8c257d32006196ff4e19",
+    "collection_timestamp": "2025-07-09T20:28:10.805430",
+    "source_metadata": {
+      "title": "\"Most Massive Transfer of Wealth Upward in American History\": John Nichols on Trump's Budget Law",
+      "url": "http://www.democracynow.org/2025/7/7/trump_spending_bill",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-07-07",
+      "collected_at": "2025-07-09T20:27:33.032816",
+      "id": "012f173a8441_1752092890804",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "012f173a8441_1752092890804",
+      "stored_at": "2025-07-09T20:28:10.804753"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/7/7/trump_spending_bill",
+    "stored_doc_id": "012f173a8441_1752092890804"
+  },
+  "collection_signature": "t5QEP1QTvIya7pMJL7Vope+SpdDNxo6m18+FZVo6tpI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.805506"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "a4f0203feeaa7403e409c222b549d85e890c4239e2c963b27abfcf57169f10d4",
+  "crypto_record": {
+    "document_id": "a4f0203feeaa7403e409c222b549d85e890c4239e2c963b27abfcf57169f10d4",
+    "content_hash": "a4f0203feeaa7403e409c222b549d85e890c4239e2c963b27abfcf57169f10d4",
+    "collection_timestamp": "2025-07-09T21:08:18.758554",
+    "source_metadata": {
+      "title": "House approves Trump's $8.3 billion clawback of US foreign aid - Devex",
+      "url": "https://www.devex.com/news/house-approves-trump-s-8-3-billion-clawback-of-us-foreign-aid-110294",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-12",
+      "collected_at": "2025-07-09T20:47:05.670693",
+      "id": "13e6f4b88934_1752095298757",
+      "author": "Elissa Miolene",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "13e6f4b88934_1752095298757",
+      "stored_at": "2025-07-09T21:08:18.757645"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.devex.com/news/house-approves-trump-s-8-3-billion-clawback-of-us-foreign-aid-110294",
+    "stored_doc_id": "13e6f4b88934_1752095298757"
+  },
+  "collection_signature": "Kh03hV2V1xVsh1nFmZQ5vPSXnWFujyH60lHTpPKO4i4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.758640"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "7711767d4c5adec0f4590f39eeaf3cdbf8b6b73c7b46207da17599e34e2f5c29",
+  "crypto_record": {
+    "document_id": "7711767d4c5adec0f4590f39eeaf3cdbf8b6b73c7b46207da17599e34e2f5c29",
+    "content_hash": "7711767d4c5adec0f4590f39eeaf3cdbf8b6b73c7b46207da17599e34e2f5c29",
+    "collection_timestamp": "2025-07-09T20:34:00.591394",
+    "source_metadata": {
+      "title": "Senate passes Trump's 'big, beautiful bill' after marathon vote-a-rama - Fox News",
+      "url": "https://www.foxnews.com/politics/senate-passes-trumps-big-beautiful-bill-after-marathon-vote-a-rama",
+      "source": "Fox News via Google News",
+      "bias_label": "right",
+      "published": "2025-06-29",
+      "collected_at": "2025-07-09T20:33:48.557305",
+      "id": "565280ab6c84_1752093240590",
+      "author": "Alex Miller",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "565280ab6c84_1752093240590",
+      "stored_at": "2025-07-09T20:34:00.590494"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.foxnews.com/politics/senate-passes-trumps-big-beautiful-bill-after-marathon-vote-a-rama",
+    "stored_doc_id": "565280ab6c84_1752093240590"
+  },
+  "collection_signature": "WKPKBlRdGA8YA8JhoBh3lmEcV8ayZlEJJN5RwcCLgEA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:34:00.591471"
+}

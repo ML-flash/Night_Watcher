@@ -1,0 +1,31 @@
+{
+  "document_id": "e9428493fca0b31bfa467a0e09cb8c6210f120074a1146edbf9de167a54b110a",
+  "crypto_record": {
+    "document_id": "e9428493fca0b31bfa467a0e09cb8c6210f120074a1146edbf9de167a54b110a",
+    "content_hash": "e9428493fca0b31bfa467a0e09cb8c6210f120074a1146edbf9de167a54b110a",
+    "collection_timestamp": "2025-07-09T21:08:18.532175",
+    "source_metadata": {
+      "title": "WEEK 11 WINS: President Trump Unleashes Economic Prosperity - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/articles/2025/04/week-11-wins-president-trump-unleashes-economic-prosperity/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-04",
+      "collected_at": "2025-07-09T20:37:26.114173",
+      "id": "794fcfe30ecb_1752095298531",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "794fcfe30ecb_1752095298531",
+      "stored_at": "2025-07-09T21:08:18.531486"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/articles/2025/04/week-11-wins-president-trump-unleashes-economic-prosperity/",
+    "stored_doc_id": "794fcfe30ecb_1752095298531"
+  },
+  "collection_signature": "gk6D0w0UHsXs2vCiqeexRvAHEY5vJdO6puP/2IfDQDk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.532254"
+}

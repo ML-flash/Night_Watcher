@@ -1,0 +1,31 @@
+{
+  "document_id": "5470f6a37003c71b9aa80664152e9d15b23e2897416ab63c74b2a85cee6c6be0",
+  "crypto_record": {
+    "document_id": "5470f6a37003c71b9aa80664152e9d15b23e2897416ab63c74b2a85cee6c6be0",
+    "content_hash": "5470f6a37003c71b9aa80664152e9d15b23e2897416ab63c74b2a85cee6c6be0",
+    "collection_timestamp": "2025-07-09T21:25:56.824378",
+    "source_metadata": {
+      "title": "FBI probes effort to impersonate White House chief of staff Susie Wiles , sources say",
+      "url": "https://www.cbsnews.com/news/fbi-probes-effort-to-impersonate-white-house-chief-of-staff-susie-wiles/",
+      "source": "cbsnews.com",
+      "bias_label": "unknown",
+      "published": "2025-05-29",
+      "collected_at": "2025-07-09T21:13:26.418467",
+      "id": "226580b713c7_1752096356823",
+      "author": "Jennifer Jacobs",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "226580b713c7_1752096356823",
+      "stored_at": "2025-07-09T21:25:56.823577"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.cbsnews.com/news/fbi-probes-effort-to-impersonate-white-house-chief-of-staff-susie-wiles/",
+    "stored_doc_id": "226580b713c7_1752096356823"
+  },
+  "collection_signature": "v28kfNyZwxje1YyoR/vuC3BJaZqpvjXNh25ZsATzpqs=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.824462"
+}

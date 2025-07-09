@@ -1,0 +1,31 @@
+{
+  "document_id": "607b9da5b8e326bff54d2176b378429971ac2e1b5bd8a420d7eccbbddca58049",
+  "crypto_record": {
+    "document_id": "607b9da5b8e326bff54d2176b378429971ac2e1b5bd8a420d7eccbbddca58049",
+    "content_hash": "607b9da5b8e326bff54d2176b378429971ac2e1b5bd8a420d7eccbbddca58049",
+    "collection_timestamp": "2025-07-09T21:08:18.722870",
+    "source_metadata": {
+      "title": "Highlights: Senate votes on amendments to Republicans' domestic policy package - NBC News",
+      "url": "https://www.nbcnews.com/politics/trump-administration/live-blog/trump-agenda-bill-senate-tillis-medicaid-immigration-live-updates-rcna215837",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-30",
+      "collected_at": "2025-07-09T20:45:57.991869",
+      "id": "1b5770c93d6f_1752095298721",
+      "author": "Adam Wollner is a deputy politics editor",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "1b5770c93d6f_1752095298721",
+      "stored_at": "2025-07-09T21:08:18.721801"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nbcnews.com/politics/trump-administration/live-blog/trump-agenda-bill-senate-tillis-medicaid-immigration-live-updates-rcna215837",
+    "stored_doc_id": "1b5770c93d6f_1752095298721"
+  },
+  "collection_signature": "G81t1vSD1Y3OdZjIumFvImV9/tNqlIy2DmqML/cOyVw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.722951"
+}

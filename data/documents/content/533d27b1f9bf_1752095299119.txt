@@ -1,0 +1,26 @@
+1 Choose a location
+Error, The Per Diem API is not responding. Please try again later.
+No results could be found for the location you've entered.
+OR
+OR
+2 Choose a date
+The End Date of your trip can not occur before the Start Date.
+Official websites use .gov
+A .gov website belongs to an official government organization in the United States.
+Secure .gov websites use HTTPS
+A lock
+( https:// means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.
+GSA’s Office of Technology Policy within the Office of Government-wide Policy develops, advances, and accelerates solutions that deliver world-class IT across government.
+With a wealth of IT and policy expertise on our team, we enable agency implementation of government-wide information technology policies and programs, and use data, analysis and collaboration to deliver results and solutions that improve federal IT service delivery.
+OTP operates several distinct lines of business, including:
+Under these business lines, we manage several government-wide programs and Communities of Practice (CoPs).
+Through collaborative relationships with the Office of Management and Budget’s (OMB) Office of E-Gov and IT, the Chief Information Officers Council (CIOC), and through their respective committees and communities of practice (CoP) we help to:
+Operating at the intersection of policy and program execution, our team helps CIOs navigate the complexities of federal IT, including:
+Error, The Per Diem API is not responding. Please try again later.
+No results could be found for the location you've entered.
+Rates are available between 10/1/2022 and 09/30/2025.
+The End Date of your trip can not occur before the Start Date.
+Traveler reimbursement is based on the location of the work activities and not the accommodations, unless lodging is not available at the work activity, then the agency may authorize the rate where lodging is obtained.
+Unless otherwise specified, the per diem locality is defined as "all locations within, or entirely surrounded by, the corporate limits of the key city, including independent entities located within those boundaries."
+Per diem localities with county definitions shall include"all locations within, or entirely surrounded by, the corporate limits of the key city as well as the boundaries of the listed counties, including independent entities located within the boundaries of the key city and the listed counties (unless otherwise listed separately)."
+When a military installation or Government - related facility(whether or not specifically named) is located partially within more than one city or county boundary, the applicable per diem rate for the entire installation or facility is the higher of the rates which apply to the cities and / or counties, even though part(s) of such activities may be located outside the defined per diem locality.

@@ -1,0 +1,31 @@
+{
+  "document_id": "c46aba7e12e809e94048ff6fc9c653ee8710ed020fb0d58cc6d05cddfa4bac1e",
+  "crypto_record": {
+    "document_id": "c46aba7e12e809e94048ff6fc9c653ee8710ed020fb0d58cc6d05cddfa4bac1e",
+    "content_hash": "c46aba7e12e809e94048ff6fc9c653ee8710ed020fb0d58cc6d05cddfa4bac1e",
+    "collection_timestamp": "2025-07-09T21:08:18.792400",
+    "source_metadata": {
+      "title": "Hagerty Introduces Legislation to Protect U.S. Businesses from European Regulators\u2019 Power Grab - Senator Bill Hagerty (.gov)",
+      "url": "https://www.hagerty.senate.gov/press-releases/2025/03/12/hagerty-introduces-legislation-to-protect-u-s-businesses-from-european-regulators-power-grab/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-03-12",
+      "collected_at": "2025-07-09T20:49:05.842802",
+      "id": "2f99c5f0f92d_1752095298791",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "2f99c5f0f92d_1752095298791",
+      "stored_at": "2025-07-09T21:08:18.791466"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.hagerty.senate.gov/press-releases/2025/03/12/hagerty-introduces-legislation-to-protect-u-s-businesses-from-european-regulators-power-grab/",
+    "stored_doc_id": "2f99c5f0f92d_1752095298791"
+  },
+  "collection_signature": "d499/WsuijJMGsosVTAevaRBvm3c2Bdgv9HcXntd5Lo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.792483"
+}

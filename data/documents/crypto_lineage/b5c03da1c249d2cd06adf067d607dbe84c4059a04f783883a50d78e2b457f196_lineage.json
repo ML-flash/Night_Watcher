@@ -1,0 +1,31 @@
+{
+  "document_id": "b5c03da1c249d2cd06adf067d607dbe84c4059a04f783883a50d78e2b457f196",
+  "crypto_record": {
+    "document_id": "b5c03da1c249d2cd06adf067d607dbe84c4059a04f783883a50d78e2b457f196",
+    "content_hash": "b5c03da1c249d2cd06adf067d607dbe84c4059a04f783883a50d78e2b457f196",
+    "collection_timestamp": "2025-07-09T21:08:19.331216",
+    "source_metadata": {
+      "title": "The Trump-Massie feud goes to a new level: From the Politics Desk - NBC News",
+      "url": "https://www.nbcnews.com/politics/politics-news/trump-massie-feud-goes-new-level-politics-desk-rcna214628",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-23",
+      "collected_at": "2025-07-09T21:03:33.316740",
+      "id": "aa2553d63e70_1752095299325",
+      "author": "The Politics Desk",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "aa2553d63e70_1752095299325",
+      "stored_at": "2025-07-09T21:08:19.326414"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nbcnews.com/politics/politics-news/trump-massie-feud-goes-new-level-politics-desk-rcna214628",
+    "stored_doc_id": "aa2553d63e70_1752095299325"
+  },
+  "collection_signature": "7E/lcmDmC6/oOas/sMWDrmlmzGio3hSvxPa/7ClatxI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.331330"
+}

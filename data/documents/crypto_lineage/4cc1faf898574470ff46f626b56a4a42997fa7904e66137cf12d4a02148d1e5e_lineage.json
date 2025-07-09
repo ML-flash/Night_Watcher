@@ -1,0 +1,31 @@
+{
+  "document_id": "4cc1faf898574470ff46f626b56a4a42997fa7904e66137cf12d4a02148d1e5e",
+  "crypto_record": {
+    "document_id": "4cc1faf898574470ff46f626b56a4a42997fa7904e66137cf12d4a02148d1e5e",
+    "content_hash": "4cc1faf898574470ff46f626b56a4a42997fa7904e66137cf12d4a02148d1e5e",
+    "collection_timestamp": "2025-07-09T21:08:19.113786",
+    "source_metadata": {
+      "title": "Hiring Freeze - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/01/hiring-freeze/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-20",
+      "collected_at": "2025-07-09T20:58:15.507151",
+      "id": "a27c1b1b07f0_1752095299112",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a27c1b1b07f0_1752095299112",
+      "stored_at": "2025-07-09T21:08:19.112986"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/01/hiring-freeze/",
+    "stored_doc_id": "a27c1b1b07f0_1752095299112"
+  },
+  "collection_signature": "iuHzq3NevRmoIkoggxYYQaFj8/Z2HHZiPhAK6aDDB2o=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.113868"
+}

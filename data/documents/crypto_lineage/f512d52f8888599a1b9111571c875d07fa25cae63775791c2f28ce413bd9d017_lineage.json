@@ -1,0 +1,31 @@
+{
+  "document_id": "f512d52f8888599a1b9111571c875d07fa25cae63775791c2f28ce413bd9d017",
+  "crypto_record": {
+    "document_id": "f512d52f8888599a1b9111571c875d07fa25cae63775791c2f28ce413bd9d017",
+    "content_hash": "f512d52f8888599a1b9111571c875d07fa25cae63775791c2f28ce413bd9d017",
+    "collection_timestamp": "2025-07-09T21:25:56.980204",
+    "source_metadata": {
+      "title": "Trump flurry of executive orders kicked off 100 days with decisive action",
+      "url": "https://www.foxnews.com/politics/trumps-executive-order-blitz-what-hes-signed-whats-changed",
+      "source": "foxnews.com",
+      "bias_label": "unknown",
+      "published": "2025-04-27",
+      "collected_at": "2025-07-09T21:18:48.806365",
+      "id": "50b8577fc46b_1752096356977",
+      "author": "Emma Colton",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "50b8577fc46b_1752096356977",
+      "stored_at": "2025-07-09T21:25:56.977262"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.foxnews.com/politics/trumps-executive-order-blitz-what-hes-signed-whats-changed",
+    "stored_doc_id": "50b8577fc46b_1752096356977"
+  },
+  "collection_signature": "GJd5BR4uX9LfAlIVySo0Ofo4pWAYZjKHI9nnPLLix5E=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.980307"
+}

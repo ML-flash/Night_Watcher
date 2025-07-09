@@ -1,0 +1,31 @@
+{
+  "document_id": "a32635327da79846507d4f31931252d93cccdf73a50d5328eb3cb4702e4c103e",
+  "crypto_record": {
+    "document_id": "a32635327da79846507d4f31931252d93cccdf73a50d5328eb3cb4702e4c103e",
+    "content_hash": "a32635327da79846507d4f31931252d93cccdf73a50d5328eb3cb4702e4c103e",
+    "collection_timestamp": "2025-07-09T21:08:19.416888",
+    "source_metadata": {
+      "title": "HEARINGS NOTICE: House Financial Services Committee Hearings Schedule for February 2025 - House Committee on Financial Services (.gov)",
+      "url": "https://financialservices.house.gov/news/documentsingle.aspx?DocumentID=409448",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-24T00:00:00",
+      "collected_at": "2025-07-09T21:06:08.844233",
+      "id": "436a0e2fe1ff_1752095299415",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "436a0e2fe1ff_1752095299415",
+      "stored_at": "2025-07-09T21:08:19.415396"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://financialservices.house.gov/news/documentsingle.aspx?DocumentID=409448",
+    "stored_doc_id": "436a0e2fe1ff_1752095299415"
+  },
+  "collection_signature": "XmRMs9RjLhjrjSqR7OxmlGv+LEnXo94P+RwNvIzMU98=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.416972"
+}

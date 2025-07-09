@@ -1,0 +1,31 @@
+{
+  "document_id": "c3416f5d3ffd0d02fe34bf1d8548ec410bb58680b9c91cbe279ab2f2d3072d30",
+  "crypto_record": {
+    "document_id": "c3416f5d3ffd0d02fe34bf1d8548ec410bb58680b9c91cbe279ab2f2d3072d30",
+    "content_hash": "c3416f5d3ffd0d02fe34bf1d8548ec410bb58680b9c91cbe279ab2f2d3072d30",
+    "collection_timestamp": "2025-07-09T21:25:56.847749",
+    "source_metadata": {
+      "title": "Trump - led White House formally asks Congress to rescind $9 . 4 billion in approved spending",
+      "url": "https://indianexpress.com/article/world/trump-white-house-asks-congress-rescind-9-billion-approved-spending-10047006/",
+      "source": "indianexpress.com",
+      "bias_label": "unknown",
+      "published": "2025-06-04",
+      "collected_at": "2025-07-09T21:13:58.415599",
+      "id": "911a708bb817_1752096356844",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "911a708bb817_1752096356844",
+      "stored_at": "2025-07-09T21:25:56.844619"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://indianexpress.com/article/world/trump-white-house-asks-congress-rescind-9-billion-approved-spending-10047006/",
+    "stored_doc_id": "911a708bb817_1752096356844"
+  },
+  "collection_signature": "/H7ovpUKqCJeM9PldhOEXh6ADW0VL58ejnxv7hRy/SI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.847835"
+}

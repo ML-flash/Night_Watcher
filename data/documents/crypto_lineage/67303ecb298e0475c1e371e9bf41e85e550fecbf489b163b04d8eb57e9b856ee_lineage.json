@@ -1,0 +1,31 @@
+{
+  "document_id": "67303ecb298e0475c1e371e9bf41e85e550fecbf489b163b04d8eb57e9b856ee",
+  "crypto_record": {
+    "document_id": "67303ecb298e0475c1e371e9bf41e85e550fecbf489b163b04d8eb57e9b856ee",
+    "content_hash": "67303ecb298e0475c1e371e9bf41e85e550fecbf489b163b04d8eb57e9b856ee",
+    "collection_timestamp": "2025-07-09T20:27:16.751684",
+    "source_metadata": {
+      "title": "A New Trump Plan Gives DHS and the White House Greater Influence in the Fight Against Organized Crime",
+      "url": "https://www.propublica.org/article/stephen-miller-trump-dhs-fbi-doj-war-on-drugs",
+      "source": "ProPublica",
+      "bias_label": "center-left",
+      "published": "2025-06-25",
+      "collected_at": "2025-07-09T20:27:15.946306",
+      "id": "2fc693444e80_1752092836749",
+      "author": "Tim Golden",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "2fc693444e80_1752092836749",
+      "stored_at": "2025-07-09T20:27:16.749673"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.propublica.org/article/stephen-miller-trump-dhs-fbi-doj-war-on-drugs",
+    "stored_doc_id": "2fc693444e80_1752092836749"
+  },
+  "collection_signature": "dUycFvNZY8Ez+psQ6KEahOjOHQVkfGoDqH7/TvDRUh4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:27:16.751772"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "42963928897e9e82ad844c0b803f89fbb4c57742fd948f67c104dedea3f889c0",
+  "crypto_record": {
+    "document_id": "42963928897e9e82ad844c0b803f89fbb4c57742fd948f67c104dedea3f889c0",
+    "content_hash": "42963928897e9e82ad844c0b803f89fbb4c57742fd948f67c104dedea3f889c0",
+    "collection_timestamp": "2025-07-09T20:26:48.583827",
+    "source_metadata": {
+      "title": "Trump tariff letters: Running list of countries and rates",
+      "url": "https://thehill.com/homenews/administration/5392377-trump-tariff-letters-trade-policy/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:19.461509",
+      "id": "b1250a899203_1752092808583",
+      "author": "Brett Samuels",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "b1250a899203_1752092808583",
+      "stored_at": "2025-07-09T20:26:48.583230"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/administration/5392377-trump-tariff-letters-trade-policy/",
+    "stored_doc_id": "b1250a899203_1752092808583"
+  },
+  "collection_signature": "aQDZcBzAhsuF4ohaC0N66GnaCk0zCZIveMA6f3Y/Cp0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.583908"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "482e0ebb5c01fe9edf078366594937dae268fff7eb8a3ace0dffedf02af601e2",
+  "crypto_record": {
+    "document_id": "482e0ebb5c01fe9edf078366594937dae268fff7eb8a3ace0dffedf02af601e2",
+    "content_hash": "482e0ebb5c01fe9edf078366594937dae268fff7eb8a3ace0dffedf02af601e2",
+    "collection_timestamp": "2025-07-09T21:25:57.126333",
+    "source_metadata": {
+      "title": "Political parties are democracy cornerstone",
+      "url": "https://www.thenational.com.pg/political-parties-are-democracy-cornerstone/",
+      "source": "thenational.com.pg",
+      "bias_label": "unknown",
+      "published": "2025-05-09",
+      "collected_at": "2025-07-09T21:25:10.326565",
+      "id": "f948ec6dc88b_1752096357125",
+      "author": "The National",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f948ec6dc88b_1752096357125",
+      "stored_at": "2025-07-09T21:25:57.125552"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.thenational.com.pg/political-parties-are-democracy-cornerstone/",
+    "stored_doc_id": "f948ec6dc88b_1752096357125"
+  },
+  "collection_signature": "HO3Q4MkZrl+0t4a0Kz6MyCCw3K7r2oF4zDHn/elb7VY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.126417"
+}

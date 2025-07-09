@@ -1,0 +1,31 @@
+{
+  "document_id": "b78387642abf5c05cbb6faa503004fcb66993897fd66791a4ae3a2622134c3d0",
+  "crypto_record": {
+    "document_id": "b78387642abf5c05cbb6faa503004fcb66993897fd66791a4ae3a2622134c3d0",
+    "content_hash": "b78387642abf5c05cbb6faa503004fcb66993897fd66791a4ae3a2622134c3d0",
+    "collection_timestamp": "2025-07-09T21:25:56.821809",
+    "source_metadata": {
+      "title": "Trump top meme coin investors invited to White House",
+      "url": "https://www.yahoo.com/news/trumps-top-meme-coin-investors-000105187.html",
+      "source": "yahoo.com",
+      "bias_label": "unknown",
+      "published": "2025-05-24",
+      "collected_at": "2025-07-09T21:13:15.511043",
+      "id": "1180e155956d_1752096356821",
+      "author": "OLIVIA RUBIN; LUCIEN BRUGGEMAN",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "1180e155956d_1752096356821",
+      "stored_at": "2025-07-09T21:25:56.821164"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.yahoo.com/news/trumps-top-meme-coin-investors-000105187.html",
+    "stored_doc_id": "1180e155956d_1752096356821"
+  },
+  "collection_signature": "/yBthCEQGsfl+sfHCpmrhbrBP9xn9UdPjsIV9IiDQFo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.821882"
+}

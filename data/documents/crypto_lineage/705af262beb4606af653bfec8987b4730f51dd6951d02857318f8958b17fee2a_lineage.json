@@ -1,0 +1,31 @@
+{
+  "document_id": "705af262beb4606af653bfec8987b4730f51dd6951d02857318f8958b17fee2a",
+  "crypto_record": {
+    "document_id": "705af262beb4606af653bfec8987b4730f51dd6951d02857318f8958b17fee2a",
+    "content_hash": "705af262beb4606af653bfec8987b4730f51dd6951d02857318f8958b17fee2a",
+    "collection_timestamp": "2025-07-09T21:08:18.849097",
+    "source_metadata": {
+      "title": "Subcommittee on Energy Holds Hearing on Grid Reliability - House Committee on Energy and Commerce (.gov)",
+      "url": "https://energycommerce.house.gov/posts/subcommittee-on-energy-holds-hearing-on-grid-reliability",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-03-25",
+      "collected_at": "2025-07-09T20:50:04.347740",
+      "id": "9fd7a94d1afe_1752095298844",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "9fd7a94d1afe_1752095298844",
+      "stored_at": "2025-07-09T21:08:18.844881"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://energycommerce.house.gov/posts/subcommittee-on-energy-holds-hearing-on-grid-reliability",
+    "stored_doc_id": "9fd7a94d1afe_1752095298844"
+  },
+  "collection_signature": "oWz2fo1nAOasqkwlaqeriOeH4JTSGhbU5WndhVYN3PM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.850116"
+}

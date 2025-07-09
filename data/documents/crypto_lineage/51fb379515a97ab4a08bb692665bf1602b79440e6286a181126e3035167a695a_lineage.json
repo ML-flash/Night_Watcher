@@ -1,0 +1,31 @@
+{
+  "document_id": "51fb379515a97ab4a08bb692665bf1602b79440e6286a181126e3035167a695a",
+  "crypto_record": {
+    "document_id": "51fb379515a97ab4a08bb692665bf1602b79440e6286a181126e3035167a695a",
+    "content_hash": "51fb379515a97ab4a08bb692665bf1602b79440e6286a181126e3035167a695a",
+    "collection_timestamp": "2025-07-09T20:28:16.943134",
+    "source_metadata": {
+      "title": "Appeals Court Briefs Say Trump's Tariffs Are Based on a Statute That Does Not Authorize Tariffs at All",
+      "url": "https://reason.com/2025/07/09/appeals-court-briefs-say-trumps-tariffs-are-based-on-a-statute-that-does-not-authorize-tariffs-at-all/",
+      "source": "Reason Magazine",
+      "bias_label": "libertarian",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:28:14.462516",
+      "id": "e9bd34d212af_1752092896942",
+      "author": "Jacob Sullum",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "e9bd34d212af_1752092896942",
+      "stored_at": "2025-07-09T20:28:16.942339"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://reason.com/2025/07/09/appeals-court-briefs-say-trumps-tariffs-are-based-on-a-statute-that-does-not-authorize-tariffs-at-all/",
+    "stored_doc_id": "e9bd34d212af_1752092896942"
+  },
+  "collection_signature": "c3UGRTHVUjE0ttfMs1R7BICwlhoAZv2jbe5hWwREqyc=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:16.943216"
+}

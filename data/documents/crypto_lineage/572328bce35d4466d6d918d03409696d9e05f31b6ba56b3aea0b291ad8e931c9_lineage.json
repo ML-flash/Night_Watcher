@@ -1,0 +1,31 @@
+{
+  "document_id": "572328bce35d4466d6d918d03409696d9e05f31b6ba56b3aea0b291ad8e931c9",
+  "crypto_record": {
+    "document_id": "572328bce35d4466d6d918d03409696d9e05f31b6ba56b3aea0b291ad8e931c9",
+    "content_hash": "572328bce35d4466d6d918d03409696d9e05f31b6ba56b3aea0b291ad8e931c9",
+    "collection_timestamp": "2025-07-09T20:34:00.584230",
+    "source_metadata": {
+      "title": "Trump White House calls out Smithsonian for pushing 'one-sided, divisive political narratives' - Fox News",
+      "url": "https://www.foxnews.com/politics/exclusive-trump-white-house-calls-out-smithsonian-pushing-one-sided-divisive-political-narratives",
+      "source": "Fox News via Google News",
+      "bias_label": "right",
+      "published": "2025-07-01",
+      "collected_at": "2025-07-09T20:33:17.009560",
+      "id": "89cda74e3d79_1752093240583",
+      "author": "Jasmine Baehr",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "89cda74e3d79_1752093240583",
+      "stored_at": "2025-07-09T20:34:00.583495"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.foxnews.com/politics/exclusive-trump-white-house-calls-out-smithsonian-pushing-one-sided-divisive-political-narratives",
+    "stored_doc_id": "89cda74e3d79_1752093240583"
+  },
+  "collection_signature": "4aXCpSMdnYA9ialLZSK2FnCrAQhixT2iK6Gv4zd3iyI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:34:00.584317"
+}

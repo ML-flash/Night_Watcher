@@ -1,0 +1,31 @@
+{
+  "document_id": "8bcb4ad80c8e600d3c93717a3dd101c95f590ffed6727070fce6ff7b2d38f732",
+  "crypto_record": {
+    "document_id": "8bcb4ad80c8e600d3c93717a3dd101c95f590ffed6727070fce6ff7b2d38f732",
+    "content_hash": "8bcb4ad80c8e600d3c93717a3dd101c95f590ffed6727070fce6ff7b2d38f732",
+    "collection_timestamp": "2025-07-09T21:08:18.716585",
+    "source_metadata": {
+      "title": "Senate GOP passes Trump's sweeping policy bill, setting up decisive vote in the House - NPR",
+      "url": "https://www.npr.org/2025/07/01/nx-s1-5450367/senate-republicans-trump-tax-bill-medicaid",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-07-01",
+      "collected_at": "2025-07-09T20:45:44.628524",
+      "id": "51c9e12bb42f_1752095298715",
+      "author": "Jason Breslow",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "51c9e12bb42f_1752095298715",
+      "stored_at": "2025-07-09T21:08:18.715761"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/07/01/nx-s1-5450367/senate-republicans-trump-tax-bill-medicaid",
+    "stored_doc_id": "51c9e12bb42f_1752095298715"
+  },
+  "collection_signature": "4oNJRXmVHOsBJ8k0234VEd7MlYEotBmG/8Wm/RTHs2M=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.716665"
+}

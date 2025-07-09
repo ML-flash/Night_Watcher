@@ -1,0 +1,31 @@
+{
+  "document_id": "9e76d959041c7db074d5120d364a09cbefd840c6e728a5ab9cbb7174afc517b8",
+  "crypto_record": {
+    "document_id": "9e76d959041c7db074d5120d364a09cbefd840c6e728a5ab9cbb7174afc517b8",
+    "content_hash": "9e76d959041c7db074d5120d364a09cbefd840c6e728a5ab9cbb7174afc517b8",
+    "collection_timestamp": "2025-07-09T20:28:10.834252",
+    "source_metadata": {
+      "title": "Bill Moyers Dies at 91: PBS Icon on Corruption of Corporate Media and Power of Public Broadcasting",
+      "url": "http://www.democracynow.org/2025/6/27/rip_bill_moyers",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-06-27",
+      "collected_at": "2025-07-09T20:27:58.740713",
+      "id": "6fade00cd6d1_1752092890833",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "6fade00cd6d1_1752092890833",
+      "stored_at": "2025-07-09T20:28:10.833230"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/6/27/rip_bill_moyers",
+    "stored_doc_id": "6fade00cd6d1_1752092890833"
+  },
+  "collection_signature": "hY96dLyKpMV+0i8mAs1vPWAgDfu2enWFfH8LOeaHOUE=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.834335"
+}

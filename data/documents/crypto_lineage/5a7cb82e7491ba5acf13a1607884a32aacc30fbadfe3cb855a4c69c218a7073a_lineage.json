@@ -1,0 +1,31 @@
+{
+  "document_id": "5a7cb82e7491ba5acf13a1607884a32aacc30fbadfe3cb855a4c69c218a7073a",
+  "crypto_record": {
+    "document_id": "5a7cb82e7491ba5acf13a1607884a32aacc30fbadfe3cb855a4c69c218a7073a",
+    "content_hash": "5a7cb82e7491ba5acf13a1607884a32aacc30fbadfe3cb855a4c69c218a7073a",
+    "collection_timestamp": "2025-07-09T21:08:19.249358",
+    "source_metadata": {
+      "title": "President Trump Holds First Cabinet Meeting of Second Administration - C-SPAN",
+      "url": "https://www.c-span.org/program/white-house-event/president-trump-holds-first-cabinet-meeting-of-second-administration/656328",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-26",
+      "collected_at": "2025-07-09T21:00:54.763174",
+      "id": "5fff955a8125_1752095299245",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "5fff955a8125_1752095299245",
+      "stored_at": "2025-07-09T21:08:19.245750"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.c-span.org/program/white-house-event/president-trump-holds-first-cabinet-meeting-of-second-administration/656328",
+    "stored_doc_id": "5fff955a8125_1752095299245"
+  },
+  "collection_signature": "CuUcdm7bcio6m6jJqUanQUZukE99Js1aYL2xk3SN230=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.249513"
+}

@@ -1,0 +1,212 @@
+Below are the adjusted expenses per inpatient day in 2023 for nonprofit, for-profit, and government hospitals in every U.S. state, based on the latest estimates provided by Kaiser State Health Facts.
+The figures are based on information from the 2023 American Hospital Association Annual Survey. They are an estimate of the expenses incurred in a day of inpatient care and have been adjusted upward to reflect an estimate of outpatient service volumes, according to the KFF.
+The foundation notes the figures are “only an estimate of expenses incurred by the hospital” for one day of inpatient care and do not substitute actual charges or reimbursement for care provided.
+To see how expenses compare to one year prior, find 2022’s adjusted expenses per inpatient day here.
+National average
+Nonprofit hospitals: $3,288
+For-profit hospitals: $2,529
+State/local government hospitals: $2,857
+Alabama
+Nonprofit hospitals: $1,988
+For-profit hospitals: $1,802
+State/local government hospitals: $1,965
+Alaska
+Nonprofit hospitals: $2,710
+For-profit hospitals: $4,103
+State/local government hospitals: $2,328
+Arizona
+Nonprofit hospitals: $3,508
+For-profit hospitals: $2,901
+State/local government hospitals: $2,802
+Arkansas
+Nonprofit hospitals: $2,144
+For-profit hospitals: $2,086
+State/local government hospitals: $3,917
+California
+Nonprofit hospitals: $4,819
+For-profit hospitals: $2,948
+State/local government hospitals: $4,404
+Colorado
+Nonprofit hospitals: $3,953
+For-profit hospitals: $3,527
+State/local government hospitals: $2,546
+Connecticut
+Nonprofit hospitals: $3,409
+For-profit hospitals: $2,372
+State/local government hospitals: $5,185
+Delaware
+Nonprofit hospitals: $3,530
+For-profit hospitals: $1,729
+State/local government hospitals: N/A
+District of Columbia
+Nonprofit hospitals: $4,067
+For-profit hospitals: $2,889
+State/local government hospitals: N/A
+Florida
+Nonprofit hospitals: $3,223
+For-profit hospitals: $2,374
+State/local government hospitals: $2,808
+Georgia
+Nonprofit hospitals: $2,633
+For-profit hospitals: $2,637
+State/local government hospitals: $874
+Hawaii
+Nonprofit hospitals: $3,664
+For-profit hospitals: N/A
+State/local government hospitals: $1,260
+Idaho
+Nonprofit hospitals: $4,762
+For-profit hospitals: $3,139
+State/local government hospitals: $2,857
+Illinois
+Nonprofit hospitals: $3,086
+For-profit hospitals: $2,715
+State/local government hospitals: $3,880
+Indiana
+Nonprofit hospitals: $3,510
+For-profit hospitals: $3,147
+State/local government hospitals: $1,977
+Iowa
+Nonprofit hospitals: $1,884
+For-profit hospitals: $1,643
+State/local government hospitals: $2,152
+Kansas
+Nonprofit hospitals: $2,531
+For-profit hospitals: $2,723
+State/local government hospitals: $2,401
+Kentucky
+Nonprofit hospitals: $2,781
+For-profit hospitals: $2,964
+State/local government hospitals: $2,937
+Louisiana
+Nonprofit hospitals: $2,920
+For-profit hospitals: $2,579
+State/local government hospitals: $2,381
+Maine
+Nonprofit hospitals: $3,066
+For-profit hospitals: $597
+State/local government hospitals: $1,213
+Maryland
+Nonprofit hospitals: $3,698
+For-profit hospitals: $1,871
+State/local government hospitals: N/A
+Massachusetts
+Nonprofit hospitals: $3,812
+For-profit hospitals: $2,477
+State/local government hospitals: $2,839
+Michigan
+Nonprofit hospitals: $2,664
+For-profit hospitals: $2,494
+State/local government hospitals: $1,080
+Minnesota
+Nonprofit hospitals: $2,946
+For-profit hospitals: N/A
+State/local government hospitals: $2,426
+Mississippi
+Nonprofit hospitals: $1,064
+For-profit hospitals: $1,805
+State/local government hospitals: $917
+Missouri
+Nonprofit hospitals: $2,957
+For-profit hospitals: $2,360
+State/local government hospitals: $2,311
+Montana
+Nonprofit hospitals: $2,161
+For-profit hospitals: $2,958
+State/local government hospitals: $1,166
+Nebraska
+Nonprofit hospitals: $2,884
+For-profit hospitals: $5,799
+State/local government hospitals: $1,578
+Nevada
+Nonprofit hospitals: $2,802
+For-profit hospitals: $2,087
+State/local government hospitals: $2,145
+New Hampshire
+Nonprofit hospitals: $3,250
+For-profit hospitals: $3,020
+State/local government hospitals: N/A
+New Jersey
+Nonprofit hospitals: $3,633
+For-profit hospitals: $2,555
+State/local government hospitals: $2,326
+New Mexico
+Nonprofit hospitals: $3,112
+For-profit hospitals: $3,780
+State/local government hospitals: $3,673
+New York
+Nonprofit hospitals: $3,905
+For-profit hospitals: N/A
+State/local government hospitals: $3,535
+North Carolina
+Nonprofit hospitals: $2,991
+For-profit hospitals: $2,744
+State/local government hospitals: $2,625
+North Dakota
+Nonprofit hospitals: $2,772
+For-profit hospitals: $4,226
+State/local government hospitals: N/A
+Ohio
+Nonprofit hospitals: $3,603
+For-profit hospitals: $2,382
+State/local government hospitals: $3,861
+Oklahoma
+Nonprofit hospitals: $2,459
+For-profit hospitals: $2,587
+State/local government hospitals: $1,990
+Oregon
+Nonprofit hospitals: $3,926
+For-profit hospitals: $3,474
+State/local government hospitals: $5,809
+Pennsylvania
+Nonprofit hospitals: $3,129
+For-profit hospitals: $2,313
+State/local government hospitals: $1,517
+Rhode Island
+Nonprofit hospitals: $3,206
+For-profit hospitals: N/A
+State/local government hospitals: N/A
+South Carolina
+Nonprofit hospitals: $2,570
+For-profit hospitals: $1,846
+State/local government hospitals: $2,843
+South Dakota
+Nonprofit hospitals: $1,709
+For-profit hospitals: $4,707
+State/local government hospitals: $699
+Tennessee
+Nonprofit hospitals: $3,146
+For-profit hospitals: $2,390
+State/local government hospitals: $2,275
+Texas
+Nonprofit hospitals: $3,441
+For-profit hospitals: $2,392
+State/local government hospitals: $3,881
+Utah
+Nonprofit hospitals: $4,205
+For-profit hospitals: $3,751
+State/local government hospitals: $3,709
+Vermont
+Nonprofit hospitals: $2,935
+For-profit hospitals: N/A
+State/local government hospitals: N/A
+Virginia
+Nonprofit hospitals: $2,985
+For-profit hospitals: $2,512
+State/local government hospitals: $4,488
+Washington
+Nonprofit hospitals: $4,082
+For-profit hospitals: $5,790
+State/local government hospitals: $4,034
+West Virginia
+Nonprofit hospitals: $2,607
+For-profit hospitals: $1,224
+State/local government hospitals: $1,708
+Wisconsin
+Nonprofit hospitals: $2,862
+For-profit hospitals: $3,031
+State/local government hospitals: $3,986
+Wyoming
+Nonprofit hospitals: $3,287
+For-profit hospitals: $3,799
+State/local government hospitals: $1,604

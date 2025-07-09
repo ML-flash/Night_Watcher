@@ -1,0 +1,31 @@
+{
+  "document_id": "42d09e054920f8869076cd467a18c3c8a4cd35f1537f92f4bcf54b697dd1863a",
+  "crypto_record": {
+    "document_id": "42d09e054920f8869076cd467a18c3c8a4cd35f1537f92f4bcf54b697dd1863a",
+    "content_hash": "42d09e054920f8869076cd467a18c3c8a4cd35f1537f92f4bcf54b697dd1863a",
+    "collection_timestamp": "2025-07-09T20:32:49.022087",
+    "source_metadata": {
+      "title": "Sean \u2018Diddy\u2019 Combs\u2019 Sentencing Set for Oct. 3 After Split Verdict in Federal Sex Crimes Case",
+      "url": "https://www.breitbart.com/entertainment/2025/07/09/sean-diddy-combs-sentencing-set-for-oct-3-after-split-verdict-in-federal-sex-crimes-case/",
+      "source": "Breitbart Politics",
+      "bias_label": "right",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:32:48.160026",
+      "id": "e25cee800817_1752093169021",
+      "author": "Andrew Breitbart; Breitbart News",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "e25cee800817_1752093169021",
+      "stored_at": "2025-07-09T20:32:49.021450"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.breitbart.com/entertainment/2025/07/09/sean-diddy-combs-sentencing-set-for-oct-3-after-split-verdict-in-federal-sex-crimes-case/",
+    "stored_doc_id": "e25cee800817_1752093169021"
+  },
+  "collection_signature": "Jc/2PGZTbPkJ1gYVJlYpk5cBrnYJBRVxzpSQ3ENl74I=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:32:49.022173"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "6bd4398bf233a96dc3e47101bf5fac33b72bd4858bbef97ae68e01fd319bf1c1",
+  "crypto_record": {
+    "document_id": "6bd4398bf233a96dc3e47101bf5fac33b72bd4858bbef97ae68e01fd319bf1c1",
+    "content_hash": "6bd4398bf233a96dc3e47101bf5fac33b72bd4858bbef97ae68e01fd319bf1c1",
+    "collection_timestamp": "2025-07-09T21:25:56.968170",
+    "source_metadata": {
+      "title": "MODIFYING RECIPROCAL TARIFF RATES TO REFLECT TRADING PARTNER RETALIATION AND ALIGNMENT",
+      "url": "https://www.globalsecurity.org/military/library/news/2025/04/mil-250409-whitehouse07.htm",
+      "source": "globalsecurity.org",
+      "bias_label": "unknown",
+      "published": "2025-04-09",
+      "collected_at": "2025-07-09T21:18:14.168425",
+      "id": "62a0108a857c_1752096356967",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "62a0108a857c_1752096356967",
+      "stored_at": "2025-07-09T21:25:56.967292"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.globalsecurity.org/military/library/news/2025/04/mil-250409-whitehouse07.htm",
+    "stored_doc_id": "62a0108a857c_1752096356967"
+  },
+  "collection_signature": "oEEZoi6bJsQuN0BrI3wvFIjUY5O01g3wBDqUXmz4WpE=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.968257"
+}

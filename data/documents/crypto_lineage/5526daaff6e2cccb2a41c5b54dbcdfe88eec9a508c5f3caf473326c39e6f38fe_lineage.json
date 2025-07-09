@@ -1,0 +1,31 @@
+{
+  "document_id": "5526daaff6e2cccb2a41c5b54dbcdfe88eec9a508c5f3caf473326c39e6f38fe",
+  "crypto_record": {
+    "document_id": "5526daaff6e2cccb2a41c5b54dbcdfe88eec9a508c5f3caf473326c39e6f38fe",
+    "content_hash": "5526daaff6e2cccb2a41c5b54dbcdfe88eec9a508c5f3caf473326c39e6f38fe",
+    "collection_timestamp": "2025-07-09T20:27:16.742637",
+    "source_metadata": {
+      "title": "Kristi Noem Secretly Took a Cut of Political Donations",
+      "url": "https://www.propublica.org/article/kristi-noem-political-donations-income-dark-money-dhs-ethics",
+      "source": "ProPublica",
+      "bias_label": "center-left",
+      "published": "2025-06-30",
+      "collected_at": "2025-07-09T20:27:09.849326",
+      "id": "cc9bd6720c26_1752092836740",
+      "author": "Justin Elliott; Joshua Kaplan; Alex Mierjeski",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "cc9bd6720c26_1752092836740",
+      "stored_at": "2025-07-09T20:27:16.740836"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.propublica.org/article/kristi-noem-political-donations-income-dark-money-dhs-ethics",
+    "stored_doc_id": "cc9bd6720c26_1752092836740"
+  },
+  "collection_signature": "1ESrvP/lX9zmx9MJNOF//cGsVWZSv/Dw3aL4TREIZlg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:27:16.742723"
+}

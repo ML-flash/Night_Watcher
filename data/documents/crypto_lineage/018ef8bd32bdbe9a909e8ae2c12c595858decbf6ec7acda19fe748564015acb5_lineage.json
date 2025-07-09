@@ -1,0 +1,31 @@
+{
+  "document_id": "018ef8bd32bdbe9a909e8ae2c12c595858decbf6ec7acda19fe748564015acb5",
+  "crypto_record": {
+    "document_id": "018ef8bd32bdbe9a909e8ae2c12c595858decbf6ec7acda19fe748564015acb5",
+    "content_hash": "018ef8bd32bdbe9a909e8ae2c12c595858decbf6ec7acda19fe748564015acb5",
+    "collection_timestamp": "2025-07-09T21:08:18.617676",
+    "source_metadata": {
+      "title": "DIRECTING THE REPEAL OF UNLAWFUL REGULATIONS - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/04/directing-the-repeal-of-unlawful-regulations/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-09",
+      "collected_at": "2025-07-09T20:42:10.010018",
+      "id": "593371947096_1752095298616",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "593371947096_1752095298616",
+      "stored_at": "2025-07-09T21:08:18.617023"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/04/directing-the-repeal-of-unlawful-regulations/",
+    "stored_doc_id": "593371947096_1752095298616"
+  },
+  "collection_signature": "BPpIL7MO0iv+0zniMqJrEUh5Ipb3aUhs0u7OYqtx5HM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.617758"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "89d5b62fb9b2ede4a6e6ed88f97a47a0058804ddcdac52770e448d443008f84f",
+  "crypto_record": {
+    "document_id": "89d5b62fb9b2ede4a6e6ed88f97a47a0058804ddcdac52770e448d443008f84f",
+    "content_hash": "89d5b62fb9b2ede4a6e6ed88f97a47a0058804ddcdac52770e448d443008f84f",
+    "collection_timestamp": "2025-07-09T21:25:57.084291",
+    "source_metadata": {
+      "title": "Free film town hall at Hardberger Park will tackle incentives , legislation involvement",
+      "url": "https://www.ksat.com/news/local/2025/04/23/free-film-town-hall-at-hardberger-park-will-tackle-incentives-legislation-involvement/",
+      "source": "ksat.com",
+      "bias_label": "unknown",
+      "published": "2025-04-23",
+      "collected_at": "2025-07-09T21:20:24.658256",
+      "id": "d8cb83b6f807_1752096357083",
+      "author": "Mason Hickok",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d8cb83b6f807_1752096357083",
+      "stored_at": "2025-07-09T21:25:57.083581"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.ksat.com/news/local/2025/04/23/free-film-town-hall-at-hardberger-park-will-tackle-incentives-legislation-involvement/",
+    "stored_doc_id": "d8cb83b6f807_1752096357083"
+  },
+  "collection_signature": "BXarFZtwp6nCIkD0LYLlpdhTXYs8Z5Xpj2XedJHk28M=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.084382"
+}

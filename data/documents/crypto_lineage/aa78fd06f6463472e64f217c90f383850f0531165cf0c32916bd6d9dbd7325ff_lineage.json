@@ -1,0 +1,31 @@
+{
+  "document_id": "aa78fd06f6463472e64f217c90f383850f0531165cf0c32916bd6d9dbd7325ff",
+  "crypto_record": {
+    "document_id": "aa78fd06f6463472e64f217c90f383850f0531165cf0c32916bd6d9dbd7325ff",
+    "content_hash": "aa78fd06f6463472e64f217c90f383850f0531165cf0c32916bd6d9dbd7325ff",
+    "collection_timestamp": "2025-07-09T20:27:16.725827",
+    "source_metadata": {
+      "title": "Elon Musk Hired a Dozen Texas Lobbyists This Year. State Law Keeps the Extent of Their Influence Under Wraps.",
+      "url": "https://www.propublica.org/article/elon-musk-texas-lobbyists-influence-law",
+      "source": "ProPublica",
+      "bias_label": "center-left",
+      "published": "2025-07-03",
+      "collected_at": "2025-07-09T20:26:59.569344",
+      "id": "2b043fb1fd10_1752092836725",
+      "author": "Lauren McGaughy",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "2b043fb1fd10_1752092836725",
+      "stored_at": "2025-07-09T20:27:16.725163"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.propublica.org/article/elon-musk-texas-lobbyists-influence-law",
+    "stored_doc_id": "2b043fb1fd10_1752092836725"
+  },
+  "collection_signature": "12091lQqt2N8N+Yn1cLwH047BEQJC92hMn0exbX9NMU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:27:16.725902"
+}

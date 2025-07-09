@@ -1,0 +1,31 @@
+{
+  "document_id": "7fdffdfb7b91f32e4952f29838c211a5df94f9c520f9cf3ad8906b9435a58092",
+  "crypto_record": {
+    "document_id": "7fdffdfb7b91f32e4952f29838c211a5df94f9c520f9cf3ad8906b9435a58092",
+    "content_hash": "7fdffdfb7b91f32e4952f29838c211a5df94f9c520f9cf3ad8906b9435a58092",
+    "collection_timestamp": "2025-07-09T21:08:19.410140",
+    "source_metadata": {
+      "title": "Full Committee Hearing - The State of U.S. Science and Technology: Ensuring U.S. Global Leadership - House.gov",
+      "url": "https://science.house.gov/2025/2/the-state-of-u-s-science-and-technology-ensuring-u-s-global-leadership",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-05",
+      "collected_at": "2025-07-09T21:05:54.767905",
+      "id": "79965cd33599_1752095299409",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "79965cd33599_1752095299409",
+      "stored_at": "2025-07-09T21:08:19.409230"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://science.house.gov/2025/2/the-state-of-u-s-science-and-technology-ensuring-u-s-global-leadership",
+    "stored_doc_id": "79965cd33599_1752095299409"
+  },
+  "collection_signature": "rpMnj6DdxBJNDiyLOG0XPijkTGKIrnFwSlIVSWQjHj0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.410223"
+}

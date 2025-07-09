@@ -1,0 +1,31 @@
+{
+  "document_id": "387173a36fdd643e0df9f573894d4feb83dd806e97e1fab8d0b6147ad9c2b454",
+  "crypto_record": {
+    "document_id": "387173a36fdd643e0df9f573894d4feb83dd806e97e1fab8d0b6147ad9c2b454",
+    "content_hash": "387173a36fdd643e0df9f573894d4feb83dd806e97e1fab8d0b6147ad9c2b454",
+    "collection_timestamp": "2025-07-09T21:08:19.007525",
+    "source_metadata": {
+      "title": "Federal court strikes down Trump's tariffs on countries around the world - Politico",
+      "url": "https://www.politico.com/news/2025/05/28/federal-court-strikes-down-trumps-april-2-tariffs-00373843",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-28",
+      "collected_at": "2025-07-09T20:53:08.243946",
+      "id": "6486646b28a8_1752095299005",
+      "author": "Doug Palmer; Kyle Cheney; Josh Gerstein",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "6486646b28a8_1752095299005",
+      "stored_at": "2025-07-09T21:08:19.005518"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.politico.com/news/2025/05/28/federal-court-strikes-down-trumps-april-2-tariffs-00373843",
+    "stored_doc_id": "6486646b28a8_1752095299005"
+  },
+  "collection_signature": "NnTtuQwGdPXgR3BHWUKm3U72Cr4vRVqFZw4WVK7vflA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.007619"
+}

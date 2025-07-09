@@ -1,0 +1,31 @@
+{
+  "document_id": "2ccd2616846049e98179179f7729e070302a0aea30eec59de86b46ffce411c2a",
+  "crypto_record": {
+    "document_id": "2ccd2616846049e98179179f7729e070302a0aea30eec59de86b46ffce411c2a",
+    "content_hash": "2ccd2616846049e98179179f7729e070302a0aea30eec59de86b46ffce411c2a",
+    "collection_timestamp": "2025-07-09T21:25:56.719185",
+    "source_metadata": {
+      "title": "Slogans in the name of the Constitution and Ambedkar . Only 4 Congress workers stopped the BJP \u0938\u0902\u0935\u093f\u0927\u093e\u0928 \u0906\u0923\u093f \u0906\u0902\u092c\u0947\u0921\u0915\u0930\u093e\u0902\u091a\u094d\u092f\u093e \u0928\u093e\u0935\u093e\u091a\u094d\u092f\u093e \u0918\u094b\u0937\u0923\u093e , \u0915\u093e\u0901\u0917\u094d\u0930\u0947\u0938\u091a\u094d\u092f\u093e \u0915\u0947\u0935\u0933 \u096a \u0915\u093e\u0930\u094d\u092f\u0915\u0930\u094d\u0924\u094d\u092f\u093e\u0902\u0928\u0940 \u092d\u093e\u091c\u092a\u0932\u093e \u0930\u094b\u0916\u0932\u0947",
+      "url": "https://www.loksatta.com/vasaivirar/slogans-in-the-name-of-the-constitution-and-ambedkar-only-4-congress-workers-stopped-the-bjp-ssb-93-5033354/",
+      "source": "loksatta.com",
+      "bias_label": "unknown",
+      "published": "2025-04-20",
+      "collected_at": "2025-07-09T21:10:23.315462",
+      "id": "ba20bbe10cb4_1752096356718",
+      "author": "\u0932\u094b\u0915\u0938\u0924\u094d\u0924\u093e \u091f\u0940\u092e",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "ba20bbe10cb4_1752096356718",
+      "stored_at": "2025-07-09T21:25:56.718526"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.loksatta.com/vasaivirar/slogans-in-the-name-of-the-constitution-and-ambedkar-only-4-congress-workers-stopped-the-bjp-ssb-93-5033354/",
+    "stored_doc_id": "ba20bbe10cb4_1752096356718"
+  },
+  "collection_signature": "0J4tiyzNmlZb3KmNJpMYxDDI6jx5HH8PQCYdyOz16Pw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.719280"
+}

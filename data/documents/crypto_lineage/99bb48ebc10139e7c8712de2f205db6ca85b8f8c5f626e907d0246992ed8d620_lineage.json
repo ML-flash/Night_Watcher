@@ -1,0 +1,31 @@
+{
+  "document_id": "99bb48ebc10139e7c8712de2f205db6ca85b8f8c5f626e907d0246992ed8d620",
+  "crypto_record": {
+    "document_id": "99bb48ebc10139e7c8712de2f205db6ca85b8f8c5f626e907d0246992ed8d620",
+    "content_hash": "99bb48ebc10139e7c8712de2f205db6ca85b8f8c5f626e907d0246992ed8d620",
+    "collection_timestamp": "2025-07-09T20:34:00.590139",
+    "source_metadata": {
+      "title": "Elon Musk says US is ruled by 'Porky Pig Party' as Trump defends his vision against former ally's criticism - Fox News",
+      "url": "https://www.foxnews.com/politics/elon-musk-says-us-ruled-porky-pig-party-trump-defends-his-vision-against-former-allys-criticism",
+      "source": "Fox News via Google News",
+      "bias_label": "right",
+      "published": "2025-06-30",
+      "collected_at": "2025-07-09T20:33:43.407008",
+      "id": "4b2e2246e982_1752093240589",
+      "author": "Alec Schemmel",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "4b2e2246e982_1752093240589",
+      "stored_at": "2025-07-09T20:34:00.589377"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.foxnews.com/politics/elon-musk-says-us-ruled-porky-pig-party-trump-defends-his-vision-against-former-allys-criticism",
+    "stored_doc_id": "4b2e2246e982_1752093240589"
+  },
+  "collection_signature": "5m0ng7M5ZUkMPAgfet4fAS2fwxmmVQ9enDxcuYSLG9s=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:34:00.590213"
+}

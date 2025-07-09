@@ -1,0 +1,31 @@
+{
+  "document_id": "6b66b56d0325ee1bbe9cb570b081bd6db21f7b840267318a0ead2b53996910fe",
+  "crypto_record": {
+    "document_id": "6b66b56d0325ee1bbe9cb570b081bd6db21f7b840267318a0ead2b53996910fe",
+    "content_hash": "6b66b56d0325ee1bbe9cb570b081bd6db21f7b840267318a0ead2b53996910fe",
+    "collection_timestamp": "2025-07-09T21:25:57.069783",
+    "source_metadata": {
+      "title": "Donald Trump orders crackdown on foreign funding of Universities amid Harvard , Columbia row - All you need to know",
+      "url": "https://www.livemint.com/news/us-news/donald-trump-orders-crackdown-on-foreign-funding-of-universities-amid-harvard-columbia-row-all-you-need-to-know-11745460011050.html",
+      "source": "livemint.com",
+      "bias_label": "unknown",
+      "published": "2025-04-24",
+      "collected_at": "2025-07-09T21:19:21.249494",
+      "id": "5880e78eef06_1752096357066",
+      "author": "Riya R Alex",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "5880e78eef06_1752096357066",
+      "stored_at": "2025-07-09T21:25:57.066192"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.livemint.com/news/us-news/donald-trump-orders-crackdown-on-foreign-funding-of-universities-amid-harvard-columbia-row-all-you-need-to-know-11745460011050.html",
+    "stored_doc_id": "5880e78eef06_1752096357066"
+  },
+  "collection_signature": "9XBPsjAyt80wFfvX1i9XS5bc/mhGEMqyB8P0CuEMX2w=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.069879"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "d370362acfd0b37c98c110c06b7f86ebc48bfec231a816a8b50cf7fb72bf2dfa",
+  "crypto_record": {
+    "document_id": "d370362acfd0b37c98c110c06b7f86ebc48bfec231a816a8b50cf7fb72bf2dfa",
+    "content_hash": "d370362acfd0b37c98c110c06b7f86ebc48bfec231a816a8b50cf7fb72bf2dfa",
+    "collection_timestamp": "2025-07-09T21:08:18.770765",
+    "source_metadata": {
+      "title": "Raskin Introduces Legislation to Reveal How Much \u2018Trump Tariffs\u2019 Cost Americans | Press Releases - raskin.house.gov",
+      "url": "https://raskin.house.gov/2025/5/raskin-introduces-legislation-to-reveal-how-much-trump-tariffs-cost-americans",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-08",
+      "collected_at": "2025-07-09T20:48:12.940290",
+      "id": "25ba4873f96c_1752095298768",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "25ba4873f96c_1752095298768",
+      "stored_at": "2025-07-09T21:08:18.768808"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://raskin.house.gov/2025/5/raskin-introduces-legislation-to-reveal-how-much-trump-tariffs-cost-americans",
+    "stored_doc_id": "25ba4873f96c_1752095298768"
+  },
+  "collection_signature": "Rohy24Cjn4j2EB6QAF0IXelQlGNKMSD55dp+xfAQHgY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.770846"
+}

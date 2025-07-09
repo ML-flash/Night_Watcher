@@ -1,0 +1,31 @@
+{
+  "document_id": "6396bfe8a77bdc19efaa3258804153b5af0b9f3ce1805a2082c654e1544f5e36",
+  "crypto_record": {
+    "document_id": "6396bfe8a77bdc19efaa3258804153b5af0b9f3ce1805a2082c654e1544f5e36",
+    "content_hash": "6396bfe8a77bdc19efaa3258804153b5af0b9f3ce1805a2082c654e1544f5e36",
+    "collection_timestamp": "2025-07-09T21:08:19.400392",
+    "source_metadata": {
+      "title": "Investigation launched involving alleged election fraud in Rolling Fork - WDAM-TV",
+      "url": "https://www.wdam.com/video/2025/05/15/investigation-launched-involving-alleged-election-fraud-rolling-fork/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-15",
+      "collected_at": "2025-07-09T21:05:31.265092",
+      "id": "520e4390b2d3_1752095299399",
+      "author": "Updated",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "520e4390b2d3_1752095299399",
+      "stored_at": "2025-07-09T21:08:19.399606"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.wdam.com/video/2025/05/15/investigation-launched-involving-alleged-election-fraud-rolling-fork/",
+    "stored_doc_id": "520e4390b2d3_1752095299399"
+  },
+  "collection_signature": "iNqEU+xU2oYIhVD3Ck6cbs6ccL2lRA9Ms/C3Q1CgSgw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.400474"
+}

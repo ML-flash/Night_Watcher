@@ -1,0 +1,31 @@
+{
+  "document_id": "4287b99915a0aec86997f71ead5e7fba845e40ad31caa34254ab080a9495d529",
+  "crypto_record": {
+    "document_id": "4287b99915a0aec86997f71ead5e7fba845e40ad31caa34254ab080a9495d529",
+    "content_hash": "4287b99915a0aec86997f71ead5e7fba845e40ad31caa34254ab080a9495d529",
+    "collection_timestamp": "2025-07-09T21:25:56.818765",
+    "source_metadata": {
+      "title": "  COVER - UP BY ANY DEFINITION : White House Reporters Weigh In on Biden Admin Hiding Joe Decline : Report",
+      "url": "https://hannity.com/media-room/cover-up-by-any-definition-white-house-reporters-weigh-in-on-biden-admin-hiding-joes-decline-report/",
+      "source": "hannity.com",
+      "bias_label": "unknown",
+      "published": "2025-05-27",
+      "collected_at": "2025-07-09T21:13:01.613248",
+      "id": "d8c39b0eee91_1752096356817",
+      "author": "Hannity Staff",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d8c39b0eee91_1752096356817",
+      "stored_at": "2025-07-09T21:25:56.817883"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://hannity.com/media-room/cover-up-by-any-definition-white-house-reporters-weigh-in-on-biden-admin-hiding-joes-decline-report/",
+    "stored_doc_id": "d8c39b0eee91_1752096356817"
+  },
+  "collection_signature": "gSJolTCkvMWxiCgKT0sKWY1cCIpd3ULgyJw0pbjB5s8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.819572"
+}

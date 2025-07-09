@@ -1,0 +1,31 @@
+{
+  "document_id": "4f8bcd5fe005ba2fc1f44aa3371a46190b0269fa3e86285fb303c4eec185df47",
+  "crypto_record": {
+    "document_id": "4f8bcd5fe005ba2fc1f44aa3371a46190b0269fa3e86285fb303c4eec185df47",
+    "content_hash": "4f8bcd5fe005ba2fc1f44aa3371a46190b0269fa3e86285fb303c4eec185df47",
+    "collection_timestamp": "2025-07-09T21:08:19.134559",
+    "source_metadata": {
+      "title": "State Policy Trends: 3 Key Public Policy Issues to Watch in 2025 - Bloomberg Government",
+      "url": "https://about.bgov.com/insights/state-government/state-policy-trends-to-watch/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-11",
+      "collected_at": "2025-07-09T20:58:42.530490",
+      "id": "9ca6f81a9893_1752095299132",
+      "author": "Bloomberg Government",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "9ca6f81a9893_1752095299132",
+      "stored_at": "2025-07-09T21:08:19.132411"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://about.bgov.com/insights/state-government/state-policy-trends-to-watch/",
+    "stored_doc_id": "9ca6f81a9893_1752095299132"
+  },
+  "collection_signature": "LdI4n+lkni0CF9BT1BRHgEbSex/9kv/1FSPpWcIFMpM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.134644"
+}

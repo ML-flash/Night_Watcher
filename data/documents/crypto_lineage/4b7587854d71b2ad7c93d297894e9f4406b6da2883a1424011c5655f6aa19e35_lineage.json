@@ -1,0 +1,31 @@
+{
+  "document_id": "4b7587854d71b2ad7c93d297894e9f4406b6da2883a1424011c5655f6aa19e35",
+  "crypto_record": {
+    "document_id": "4b7587854d71b2ad7c93d297894e9f4406b6da2883a1424011c5655f6aa19e35",
+    "content_hash": "4b7587854d71b2ad7c93d297894e9f4406b6da2883a1424011c5655f6aa19e35",
+    "collection_timestamp": "2025-07-09T21:25:56.875228",
+    "source_metadata": {
+      "title": "Supreme Court Of India Puts Asset Details , Appointment Process Of Judges In Public Domain",
+      "url": "https://www.freepressjournal.in/india/supreme-court-of-india-puts-asset-details-appointment-process-of-judges-in-public-domain",
+      "source": "freepressjournal.in",
+      "bias_label": "unknown",
+      "published": "2025-05-06",
+      "collected_at": "2025-07-09T21:15:51.155463",
+      "id": "58b69f948b36_1752096356874",
+      "author": "PTI",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "58b69f948b36_1752096356874",
+      "stored_at": "2025-07-09T21:25:56.874217"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.freepressjournal.in/india/supreme-court-of-india-puts-asset-details-appointment-process-of-judges-in-public-domain",
+    "stored_doc_id": "58b69f948b36_1752096356874"
+  },
+  "collection_signature": "Prg2reE1jJ/h0GZWt7dEEtCAO49EMcGpxwjnPqGhUMs=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.875315"
+}

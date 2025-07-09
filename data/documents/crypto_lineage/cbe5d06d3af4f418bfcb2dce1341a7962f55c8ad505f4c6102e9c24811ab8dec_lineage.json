@@ -1,0 +1,31 @@
+{
+  "document_id": "cbe5d06d3af4f418bfcb2dce1341a7962f55c8ad505f4c6102e9c24811ab8dec",
+  "crypto_record": {
+    "document_id": "cbe5d06d3af4f418bfcb2dce1341a7962f55c8ad505f4c6102e9c24811ab8dec",
+    "content_hash": "cbe5d06d3af4f418bfcb2dce1341a7962f55c8ad505f4c6102e9c24811ab8dec",
+    "collection_timestamp": "2025-07-09T21:08:19.269571",
+    "source_metadata": {
+      "title": "The Need for an Authorized State Department - Committee on Foreign Affairs (.gov)",
+      "url": "https://foreignaffairs.house.gov/hearing/the-need-for-an-authorized-state-department/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-13",
+      "collected_at": "2025-07-09T21:01:29.901493",
+      "id": "4185f8d9af88_1752095299268",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "4185f8d9af88_1752095299268",
+      "stored_at": "2025-07-09T21:08:19.268701"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://foreignaffairs.house.gov/hearing/the-need-for-an-authorized-state-department/",
+    "stored_doc_id": "4185f8d9af88_1752095299268"
+  },
+  "collection_signature": "/BHbVHxKVA7t+YIf2Z03Dd7QvUlJfUYBTFNCagxzc00=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.269660"
+}

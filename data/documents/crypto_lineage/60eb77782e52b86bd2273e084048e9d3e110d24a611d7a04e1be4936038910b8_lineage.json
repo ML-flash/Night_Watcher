@@ -1,0 +1,31 @@
+{
+  "document_id": "60eb77782e52b86bd2273e084048e9d3e110d24a611d7a04e1be4936038910b8",
+  "crypto_record": {
+    "document_id": "60eb77782e52b86bd2273e084048e9d3e110d24a611d7a04e1be4936038910b8",
+    "content_hash": "60eb77782e52b86bd2273e084048e9d3e110d24a611d7a04e1be4936038910b8",
+    "collection_timestamp": "2025-07-09T21:25:56.896789",
+    "source_metadata": {
+      "title": "President Trump signs seven executive orders focused on education",
+      "url": "https://wjla.com/news/nation-world/trump-to-sign-executive-orders-focused-on-education-karoline-leavitt-oval-office-lindsay-mcmahon-department-of-education-harvard-immigration-student-loans",
+      "source": "wjla.com",
+      "bias_label": "unknown",
+      "published": "2025-04-23",
+      "collected_at": "2025-07-09T21:16:49.439004",
+      "id": "7508311e529d_1752096356892",
+      "author": "TAYLOR FISHMAN; The National News Desk",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7508311e529d_1752096356892",
+      "stored_at": "2025-07-09T21:25:56.892690"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://wjla.com/news/nation-world/trump-to-sign-executive-orders-focused-on-education-karoline-leavitt-oval-office-lindsay-mcmahon-department-of-education-harvard-immigration-student-loans",
+    "stored_doc_id": "7508311e529d_1752096356892"
+  },
+  "collection_signature": "NAJgzQWCKDCHSbWBZNjnsllVcyFYY6JAv/CqGOCR8Fo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.896872"
+}

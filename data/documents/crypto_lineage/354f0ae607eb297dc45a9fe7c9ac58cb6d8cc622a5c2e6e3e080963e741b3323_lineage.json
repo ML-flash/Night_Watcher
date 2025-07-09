@@ -1,0 +1,31 @@
+{
+  "document_id": "354f0ae607eb297dc45a9fe7c9ac58cb6d8cc622a5c2e6e3e080963e741b3323",
+  "crypto_record": {
+    "document_id": "354f0ae607eb297dc45a9fe7c9ac58cb6d8cc622a5c2e6e3e080963e741b3323",
+    "content_hash": "354f0ae607eb297dc45a9fe7c9ac58cb6d8cc622a5c2e6e3e080963e741b3323",
+    "collection_timestamp": "2025-07-09T20:25:41.290895",
+    "source_metadata": {
+      "title": "Trump Administration Renews Attacks On Harvard With Negotiations Uncertain (New York Times)",
+      "url": "http://www.memeorandum.com/250709/p88#a250709p88",
+      "source": "Memeorandum Politics",
+      "bias_label": "aggregate",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:25:38.379877",
+      "id": "bbf97bd3fb33_1752092741288",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "bbf97bd3fb33_1752092741288",
+      "stored_at": "2025-07-09T20:25:41.288967"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.memeorandum.com/250709/p88#a250709p88",
+    "stored_doc_id": "bbf97bd3fb33_1752092741288"
+  },
+  "collection_signature": "sa/gXeTZ7d2iWrnE+oTna7sNUh2SvpxH7ko5gTtsnpg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:25:41.290977"
+}

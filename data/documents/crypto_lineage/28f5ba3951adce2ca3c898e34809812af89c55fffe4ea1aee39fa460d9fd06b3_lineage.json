@@ -1,0 +1,31 @@
+{
+  "document_id": "28f5ba3951adce2ca3c898e34809812af89c55fffe4ea1aee39fa460d9fd06b3",
+  "crypto_record": {
+    "document_id": "28f5ba3951adce2ca3c898e34809812af89c55fffe4ea1aee39fa460d9fd06b3",
+    "content_hash": "28f5ba3951adce2ca3c898e34809812af89c55fffe4ea1aee39fa460d9fd06b3",
+    "collection_timestamp": "2025-07-09T21:25:57.083140",
+    "source_metadata": {
+      "title": "Premier Jeremy Rockliff issues ultimatum on special AFL stadium legislation",
+      "url": "https://www.abc.net.au/news/2025-05-07/jeremy-rockliff-macquarie-point-stadium-ultimatum/105263436",
+      "source": "abc.net.au",
+      "bias_label": "unknown",
+      "published": "2025-05-07",
+      "collected_at": "2025-07-09T21:20:17.335812",
+      "id": "1ea9a8084cd6_1752096357078",
+      "author": "Adam Langenberg; Georgie Burgess",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "1ea9a8084cd6_1752096357078",
+      "stored_at": "2025-07-09T21:25:57.079049"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.abc.net.au/news/2025-05-07/jeremy-rockliff-macquarie-point-stadium-ultimatum/105263436",
+    "stored_doc_id": "1ea9a8084cd6_1752096357078"
+  },
+  "collection_signature": "nIsNs8RF8vfszQFlVAHlAnzHL60N2Qu9yynd++deaD0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.083240"
+}

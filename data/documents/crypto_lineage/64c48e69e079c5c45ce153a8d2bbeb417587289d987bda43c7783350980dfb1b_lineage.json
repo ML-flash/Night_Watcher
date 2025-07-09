@@ -1,0 +1,31 @@
+{
+  "document_id": "64c48e69e079c5c45ce153a8d2bbeb417587289d987bda43c7783350980dfb1b",
+  "crypto_record": {
+    "document_id": "64c48e69e079c5c45ce153a8d2bbeb417587289d987bda43c7783350980dfb1b",
+    "content_hash": "64c48e69e079c5c45ce153a8d2bbeb417587289d987bda43c7783350980dfb1b",
+    "collection_timestamp": "2025-07-09T20:28:10.794577",
+    "source_metadata": {
+      "title": "What Is the Trump Doctrine? John Bellamy Foster on U.S. Foreign Policy & the \"New MAGA Imperialism\"",
+      "url": "http://www.democracynow.org/2025/7/8/trump_doctrine_maga_imperialism",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T20:27:25.767567",
+      "id": "7159a3868497_1752092890793",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7159a3868497_1752092890793",
+      "stored_at": "2025-07-09T20:28:10.793853"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/7/8/trump_doctrine_maga_imperialism",
+    "stored_doc_id": "7159a3868497_1752092890793"
+  },
+  "collection_signature": "Aco3G61d9gFqdiNkVVsYv3SmjtlPhriHMQ5WQGI16Ok=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.794652"
+}

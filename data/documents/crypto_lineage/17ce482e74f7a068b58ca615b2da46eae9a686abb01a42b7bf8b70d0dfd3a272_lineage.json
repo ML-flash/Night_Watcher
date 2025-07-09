@@ -1,0 +1,31 @@
+{
+  "document_id": "17ce482e74f7a068b58ca615b2da46eae9a686abb01a42b7bf8b70d0dfd3a272",
+  "crypto_record": {
+    "document_id": "17ce482e74f7a068b58ca615b2da46eae9a686abb01a42b7bf8b70d0dfd3a272",
+    "content_hash": "17ce482e74f7a068b58ca615b2da46eae9a686abb01a42b7bf8b70d0dfd3a272",
+    "collection_timestamp": "2025-07-09T20:35:58.430574",
+    "source_metadata": {
+      "title": "Netanyahu visits White House; Trump threatens more tariffs on trade partners - NBC News",
+      "url": "https://www.nbcnews.com/politics/trump-administration/live-blog/trump-netanyahu-iran-tariff-letters-elon-musk-gop-bill-live-updates-rcna217061",
+      "source": "Executive Orders Search",
+      "bias_label": "aggregate",
+      "published": "2025-07-07",
+      "collected_at": "2025-07-09T20:35:41.160661",
+      "id": "5152f545a67f_1752093358429",
+      "author": "Frank Thorp V producer; Off-Air Reporter",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "5152f545a67f_1752093358429",
+      "stored_at": "2025-07-09T20:35:58.429818"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nbcnews.com/politics/trump-administration/live-blog/trump-netanyahu-iran-tariff-letters-elon-musk-gop-bill-live-updates-rcna217061",
+    "stored_doc_id": "5152f545a67f_1752093358429"
+  },
+  "collection_signature": "bVdaUzipcAuwVDpMiO8gLdZs9rQ7uxjGrbVGlynaClw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:35:58.430662"
+}

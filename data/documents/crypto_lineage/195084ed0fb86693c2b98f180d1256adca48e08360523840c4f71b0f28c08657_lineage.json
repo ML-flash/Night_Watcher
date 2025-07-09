@@ -1,0 +1,31 @@
+{
+  "document_id": "195084ed0fb86693c2b98f180d1256adca48e08360523840c4f71b0f28c08657",
+  "crypto_record": {
+    "document_id": "195084ed0fb86693c2b98f180d1256adca48e08360523840c4f71b0f28c08657",
+    "content_hash": "195084ed0fb86693c2b98f180d1256adca48e08360523840c4f71b0f28c08657",
+    "collection_timestamp": "2025-07-09T20:26:48.585877",
+    "source_metadata": {
+      "title": "Live updates: Trump hosts African leaders; NOAA nominee questioned on staffing",
+      "url": "https://thehill.com/homenews/administration/trump-the-next-100-days/5391475-live-updates-trump-senate-noaa/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:21.727635",
+      "id": "832d4c2cf5c2_1752092808585",
+      "author": "The Hill Staff; Alexander Bolton; Alex Gangitano; Mychael Schnell; Brett Samuels; Kwadington; Rachel Frazin; Joseph Choi; Jared Gans; Filip Timotija; Julia Shapero; Laura Kelly; Emily Brooks; Sarah Fortinsky; Live updates Trump hosts African leaders; NOAA nominee questioned; Dominick Mastrangelo; Ella Lee",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "832d4c2cf5c2_1752092808585",
+      "stored_at": "2025-07-09T20:26:48.585242"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/administration/trump-the-next-100-days/5391475-live-updates-trump-senate-noaa/",
+    "stored_doc_id": "832d4c2cf5c2_1752092808585"
+  },
+  "collection_signature": "DozB+7y3fbT4HcM9/Y1T1HX23J9b92DyrfYgdMPMehU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.585960"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "4c1e2dbdfab7d322e41de5fb2eee5a7c7f020005e42d755220aea9a21f03c560",
+  "crypto_record": {
+    "document_id": "4c1e2dbdfab7d322e41de5fb2eee5a7c7f020005e42d755220aea9a21f03c560",
+    "content_hash": "4c1e2dbdfab7d322e41de5fb2eee5a7c7f020005e42d755220aea9a21f03c560",
+    "collection_timestamp": "2025-07-09T21:08:18.802800",
+    "source_metadata": {
+      "title": "Higgins Introduces Legislation Abolishing Several Federal Agencies, Returning Services to States - Congressman Clay Higgins (.gov)",
+      "url": "https://clayhiggins.house.gov/2025/05/13/higgins-introduces-legislation-abolishing-several-federal-agencies-returning-services-to-states/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-13",
+      "collected_at": "2025-07-09T20:49:18.333584",
+      "id": "fcfd6c51e2a6_1752095298801",
+      "author": "Mackenzie Martinez",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "fcfd6c51e2a6_1752095298801",
+      "stored_at": "2025-07-09T21:08:18.801966"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://clayhiggins.house.gov/2025/05/13/higgins-introduces-legislation-abolishing-several-federal-agencies-returning-services-to-states/",
+    "stored_doc_id": "fcfd6c51e2a6_1752095298801"
+  },
+  "collection_signature": "ZcwmMY71jiNRq18tF5YNyicVNar0SgIUT0Aq4RKh0T8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.802879"
+}

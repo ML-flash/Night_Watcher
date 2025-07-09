@@ -1,0 +1,31 @@
+{
+  "document_id": "ca8cfa11964fa4e01bcd697eb7c4e9928e9a0ab970afacc9eceb9ca74743560f",
+  "crypto_record": {
+    "document_id": "ca8cfa11964fa4e01bcd697eb7c4e9928e9a0ab970afacc9eceb9ca74743560f",
+    "content_hash": "ca8cfa11964fa4e01bcd697eb7c4e9928e9a0ab970afacc9eceb9ca74743560f",
+    "collection_timestamp": "2025-07-09T21:08:19.403825",
+    "source_metadata": {
+      "title": "Full Committee Hearing on the Trump Administration\u2019s 2025 Trade Policy Agenda with United States Trade Representative Jamieson Greer - House Ways and Means (.gov)",
+      "url": "https://waysandmeans.house.gov/event/full-committee-hearing-on-the-trump-administrations-2025-trade-policy-agenda-with-united-states-trade-representative-jamieson-greer/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": null,
+      "collected_at": "2025-07-09T21:05:51.231536",
+      "id": "0dcf60245b7d_1752095299403",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "beautifulsoup",
+      "document_id": "0dcf60245b7d_1752095299403",
+      "stored_at": "2025-07-09T21:08:19.403193"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://waysandmeans.house.gov/event/full-committee-hearing-on-the-trump-administrations-2025-trade-policy-agenda-with-united-states-trade-representative-jamieson-greer/",
+    "stored_doc_id": "0dcf60245b7d_1752095299403"
+  },
+  "collection_signature": "6LGDzbwS4igFGRg2FmUK6Y81wMNA8+9HL4iDSWB76Mw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.403902"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "4b36ffc72ab8c19a7c3c45cd864a7b8ed24592887e86651195b7729968871cb0",
+  "crypto_record": {
+    "document_id": "4b36ffc72ab8c19a7c3c45cd864a7b8ed24592887e86651195b7729968871cb0",
+    "content_hash": "4b36ffc72ab8c19a7c3c45cd864a7b8ed24592887e86651195b7729968871cb0",
+    "collection_timestamp": "2025-07-09T21:08:19.309638",
+    "source_metadata": {
+      "title": "The Political Gap in Americans\u2019 News Sources - Pew Research Center",
+      "url": "https://www.pewresearch.org/journalism/2025/06/10/the-political-gap-in-americans-news-sources/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-10",
+      "collected_at": "2025-07-09T21:03:00.869923",
+      "id": "d73d9840d7c6_1752095299308",
+      "author": "Elisa Shearer; Kirsten Eddy; Michael Lipka; Katerina Eva Matsa; Beshay",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d73d9840d7c6_1752095299308",
+      "stored_at": "2025-07-09T21:08:19.308618"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.pewresearch.org/journalism/2025/06/10/the-political-gap-in-americans-news-sources/",
+    "stored_doc_id": "d73d9840d7c6_1752095299308"
+  },
+  "collection_signature": "P1VhfssTryQIZXx4mibqHbUJupKApXTcd0wYq3mXnR4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.309721"
+}

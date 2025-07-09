@@ -1,0 +1,31 @@
+{
+  "document_id": "c8d16444efbc5670abda429d28801dc06392837b2d1ab03ae86ca7414682e32b",
+  "crypto_record": {
+    "document_id": "c8d16444efbc5670abda429d28801dc06392837b2d1ab03ae86ca7414682e32b",
+    "content_hash": "c8d16444efbc5670abda429d28801dc06392837b2d1ab03ae86ca7414682e32b",
+    "collection_timestamp": "2025-07-09T21:08:19.397903",
+    "source_metadata": {
+      "title": "Investigation launched after KSP trooper shoots, kills man - WKYT",
+      "url": "https://www.wkyt.com/2025/06/09/investigation-launched-after-ksp-trooper-shoots-kills-man/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-09",
+      "collected_at": "2025-07-09T21:05:19.170534",
+      "id": "08779b8e3e37_1752095299397",
+      "author": "WKYT News Staff",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "08779b8e3e37_1752095299397",
+      "stored_at": "2025-07-09T21:08:19.397206"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.wkyt.com/2025/06/09/investigation-launched-after-ksp-trooper-shoots-kills-man/",
+    "stored_doc_id": "08779b8e3e37_1752095299397"
+  },
+  "collection_signature": "ttvrVs+gsiY1Vv8zdI9YuRuZzda8pwJxKT0uPHkzVJQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.397982"
+}

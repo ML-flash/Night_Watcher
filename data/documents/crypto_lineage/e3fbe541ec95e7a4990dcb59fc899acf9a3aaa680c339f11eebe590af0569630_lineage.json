@@ -1,0 +1,31 @@
+{
+  "document_id": "e3fbe541ec95e7a4990dcb59fc899acf9a3aaa680c339f11eebe590af0569630",
+  "crypto_record": {
+    "document_id": "e3fbe541ec95e7a4990dcb59fc899acf9a3aaa680c339f11eebe590af0569630",
+    "content_hash": "e3fbe541ec95e7a4990dcb59fc899acf9a3aaa680c339f11eebe590af0569630",
+    "collection_timestamp": "2025-07-09T21:08:18.574730",
+    "source_metadata": {
+      "title": "President Trump\u2019s speech to Congress, annotated and fact-checked - CNN",
+      "url": "https://www.cnn.com/interactive/2025/03/politics/transcript-speech-trump-congress-annotated-dg/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-03-05",
+      "collected_at": "2025-07-09T20:40:13.179988",
+      "id": "a971a90f052e_1752095298573",
+      "author": "Zachary B Wolf; Curt Merrill; CNN Published March 5",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a971a90f052e_1752095298573",
+      "stored_at": "2025-07-09T21:08:18.573671"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.cnn.com/interactive/2025/03/politics/transcript-speech-trump-congress-annotated-dg/",
+    "stored_doc_id": "a971a90f052e_1752095298573"
+  },
+  "collection_signature": "RpKCtoQSWQtzNxJ6r4ZevdNsanvptuXVFj8bsk2lftY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.574818"
+}

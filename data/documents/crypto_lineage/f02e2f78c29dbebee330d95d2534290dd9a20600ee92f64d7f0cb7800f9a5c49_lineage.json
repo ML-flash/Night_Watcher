@@ -1,0 +1,31 @@
+{
+  "document_id": "f02e2f78c29dbebee330d95d2534290dd9a20600ee92f64d7f0cb7800f9a5c49",
+  "crypto_record": {
+    "document_id": "f02e2f78c29dbebee330d95d2534290dd9a20600ee92f64d7f0cb7800f9a5c49",
+    "content_hash": "f02e2f78c29dbebee330d95d2534290dd9a20600ee92f64d7f0cb7800f9a5c49",
+    "collection_timestamp": "2025-07-09T21:25:56.798823",
+    "source_metadata": {
+      "title": "Bihar Polls : Time For RJD To Look Beyond Congress ? Ahead Of Tejashwi - Kharge Meet , Check What Numbers Say",
+      "url": "https://zeenews.india.com/india/bihar-polls-time-for-rjd-to-look-beyond-congress-ahead-of-tejashwi-kharge-meet-check-what-numbers-say-2886297.html",
+      "source": "zeenews.india.com",
+      "bias_label": "unknown",
+      "published": "2025-04-15",
+      "collected_at": "2025-07-09T21:12:44.803382",
+      "id": "77b2e673944b_1752096356797",
+      "author": "Zee Media Bureau",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "77b2e673944b_1752096356797",
+      "stored_at": "2025-07-09T21:25:56.797994"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://zeenews.india.com/india/bihar-polls-time-for-rjd-to-look-beyond-congress-ahead-of-tejashwi-kharge-meet-check-what-numbers-say-2886297.html",
+    "stored_doc_id": "77b2e673944b_1752096356797"
+  },
+  "collection_signature": "gnLpnfVvhWjFI3td/YVpYTmJzr+wxufW2xuT9i5UYbE=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.798909"
+}

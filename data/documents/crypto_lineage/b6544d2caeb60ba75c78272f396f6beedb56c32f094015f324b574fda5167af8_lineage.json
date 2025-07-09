@@ -1,0 +1,31 @@
+{
+  "document_id": "b6544d2caeb60ba75c78272f396f6beedb56c32f094015f324b574fda5167af8",
+  "crypto_record": {
+    "document_id": "b6544d2caeb60ba75c78272f396f6beedb56c32f094015f324b574fda5167af8",
+    "content_hash": "b6544d2caeb60ba75c78272f396f6beedb56c32f094015f324b574fda5167af8",
+    "collection_timestamp": "2025-07-09T21:25:56.748684",
+    "source_metadata": {
+      "title": "Congress state president Harshvardhan Sapkal said \u0939\u0930\u094d\u0937\u0935\u0930\u094d\u0927\u0928 \u0938\u092a\u0915\u093e\u0933",
+      "url": "https://www.loksatta.com/maharashtra/congress-state-president-harshvardhan-sapkal-said-that-the-dna-of-the-country-and-the-congress-is-the-same-phm-00-5081468/",
+      "source": "loksatta.com",
+      "bias_label": "unknown",
+      "published": "2025-05-11",
+      "collected_at": "2025-07-09T21:12:01.859702",
+      "id": "41a8343f36c3_1752096356746",
+      "author": "\u0932\u094b\u0915\u0938\u0924\u094d\u0924\u093e \u091f\u0940\u092e",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "41a8343f36c3_1752096356746",
+      "stored_at": "2025-07-09T21:25:56.746925"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.loksatta.com/maharashtra/congress-state-president-harshvardhan-sapkal-said-that-the-dna-of-the-country-and-the-congress-is-the-same-phm-00-5081468/",
+    "stored_doc_id": "41a8343f36c3_1752096356746"
+  },
+  "collection_signature": "T4VjzPpMLbfibAx4/fTkEVd8AhtEW94HN5Gph/68iAo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.748823"
+}

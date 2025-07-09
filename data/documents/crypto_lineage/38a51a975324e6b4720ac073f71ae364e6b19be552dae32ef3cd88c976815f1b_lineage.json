@@ -1,0 +1,31 @@
+{
+  "document_id": "38a51a975324e6b4720ac073f71ae364e6b19be552dae32ef3cd88c976815f1b",
+  "crypto_record": {
+    "document_id": "38a51a975324e6b4720ac073f71ae364e6b19be552dae32ef3cd88c976815f1b",
+    "content_hash": "38a51a975324e6b4720ac073f71ae364e6b19be552dae32ef3cd88c976815f1b",
+    "collection_timestamp": "2025-07-09T20:26:48.584791",
+    "source_metadata": {
+      "title": "After US strikes, Iran is seeking closer ties to Europe\u2019s pariah states",
+      "url": "https://thehill.com/opinion/international/5391152-iran-strategic-ties-europe/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:20.178163",
+      "id": "af18c7349b77_1752092808584",
+      "author": "Jack Roush; Opinion Contributor",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "af18c7349b77_1752092808584",
+      "stored_at": "2025-07-09T20:26:48.584264"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/opinion/international/5391152-iran-strategic-ties-europe/",
+    "stored_doc_id": "af18c7349b77_1752092808584"
+  },
+  "collection_signature": "ouVSHl8DuibhKcYm2hsmm9k5GG0jx/O3yFomf1QFYsU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.584874"
+}

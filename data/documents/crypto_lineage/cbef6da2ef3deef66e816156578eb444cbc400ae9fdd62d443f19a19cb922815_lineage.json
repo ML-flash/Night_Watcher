@@ -1,0 +1,31 @@
+{
+  "document_id": "cbef6da2ef3deef66e816156578eb444cbc400ae9fdd62d443f19a19cb922815",
+  "crypto_record": {
+    "document_id": "cbef6da2ef3deef66e816156578eb444cbc400ae9fdd62d443f19a19cb922815",
+    "content_hash": "cbef6da2ef3deef66e816156578eb444cbc400ae9fdd62d443f19a19cb922815",
+    "collection_timestamp": "2025-07-09T21:08:18.517994",
+    "source_metadata": {
+      "title": "President Trump Makes an Announcement with the Secretary of Defense - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/videos/president-trump-makes-an-announcement-with-the-secretary-of-defense/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": null,
+      "collected_at": "2025-07-09T20:36:48.682294",
+      "id": "d796eec5d9ad_1752095298517",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "beautifulsoup",
+      "document_id": "d796eec5d9ad_1752095298517",
+      "stored_at": "2025-07-09T21:08:18.517285"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/videos/president-trump-makes-an-announcement-with-the-secretary-of-defense/",
+    "stored_doc_id": "d796eec5d9ad_1752095298517"
+  },
+  "collection_signature": "XB2P/7/HwgZDwxuFlmUPTgrXOyMJLAFIj9ZkV1qe2Z8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.518097"
+}

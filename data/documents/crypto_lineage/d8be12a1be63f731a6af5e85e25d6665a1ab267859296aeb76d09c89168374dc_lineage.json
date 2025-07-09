@@ -1,0 +1,31 @@
+{
+  "document_id": "d8be12a1be63f731a6af5e85e25d6665a1ab267859296aeb76d09c89168374dc",
+  "crypto_record": {
+    "document_id": "d8be12a1be63f731a6af5e85e25d6665a1ab267859296aeb76d09c89168374dc",
+    "content_hash": "d8be12a1be63f731a6af5e85e25d6665a1ab267859296aeb76d09c89168374dc",
+    "collection_timestamp": "2025-07-09T20:27:16.731708",
+    "source_metadata": {
+      "title": "This Doctor Specializes in Diagnosing Child Abuse. Some of Her Conclusions Have Been Called Into Question.",
+      "url": "https://www.propublica.org/article/child-abuse-pediatrician-nancy-harper-minnesota-shaken-baby-syndrome",
+      "source": "ProPublica",
+      "bias_label": "center-left",
+      "published": "2025-07-01",
+      "collected_at": "2025-07-09T20:27:03.634300",
+      "id": "edd2887ce43b_1752092836730",
+      "author": "Jessica Lussenhop; Sarahbeth Maney",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "edd2887ce43b_1752092836730",
+      "stored_at": "2025-07-09T20:27:16.731028"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.propublica.org/article/child-abuse-pediatrician-nancy-harper-minnesota-shaken-baby-syndrome",
+    "stored_doc_id": "edd2887ce43b_1752092836730"
+  },
+  "collection_signature": "+XvHNYzMWcJH1+Ix7WTe4wlf4/WIFgVGZ+GoN/rcOLo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:27:16.731788"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "27f695d26d52e291d6178079b997c01d123d14067496ec4dbb66f97f82a4d410",
+  "crypto_record": {
+    "document_id": "27f695d26d52e291d6178079b997c01d123d14067496ec4dbb66f97f82a4d410",
+    "content_hash": "27f695d26d52e291d6178079b997c01d123d14067496ec4dbb66f97f82a4d410",
+    "collection_timestamp": "2025-07-09T21:08:18.779646",
+    "source_metadata": {
+      "title": "Sherrill Introduces Bill to Require Elon Musk to Pass Drug Test to Maintain Special Government Employee Status - Congresswoman Mikie Sherrill | (.gov)",
+      "url": "http://sherrill.house.gov/media/press-releases/sherrill-introduces-bill-to-require-elon-musk-to-pass-drug-test-to-maintain-special-government-employee-status",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-01",
+      "collected_at": "2025-07-09T20:48:40.359399",
+      "id": "c03a68c47974_1752095298778",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "c03a68c47974_1752095298778",
+      "stored_at": "2025-07-09T21:08:18.778362"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://sherrill.house.gov/media/press-releases/sherrill-introduces-bill-to-require-elon-musk-to-pass-drug-test-to-maintain-special-government-employee-status",
+    "stored_doc_id": "c03a68c47974_1752095298778"
+  },
+  "collection_signature": "E8YQA8sqNio3V/NTaBsSSX5GCq2PzZ5LWLHgck7PoXg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.779730"
+}

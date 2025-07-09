@@ -1,0 +1,31 @@
+{
+  "document_id": "bc03e1ab4ade17eff33992278f52df42ecc9403b6fdbac74a9801244d1f5db33",
+  "crypto_record": {
+    "document_id": "bc03e1ab4ade17eff33992278f52df42ecc9403b6fdbac74a9801244d1f5db33",
+    "content_hash": "bc03e1ab4ade17eff33992278f52df42ecc9403b6fdbac74a9801244d1f5db33",
+    "collection_timestamp": "2025-07-09T20:26:48.561764",
+    "source_metadata": {
+      "title": "Los Angeles joining federal lawsuit against immigration raids",
+      "url": "https://thehill.com/homenews/state-watch/5392970-la-joins-suit-against-trump-immigration/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:25:59.503742",
+      "id": "13e144c666be_1752092808560",
+      "author": "Ashleigh Fields",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "13e144c666be_1752092808560",
+      "stored_at": "2025-07-09T20:26:48.561081"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/state-watch/5392970-la-joins-suit-against-trump-immigration/",
+    "stored_doc_id": "13e144c666be_1752092808560"
+  },
+  "collection_signature": "J+mh/bRSJEPrPz4kj8eoA3HUyL3a/Tm2kI9Z5gG1gH8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.561843"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "ae3babbdf3a0a9941142cb8fedc5fac194116f7d59f1a9d2aa17ebb71ac2c171",
+  "crypto_record": {
+    "document_id": "ae3babbdf3a0a9941142cb8fedc5fac194116f7d59f1a9d2aa17ebb71ac2c171",
+    "content_hash": "ae3babbdf3a0a9941142cb8fedc5fac194116f7d59f1a9d2aa17ebb71ac2c171",
+    "collection_timestamp": "2025-07-09T21:25:56.986100",
+    "source_metadata": {
+      "title": "Executive Order Targets Accreditors That Impose DEI Requirements On Colleges",
+      "url": "https://www.mondaq.com:443/unitedstates/diversity-equity-inclusion/1620920/executive-order-targets-accreditors-that-impose-dei-requirements-on-colleges",
+      "source": "mondaq.com",
+      "bias_label": "unknown",
+      "published": "2025-05-08",
+      "collected_at": "2025-07-09T21:18:53.192827",
+      "id": "b79ac43c1181_1752096356984",
+      "author": "Amanda T Quan",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "b79ac43c1181_1752096356984",
+      "stored_at": "2025-07-09T21:25:56.984218"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.mondaq.com:443/unitedstates/diversity-equity-inclusion/1620920/executive-order-targets-accreditors-that-impose-dei-requirements-on-colleges",
+    "stored_doc_id": "b79ac43c1181_1752096356984"
+  },
+  "collection_signature": "dDQmSlIAo3NMhAOf9q4D0Bd5Y+Y7fVt+hH8q1F7H1Bk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.986186"
+}

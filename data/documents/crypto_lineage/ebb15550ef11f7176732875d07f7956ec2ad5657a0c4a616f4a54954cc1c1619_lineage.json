@@ -1,0 +1,31 @@
+{
+  "document_id": "ebb15550ef11f7176732875d07f7956ec2ad5657a0c4a616f4a54954cc1c1619",
+  "crypto_record": {
+    "document_id": "ebb15550ef11f7176732875d07f7956ec2ad5657a0c4a616f4a54954cc1c1619",
+    "content_hash": "ebb15550ef11f7176732875d07f7956ec2ad5657a0c4a616f4a54954cc1c1619",
+    "collection_timestamp": "2025-07-09T21:08:19.402808",
+    "source_metadata": {
+      "title": "Investigation launched into theft allegations against GBI agent - WALB",
+      "url": "https://www.walb.com/2025/05/19/investigation-launched-into-theft-allegations-against-gbi-agent/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-19",
+      "collected_at": "2025-07-09T21:05:43.532514",
+      "id": "0b22668565c2_1752095299401",
+      "author": "Ty Grant; WALB News Team",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "0b22668565c2_1752095299401",
+      "stored_at": "2025-07-09T21:08:19.401916"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.walb.com/2025/05/19/investigation-launched-into-theft-allegations-against-gbi-agent/",
+    "stored_doc_id": "0b22668565c2_1752095299401"
+  },
+  "collection_signature": "IH2luAwpOeP4xNssyUfoYK7tCt5lwuAePI9MBqvJkRA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.402883"
+}

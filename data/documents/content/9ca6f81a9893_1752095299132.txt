@@ -1,0 +1,10 @@
+AI regulation seeks to combat bias
+Trusted AI-powered software has big benefits when professionals use it to carry out more efficient research, drafting, or other workflow-related tasks. But some automated, AI-enabled systems can have downsides such as bias – particularly when used to support decision-making in areas such as employment and housing.
+Seeking to protect against these risks, Colorado lawmakers approved a first-in-the-nation anti-AI-bias law in 2024, which goes into effect in 2026. It requires AI developers to proactively assess how their products might enable discrimination against Colorado residents (which would include when an AI system is a “substantial factor” in making a “consequential decision,” which it defined as those affecting their education, employment, finances, government services, health care, housing, insurance, and legal services).
+But as large tech business and start-ups aim to dramatically reduce the AI products affected by the law, Colorado is reexamining the legislation. Meanwhile, the nation looks on.
+In addition, states such as California, Connecticut, New York, and Texas are considering similar legislation that would prevent automated systems from undermining the civil rights of those pursuing services from private businesses or the government.
+Key areas to watch in AI decision-making regulations by state include:
+- Proposals across New York, Connecticut, and Texas requiring AI model audits for bias
+- Bills related to “high-risk” systems that focus on ensuring fairness in hiring and lending processes
+Also of note: When it comes to state-level efforts to regulate AI, lawmakers are exploring broader guardrails for AI’s role in enabling weapons development and other public safety abuses.
+If tracking AI-enabled discrimination legislation is a priority for your team this year, consider using Bloomberg Government’s policy analysis tools to keep you informed about draft measures and discrimination laws – and ensure your strategies align with emerging standards.

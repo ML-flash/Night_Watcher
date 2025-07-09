@@ -1,0 +1,31 @@
+{
+  "document_id": "13c042c67abc500b9c574e8ec159592a03042efb675528f55c82a88c00151cd5",
+  "crypto_record": {
+    "document_id": "13c042c67abc500b9c574e8ec159592a03042efb675528f55c82a88c00151cd5",
+    "content_hash": "13c042c67abc500b9c574e8ec159592a03042efb675528f55c82a88c00151cd5",
+    "collection_timestamp": "2025-07-09T20:32:31.344540",
+    "source_metadata": {
+      "title": "Trump Administration Expels Eight Men to War-Torn \u201cThird Country\u201d South Sudan",
+      "url": "https://theintercept.com/2025/07/07/third-country-deportation-south-sudan-trump/",
+      "source": "The Intercept",
+      "bias_label": "left",
+      "published": "2025-07-07",
+      "collected_at": "2025-07-09T20:32:20.531731",
+      "id": "0cf247602cd6_1752093151343",
+      "author": "Nick Turse",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "0cf247602cd6_1752093151343",
+      "stored_at": "2025-07-09T20:32:31.343941"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://theintercept.com/2025/07/07/third-country-deportation-south-sudan-trump/",
+    "stored_doc_id": "0cf247602cd6_1752093151343"
+  },
+  "collection_signature": "sHdyqHRS4XIbGkcgYUYRPvgyfLy+FaJVqHa7ayEsncA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:32:31.344612"
+}

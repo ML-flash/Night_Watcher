@@ -1,0 +1,31 @@
+{
+  "document_id": "f4f971caedd956eece663cb142ae5402eb5bf217d90bf72547ba3ed1a22d2d9c",
+  "crypto_record": {
+    "document_id": "f4f971caedd956eece663cb142ae5402eb5bf217d90bf72547ba3ed1a22d2d9c",
+    "content_hash": "f4f971caedd956eece663cb142ae5402eb5bf217d90bf72547ba3ed1a22d2d9c",
+    "collection_timestamp": "2025-07-09T21:08:18.550092",
+    "source_metadata": {
+      "title": "Biden calls Pope Francis \"one of the most consequential leaders of our time\" - CBS News",
+      "url": "https://www.cbsnews.com/news/pope-francis-death-joe-biden-statement/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-21",
+      "collected_at": "2025-07-09T20:38:24.950320",
+      "id": "936ef97f52fd_1752095298548",
+      "author": "Kaia Hubbard",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "936ef97f52fd_1752095298548",
+      "stored_at": "2025-07-09T21:08:18.549025"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.cbsnews.com/news/pope-francis-death-joe-biden-statement/",
+    "stored_doc_id": "936ef97f52fd_1752095298548"
+  },
+  "collection_signature": "fWYxv+5RV1PK49zLj3LYrYuQyGals7wrhMDxOsDUxXY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.550181"
+}

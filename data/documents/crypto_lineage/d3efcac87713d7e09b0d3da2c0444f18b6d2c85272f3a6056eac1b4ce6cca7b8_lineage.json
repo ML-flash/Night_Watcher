@@ -1,0 +1,31 @@
+{
+  "document_id": "d3efcac87713d7e09b0d3da2c0444f18b6d2c85272f3a6056eac1b4ce6cca7b8",
+  "crypto_record": {
+    "document_id": "d3efcac87713d7e09b0d3da2c0444f18b6d2c85272f3a6056eac1b4ce6cca7b8",
+    "content_hash": "d3efcac87713d7e09b0d3da2c0444f18b6d2c85272f3a6056eac1b4ce6cca7b8",
+    "collection_timestamp": "2025-07-09T20:28:10.818759",
+    "source_metadata": {
+      "title": "\"Alligator Alcatraz\": Florida Activists Resist Everglades Migrant Jail as ICE Deaths Rise in U.S.",
+      "url": "http://www.democracynow.org/2025/7/2/ice_jail_alligator_alcatraz_florida",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-07-02",
+      "collected_at": "2025-07-09T20:27:43.459135",
+      "id": "c99daced6795_1752092890817",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "c99daced6795_1752092890817",
+      "stored_at": "2025-07-09T20:28:10.817923"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/7/2/ice_jail_alligator_alcatraz_florida",
+    "stored_doc_id": "c99daced6795_1752092890817"
+  },
+  "collection_signature": "oeTtg/Y3pc/3y98iAvOOi27CQPGMUJKfvkxm8esefoA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.818847"
+}

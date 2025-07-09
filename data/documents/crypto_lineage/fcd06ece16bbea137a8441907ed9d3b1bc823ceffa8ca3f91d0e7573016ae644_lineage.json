@@ -1,0 +1,31 @@
+{
+  "document_id": "fcd06ece16bbea137a8441907ed9d3b1bc823ceffa8ca3f91d0e7573016ae644",
+  "crypto_record": {
+    "document_id": "fcd06ece16bbea137a8441907ed9d3b1bc823ceffa8ca3f91d0e7573016ae644",
+    "content_hash": "fcd06ece16bbea137a8441907ed9d3b1bc823ceffa8ca3f91d0e7573016ae644",
+    "collection_timestamp": "2025-07-09T20:26:48.570314",
+    "source_metadata": {
+      "title": "Wiles: Musk-Trump relationship was \u2018great\u2019 ahead of \u2018very troublesome ending\u2019",
+      "url": "https://thehill.com/homenews/administration/5392790-wiles-musk-trump-relationship-ending/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:07.514702",
+      "id": "e29e931e85c9_1752092808569",
+      "author": "Alex Gangitano",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "e29e931e85c9_1752092808569",
+      "stored_at": "2025-07-09T20:26:48.569665"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/administration/5392790-wiles-musk-trump-relationship-ending/",
+    "stored_doc_id": "e29e931e85c9_1752092808569"
+  },
+  "collection_signature": "71RCaUVza6Y61l56mxd5+J3ZhJT2804Ovowcx9+JM4c=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.570405"
+}

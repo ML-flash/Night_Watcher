@@ -1,0 +1,31 @@
+{
+  "document_id": "9ff4466fbc9929b844927318e7ddbe71815ad9226d0127c69e418dbabf03b924",
+  "crypto_record": {
+    "document_id": "9ff4466fbc9929b844927318e7ddbe71815ad9226d0127c69e418dbabf03b924",
+    "content_hash": "9ff4466fbc9929b844927318e7ddbe71815ad9226d0127c69e418dbabf03b924",
+    "collection_timestamp": "2025-07-09T21:25:56.746417",
+    "source_metadata": {
+      "title": "Caravanas Estadual e Federativa s\u00e3o os diferenciais do 8\u00ba Congresso Pernambucano de Munic\u00edpios",
+      "url": "https://jc.uol.com.br/colunas/jc-negocios/2025/04/25/caravanas-estadual-e-federativa-sao-os-diferenciais-do-8-congresso-pernambucano-de-municipios.html",
+      "source": "jc.uol.com.br",
+      "bias_label": "unknown",
+      "published": "2025-04-25",
+      "collected_at": "2025-07-09T21:12:00.476790",
+      "id": "3b7da8b0d1e0_1752096356745",
+      "author": "Samantha Oliveira",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "3b7da8b0d1e0_1752096356745",
+      "stored_at": "2025-07-09T21:25:56.745531"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://jc.uol.com.br/colunas/jc-negocios/2025/04/25/caravanas-estadual-e-federativa-sao-os-diferenciais-do-8-congresso-pernambucano-de-municipios.html",
+    "stored_doc_id": "3b7da8b0d1e0_1752096356745"
+  },
+  "collection_signature": "0NNO7ldFvV8Qy2DbceQITj9FyuemB4tZ77Bmte1CubU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.746510"
+}

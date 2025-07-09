@@ -1,0 +1,31 @@
+{
+  "document_id": "d5cc03d81334b80c2cfc78a58fc60d89273477663983f06b57d64d73b78d2620",
+  "crypto_record": {
+    "document_id": "d5cc03d81334b80c2cfc78a58fc60d89273477663983f06b57d64d73b78d2620",
+    "content_hash": "d5cc03d81334b80c2cfc78a58fc60d89273477663983f06b57d64d73b78d2620",
+    "collection_timestamp": "2025-07-09T20:28:10.814702",
+    "source_metadata": {
+      "title": "EXCLUSIVE: Mahmoud Khalil, Palestinian Activist Jailed by ICE for 104 Days, in First Live Interview",
+      "url": "http://www.democracynow.org/2025/7/3/mahmoud_khalil",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-07-03",
+      "collected_at": "2025-07-09T20:27:40.478031",
+      "id": "935645983129_1752092890813",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "935645983129_1752092890813",
+      "stored_at": "2025-07-09T20:28:10.813661"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/7/3/mahmoud_khalil",
+    "stored_doc_id": "935645983129_1752092890813"
+  },
+  "collection_signature": "cD2X+JbKy1crR5WyqbGiyJNqoQI1t0fih8PrQSWTxlw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.814785"
+}

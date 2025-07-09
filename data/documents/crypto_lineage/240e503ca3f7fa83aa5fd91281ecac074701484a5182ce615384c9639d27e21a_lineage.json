@@ -1,0 +1,31 @@
+{
+  "document_id": "240e503ca3f7fa83aa5fd91281ecac074701484a5182ce615384c9639d27e21a",
+  "crypto_record": {
+    "document_id": "240e503ca3f7fa83aa5fd91281ecac074701484a5182ce615384c9639d27e21a",
+    "content_hash": "240e503ca3f7fa83aa5fd91281ecac074701484a5182ce615384c9639d27e21a",
+    "collection_timestamp": "2025-07-09T21:08:19.452181",
+    "source_metadata": {
+      "title": "New FOIA Documents Reveal FEMA Wrongdoing in East Palestine, Ohio - Government Accountability Project",
+      "url": "https://whistleblower.org/press/new-foia-documents-reveal-fema-wrongdoing-in-east-palestine-ohio/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-20",
+      "collected_at": "2025-07-09T21:07:39.611692",
+      "id": "bbc7a4968eb3_1752095299451",
+      "author": "Sydney Johnson",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "bbc7a4968eb3_1752095299451",
+      "stored_at": "2025-07-09T21:08:19.451464"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://whistleblower.org/press/new-foia-documents-reveal-fema-wrongdoing-in-east-palestine-ohio/",
+    "stored_doc_id": "bbc7a4968eb3_1752095299451"
+  },
+  "collection_signature": "PKq/E06XwVg8oXqe6217BFkHQB1eOAbbz9p+lUD79Vs=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.452261"
+}

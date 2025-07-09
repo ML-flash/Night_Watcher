@@ -1,0 +1,31 @@
+{
+  "document_id": "81bfaae6f456ed8ccd139289dd1b1dc3a1e60f65705f42b4aa2dc94c943821d4",
+  "crypto_record": {
+    "document_id": "81bfaae6f456ed8ccd139289dd1b1dc3a1e60f65705f42b4aa2dc94c943821d4",
+    "content_hash": "81bfaae6f456ed8ccd139289dd1b1dc3a1e60f65705f42b4aa2dc94c943821d4",
+    "collection_timestamp": "2025-07-09T20:32:31.352595",
+    "source_metadata": {
+      "title": "Want a Student Visa? The U.S. Government Needs Your Vine Account.",
+      "url": "https://theintercept.com/2025/07/01/trump-student-visa-social-media/",
+      "source": "The Intercept",
+      "bias_label": "left",
+      "published": "2025-07-01",
+      "collected_at": "2025-07-09T20:32:30.794763",
+      "id": "1a075828ae58_1752093151351",
+      "author": "Nikita Mazurov",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "1a075828ae58_1752093151351",
+      "stored_at": "2025-07-09T20:32:31.351880"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://theintercept.com/2025/07/01/trump-student-visa-social-media/",
+    "stored_doc_id": "1a075828ae58_1752093151351"
+  },
+  "collection_signature": "URNGIhj/cJ5dnk1t/M5gqgjRRJnUEYwbpzweFXUuvd4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:32:31.352683"
+}

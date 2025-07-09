@@ -1,0 +1,31 @@
+{
+  "document_id": "f6951f889794c63fee9ca890f5578cc94ea39dee9023bd84db4d3c6037f9ee68",
+  "crypto_record": {
+    "document_id": "f6951f889794c63fee9ca890f5578cc94ea39dee9023bd84db4d3c6037f9ee68",
+    "content_hash": "f6951f889794c63fee9ca890f5578cc94ea39dee9023bd84db4d3c6037f9ee68",
+    "collection_timestamp": "2025-07-09T21:08:18.998437",
+    "source_metadata": {
+      "title": "Is the Trump Administration Deliberately Violating a Federal Court Order? - Just Security",
+      "url": "https://www.justsecurity.org/109194/trump-violation-court-order/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-03-17",
+      "collected_at": "2025-07-09T20:52:48.048556",
+      "id": "3ca0f321c695_1752095298997",
+      "author": "Marty Lederman",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "3ca0f321c695_1752095298997",
+      "stored_at": "2025-07-09T21:08:18.997126"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.justsecurity.org/109194/trump-violation-court-order/",
+    "stored_doc_id": "3ca0f321c695_1752095298997"
+  },
+  "collection_signature": "nfL60C/sEpW+t33Ei2SrgnR+untamrf7LgUD1tyY2sU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.998530"
+}

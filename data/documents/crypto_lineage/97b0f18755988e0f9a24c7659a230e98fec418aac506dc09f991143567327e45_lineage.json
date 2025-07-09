@@ -1,0 +1,31 @@
+{
+  "document_id": "97b0f18755988e0f9a24c7659a230e98fec418aac506dc09f991143567327e45",
+  "crypto_record": {
+    "document_id": "97b0f18755988e0f9a24c7659a230e98fec418aac506dc09f991143567327e45",
+    "content_hash": "97b0f18755988e0f9a24c7659a230e98fec418aac506dc09f991143567327e45",
+    "collection_timestamp": "2025-07-09T21:08:18.952233",
+    "source_metadata": {
+      "title": "Supreme Court wraps up term with two big wins for conservatives, and Trump - NPR",
+      "url": "https://www.npr.org/2025/06/27/nx-s1-5448843/a-look-at-todays-supreme-court-decisions",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-27",
+      "collected_at": "2025-07-09T20:52:09.448687",
+      "id": "55953979e4cc_1752095298945",
+      "author": "Nina Totenberg",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "55953979e4cc_1752095298945",
+      "stored_at": "2025-07-09T21:08:18.945798"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/06/27/nx-s1-5448843/a-look-at-todays-supreme-court-decisions",
+    "stored_doc_id": "55953979e4cc_1752095298945"
+  },
+  "collection_signature": "hkiZI886eCZIPdcyQEWvlIYzVpMXvKjDTmXTwRhCl8s=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.952318"
+}

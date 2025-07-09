@@ -1,0 +1,31 @@
+{
+  "document_id": "33e30af384e841d9f60439a90be5e892731005da40d598af20c6c981d5f382ae",
+  "crypto_record": {
+    "document_id": "33e30af384e841d9f60439a90be5e892731005da40d598af20c6c981d5f382ae",
+    "content_hash": "33e30af384e841d9f60439a90be5e892731005da40d598af20c6c981d5f382ae",
+    "collection_timestamp": "2025-07-09T21:08:18.540852",
+    "source_metadata": {
+      "title": "ESTABLISHMENT OF THE STRATEGIC BITCOIN RESERVE AND UNITED STATES DIGITAL ASSET STOCKPILE - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/03/establishment-of-the-strategic-bitcoin-reserve-and-united-states-digital-asset-stockpile/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-03-07",
+      "collected_at": "2025-07-09T20:37:50.383907",
+      "id": "3eb479cf759c_1752095298539",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "3eb479cf759c_1752095298539",
+      "stored_at": "2025-07-09T21:08:18.539957"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/03/establishment-of-the-strategic-bitcoin-reserve-and-united-states-digital-asset-stockpile/",
+    "stored_doc_id": "3eb479cf759c_1752095298539"
+  },
+  "collection_signature": "T5QeYo9zxB3wpOm3F6CAyZvBvNp9JC36GEgN0EWx158=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.540935"
+}

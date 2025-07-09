@@ -1,0 +1,31 @@
+{
+  "document_id": "89997efe6c5a4b84a48a319141aedf6236900944aca65d74e69d52db683ac1da",
+  "crypto_record": {
+    "document_id": "89997efe6c5a4b84a48a319141aedf6236900944aca65d74e69d52db683ac1da",
+    "content_hash": "89997efe6c5a4b84a48a319141aedf6236900944aca65d74e69d52db683ac1da",
+    "collection_timestamp": "2025-07-09T21:08:19.433883",
+    "source_metadata": {
+      "title": "HEARING NOTICE: \u201cReversing the Curse: Rooting Out Waste and Fraud and Restoring the Dignity of Work\u201d - House Committee on the Budget (.gov)",
+      "url": "https://budget.house.gov/hearing/hearing-notice_reversing-the-curse-rooting-out-waste-and-fraud-and-restoring-the-dignity-of-work",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-25",
+      "collected_at": "2025-07-09T21:06:33.504427",
+      "id": "413c2b8b6388_1752095299432",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "413c2b8b6388_1752095299432",
+      "stored_at": "2025-07-09T21:08:19.432906"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://budget.house.gov/hearing/hearing-notice_reversing-the-curse-rooting-out-waste-and-fraud-and-restoring-the-dignity-of-work",
+    "stored_doc_id": "413c2b8b6388_1752095299432"
+  },
+  "collection_signature": "Ke7Hy4KyULbbWCUYV9CBP4VCPdUipb2PSa1DeE5Knvc=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.433972"
+}

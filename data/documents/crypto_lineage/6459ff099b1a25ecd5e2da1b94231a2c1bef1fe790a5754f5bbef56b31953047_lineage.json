@@ -1,0 +1,31 @@
+{
+  "document_id": "6459ff099b1a25ecd5e2da1b94231a2c1bef1fe790a5754f5bbef56b31953047",
+  "crypto_record": {
+    "document_id": "6459ff099b1a25ecd5e2da1b94231a2c1bef1fe790a5754f5bbef56b31953047",
+    "content_hash": "6459ff099b1a25ecd5e2da1b94231a2c1bef1fe790a5754f5bbef56b31953047",
+    "collection_timestamp": "2025-07-09T20:34:00.594315",
+    "source_metadata": {
+      "title": "FBI launches criminal investigations of John Brennan, James Comey: DOJ sources - Fox News",
+      "url": "https://www.foxnews.com/politics/john-brennan-james-comey-under-criminal-investigation-doj-sources",
+      "source": "Fox News via Google News",
+      "bias_label": "right",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T20:33:59.589885",
+      "id": "465213bd1db7_1752093240593",
+      "author": "Brooke Singman",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "465213bd1db7_1752093240593",
+      "stored_at": "2025-07-09T20:34:00.593700"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.foxnews.com/politics/john-brennan-james-comey-under-criminal-investigation-doj-sources",
+    "stored_doc_id": "465213bd1db7_1752093240593"
+  },
+  "collection_signature": "YrJ0uvna/oSxkOwuLC4eAavq4O3Uk0dM7LGz9SEiin8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:34:00.594397"
+}

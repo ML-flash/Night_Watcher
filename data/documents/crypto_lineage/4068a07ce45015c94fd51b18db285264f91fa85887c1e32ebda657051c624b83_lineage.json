@@ -1,0 +1,31 @@
+{
+  "document_id": "4068a07ce45015c94fd51b18db285264f91fa85887c1e32ebda657051c624b83",
+  "crypto_record": {
+    "document_id": "4068a07ce45015c94fd51b18db285264f91fa85887c1e32ebda657051c624b83",
+    "content_hash": "4068a07ce45015c94fd51b18db285264f91fa85887c1e32ebda657051c624b83",
+    "collection_timestamp": "2025-07-09T21:08:18.687742",
+    "source_metadata": {
+      "title": "House passes sweeping domestic policy package after Trump and Speaker Johnson win over holdouts - NBC News",
+      "url": "https://www.nbcnews.com/politics/congress/house-passes-sweeping-domestic-policy-package-big-win-trump-speaker-jo-rcna208417",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-22",
+      "collected_at": "2025-07-09T20:44:20.738711",
+      "id": "0e1090b1b0e3_1752095298686",
+      "author": "Scott Wong; Sahil Kapur; Kyle Stewart; Syedah Asghar",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "0e1090b1b0e3_1752095298686",
+      "stored_at": "2025-07-09T21:08:18.686889"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nbcnews.com/politics/congress/house-passes-sweeping-domestic-policy-package-big-win-trump-speaker-jo-rcna208417",
+    "stored_doc_id": "0e1090b1b0e3_1752095298686"
+  },
+  "collection_signature": "pgHmItap02rdf65tbaAIY08PLNtNacsducr54d2qhro=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.687833"
+}

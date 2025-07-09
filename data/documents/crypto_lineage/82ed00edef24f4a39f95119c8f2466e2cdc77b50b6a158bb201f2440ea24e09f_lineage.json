@@ -1,0 +1,31 @@
+{
+  "document_id": "82ed00edef24f4a39f95119c8f2466e2cdc77b50b6a158bb201f2440ea24e09f",
+  "crypto_record": {
+    "document_id": "82ed00edef24f4a39f95119c8f2466e2cdc77b50b6a158bb201f2440ea24e09f",
+    "content_hash": "82ed00edef24f4a39f95119c8f2466e2cdc77b50b6a158bb201f2440ea24e09f",
+    "collection_timestamp": "2025-07-09T21:08:18.612088",
+    "source_metadata": {
+      "title": "Implementing The President's \"Department of Government Efficiency\" Workforce Optimization Initiative - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/02/implementing-the-presidents-department-of-government-efficiency-workforce-optimization-initiative/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-11",
+      "collected_at": "2025-07-09T20:41:51.897373",
+      "id": "359560f0a69d_1752095298610",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "359560f0a69d_1752095298610",
+      "stored_at": "2025-07-09T21:08:18.610775"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/02/implementing-the-presidents-department-of-government-efficiency-workforce-optimization-initiative/",
+    "stored_doc_id": "359560f0a69d_1752095298610"
+  },
+  "collection_signature": "qh/uVgZ401e4197Fq8pSgqFBhiLfQzF/I2vheeFcLGo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.612175"
+}

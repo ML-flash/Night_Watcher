@@ -1,0 +1,31 @@
+{
+  "document_id": "532d31301d3e6a2afb3c1c979525cc568c92ed4f3029afcc7aef5acdf5188abf",
+  "crypto_record": {
+    "document_id": "532d31301d3e6a2afb3c1c979525cc568c92ed4f3029afcc7aef5acdf5188abf",
+    "content_hash": "532d31301d3e6a2afb3c1c979525cc568c92ed4f3029afcc7aef5acdf5188abf",
+    "collection_timestamp": "2025-07-09T20:26:48.606189",
+    "source_metadata": {
+      "title": "Tapper says public \u2018being played\u2019 on Epstein: \u2018This isn\u2019t going to go away\u2019",
+      "url": "https://thehill.com/homenews/media/5391743-tapper-criticizes-trump-administration-over-epstein-files/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:41.293693",
+      "id": "493fe68eaaef_1752092808605",
+      "author": "Dominick Mastrangelo",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "493fe68eaaef_1752092808605",
+      "stored_at": "2025-07-09T20:26:48.605577"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/media/5391743-tapper-criticizes-trump-administration-over-epstein-files/",
+    "stored_doc_id": "493fe68eaaef_1752092808605"
+  },
+  "collection_signature": "EDKxuAgI4RDwgKnNTVJ9x1oNS3r3sAqUxhBs9Iz1Pag=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.606272"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "f40fa5f2ebb3a8667dfffe090867e6400d0df12e7de816dd5ea2a21e6e3c98da",
+  "crypto_record": {
+    "document_id": "f40fa5f2ebb3a8667dfffe090867e6400d0df12e7de816dd5ea2a21e6e3c98da",
+    "content_hash": "f40fa5f2ebb3a8667dfffe090867e6400d0df12e7de816dd5ea2a21e6e3c98da",
+    "collection_timestamp": "2025-07-09T21:08:18.628269",
+    "source_metadata": {
+      "title": "Military Mission for Sealing the Southern Border of the United States and Repelling Invasions - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/04/military-mission-for-sealing-the-southern-border-of-the-united-states-and-repelling-invasions/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-11",
+      "collected_at": "2025-07-09T20:42:26.253854",
+      "id": "0b8507c8aad7_1752095298627",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "0b8507c8aad7_1752095298627",
+      "stored_at": "2025-07-09T21:08:18.627416"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/04/military-mission-for-sealing-the-southern-border-of-the-united-states-and-repelling-invasions/",
+    "stored_doc_id": "0b8507c8aad7_1752095298627"
+  },
+  "collection_signature": "ck/p/lK+KS9YNkuxq1xRiqe9M2tTYIAWEmW9WH+ITIM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.628345"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "6651be69902aeabfa8c568020c3a4d5ae649dc87034398eda9bde35b4eaa7408",
+  "crypto_record": {
+    "document_id": "6651be69902aeabfa8c568020c3a4d5ae649dc87034398eda9bde35b4eaa7408",
+    "content_hash": "6651be69902aeabfa8c568020c3a4d5ae649dc87034398eda9bde35b4eaa7408",
+    "collection_timestamp": "2025-07-09T21:08:18.797003",
+    "source_metadata": {
+      "title": "Bacon Gets 16 Bills Passed into Law During 118th Congress - Congressman Don Bacon (.gov)",
+      "url": "https://bacon.house.gov/news/documentsingle.aspx?DocumentID=2596",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-22",
+      "collected_at": "2025-07-09T20:49:09.527790",
+      "id": "04ae93fe0f62_1752095298792",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "04ae93fe0f62_1752095298792",
+      "stored_at": "2025-07-09T21:08:18.792947"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://bacon.house.gov/news/documentsingle.aspx?DocumentID=2596",
+    "stored_doc_id": "04ae93fe0f62_1752095298792"
+  },
+  "collection_signature": "3EZxQ1rPHtjT2J7k5teCHz9NpfMb8qM6GBu0CU0Qp/w=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.797118"
+}

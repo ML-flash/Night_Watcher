@@ -1,0 +1,31 @@
+{
+  "document_id": "4526fa6e44ee49bf4ffe99cda9883afb531cce8f09d78c636d895621c387d625",
+  "crypto_record": {
+    "document_id": "4526fa6e44ee49bf4ffe99cda9883afb531cce8f09d78c636d895621c387d625",
+    "content_hash": "4526fa6e44ee49bf4ffe99cda9883afb531cce8f09d78c636d895621c387d625",
+    "collection_timestamp": "2025-07-09T20:26:48.565673",
+    "source_metadata": {
+      "title": "RNC chair: \u2018Entire Republican universe\u2019 would coalesce behind Laura Trump Senate bid",
+      "url": "https://thehill.com/homenews/campaign/5392768-rnc-michael-whatley-lara-trump-senate-north-carolina/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:04.385428",
+      "id": "d9f175c6321e_1752092808564",
+      "author": "Elizabeth Crisp",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d9f175c6321e_1752092808564",
+      "stored_at": "2025-07-09T20:26:48.565008"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/campaign/5392768-rnc-michael-whatley-lara-trump-senate-north-carolina/",
+    "stored_doc_id": "d9f175c6321e_1752092808564"
+  },
+  "collection_signature": "7TeCUbqEu/PfGYUn4FUft4xDMzNnXRFjXpDzFJME888=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.565757"
+}

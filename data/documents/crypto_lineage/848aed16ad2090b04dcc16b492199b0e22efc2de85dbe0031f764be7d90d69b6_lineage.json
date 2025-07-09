@@ -1,0 +1,31 @@
+{
+  "document_id": "848aed16ad2090b04dcc16b492199b0e22efc2de85dbe0031f764be7d90d69b6",
+  "crypto_record": {
+    "document_id": "848aed16ad2090b04dcc16b492199b0e22efc2de85dbe0031f764be7d90d69b6",
+    "content_hash": "848aed16ad2090b04dcc16b492199b0e22efc2de85dbe0031f764be7d90d69b6",
+    "collection_timestamp": "2025-07-09T20:28:10.843440",
+    "source_metadata": {
+      "title": "\"The Economy Is Rigged\": Robert Reich on Zohran Mamdani, the Democratic Party, Inequality and Trump",
+      "url": "http://www.democracynow.org/2025/6/26/robert_reich_mamdani",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-06-26",
+      "collected_at": "2025-07-09T20:28:08.017368",
+      "id": "a8b29074501a_1752092890842",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a8b29074501a_1752092890842",
+      "stored_at": "2025-07-09T20:28:10.842819"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/6/26/robert_reich_mamdani",
+    "stored_doc_id": "a8b29074501a_1752092890842"
+  },
+  "collection_signature": "Xpl2j8s9aahoxhe0AnWDxeQUm5Jqd3B50bqQ+J6as7w=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.843512"
+}

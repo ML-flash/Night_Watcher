@@ -1,0 +1,31 @@
+{
+  "document_id": "285bb5bcb39172b9fe2d1d06c7f6e9b6657e36a755098c0229ed2e696041eff2",
+  "crypto_record": {
+    "document_id": "285bb5bcb39172b9fe2d1d06c7f6e9b6657e36a755098c0229ed2e696041eff2",
+    "content_hash": "285bb5bcb39172b9fe2d1d06c7f6e9b6657e36a755098c0229ed2e696041eff2",
+    "collection_timestamp": "2025-07-09T20:32:31.345530",
+    "source_metadata": {
+      "title": "Supreme Court Lets Trump Banish Immigrants to South Sudan",
+      "url": "https://theintercept.com/2025/07/03/supreme-court-trump-immigration-djibouti-south-sudan/",
+      "source": "The Intercept",
+      "bias_label": "left",
+      "published": "2025-07-03",
+      "collected_at": "2025-07-09T20:32:22.221162",
+      "id": "1f06ad4402da_1752093151344",
+      "author": "Nick Turse",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "1f06ad4402da_1752093151344",
+      "stored_at": "2025-07-09T20:32:31.344881"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://theintercept.com/2025/07/03/supreme-court-trump-immigration-djibouti-south-sudan/",
+    "stored_doc_id": "1f06ad4402da_1752093151344"
+  },
+  "collection_signature": "FeeIsvBFi3ys4I5RtuskixmRN6D9SeDKvhHFi0EyHXE=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:32:31.345613"
+}

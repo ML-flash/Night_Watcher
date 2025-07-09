@@ -1,0 +1,31 @@
+{
+  "document_id": "a2f6f243e948c5bbbe8f379ca4b3ce636f3e12c0df01df2f117379963d3b44f0",
+  "crypto_record": {
+    "document_id": "a2f6f243e948c5bbbe8f379ca4b3ce636f3e12c0df01df2f117379963d3b44f0",
+    "content_hash": "a2f6f243e948c5bbbe8f379ca4b3ce636f3e12c0df01df2f117379963d3b44f0",
+    "collection_timestamp": "2025-07-09T21:08:19.266942",
+    "source_metadata": {
+      "title": "Trump talks tariffs, Russia, Iran at Cabinet meeting; Supreme Court allows mass federal layoffs - NBC News",
+      "url": "https://www.nbcnews.com/politics/trump-administration/live-blog/trump-netanyahu-congress-ukraine-iran-gaza-tariffs-live-updates-rcna217064",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T21:01:12.033682",
+      "id": "9a9ab1c1a837_1752095299265",
+      "author": "Brennan Leach Brennan Leach is a Desk Assistant",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "9a9ab1c1a837_1752095299265",
+      "stored_at": "2025-07-09T21:08:19.265986"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nbcnews.com/politics/trump-administration/live-blog/trump-netanyahu-congress-ukraine-iran-gaza-tariffs-live-updates-rcna217064",
+    "stored_doc_id": "9a9ab1c1a837_1752095299265"
+  },
+  "collection_signature": "8XOA3Y1o7hMijs/v5GxiMZ+ZKDBN0Qz2Js/xOhQ69EI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.267027"
+}

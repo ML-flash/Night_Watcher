@@ -1,0 +1,31 @@
+{
+  "document_id": "ae27554fbfce5252bde11fc306444a97b5b9b9a4d346bc27363fba224458da7f",
+  "crypto_record": {
+    "document_id": "ae27554fbfce5252bde11fc306444a97b5b9b9a4d346bc27363fba224458da7f",
+    "content_hash": "ae27554fbfce5252bde11fc306444a97b5b9b9a4d346bc27363fba224458da7f",
+    "collection_timestamp": "2025-07-09T21:25:56.718093",
+    "source_metadata": {
+      "title": "\u5ddd\u666e\u653f\u5e9c\u66ab\u505c\u6240\u6709\u88dc\u52a9 \u54c8\u4f5b\u5927\u5b78\u6821\u9577\u81ea\u9858\u6e1b\u85aa25 \uff05 - \u570b\u969b",
+      "url": "https://news.ltn.com.tw/news/world/breakingnews/5043952",
+      "source": "news.ltn.com.tw",
+      "bias_label": "unknown",
+      "published": "2025-05-15",
+      "collected_at": "2025-07-09T21:10:03.200685",
+      "id": "8bedbc868235_1752096356714",
+      "author": "\u76f8\u95dc\u65b0\u805e\u8acb\u898b\ufe30\u5ddd\u666e\u653f\u5e9c\u518d\u51fa\u624b \u5ba3\u5e03\u505c\u6b62\u5c0d\u54c8\u4f5b\u5927\u5b78\u6240\u6709\u65b0\u88dc\u52a9\u6b3e\u6230\u706b\u5347\u7d1a\uff01 \u54c8\u4f5b\u5927\u5b78\u53c8\u69d3\u4e0a\u5ddd\u666e\u653f\u5e9c \u6050\u518d\u5931",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "8bedbc868235_1752096356714",
+      "stored_at": "2025-07-09T21:25:56.714844"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://news.ltn.com.tw/news/world/breakingnews/5043952",
+    "stored_doc_id": "8bedbc868235_1752096356714"
+  },
+  "collection_signature": "GIMrUdvEJ7Z7+Ja0XOd7AoKOxZPB/RyMLE/EWJAqXBU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.718187"
+}

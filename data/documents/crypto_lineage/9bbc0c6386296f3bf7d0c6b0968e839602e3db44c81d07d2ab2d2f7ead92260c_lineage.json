@@ -1,0 +1,31 @@
+{
+  "document_id": "9bbc0c6386296f3bf7d0c6b0968e839602e3db44c81d07d2ab2d2f7ead92260c",
+  "crypto_record": {
+    "document_id": "9bbc0c6386296f3bf7d0c6b0968e839602e3db44c81d07d2ab2d2f7ead92260c",
+    "content_hash": "9bbc0c6386296f3bf7d0c6b0968e839602e3db44c81d07d2ab2d2f7ead92260c",
+    "collection_timestamp": "2025-07-09T21:08:18.897736",
+    "source_metadata": {
+      "title": "Live Coverage: Final SCOTUS Decision Day - American Civil Liberties Union",
+      "url": "https://www.aclu.org/news/free-speech/live-coverage-final-scotus-decision-day",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-27",
+      "collected_at": "2025-07-09T20:51:07.228891",
+      "id": "0588def46894_1752095298895",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "0588def46894_1752095298895",
+      "stored_at": "2025-07-09T21:08:18.895767"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.aclu.org/news/free-speech/live-coverage-final-scotus-decision-day",
+    "stored_doc_id": "0588def46894_1752095298895"
+  },
+  "collection_signature": "mwfTZTqEkgJ9axZKl8FLDiEbGFXD/SJuokdLVtp34po=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.897823"
+}

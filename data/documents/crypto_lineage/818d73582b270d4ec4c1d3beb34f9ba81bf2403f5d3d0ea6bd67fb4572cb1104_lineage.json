@@ -1,0 +1,31 @@
+{
+  "document_id": "818d73582b270d4ec4c1d3beb34f9ba81bf2403f5d3d0ea6bd67fb4572cb1104",
+  "crypto_record": {
+    "document_id": "818d73582b270d4ec4c1d3beb34f9ba81bf2403f5d3d0ea6bd67fb4572cb1104",
+    "content_hash": "818d73582b270d4ec4c1d3beb34f9ba81bf2403f5d3d0ea6bd67fb4572cb1104",
+    "collection_timestamp": "2025-07-09T21:08:19.109120",
+    "source_metadata": {
+      "title": "Ensuring Accountability for All Agencies - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/02/ensuring-accountability-for-all-agencies/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-19",
+      "collected_at": "2025-07-09T20:58:10.027681",
+      "id": "43caa7ebf8e7_1752095299108",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "43caa7ebf8e7_1752095299108",
+      "stored_at": "2025-07-09T21:08:19.108293"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/02/ensuring-accountability-for-all-agencies/",
+    "stored_doc_id": "43caa7ebf8e7_1752095299108"
+  },
+  "collection_signature": "1OpL5nP/asFXbSYdgkeumwcU+qdNMEDMGt42/Rt2qao=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.109206"
+}

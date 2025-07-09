@@ -1,0 +1,31 @@
+{
+  "document_id": "c92ad39751c6ceae5355b4abe0912a7d629b2395e8ec371848e927cb1cf60242",
+  "crypto_record": {
+    "document_id": "c92ad39751c6ceae5355b4abe0912a7d629b2395e8ec371848e927cb1cf60242",
+    "content_hash": "c92ad39751c6ceae5355b4abe0912a7d629b2395e8ec371848e927cb1cf60242",
+    "collection_timestamp": "2025-07-09T20:26:48.596498",
+    "source_metadata": {
+      "title": "Zelensky: Record Russia drone attack shows need for \u2018biting sanctions\u2019",
+      "url": "https://thehill.com/policy/international/5392083-volodymyr-zelensky-russia-drone-attack-sanctions/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:33.086286",
+      "id": "68102f44c038_1752092808595",
+      "author": "Sarah Fortinsky",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "68102f44c038_1752092808595",
+      "stored_at": "2025-07-09T20:26:48.595827"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/policy/international/5392083-volodymyr-zelensky-russia-drone-attack-sanctions/",
+    "stored_doc_id": "68102f44c038_1752092808595"
+  },
+  "collection_signature": "AejXx7reO8zvSJCxSKsqP8jDiQxQTvfLfCuZ49M0C+0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.596581"
+}

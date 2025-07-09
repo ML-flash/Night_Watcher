@@ -1,0 +1,31 @@
+{
+  "document_id": "1845bd134ecec44b313d96a937508002841a8fb5dddf49aa3312b6fc27b5f790",
+  "crypto_record": {
+    "document_id": "1845bd134ecec44b313d96a937508002841a8fb5dddf49aa3312b6fc27b5f790",
+    "content_hash": "1845bd134ecec44b313d96a937508002841a8fb5dddf49aa3312b6fc27b5f790",
+    "collection_timestamp": "2025-07-09T21:25:56.733877",
+    "source_metadata": {
+      "title": "Bihar Politics : \u092c\u093f\u0939\u093e\u0930 \u092e\u0947\u0902 \u092c\u0922\u093c \u0930\u0939\u093e \u0915\u093e\u0902\u0917\u094d\u0930\u0947\u0938 \u0915\u093e \u0915\u0941\u0928\u092c\u093e , \u092f\u0941\u0935\u093e \u0926\u0932\u093f\u0924 \u0928\u0947\u0924\u093e \u0928\u0947 \u0932\u0940 \u0915\u093e\u0902\u0917\u094d\u0930\u0947\u0938 \u0915\u0940 \u0938\u0926\u0938\u094d\u092f\u0924\u093e - Congress family is growing in Bihar , young dalit leader Manish Paswan took membership of Congress",
+      "url": "https://www.jagran.com/bihar/patna-city-congress-family-is-growing-in-bihar-young-dalit-leader-manish-paswan-took-membership-of-congress-23935746.html",
+      "source": "jagran.com",
+      "bias_label": "unknown",
+      "published": "2025-05-11",
+      "collected_at": "2025-07-09T21:11:38.002947",
+      "id": "6f49cdfb1b1f_1752096356730",
+      "author": "Sunil Raj",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "6f49cdfb1b1f_1752096356730",
+      "stored_at": "2025-07-09T21:25:56.731011"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.jagran.com/bihar/patna-city-congress-family-is-growing-in-bihar-young-dalit-leader-manish-paswan-took-membership-of-congress-23935746.html",
+    "stored_doc_id": "6f49cdfb1b1f_1752096356730"
+  },
+  "collection_signature": "w7MP4fZJzgiWci8mr2KBrrmki9faSIJDzNwk/zzTDbk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.733990"
+}

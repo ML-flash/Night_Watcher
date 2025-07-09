@@ -1,0 +1,31 @@
+{
+  "document_id": "bdcecbc901014f13c7a4c144353d02417369ea1581905a970434776bc962d001",
+  "crypto_record": {
+    "document_id": "bdcecbc901014f13c7a4c144353d02417369ea1581905a970434776bc962d001",
+    "content_hash": "bdcecbc901014f13c7a4c144353d02417369ea1581905a970434776bc962d001",
+    "collection_timestamp": "2025-07-09T21:08:18.587228",
+    "source_metadata": {
+      "title": "7 takeaways from Trump\u2019s first address to Congress after his return to the White House - PBS",
+      "url": "https://www.pbs.org/newshour/politics/7-takeaways-from-trumps-first-address-to-congress-after-his-return-to-the-white-house",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-03-05T01:00:26-04:00",
+      "collected_at": "2025-07-09T20:40:39.209431",
+      "id": "70087b6c6771_1752095298586",
+      "author": "Chris Megerian, Associated Press, Aamer Madhani",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "70087b6c6771_1752095298586",
+      "stored_at": "2025-07-09T21:08:18.586455"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.pbs.org/newshour/politics/7-takeaways-from-trumps-first-address-to-congress-after-his-return-to-the-white-house",
+    "stored_doc_id": "70087b6c6771_1752095298586"
+  },
+  "collection_signature": "klo4nmoWuBOSsP8oOURn0bEnSY7w78UtWET9+KQ/Fr0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.587310"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "60b2d7e0e27bcea2bb73371b41594fec880b3eea12204aaa82d18acfb8063e28",
+  "crypto_record": {
+    "document_id": "60b2d7e0e27bcea2bb73371b41594fec880b3eea12204aaa82d18acfb8063e28",
+    "content_hash": "60b2d7e0e27bcea2bb73371b41594fec880b3eea12204aaa82d18acfb8063e28",
+    "collection_timestamp": "2025-07-09T21:08:18.727526",
+    "source_metadata": {
+      "title": "Senate advances massive bill for Trump's agenda after GOP leaders sway holdouts - NBC News",
+      "url": "https://www.nbcnews.com/politics/congress/senate-republican-bill-trump-agenda-vote-rcna215713",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-28",
+      "collected_at": "2025-07-09T20:46:07.463542",
+      "id": "ab7b4e200a2a_1752095298726",
+      "author": "Sahil Kapur; Scott Wong; Madyson Diaz; Brennan Leach; Frank Thorp V; Gabrielle Khoriaty",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "ab7b4e200a2a_1752095298726",
+      "stored_at": "2025-07-09T21:08:18.726652"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nbcnews.com/politics/congress/senate-republican-bill-trump-agenda-vote-rcna215713",
+    "stored_doc_id": "ab7b4e200a2a_1752095298726"
+  },
+  "collection_signature": "gTCR27mfFjnDmevsHjPk3/twA3C3xGALBQlUhbVUKGg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.727616"
+}

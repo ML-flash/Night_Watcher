@@ -1,0 +1,31 @@
+{
+  "document_id": "61a96d5991dae6bede933be40b3090a29525a765a392429266d1c1379e058a16",
+  "crypto_record": {
+    "document_id": "61a96d5991dae6bede933be40b3090a29525a765a392429266d1c1379e058a16",
+    "content_hash": "61a96d5991dae6bede933be40b3090a29525a765a392429266d1c1379e058a16",
+    "collection_timestamp": "2025-07-09T21:08:18.547338",
+    "source_metadata": {
+      "title": "Biden gives farewell remarks: 'We're not leaving the fight' - ABC News - Breaking News, Latest News and Videos",
+      "url": "https://abcnews.go.com/Politics/biden-farewell-remarks-inauguration/story?id=117903472",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-20",
+      "collected_at": "2025-07-09T20:38:16.719430",
+      "id": "f1294135b991_1752095298546",
+      "author": "ABC News; Meredith Deliso",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f1294135b991_1752095298546",
+      "stored_at": "2025-07-09T21:08:18.546479"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://abcnews.go.com/Politics/biden-farewell-remarks-inauguration/story?id=117903472",
+    "stored_doc_id": "f1294135b991_1752095298546"
+  },
+  "collection_signature": "8C5PPt8U1/dlvCN4rGdquUcQwe6M0sjGi7/AcbqnMAU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.547425"
+}

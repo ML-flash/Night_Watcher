@@ -1,0 +1,31 @@
+{
+  "document_id": "d649de3ac2abd46c90be7fea282e19f366775ffe86cd529c4061b90185c7f81e",
+  "crypto_record": {
+    "document_id": "d649de3ac2abd46c90be7fea282e19f366775ffe86cd529c4061b90185c7f81e",
+    "content_hash": "d649de3ac2abd46c90be7fea282e19f366775ffe86cd529c4061b90185c7f81e",
+    "collection_timestamp": "2025-07-09T21:08:19.411446",
+    "source_metadata": {
+      "title": "A Review of the President\u2019s Fiscal Year 2026 Budget Request for the Food and Drug Administration - Senate Appropriations Committee (.gov)",
+      "url": "https://www.appropriations.senate.gov/hearings/a-review-of-the-presidents-fiscal-year-2026-budget-request-for-the-food-and-drug-administration",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-22",
+      "collected_at": "2025-07-09T21:06:01.634298",
+      "id": "badb182f03cb_1752095299410",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "badb182f03cb_1752095299410",
+      "stored_at": "2025-07-09T21:08:19.410667"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.appropriations.senate.gov/hearings/a-review-of-the-presidents-fiscal-year-2026-budget-request-for-the-food-and-drug-administration",
+    "stored_doc_id": "badb182f03cb_1752095299410"
+  },
+  "collection_signature": "F41D2qjUqvi9em/MhanR5tcNk8U+d3/yGWKm98S1IRk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.411529"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "0c3dd017ed17a5d6d3331b14f372282a69b2f7cb6ac483c2a3a3d06d1ea8e9f5",
+  "crypto_record": {
+    "document_id": "0c3dd017ed17a5d6d3331b14f372282a69b2f7cb6ac483c2a3a3d06d1ea8e9f5",
+    "content_hash": "0c3dd017ed17a5d6d3331b14f372282a69b2f7cb6ac483c2a3a3d06d1ea8e9f5",
+    "collection_timestamp": "2025-07-09T21:08:19.270937",
+    "source_metadata": {
+      "title": "Michael Anton - U.S. Department of State (.gov)",
+      "url": "https://www.state.gov/biographies/michael-anton/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": null,
+      "collected_at": "2025-07-09T21:01:34.568372",
+      "id": "dd698a651fc3_1752095299270",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "dd698a651fc3_1752095299270",
+      "stored_at": "2025-07-09T21:08:19.270140"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.state.gov/biographies/michael-anton/",
+    "stored_doc_id": "dd698a651fc3_1752095299270"
+  },
+  "collection_signature": "ozbKb8b3JmFqa1lUoaSNQL3R9aPn2z9uBUUpUdmGlg0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.271021"
+}

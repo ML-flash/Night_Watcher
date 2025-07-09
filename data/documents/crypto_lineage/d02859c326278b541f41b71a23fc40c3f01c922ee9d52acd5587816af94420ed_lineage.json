@@ -1,0 +1,31 @@
+{
+  "document_id": "d02859c326278b541f41b71a23fc40c3f01c922ee9d52acd5587816af94420ed",
+  "crypto_record": {
+    "document_id": "d02859c326278b541f41b71a23fc40c3f01c922ee9d52acd5587816af94420ed",
+    "content_hash": "d02859c326278b541f41b71a23fc40c3f01c922ee9d52acd5587816af94420ed",
+    "collection_timestamp": "2025-07-09T21:08:18.642525",
+    "source_metadata": {
+      "title": "Regulatory Freeze Pending Review - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/01/regulatory-freeze-pending-review/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-20",
+      "collected_at": "2025-07-09T20:43:01.035871",
+      "id": "51da06ddeb8d_1752095298641",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "51da06ddeb8d_1752095298641",
+      "stored_at": "2025-07-09T21:08:18.641649"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/01/regulatory-freeze-pending-review/",
+    "stored_doc_id": "51da06ddeb8d_1752095298641"
+  },
+  "collection_signature": "f40OFNY4vw53DP9H87wKMPRnwcqrX9XuAjSCfvDzlWc=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.642603"
+}

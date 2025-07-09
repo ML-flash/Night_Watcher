@@ -1,0 +1,31 @@
+{
+  "document_id": "680bc077b0659bf03eee9852e83843aa34ffc67858661d75b95afba84a4f8fb2",
+  "crypto_record": {
+    "document_id": "680bc077b0659bf03eee9852e83843aa34ffc67858661d75b95afba84a4f8fb2",
+    "content_hash": "680bc077b0659bf03eee9852e83843aa34ffc67858661d75b95afba84a4f8fb2",
+    "collection_timestamp": "2025-07-09T21:08:19.390916",
+    "source_metadata": {
+      "title": "Investigation launched after anonymous letter accuses Hamtramck police chief of grooming members - ClickOnDetroit | WDIV Local 4",
+      "url": "https://www.clickondetroit.com/news/local/2025/05/23/investigation-launched-after-anonymous-letter-accuses-hamtramck-police-chief-of-grooming-members/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-23",
+      "collected_at": "2025-07-09T21:05:01.856257",
+      "id": "d15a4bef109f_1752095299390",
+      "author": "Brandon Carr",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d15a4bef109f_1752095299390",
+      "stored_at": "2025-07-09T21:08:19.390248"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.clickondetroit.com/news/local/2025/05/23/investigation-launched-after-anonymous-letter-accuses-hamtramck-police-chief-of-grooming-members/",
+    "stored_doc_id": "d15a4bef109f_1752095299390"
+  },
+  "collection_signature": "KLeiLcCAjCv+uIvD/9NtKmb40zGrWkk+S61DZXBm//M=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.391005"
+}

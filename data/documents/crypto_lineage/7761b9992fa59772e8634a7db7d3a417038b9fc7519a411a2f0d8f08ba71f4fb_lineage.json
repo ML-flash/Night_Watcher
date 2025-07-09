@@ -1,0 +1,31 @@
+{
+  "document_id": "7761b9992fa59772e8634a7db7d3a417038b9fc7519a411a2f0d8f08ba71f4fb",
+  "crypto_record": {
+    "document_id": "7761b9992fa59772e8634a7db7d3a417038b9fc7519a411a2f0d8f08ba71f4fb",
+    "content_hash": "7761b9992fa59772e8634a7db7d3a417038b9fc7519a411a2f0d8f08ba71f4fb",
+    "collection_timestamp": "2025-07-09T21:08:19.123463",
+    "source_metadata": {
+      "title": "House OKs local government policy bill - MN House of Representatives (.gov)",
+      "url": "https://www.house.mn.gov/sessiondaily/Story/18762",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-01",
+      "collected_at": "2025-07-09T20:58:33.959494",
+      "id": "0490401cf1ca_1752095299122",
+      "author": "Brian Basham",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "0490401cf1ca_1752095299122",
+      "stored_at": "2025-07-09T21:08:19.122842"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.house.mn.gov/sessiondaily/Story/18762",
+    "stored_doc_id": "0490401cf1ca_1752095299122"
+  },
+  "collection_signature": "LuHxY7SVluQKcSdpsg2pmQPEiZDw/EMPepOP6mA9/ZU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.123547"
+}

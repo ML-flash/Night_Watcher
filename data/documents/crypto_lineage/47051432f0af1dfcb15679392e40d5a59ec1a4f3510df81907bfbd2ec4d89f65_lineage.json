@@ -1,0 +1,31 @@
+{
+  "document_id": "47051432f0af1dfcb15679392e40d5a59ec1a4f3510df81907bfbd2ec4d89f65",
+  "crypto_record": {
+    "document_id": "47051432f0af1dfcb15679392e40d5a59ec1a4f3510df81907bfbd2ec4d89f65",
+    "content_hash": "47051432f0af1dfcb15679392e40d5a59ec1a4f3510df81907bfbd2ec4d89f65",
+    "collection_timestamp": "2025-07-09T21:25:56.989232",
+    "source_metadata": {
+      "title": "NPR sues Trump over his executive order to cut funding for NPR and PBS",
+      "url": "https://www.wcnc.com/article/news/nation-world/npr-sues-trump-administration/507-75ccf3ef-7a8f-4b17-a239-5935d85da8e1",
+      "source": "wcnc.com",
+      "bias_label": "unknown",
+      "published": "2025-05-27",
+      "collected_at": "2025-07-09T21:18:54.877420",
+      "id": "a00e9bfad8fc_1752096356987",
+      "author": "Associated Press",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a00e9bfad8fc_1752096356987",
+      "stored_at": "2025-07-09T21:25:56.987144"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.wcnc.com/article/news/nation-world/npr-sues-trump-administration/507-75ccf3ef-7a8f-4b17-a239-5935d85da8e1",
+    "stored_doc_id": "a00e9bfad8fc_1752096356987"
+  },
+  "collection_signature": "ijXgrMaqQCrNfHnCN4bcxH9voWqk+ZnN0Jm3lSDoJuw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.989329"
+}

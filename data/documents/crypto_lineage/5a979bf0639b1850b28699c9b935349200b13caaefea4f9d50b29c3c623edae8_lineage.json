@@ -1,0 +1,31 @@
+{
+  "document_id": "5a979bf0639b1850b28699c9b935349200b13caaefea4f9d50b29c3c623edae8",
+  "crypto_record": {
+    "document_id": "5a979bf0639b1850b28699c9b935349200b13caaefea4f9d50b29c3c623edae8",
+    "content_hash": "5a979bf0639b1850b28699c9b935349200b13caaefea4f9d50b29c3c623edae8",
+    "collection_timestamp": "2025-07-09T20:27:16.735016",
+    "source_metadata": {
+      "title": "Miscarriage Is Increasingly Dangerous for Women in Texas, Our Analysis Shows. Here\u2019s How We Did It.",
+      "url": "https://www.propublica.org/article/texas-miscarriage-blood-transfusions-methodology",
+      "source": "ProPublica",
+      "bias_label": "center-left",
+      "published": "2025-07-01",
+      "collected_at": "2025-07-09T20:27:05.982972",
+      "id": "de6679e848a2_1752092836734",
+      "author": "Andrea Suozzo; Kavitha Surana; Lizzie Presser",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "de6679e848a2_1752092836734",
+      "stored_at": "2025-07-09T20:27:16.734357"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.propublica.org/article/texas-miscarriage-blood-transfusions-methodology",
+    "stored_doc_id": "de6679e848a2_1752092836734"
+  },
+  "collection_signature": "oflF4MyLnu98AFdDZKjKESwbyvbV6125/MZ6RHGwdXs=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:27:16.735122"
+}

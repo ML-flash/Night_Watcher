@@ -1,0 +1,31 @@
+{
+  "document_id": "072a653065a2f3b55131fe495421889cd76c609af7443b6345a9275488e2296d",
+  "crypto_record": {
+    "document_id": "072a653065a2f3b55131fe495421889cd76c609af7443b6345a9275488e2296d",
+    "content_hash": "072a653065a2f3b55131fe495421889cd76c609af7443b6345a9275488e2296d",
+    "collection_timestamp": "2025-07-09T21:25:57.078467",
+    "source_metadata": {
+      "title": "Law brings campaign finance rules in line \u2013 Winnipeg Free Press",
+      "url": "https://www.winnipegfreepress.com/opinion/analysis/2025/04/23/law-brings-campaign-finance-rules-in-line",
+      "source": "winnipegfreepress.com",
+      "bias_label": "unknown",
+      "published": "2025-04-23",
+      "collected_at": "2025-07-09T21:19:48.344464",
+      "id": "aa6aa2f83488_1752096357076",
+      "author": "Kathy Mallett; Liz Ambrose; Laurieb",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "aa6aa2f83488_1752096357076",
+      "stored_at": "2025-07-09T21:25:57.076516"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.winnipegfreepress.com/opinion/analysis/2025/04/23/law-brings-campaign-finance-rules-in-line",
+    "stored_doc_id": "aa6aa2f83488_1752096357076"
+  },
+  "collection_signature": "28o4agiRwFY4+9038/tSbGM8BPPJ60xrseYKIkw5QAU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.078575"
+}

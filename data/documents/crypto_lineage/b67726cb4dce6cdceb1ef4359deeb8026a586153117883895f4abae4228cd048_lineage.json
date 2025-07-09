@@ -1,0 +1,31 @@
+{
+  "document_id": "b67726cb4dce6cdceb1ef4359deeb8026a586153117883895f4abae4228cd048",
+  "crypto_record": {
+    "document_id": "b67726cb4dce6cdceb1ef4359deeb8026a586153117883895f4abae4228cd048",
+    "content_hash": "b67726cb4dce6cdceb1ef4359deeb8026a586153117883895f4abae4228cd048",
+    "collection_timestamp": "2025-07-09T21:25:56.704679",
+    "source_metadata": {
+      "title": "Chief Electoral Officer divested of additional responsibilities considering upcoming Assembly elections in U . T . ",
+      "url": "https://www.thehindu.com/news/cities/puducherry/chief-electoral-officer-divested-of-additional-responsibilities-considering-upcoming-assembly-elections-in-ut/article69474085.ece",
+      "source": "thehindu.com",
+      "bias_label": "unknown",
+      "published": "2025-04-22",
+      "collected_at": "2025-07-09T21:09:46.153490",
+      "id": "6baba1ab3ad0_1752096356703",
+      "author": "The Hindu Bureau",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "6baba1ab3ad0_1752096356703",
+      "stored_at": "2025-07-09T21:25:56.703948"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.thehindu.com/news/cities/puducherry/chief-electoral-officer-divested-of-additional-responsibilities-considering-upcoming-assembly-elections-in-ut/article69474085.ece",
+    "stored_doc_id": "6baba1ab3ad0_1752096356703"
+  },
+  "collection_signature": "qQky3/QG281uWriI37h6HbDN/L3FoaGhGTuTvjkoer4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.704772"
+}

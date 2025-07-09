@@ -1,0 +1,31 @@
+{
+  "document_id": "bab549729214e7766b2072989411c8a3b28fd54c08f76b8ff2b447ce72da1701",
+  "crypto_record": {
+    "document_id": "bab549729214e7766b2072989411c8a3b28fd54c08f76b8ff2b447ce72da1701",
+    "content_hash": "bab549729214e7766b2072989411c8a3b28fd54c08f76b8ff2b447ce72da1701",
+    "collection_timestamp": "2025-07-09T20:28:10.828280",
+    "source_metadata": {
+      "title": "Freedom for Western Sahara: Sahrawis Demand End of Moroccan Occupation at U.N. Human Rights Council",
+      "url": "http://www.democracynow.org/2025/6/30/sahara_film_fest",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-06-30",
+      "collected_at": "2025-07-09T20:27:53.813448",
+      "id": "34c031616780_1752092890827",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "34c031616780_1752092890827",
+      "stored_at": "2025-07-09T20:28:10.827398"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/6/30/sahara_film_fest",
+    "stored_doc_id": "34c031616780_1752092890827"
+  },
+  "collection_signature": "GlXHgzzxmCmTMGfyM0hIuvdXKROX3uAbDlmHgjgRgyA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.828371"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "18573ddfcc1464bd22be9df3d6e76096aec1753414dabf5601751bcad9716f9f",
+  "crypto_record": {
+    "document_id": "18573ddfcc1464bd22be9df3d6e76096aec1753414dabf5601751bcad9716f9f",
+    "content_hash": "18573ddfcc1464bd22be9df3d6e76096aec1753414dabf5601751bcad9716f9f",
+    "collection_timestamp": "2025-07-09T21:08:19.414252",
+    "source_metadata": {
+      "title": "Examining the President's FY 2026 Budget Request for the Department of the Interior | Full Committee Oversight Hearing - House Committee on Natural Resources (.gov)",
+      "url": "https://naturalresources.house.gov/calendar/eventsingle.aspx?EventID=417185",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-12",
+      "collected_at": "2025-07-09T21:06:05.103265",
+      "id": "8d3f279c56ed_1752095299411",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "8d3f279c56ed_1752095299411",
+      "stored_at": "2025-07-09T21:08:19.411988"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://naturalresources.house.gov/calendar/eventsingle.aspx?EventID=417185",
+    "stored_doc_id": "8d3f279c56ed_1752095299411"
+  },
+  "collection_signature": "O9KaqGsrlYpsMSjT4DGsNhjpFEQm7uQjFmhZa1eBl8M=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.414338"
+}

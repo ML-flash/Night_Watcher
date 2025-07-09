@@ -1,0 +1,31 @@
+{
+  "document_id": "3c8a8bc717a2689d28af1d05e2cee84f3a16429791e90564311a4f674e3e9b1e",
+  "crypto_record": {
+    "document_id": "3c8a8bc717a2689d28af1d05e2cee84f3a16429791e90564311a4f674e3e9b1e",
+    "content_hash": "3c8a8bc717a2689d28af1d05e2cee84f3a16429791e90564311a4f674e3e9b1e",
+    "collection_timestamp": "2025-07-09T21:08:19.087619",
+    "source_metadata": {
+      "title": "School of Law Dean Appoints New Designee to Serve as Chair of the Judicial Nomination Commission - UNM School of Law",
+      "url": "https://lawschool.unm.edu/news/2025/04/school-of-law-dean-appoints-new-designee-to-serve-as-chair-of-the-judicial-nomination-commission.html",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2024-01-01",
+      "collected_at": "2025-07-09T20:55:47.692964",
+      "id": "03e6329a5c51_1752095299085",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "03e6329a5c51_1752095299085",
+      "stored_at": "2025-07-09T21:08:19.085947"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://lawschool.unm.edu/news/2025/04/school-of-law-dean-appoints-new-designee-to-serve-as-chair-of-the-judicial-nomination-commission.html",
+    "stored_doc_id": "03e6329a5c51_1752095299085"
+  },
+  "collection_signature": "c9id4WDvtXBUj6GsfUp5KaWc5p4RKZxVCknbTgxT/LA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.087701"
+}

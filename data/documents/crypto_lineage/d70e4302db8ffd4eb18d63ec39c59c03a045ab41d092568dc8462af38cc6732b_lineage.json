@@ -1,0 +1,31 @@
+{
+  "document_id": "d70e4302db8ffd4eb18d63ec39c59c03a045ab41d092568dc8462af38cc6732b",
+  "crypto_record": {
+    "document_id": "d70e4302db8ffd4eb18d63ec39c59c03a045ab41d092568dc8462af38cc6732b",
+    "content_hash": "d70e4302db8ffd4eb18d63ec39c59c03a045ab41d092568dc8462af38cc6732b",
+    "collection_timestamp": "2025-07-09T21:08:18.768260",
+    "source_metadata": {
+      "title": "Rep. Spencer Igo - RELEASE: House approves housing bill with funding for proven housing solutions - MN House of Representatives (.gov)",
+      "url": "https://www.house.mn.gov/members/profile/news/15540/50740",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-05",
+      "collected_at": "2025-07-09T20:48:02.213302",
+      "id": "95318b2d660a_1752095298766",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "95318b2d660a_1752095298766",
+      "stored_at": "2025-07-09T21:08:18.767034"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.house.mn.gov/members/profile/news/15540/50740",
+    "stored_doc_id": "95318b2d660a_1752095298766"
+  },
+  "collection_signature": "4501hgKX1YJwrLOjawyZ8eRC4FU2RuBqUVIAog2dQlo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.768348"
+}

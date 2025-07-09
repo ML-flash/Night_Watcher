@@ -1,0 +1,31 @@
+{
+  "document_id": "7f505c6540c931b22c1bb0507035becc81ef1a74bfd4ff4696b9b02e5c702f6e",
+  "crypto_record": {
+    "document_id": "7f505c6540c931b22c1bb0507035becc81ef1a74bfd4ff4696b9b02e5c702f6e",
+    "content_hash": "7f505c6540c931b22c1bb0507035becc81ef1a74bfd4ff4696b9b02e5c702f6e",
+    "collection_timestamp": "2025-07-09T21:25:56.712467",
+    "source_metadata": {
+      "title": "Elon Musk government role gets even murkier",
+      "url": "https://us.cnn.com/2025/04/23/politics/elon-musk-doge-role-tesla-trump-what-matters/",
+      "source": "us.cnn.com",
+      "bias_label": "unknown",
+      "published": "2025-04-23",
+      "collected_at": "2025-07-09T21:09:49.485157",
+      "id": "27d8e5030484_1752096356710",
+      "author": "Zachary B Wolf",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "27d8e5030484_1752096356710",
+      "stored_at": "2025-07-09T21:25:56.710317"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://us.cnn.com/2025/04/23/politics/elon-musk-doge-role-tesla-trump-what-matters/",
+    "stored_doc_id": "27d8e5030484_1752096356710"
+  },
+  "collection_signature": "mZPe3jP3+/Qb36NEi97D2SlmJiGWGzlnmoX0+ebWefA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.712570"
+}

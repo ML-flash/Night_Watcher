@@ -1,0 +1,31 @@
+{
+  "document_id": "dc44a45b0e4d7d30ca235f4487d252dec23cb08faca13674f4bcf04f8ec59043",
+  "crypto_record": {
+    "document_id": "dc44a45b0e4d7d30ca235f4487d252dec23cb08faca13674f4bcf04f8ec59043",
+    "content_hash": "dc44a45b0e4d7d30ca235f4487d252dec23cb08faca13674f4bcf04f8ec59043",
+    "collection_timestamp": "2025-07-09T21:08:19.213083",
+    "source_metadata": {
+      "title": "White House Cabinet Meeting 4/30/25 - Rev",
+      "url": "https://www.rev.com/transcripts/white-house-cabinet-meeting-4-30-25",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-30",
+      "collected_at": "2025-07-09T21:00:17.229399",
+      "id": "7f56406e87e4_1752095299208",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7f56406e87e4_1752095299208",
+      "stored_at": "2025-07-09T21:08:19.209044"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.rev.com/transcripts/white-house-cabinet-meeting-4-30-25",
+    "stored_doc_id": "7f56406e87e4_1752095299208"
+  },
+  "collection_signature": "yRmyfOKuBumO+49Hl+qd5x2XNxJpyAvrWFYekzy9FWQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.213167"
+}

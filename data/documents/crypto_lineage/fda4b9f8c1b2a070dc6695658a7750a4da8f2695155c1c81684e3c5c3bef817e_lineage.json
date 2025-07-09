@@ -1,0 +1,31 @@
+{
+  "document_id": "fda4b9f8c1b2a070dc6695658a7750a4da8f2695155c1c81684e3c5c3bef817e",
+  "crypto_record": {
+    "document_id": "fda4b9f8c1b2a070dc6695658a7750a4da8f2695155c1c81684e3c5c3bef817e",
+    "content_hash": "fda4b9f8c1b2a070dc6695658a7750a4da8f2695155c1c81684e3c5c3bef817e",
+    "collection_timestamp": "2025-07-09T21:25:57.026783",
+    "source_metadata": {
+      "title": "Judge blocks executive order targeting Jenner & Block law firm",
+      "url": "https://www.washingtonexaminer.com/news/justice/3421171/judge-blocks-executive-order-targeting-jenner-block-law-firm/",
+      "source": "washingtonexaminer.com",
+      "bias_label": "unknown",
+      "published": "2025-05-23",
+      "collected_at": "2025-07-09T21:19:05.403898",
+      "id": "394ad48050dd_1752096357021",
+      "author": "Jack Birle",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "394ad48050dd_1752096357021",
+      "stored_at": "2025-07-09T21:25:57.021871"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.washingtonexaminer.com/news/justice/3421171/judge-blocks-executive-order-targeting-jenner-block-law-firm/",
+    "stored_doc_id": "394ad48050dd_1752096357021"
+  },
+  "collection_signature": "vNTIELIB+tBEQhGjhTWOJbIKnBMQOhCuTCuE82fCd34=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.026880"
+}

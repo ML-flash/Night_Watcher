@@ -1,0 +1,31 @@
+{
+  "document_id": "1b7243d5fb592c120893036ffa2dc726ddfb75f710201ea8b42389dd9e54edf7",
+  "crypto_record": {
+    "document_id": "1b7243d5fb592c120893036ffa2dc726ddfb75f710201ea8b42389dd9e54edf7",
+    "content_hash": "1b7243d5fb592c120893036ffa2dc726ddfb75f710201ea8b42389dd9e54edf7",
+    "collection_timestamp": "2025-07-09T21:08:18.651133",
+    "source_metadata": {
+      "title": "Ensuring the Enforcement of Federal Rule of Civil Procedure 65(c) - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/03/ensuring-the-enforcement-of-federal-rule-of-civil-procedure-65c/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-03-11",
+      "collected_at": "2025-07-09T20:43:12.216860",
+      "id": "9d33252a7478_1752095298649",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "9d33252a7478_1752095298649",
+      "stored_at": "2025-07-09T21:08:18.649429"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/03/ensuring-the-enforcement-of-federal-rule-of-civil-procedure-65c/",
+    "stored_doc_id": "9d33252a7478_1752095298649"
+  },
+  "collection_signature": "yfqWNU3PsE4wSJDDNEmSPOKeIGJWhiq3VarvFiRYWUU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.651229"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "f126e8522120b54851ef2c5ec547eb40b8f146b481f3f0b455616be9109f5c14",
+  "crypto_record": {
+    "document_id": "f126e8522120b54851ef2c5ec547eb40b8f146b481f3f0b455616be9109f5c14",
+    "content_hash": "f126e8522120b54851ef2c5ec547eb40b8f146b481f3f0b455616be9109f5c14",
+    "collection_timestamp": "2025-07-09T21:08:18.624526",
+    "source_metadata": {
+      "title": "Stopping Radical Environmentalism to Generate Power for the Columbia River Basin - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/06/stopping-radical-environmentalism-to-generate-power-for-the-columbia-river-basin/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-12",
+      "collected_at": "2025-07-09T20:42:21.515958",
+      "id": "eee9cf96c02f_1752095298622",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "eee9cf96c02f_1752095298622",
+      "stored_at": "2025-07-09T21:08:18.623085"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/06/stopping-radical-environmentalism-to-generate-power-for-the-columbia-river-basin/",
+    "stored_doc_id": "eee9cf96c02f_1752095298622"
+  },
+  "collection_signature": "Tm6sdblmOjhBO2+XYwqSoNOrlbrd1DJqRvM9BLoMozA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.624617"
+}

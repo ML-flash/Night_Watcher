@@ -1,0 +1,31 @@
+{
+  "document_id": "1bfca8e9e081c54ecf1d301f1023f85da5641d16996e0dd134a0523fc1607b23",
+  "crypto_record": {
+    "document_id": "1bfca8e9e081c54ecf1d301f1023f85da5641d16996e0dd134a0523fc1607b23",
+    "content_hash": "1bfca8e9e081c54ecf1d301f1023f85da5641d16996e0dd134a0523fc1607b23",
+    "collection_timestamp": "2025-07-09T20:27:16.726933",
+    "source_metadata": {
+      "title": "Trump\u2019s First EPA Promised to Crack Down on Forever Chemicals. His Second EPA Is Pulling Back.",
+      "url": "https://www.propublica.org/article/trump-epa-pfas-drinking-water",
+      "source": "ProPublica",
+      "bias_label": "center-left",
+      "published": "2025-07-02",
+      "collected_at": "2025-07-09T20:27:00.673723",
+      "id": "1058bd7a2d35_1752092836726",
+      "author": "Anna Clark",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "1058bd7a2d35_1752092836726",
+      "stored_at": "2025-07-09T20:27:16.726239"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.propublica.org/article/trump-epa-pfas-drinking-water",
+    "stored_doc_id": "1058bd7a2d35_1752092836726"
+  },
+  "collection_signature": "qZjuq5tzrmZBh9Al8uLrqxukXkaeEyNWn8onuSW83p8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:27:16.727017"
+}

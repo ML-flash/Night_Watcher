@@ -1,0 +1,31 @@
+{
+  "document_id": "aa02b688e7c52190efbb0fcc2a94f06895cf69ae8afcf6c2871cce336eb3d5d6",
+  "crypto_record": {
+    "document_id": "aa02b688e7c52190efbb0fcc2a94f06895cf69ae8afcf6c2871cce336eb3d5d6",
+    "content_hash": "aa02b688e7c52190efbb0fcc2a94f06895cf69ae8afcf6c2871cce336eb3d5d6",
+    "collection_timestamp": "2025-07-09T21:25:56.702209",
+    "source_metadata": {
+      "title": "Aspo Oyj : n varsinaisen yhti\u00f6kokouksen ja hallituksen",
+      "url": "https://www.globenewswire.com/news-release/2025/04/25/3068201/0/fi/Aspo-Oyj-n-varsinaisen-yhti%C3%B6kokouksen-ja-hallituksen-j%C3%A4rjest%C3%A4ytymiskokouksen-p%C3%A4%C3%A4t%C3%B6kset.html",
+      "source": "globenewswire.com",
+      "bias_label": "unknown",
+      "published": "2025-04-25",
+      "collected_at": "2025-07-09T21:09:40.022350",
+      "id": "2fe0088b75b9_1752096356701",
+      "author": "Aspo Plc",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "2fe0088b75b9_1752096356701",
+      "stored_at": "2025-07-09T21:25:56.701269"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.globenewswire.com/news-release/2025/04/25/3068201/0/fi/Aspo-Oyj-n-varsinaisen-yhti%C3%B6kokouksen-ja-hallituksen-j%C3%A4rjest%C3%A4ytymiskokouksen-p%C3%A4%C3%A4t%C3%B6kset.html",
+    "stored_doc_id": "2fe0088b75b9_1752096356701"
+  },
+  "collection_signature": "9Kyy5FlpaeaU8G5pe2pIy/gUnTl0E3NuVsqYwWxnr4A=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.702298"
+}

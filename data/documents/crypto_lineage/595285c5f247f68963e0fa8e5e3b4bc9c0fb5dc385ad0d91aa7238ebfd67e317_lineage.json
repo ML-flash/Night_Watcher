@@ -1,0 +1,31 @@
+{
+  "document_id": "595285c5f247f68963e0fa8e5e3b4bc9c0fb5dc385ad0d91aa7238ebfd67e317",
+  "crypto_record": {
+    "document_id": "595285c5f247f68963e0fa8e5e3b4bc9c0fb5dc385ad0d91aa7238ebfd67e317",
+    "content_hash": "595285c5f247f68963e0fa8e5e3b4bc9c0fb5dc385ad0d91aa7238ebfd67e317",
+    "collection_timestamp": "2025-07-09T21:08:19.358564",
+    "source_metadata": {
+      "title": "Carnegie Corporation of New York Awards Fellowships to 26 Scholars Researching Political Polarization - Carnegie Corporation of New York",
+      "url": "https://www.carnegie.org/news/articles/carnegie-corporation-of-new-york-awards-fellowships-to-26-scholars-researching-political-polarization/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-16",
+      "collected_at": "2025-07-09T21:03:53.606615",
+      "id": "21f717437291_1752095299350",
+      "author": "Carnegie Corporation",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "21f717437291_1752095299350",
+      "stored_at": "2025-07-09T21:08:19.350954"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.carnegie.org/news/articles/carnegie-corporation-of-new-york-awards-fellowships-to-26-scholars-researching-political-polarization/",
+    "stored_doc_id": "21f717437291_1752095299350"
+  },
+  "collection_signature": "48ejUP+La/kxyro5RE07cPEOX9Jn6q651MWjk4s7wZc=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.358644"
+}

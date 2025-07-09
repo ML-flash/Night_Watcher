@@ -1,0 +1,31 @@
+{
+  "document_id": "b5cc6541e2a0de634ec1a48b37d5477768be55f49fe81e6fb56d54c7bd8e64b0",
+  "crypto_record": {
+    "document_id": "b5cc6541e2a0de634ec1a48b37d5477768be55f49fe81e6fb56d54c7bd8e64b0",
+    "content_hash": "b5cc6541e2a0de634ec1a48b37d5477768be55f49fe81e6fb56d54c7bd8e64b0",
+    "collection_timestamp": "2025-07-09T21:08:18.781353",
+    "source_metadata": {
+      "title": "Irwin Introduces Legislation to Cut Your Auto Insurance Bills - Michigan Senate Democrats",
+      "url": "https://senatedems.com/irwin/2025/05/29/auto-insurance-bills/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-29",
+      "collected_at": "2025-07-09T20:48:45.202113",
+      "id": "3765f8b7e427_1752095298779",
+      "author": "Admin",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "3765f8b7e427_1752095298779",
+      "stored_at": "2025-07-09T21:08:18.780051"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://senatedems.com/irwin/2025/05/29/auto-insurance-bills/",
+    "stored_doc_id": "3765f8b7e427_1752095298779"
+  },
+  "collection_signature": "qGk0AXNMGUX4GzyIoNGoQd8wLZdQF3ZQ+A+9XewgsRs=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.781439"
+}

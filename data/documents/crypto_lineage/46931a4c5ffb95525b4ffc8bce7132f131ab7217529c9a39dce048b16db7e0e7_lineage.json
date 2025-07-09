@@ -1,0 +1,31 @@
+{
+  "document_id": "46931a4c5ffb95525b4ffc8bce7132f131ab7217529c9a39dce048b16db7e0e7",
+  "crypto_record": {
+    "document_id": "46931a4c5ffb95525b4ffc8bce7132f131ab7217529c9a39dce048b16db7e0e7",
+    "content_hash": "46931a4c5ffb95525b4ffc8bce7132f131ab7217529c9a39dce048b16db7e0e7",
+    "collection_timestamp": "2025-07-09T20:26:48.594422",
+    "source_metadata": {
+      "title": "Trump\u2019s CDC nominee advances on party-line vote in Senate",
+      "url": "https://thehill.com/homenews/senate/5391757-cdc-nominee-susan-monarez/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:30.525504",
+      "id": "0cd72eec27f0_1752092808593",
+      "author": "Joseph Choi",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "0cd72eec27f0_1752092808593",
+      "stored_at": "2025-07-09T20:26:48.593775"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/senate/5391757-cdc-nominee-susan-monarez/",
+    "stored_doc_id": "0cd72eec27f0_1752092808593"
+  },
+  "collection_signature": "gEoI01ee+33vq6vtHowtdWwmwiZz+tVGmYB8tic5xkk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.594505"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "29e984a221a280d42e842a40433afdf16f77dac108986e4d8e99228eb8bedb1d",
+  "crypto_record": {
+    "document_id": "29e984a221a280d42e842a40433afdf16f77dac108986e4d8e99228eb8bedb1d",
+    "content_hash": "29e984a221a280d42e842a40433afdf16f77dac108986e4d8e99228eb8bedb1d",
+    "collection_timestamp": "2025-07-09T20:32:38.870428",
+    "source_metadata": {
+      "title": "Senators Introduce a Bill Requiring Immigration Agents to Show Their Faces",
+      "url": "https://www.motherjones.com/politics/2025/07/visible-act-senate-alex-padilla-cory-booker-masking-ban-immigration-agents-ice-arrests-identification/",
+      "source": "Mother Jones Politics",
+      "bias_label": "left",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T20:32:37.692079",
+      "id": "eafa758db3cc_1752093158869",
+      "author": "Samantha Michaels",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "eafa758db3cc_1752093158869",
+      "stored_at": "2025-07-09T20:32:38.869608"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.motherjones.com/politics/2025/07/visible-act-senate-alex-padilla-cory-booker-masking-ban-immigration-agents-ice-arrests-identification/",
+    "stored_doc_id": "eafa758db3cc_1752093158869"
+  },
+  "collection_signature": "kaIAKV7mdBmZLcJG3D4G0kVctIn7ZEkpA+oWsJML/g0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:32:38.870515"
+}

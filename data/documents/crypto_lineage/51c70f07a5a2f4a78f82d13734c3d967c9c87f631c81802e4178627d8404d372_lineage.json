@@ -1,0 +1,31 @@
+{
+  "document_id": "51c70f07a5a2f4a78f82d13734c3d967c9c87f631c81802e4178627d8404d372",
+  "crypto_record": {
+    "document_id": "51c70f07a5a2f4a78f82d13734c3d967c9c87f631c81802e4178627d8404d372",
+    "content_hash": "51c70f07a5a2f4a78f82d13734c3d967c9c87f631c81802e4178627d8404d372",
+    "collection_timestamp": "2025-07-09T21:08:18.520080",
+    "source_metadata": {
+      "title": "WATCH: Trump to decide Iran action within 2 weeks, White House says - PBS",
+      "url": "https://www.pbs.org/newshour/politics/watch-trump-to-decide-iran-action-within-2-weeks-white-house-says",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-19T14:41:07-04:00",
+      "collected_at": "2025-07-09T20:36:58.129440",
+      "id": "2d333f474a78_1752095298519",
+      "author": "Associated Press",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "2d333f474a78_1752095298519",
+      "stored_at": "2025-07-09T21:08:18.519419"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.pbs.org/newshour/politics/watch-trump-to-decide-iran-action-within-2-weeks-white-house-says",
+    "stored_doc_id": "2d333f474a78_1752095298519"
+  },
+  "collection_signature": "oRi47QdPqiCvJlBFAUvSeZCp+rtzynQgLingQoWIcbo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.520157"
+}

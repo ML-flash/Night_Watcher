@@ -1,0 +1,31 @@
+{
+  "document_id": "a18f173cab61389f61124d0c658726100c1bb1287e7eed60804784ea96a3a241",
+  "crypto_record": {
+    "document_id": "a18f173cab61389f61124d0c658726100c1bb1287e7eed60804784ea96a3a241",
+    "content_hash": "a18f173cab61389f61124d0c658726100c1bb1287e7eed60804784ea96a3a241",
+    "collection_timestamp": "2025-07-09T21:08:18.553306",
+    "source_metadata": {
+      "title": "Joe Biden Launches a Comeback No One Is Asking For - Time Magazine",
+      "url": "https://time.com/7278213/joe-biden-launches-a-comeback-no-one-is-asking-for/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-16",
+      "collected_at": "2025-07-09T20:38:33.670890",
+      "id": "30af902038cf_1752095298552",
+      "author": "Philip Elliott",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "30af902038cf_1752095298552",
+      "stored_at": "2025-07-09T21:08:18.552429"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://time.com/7278213/joe-biden-launches-a-comeback-no-one-is-asking-for/",
+    "stored_doc_id": "30af902038cf_1752095298552"
+  },
+  "collection_signature": "jRbQK1xlRS/wOSR1guEdMoECF1B3fDN+AoeiKT9wm8k=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.553392"
+}

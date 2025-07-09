@@ -1,0 +1,31 @@
+{
+  "document_id": "53de76eb39d520999596b22e0039e2a5d0fd928b228d818525059b37d68a422b",
+  "crypto_record": {
+    "document_id": "53de76eb39d520999596b22e0039e2a5d0fd928b228d818525059b37d68a422b",
+    "content_hash": "53de76eb39d520999596b22e0039e2a5d0fd928b228d818525059b37d68a422b",
+    "collection_timestamp": "2025-07-09T20:28:10.836767",
+    "source_metadata": {
+      "title": "Kidnapped to Salvadoran Mega-Prison: Andry Hern\u00e1ndez Romero's Family on 100+ Days of Disappearance",
+      "url": "http://www.democracynow.org/2025/6/27/andry_jose_hernandez_romero",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-06-27",
+      "collected_at": "2025-07-09T20:28:01.617413",
+      "id": "f14cd46eefad_1752092890835",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f14cd46eefad_1752092890835",
+      "stored_at": "2025-07-09T20:28:10.835992"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/6/27/andry_jose_hernandez_romero",
+    "stored_doc_id": "f14cd46eefad_1752092890835"
+  },
+  "collection_signature": "6YwevdDs2RutF8CFTm/LXb51b54JiRCubnc75HGSMKk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.836855"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "3276e7a7edc7cbd6aec0dcd47394ccfbcda1d14ae73aa213576cb6653a97ac8b",
+  "crypto_record": {
+    "document_id": "3276e7a7edc7cbd6aec0dcd47394ccfbcda1d14ae73aa213576cb6653a97ac8b",
+    "content_hash": "3276e7a7edc7cbd6aec0dcd47394ccfbcda1d14ae73aa213576cb6653a97ac8b",
+    "collection_timestamp": "2025-07-09T20:36:43.179922",
+    "source_metadata": {
+      "title": "Here's what's in Trump's \"big, beautiful bill\" passed by Congress - CBS News",
+      "url": "https://www.cbsnews.com/news/whats-in-trump-big-beautiful-bill-senate-version/",
+      "source": "Congressional Activity",
+      "bias_label": "aggregate",
+      "published": "2025-06-28",
+      "collected_at": "2025-07-09T20:36:09.757664",
+      "id": "cdc95b1b6d21_1752093403179",
+      "author": "Kaia Hubbard; Caitlin Yilek",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "cdc95b1b6d21_1752093403179",
+      "stored_at": "2025-07-09T20:36:43.179291"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.cbsnews.com/news/whats-in-trump-big-beautiful-bill-senate-version/",
+    "stored_doc_id": "cdc95b1b6d21_1752093403179"
+  },
+  "collection_signature": "lpxRoOOrTygsWcBgXL0MErfaS9ekDNX4lD5YfmAM4iQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:36:43.180000"
+}

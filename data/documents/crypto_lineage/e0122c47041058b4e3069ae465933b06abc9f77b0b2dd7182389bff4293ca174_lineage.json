@@ -1,0 +1,31 @@
+{
+  "document_id": "e0122c47041058b4e3069ae465933b06abc9f77b0b2dd7182389bff4293ca174",
+  "crypto_record": {
+    "document_id": "e0122c47041058b4e3069ae465933b06abc9f77b0b2dd7182389bff4293ca174",
+    "content_hash": "e0122c47041058b4e3069ae465933b06abc9f77b0b2dd7182389bff4293ca174",
+    "collection_timestamp": "2025-07-09T21:08:19.386602",
+    "source_metadata": {
+      "title": "Death investigation launched after Laredo Police find body Sunday morning - KGNS",
+      "url": "https://www.kgns.tv/2025/05/19/death-investigation-launched-after-laredo-police-find-body-sunday-morning/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-19",
+      "collected_at": "2025-07-09T21:04:50.003366",
+      "id": "77012ecf924f_1752095299385",
+      "author": "KGNS Staff",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "77012ecf924f_1752095299385",
+      "stored_at": "2025-07-09T21:08:19.385411"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.kgns.tv/2025/05/19/death-investigation-launched-after-laredo-police-find-body-sunday-morning/",
+    "stored_doc_id": "77012ecf924f_1752095299385"
+  },
+  "collection_signature": "tbNAlE/Z0vJrMfv7mCSaeeSFniP7FycNYN1XQlhHmdg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.386691"
+}

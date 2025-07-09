@@ -1,0 +1,31 @@
+{
+  "document_id": "83b2ea017456be3d04c10220c50ee161e192f636842b0528f955a59dad4dc7a5",
+  "crypto_record": {
+    "document_id": "83b2ea017456be3d04c10220c50ee161e192f636842b0528f955a59dad4dc7a5",
+    "content_hash": "83b2ea017456be3d04c10220c50ee161e192f636842b0528f955a59dad4dc7a5",
+    "collection_timestamp": "2025-07-09T21:08:18.580896",
+    "source_metadata": {
+      "title": "WATCH: \u2018Nobody knows what I\u2019m going to do,\u2019 Trump says on Iran - PBS",
+      "url": "https://www.pbs.org/newshour/politics/watch-nobody-knows-what-im-going-to-do-trump-says-on-iran",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-18T11:43:07-04:00",
+      "collected_at": "2025-07-09T20:40:30.194505",
+      "id": "4ba28633f796_1752095298579",
+      "author": "Aamer Madhani, Associated Press",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "4ba28633f796_1752095298579",
+      "stored_at": "2025-07-09T21:08:18.580042"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.pbs.org/newshour/politics/watch-nobody-knows-what-im-going-to-do-trump-says-on-iran",
+    "stored_doc_id": "4ba28633f796_1752095298579"
+  },
+  "collection_signature": "g6fcVHT5UHxUmbIJQRT+UY9Qb67Mz3INP55I7DHCy80=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.580980"
+}

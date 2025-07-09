@@ -1,0 +1,31 @@
+{
+  "document_id": "cf1388369cd954154e15c14f34d04f566026fda7def439fed6b681a0e9e2558d",
+  "crypto_record": {
+    "document_id": "cf1388369cd954154e15c14f34d04f566026fda7def439fed6b681a0e9e2558d",
+    "content_hash": "cf1388369cd954154e15c14f34d04f566026fda7def439fed6b681a0e9e2558d",
+    "collection_timestamp": "2025-07-09T21:08:18.941028",
+    "source_metadata": {
+      "title": "June 27, 2025 - Supreme Court limits ability of judges to stop Trump - CNN",
+      "url": "https://www.cnn.com/politics/live-news/supreme-court-decisions-06-27-25",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-27",
+      "collected_at": "2025-07-09T20:52:02.433390",
+      "id": "9b21f4809c74_1752095298939",
+      "author": "John Fritze; Devan Cole; Dan Berman; Samantha Waldenberg; Kevin Liptak; Elise Hammond; CNN's Ang\u00e9lica Franganillo D\u00edaz; CNN\u2019s Betsy Klein; CNN's Betsy Klein; CNN's Hannah Rabinowitz; CNN Staff; CNN's Fadel Allassan; CNN's Rachel Wilson; CNN staff",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "9b21f4809c74_1752095298939",
+      "stored_at": "2025-07-09T21:08:18.939284"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.cnn.com/politics/live-news/supreme-court-decisions-06-27-25",
+    "stored_doc_id": "9b21f4809c74_1752095298939"
+  },
+  "collection_signature": "/aOGJOUGZreTNpcFIFEVi8kcaJLbjXb5Ijs6b+VE474=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.941130"
+}

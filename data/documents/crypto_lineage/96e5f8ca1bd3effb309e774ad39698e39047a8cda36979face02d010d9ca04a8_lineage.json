@@ -1,0 +1,31 @@
+{
+  "document_id": "96e5f8ca1bd3effb309e774ad39698e39047a8cda36979face02d010d9ca04a8",
+  "crypto_record": {
+    "document_id": "96e5f8ca1bd3effb309e774ad39698e39047a8cda36979face02d010d9ca04a8",
+    "content_hash": "96e5f8ca1bd3effb309e774ad39698e39047a8cda36979face02d010d9ca04a8",
+    "collection_timestamp": "2025-07-09T21:08:18.996576",
+    "source_metadata": {
+      "title": "Griffin Concedes to Riggs, Ending Six-Month Dispute Over North Carolina Supreme Court Election - State Court Report",
+      "url": "https://statecourtreport.org/our-work/analysis-opinion/griffin-concedes-riggs-ending-six-month-dispute-over-north-carolina",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-19",
+      "collected_at": "2025-07-09T20:52:43.876785",
+      "id": "c7630a15159f_1752095298995",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "c7630a15159f_1752095298995",
+      "stored_at": "2025-07-09T21:08:18.995602"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://statecourtreport.org/our-work/analysis-opinion/griffin-concedes-riggs-ending-six-month-dispute-over-north-carolina",
+    "stored_doc_id": "c7630a15159f_1752095298995"
+  },
+  "collection_signature": "EhQicjQDnu/S3Rw/gKatk9Lwxk+y+PVL/olrfJOSnrQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.996665"
+}

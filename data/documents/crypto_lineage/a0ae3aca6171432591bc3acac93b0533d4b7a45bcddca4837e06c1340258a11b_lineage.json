@@ -1,0 +1,31 @@
+{
+  "document_id": "a0ae3aca6171432591bc3acac93b0533d4b7a45bcddca4837e06c1340258a11b",
+  "crypto_record": {
+    "document_id": "a0ae3aca6171432591bc3acac93b0533d4b7a45bcddca4837e06c1340258a11b",
+    "content_hash": "a0ae3aca6171432591bc3acac93b0533d4b7a45bcddca4837e06c1340258a11b",
+    "collection_timestamp": "2025-07-09T21:08:18.539495",
+    "source_metadata": {
+      "title": "On Earth Day, We Finally Have a President Who Follows Science - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/articles/2025/04/on-earth-day-we-finally-have-a-president-who-follows-science/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-22",
+      "collected_at": "2025-07-09T20:37:47.369559",
+      "id": "4376a90352d6_1752095298538",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "4376a90352d6_1752095298538",
+      "stored_at": "2025-07-09T21:08:18.538640"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/articles/2025/04/on-earth-day-we-finally-have-a-president-who-follows-science/",
+    "stored_doc_id": "4376a90352d6_1752095298538"
+  },
+  "collection_signature": "xQ0K8MQhFzDuoBikGFGAVL3pBWcUUNkC3kiRXUzPc/0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.539583"
+}

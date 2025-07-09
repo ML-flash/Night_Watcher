@@ -1,0 +1,31 @@
+{
+  "document_id": "00178b32ad85ddca924b1112ebfe78017046a35c2abf883017573f4ec16ab705",
+  "crypto_record": {
+    "document_id": "00178b32ad85ddca924b1112ebfe78017046a35c2abf883017573f4ec16ab705",
+    "content_hash": "00178b32ad85ddca924b1112ebfe78017046a35c2abf883017573f4ec16ab705",
+    "collection_timestamp": "2025-07-09T21:25:57.100271",
+    "source_metadata": {
+      "title": "Ley de Telecomunicaciones : Denuncian atribuciones de secretar\u00eda a Agencia de Transformaci\u00f3n Digital y Telecomunicaciones",
+      "url": "https://www.sdpnoticias.com/mexico/ley-de-telecomunicaciones-denuncian-atribuciones-de-secretaria-a-agencia-de-transformacion-digital-y-telecomunicaciones/",
+      "source": "sdpnoticias.com",
+      "bias_label": "unknown",
+      "published": "2025-04-24",
+      "collected_at": "2025-07-09T21:22:35.133709",
+      "id": "90732235128a_1752096357096",
+      "author": "Sharon Sustaita",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "90732235128a_1752096357096",
+      "stored_at": "2025-07-09T21:25:57.096848"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.sdpnoticias.com/mexico/ley-de-telecomunicaciones-denuncian-atribuciones-de-secretaria-a-agencia-de-transformacion-digital-y-telecomunicaciones/",
+    "stored_doc_id": "90732235128a_1752096357096"
+  },
+  "collection_signature": "GxO/ei6sbLgfKJchrsYt44whZh+mNk1rTZ74M2eRdeI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.100375"
+}

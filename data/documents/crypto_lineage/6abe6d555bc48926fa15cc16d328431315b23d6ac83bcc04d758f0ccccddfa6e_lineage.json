@@ -1,0 +1,31 @@
+{
+  "document_id": "6abe6d555bc48926fa15cc16d328431315b23d6ac83bcc04d758f0ccccddfa6e",
+  "crypto_record": {
+    "document_id": "6abe6d555bc48926fa15cc16d328431315b23d6ac83bcc04d758f0ccccddfa6e",
+    "content_hash": "6abe6d555bc48926fa15cc16d328431315b23d6ac83bcc04d758f0ccccddfa6e",
+    "collection_timestamp": "2025-07-09T20:25:53.189408",
+    "source_metadata": {
+      "title": "Morning new brief",
+      "url": "https://www.npr.org/2025/07/09/nx-s1-5458430/morning-new-brief",
+      "source": "NPR Politics",
+      "bias_label": "center-left",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:25:49.582952",
+      "id": "718c8e62770a_1752092753188",
+      "author": "A Mart\u00ednez",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "718c8e62770a_1752092753188",
+      "stored_at": "2025-07-09T20:25:53.188887"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/07/09/nx-s1-5458430/morning-new-brief",
+    "stored_doc_id": "718c8e62770a_1752092753188"
+  },
+  "collection_signature": "YqtSCkGj5RTheFB5e8t5jd8DuEhivEiBDdVlLqjPIwk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:25:53.189481"
+}

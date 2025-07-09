@@ -1,0 +1,31 @@
+{
+  "document_id": "86e96114ce103fa44f7ad0b644968810eedceecfee726db5168c67c5673129dd",
+  "crypto_record": {
+    "document_id": "86e96114ce103fa44f7ad0b644968810eedceecfee726db5168c67c5673129dd",
+    "content_hash": "86e96114ce103fa44f7ad0b644968810eedceecfee726db5168c67c5673129dd",
+    "collection_timestamp": "2025-07-09T20:32:38.865839",
+    "source_metadata": {
+      "title": "Labor Department Reposts Grants for Women Workers DOGE Previously Killed",
+      "url": "https://www.motherjones.com/politics/2025/07/labor-department-reposts-grants-for-women-workers-doge-cancelled/",
+      "source": "Mother Jones Politics",
+      "bias_label": "left",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:32:33.057882",
+      "id": "f0ef1b829498_1752093158864",
+      "author": "Julianne McShane",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f0ef1b829498_1752093158864",
+      "stored_at": "2025-07-09T20:32:38.864992"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.motherjones.com/politics/2025/07/labor-department-reposts-grants-for-women-workers-doge-cancelled/",
+    "stored_doc_id": "f0ef1b829498_1752093158864"
+  },
+  "collection_signature": "LT6PNABwjnX9YmdMXAJeucENX+7P4ZT+VPEdOU5FBBk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:32:38.865934"
+}

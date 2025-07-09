@@ -1,0 +1,31 @@
+{
+  "document_id": "c2a532e99086ade169b13d1b0c6fc447ced029f0d2d10c3548795184d7a64250",
+  "crypto_record": {
+    "document_id": "c2a532e99086ade169b13d1b0c6fc447ced029f0d2d10c3548795184d7a64250",
+    "content_hash": "c2a532e99086ade169b13d1b0c6fc447ced029f0d2d10c3548795184d7a64250",
+    "collection_timestamp": "2025-07-09T21:25:56.876764",
+    "source_metadata": {
+      "title": "What time limit can the Supreme Court set for giving its consent to the bill ? President asks the top court 14 points",
+      "url": "https://bartamanpatrika.com/news/-what-time-limit-can-the-supreme-court-set-for-giving-its-consent-to-the-bill-president-asks-the-top-court-14-points",
+      "source": "bartamanpatrika.com",
+      "bias_label": "unknown",
+      "published": "2025-06-15",
+      "collected_at": "2025-07-09T21:16:10.043832",
+      "id": "6ce5f6bac712_1752096356875",
+      "author": "\u09ac\u09b0\u09cd\u09a4\u09ae\u09be\u09a8 \u0993\u09df\u09c7\u09ac\u09a1\u09c7\u09b8\u09cd\u0995 \u099c\u09c1\u09a8",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "6ce5f6bac712_1752096356875",
+      "stored_at": "2025-07-09T21:25:56.875862"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://bartamanpatrika.com/news/-what-time-limit-can-the-supreme-court-set-for-giving-its-consent-to-the-bill-president-asks-the-top-court-14-points",
+    "stored_doc_id": "6ce5f6bac712_1752096356875"
+  },
+  "collection_signature": "MqEd5r8GDuhcacLa2v+DIzmXrxoTMIbtPyf+ZVukB1s=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.876855"
+}

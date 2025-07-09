@@ -1,0 +1,31 @@
+{
+  "document_id": "1ee6eb9ae5e56c8d3a9a4078f63ff6f681f57878c551df4dc29bc6859cc62f06",
+  "crypto_record": {
+    "document_id": "1ee6eb9ae5e56c8d3a9a4078f63ff6f681f57878c551df4dc29bc6859cc62f06",
+    "content_hash": "1ee6eb9ae5e56c8d3a9a4078f63ff6f681f57878c551df4dc29bc6859cc62f06",
+    "collection_timestamp": "2025-07-09T21:08:18.691432",
+    "source_metadata": {
+      "title": "3 big changes to Trump\u2019s \u2018big bill\u2019 - PBS",
+      "url": "https://www.pbs.org/newshour/politics/whats-in-the-senates-version-of-trumps-big-bill",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-18T13:55:24-04:00",
+      "collected_at": "2025-07-09T20:44:28.194481",
+      "id": "ce6e40d9fc15_1752095298690",
+      "author": "Lisa Desjardins",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "ce6e40d9fc15_1752095298690",
+      "stored_at": "2025-07-09T21:08:18.690116"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.pbs.org/newshour/politics/whats-in-the-senates-version-of-trumps-big-bill",
+    "stored_doc_id": "ce6e40d9fc15_1752095298690"
+  },
+  "collection_signature": "3/LiHOvacC60+gL4oWB2L57TQtK1wET6k/+mU7tI9tY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.691559"
+}

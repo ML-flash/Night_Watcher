@@ -1,0 +1,31 @@
+{
+  "document_id": "c27c9aade5fafb0c4ddee097f19a5f4f3c88d4f30815fb4b3f022fee2a62d619",
+  "crypto_record": {
+    "document_id": "c27c9aade5fafb0c4ddee097f19a5f4f3c88d4f30815fb4b3f022fee2a62d619",
+    "content_hash": "c27c9aade5fafb0c4ddee097f19a5f4f3c88d4f30815fb4b3f022fee2a62d619",
+    "collection_timestamp": "2025-07-09T20:26:48.599748",
+    "source_metadata": {
+      "title": "Schumer jabs Trump for falling short of \u201990 deals in 90 days\u2019",
+      "url": "https://thehill.com/homenews/senate/5392048-schumer-trump-trade-deals-promises/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:35.323310",
+      "id": "4ca9ab65bccc_1752092808599",
+      "author": "Alexander Bolton",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "4ca9ab65bccc_1752092808599",
+      "stored_at": "2025-07-09T20:26:48.599118"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/senate/5392048-schumer-trump-trade-deals-promises/",
+    "stored_doc_id": "4ca9ab65bccc_1752092808599"
+  },
+  "collection_signature": "MYhDFOwm3VvB5NG3ksv2iHgzeKPK9V0IsLkT+GH/CTo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.599825"
+}

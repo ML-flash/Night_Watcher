@@ -1,0 +1,31 @@
+{
+  "document_id": "0e81070310971ea933f0daa7a5b8f646f751682ce829bd3ba5bf7ffaa18f4792",
+  "crypto_record": {
+    "document_id": "0e81070310971ea933f0daa7a5b8f646f751682ce829bd3ba5bf7ffaa18f4792",
+    "content_hash": "0e81070310971ea933f0daa7a5b8f646f751682ce829bd3ba5bf7ffaa18f4792",
+    "collection_timestamp": "2025-07-09T21:25:56.791902",
+    "source_metadata": {
+      "title": "Dy CM - minister meet fuels speculation of party rejig",
+      "url": "https://www.tribuneindia.com/news/himachal/dy-cm-ministers-meet-fuels-speculation-of-party-rejig/",
+      "source": "tribuneindia.com",
+      "bias_label": "unknown",
+      "published": "2025-04-21",
+      "collected_at": "2025-07-09T21:12:38.626706",
+      "id": "e1b3bc610bac_1752096356788",
+      "author": "Pratibha Chauhan",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "e1b3bc610bac_1752096356788",
+      "stored_at": "2025-07-09T21:25:56.788887"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.tribuneindia.com/news/himachal/dy-cm-ministers-meet-fuels-speculation-of-party-rejig/",
+    "stored_doc_id": "e1b3bc610bac_1752096356788"
+  },
+  "collection_signature": "7V0OGXUs4CW4gs9RsiLrw9cdGlorcAxtuOFCSLt+fe4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.791996"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "b294eb5971bcb21e3b84dce01b6fb965bcaf468f2d9946d3c97b74ed1e88f38d",
+  "crypto_record": {
+    "document_id": "b294eb5971bcb21e3b84dce01b6fb965bcaf468f2d9946d3c97b74ed1e88f38d",
+    "content_hash": "b294eb5971bcb21e3b84dce01b6fb965bcaf468f2d9946d3c97b74ed1e88f38d",
+    "collection_timestamp": "2025-07-09T21:25:56.810964",
+    "source_metadata": {
+      "title": "White House Saves Taxpayer Dollars With Lowest Payroll In 16 Years",
+      "url": "https://dailycaller.com/2025/07/08/trump-white-house-saves-taxpayer-dollars-lowest-payroll-16-years/",
+      "source": "dailycaller.com",
+      "bias_label": "unknown",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T21:12:58.128099",
+      "id": "1de5f07e79ca_1752096356808",
+      "author": "Adriel Perez-Gonzalez",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "1de5f07e79ca_1752096356808",
+      "stored_at": "2025-07-09T21:25:56.809028"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://dailycaller.com/2025/07/08/trump-white-house-saves-taxpayer-dollars-lowest-payroll-16-years/",
+    "stored_doc_id": "1de5f07e79ca_1752096356808"
+  },
+  "collection_signature": "8xZ5d1+IxE1S89nHeN8ok7KwGkMmzbWCxMq1LlP4vlY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.811939"
+}

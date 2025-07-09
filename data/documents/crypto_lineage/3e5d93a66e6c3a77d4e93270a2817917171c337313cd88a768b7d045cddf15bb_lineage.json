@@ -1,0 +1,31 @@
+{
+  "document_id": "3e5d93a66e6c3a77d4e93270a2817917171c337313cd88a768b7d045cddf15bb",
+  "crypto_record": {
+    "document_id": "3e5d93a66e6c3a77d4e93270a2817917171c337313cd88a768b7d045cddf15bb",
+    "content_hash": "3e5d93a66e6c3a77d4e93270a2817917171c337313cd88a768b7d045cddf15bb",
+    "collection_timestamp": "2025-07-09T21:08:18.764531",
+    "source_metadata": {
+      "title": "House budget panel approves Trump megabill following hard-liner resistance - Politico",
+      "url": "https://www.politico.com/news/2025/05/18/republicans-race-to-avoid-another-megabill-setback-00356424",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-18",
+      "collected_at": "2025-07-09T20:47:58.699025",
+      "id": "5d817f75ff42_1752095298763",
+      "author": "Jennifer Scholtes; Meredith Lee Hill",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "5d817f75ff42_1752095298763",
+      "stored_at": "2025-07-09T21:08:18.763646"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.politico.com/news/2025/05/18/republicans-race-to-avoid-another-megabill-setback-00356424",
+    "stored_doc_id": "5d817f75ff42_1752095298763"
+  },
+  "collection_signature": "I/Y+b69j5BgOf44xoG9C3azJSTyQVUOoAHJjz/HgTFY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.764613"
+}

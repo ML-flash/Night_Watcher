@@ -1,0 +1,31 @@
+{
+  "document_id": "a323742c5ffeafb3ad6a3c71961b9dbfbc7a763fd17deb1fe000f039e4c750c1",
+  "crypto_record": {
+    "document_id": "a323742c5ffeafb3ad6a3c71961b9dbfbc7a763fd17deb1fe000f039e4c750c1",
+    "content_hash": "a323742c5ffeafb3ad6a3c71961b9dbfbc7a763fd17deb1fe000f039e4c750c1",
+    "collection_timestamp": "2025-07-09T20:26:48.575221",
+    "source_metadata": {
+      "title": "Thune hopes to pass Russia sanctions bill by August",
+      "url": "https://thehill.com/homenews/senate/5392658-thune-russia-sanctions/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:10.658476",
+      "id": "2ceedc16e58a_1752092808574",
+      "author": "Alexander Bolton",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "2ceedc16e58a_1752092808574",
+      "stored_at": "2025-07-09T20:26:48.574600"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/senate/5392658-thune-russia-sanctions/",
+    "stored_doc_id": "2ceedc16e58a_1752092808574"
+  },
+  "collection_signature": "OBNmAN5zZbL7LGziUj5wgBlNZDX7x7v2Bu1VDMh5Xcw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.575301"
+}

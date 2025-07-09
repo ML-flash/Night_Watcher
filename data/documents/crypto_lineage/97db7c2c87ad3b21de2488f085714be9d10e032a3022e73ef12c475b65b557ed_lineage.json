@@ -1,0 +1,31 @@
+{
+  "document_id": "97db7c2c87ad3b21de2488f085714be9d10e032a3022e73ef12c475b65b557ed",
+  "crypto_record": {
+    "document_id": "97db7c2c87ad3b21de2488f085714be9d10e032a3022e73ef12c475b65b557ed",
+    "content_hash": "97db7c2c87ad3b21de2488f085714be9d10e032a3022e73ef12c475b65b557ed",
+    "collection_timestamp": "2025-07-09T21:08:18.885807",
+    "source_metadata": {
+      "title": "Hearing Wrap Up: FDA Must Eliminate Red Tape, Promote Innovation to Root Out Illicit Products and Restore Trust in the Agency - oversight.house.gov",
+      "url": "https://oversight.house.gov/release/hearing-wrap-up-fda-must-eliminate-red-tape-promote-innovation-to-root-out-illicit-products-and-restore-trust-in-the-agency/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-09",
+      "collected_at": "2025-07-09T20:50:48.403240",
+      "id": "85e9c87d7710_1752095298883",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "85e9c87d7710_1752095298883",
+      "stored_at": "2025-07-09T21:08:18.883155"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://oversight.house.gov/release/hearing-wrap-up-fda-must-eliminate-red-tape-promote-innovation-to-root-out-illicit-products-and-restore-trust-in-the-agency/",
+    "stored_doc_id": "85e9c87d7710_1752095298883"
+  },
+  "collection_signature": "mi9kcfVUgahkNzYkfMnbJ5XlGJ20NUMln9ZODMLmYNk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.885894"
+}

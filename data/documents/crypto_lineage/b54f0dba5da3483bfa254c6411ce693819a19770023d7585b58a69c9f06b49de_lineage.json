@@ -1,0 +1,31 @@
+{
+  "document_id": "b54f0dba5da3483bfa254c6411ce693819a19770023d7585b58a69c9f06b49de",
+  "crypto_record": {
+    "document_id": "b54f0dba5da3483bfa254c6411ce693819a19770023d7585b58a69c9f06b49de",
+    "content_hash": "b54f0dba5da3483bfa254c6411ce693819a19770023d7585b58a69c9f06b49de",
+    "collection_timestamp": "2025-07-09T20:27:16.728237",
+    "source_metadata": {
+      "title": "Inside Elon Musk\u2019s Stellar Year at the Texas Capitol",
+      "url": "https://www.propublica.org/article/elon-musk-texas-legislature-laws-spacex-tesla",
+      "source": "ProPublica",
+      "bias_label": "center-left",
+      "published": "2025-07-02",
+      "collected_at": "2025-07-09T20:27:01.526585",
+      "id": "035e29eb71ac_1752092836727",
+      "author": "Lauren McGaughy",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "035e29eb71ac_1752092836727",
+      "stored_at": "2025-07-09T20:27:16.727543"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.propublica.org/article/elon-musk-texas-legislature-laws-spacex-tesla",
+    "stored_doc_id": "035e29eb71ac_1752092836727"
+  },
+  "collection_signature": "afFWnWvFx1ji8M7q8yOgWxlyHrZo3fGS1F3m3hmZsI8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:27:16.728311"
+}

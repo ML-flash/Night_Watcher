@@ -1,0 +1,31 @@
+{
+  "document_id": "d206c3230a70b837b488a87a5f11a0235a86d199001811e8a0d1bb0bd090b94b",
+  "crypto_record": {
+    "document_id": "d206c3230a70b837b488a87a5f11a0235a86d199001811e8a0d1bb0bd090b94b",
+    "content_hash": "d206c3230a70b837b488a87a5f11a0235a86d199001811e8a0d1bb0bd090b94b",
+    "collection_timestamp": "2025-07-09T21:08:18.636516",
+    "source_metadata": {
+      "title": "Preventing Abuses of the Legal System and the Federal Court - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/03/preventing-abuses-of-the-legal-system-and-the-federal-court/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-03-22",
+      "collected_at": "2025-07-09T20:42:45.179352",
+      "id": "927ac93fa861_1752095298635",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "927ac93fa861_1752095298635",
+      "stored_at": "2025-07-09T21:08:18.635653"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/03/preventing-abuses-of-the-legal-system-and-the-federal-court/",
+    "stored_doc_id": "927ac93fa861_1752095298635"
+  },
+  "collection_signature": "AlsXlPa3lT9xvYKXaDaHVQf8s2YJcsmEBnS1txwnS68=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.636605"
+}

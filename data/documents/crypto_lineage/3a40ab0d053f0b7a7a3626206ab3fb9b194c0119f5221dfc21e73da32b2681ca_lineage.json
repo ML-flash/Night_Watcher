@@ -1,0 +1,31 @@
+{
+  "document_id": "3a40ab0d053f0b7a7a3626206ab3fb9b194c0119f5221dfc21e73da32b2681ca",
+  "crypto_record": {
+    "document_id": "3a40ab0d053f0b7a7a3626206ab3fb9b194c0119f5221dfc21e73da32b2681ca",
+    "content_hash": "3a40ab0d053f0b7a7a3626206ab3fb9b194c0119f5221dfc21e73da32b2681ca",
+    "collection_timestamp": "2025-07-09T20:35:58.435318",
+    "source_metadata": {
+      "title": "ADVANCING ARTIFICIAL INTELLIGENCE EDUCATION FOR AMERICAN YOUTH - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/04/advancing-artificial-intelligence-education-for-american-youth/",
+      "source": "Executive Orders Search",
+      "bias_label": "aggregate",
+      "published": "2025-04-23",
+      "collected_at": "2025-07-09T20:35:53.278078",
+      "id": "e87ce2a29e52_1752093358433",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "e87ce2a29e52_1752093358433",
+      "stored_at": "2025-07-09T20:35:58.433424"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/04/advancing-artificial-intelligence-education-for-american-youth/",
+    "stored_doc_id": "e87ce2a29e52_1752093358433"
+  },
+  "collection_signature": "QorosX9kJIj+ApSAht4ew72qtkppjrnFz3tKdu/C8QI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:35:58.435409"
+}

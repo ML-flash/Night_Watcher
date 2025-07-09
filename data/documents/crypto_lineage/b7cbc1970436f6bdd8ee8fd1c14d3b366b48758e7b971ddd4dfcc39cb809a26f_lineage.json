@@ -1,0 +1,31 @@
+{
+  "document_id": "b7cbc1970436f6bdd8ee8fd1c14d3b366b48758e7b971ddd4dfcc39cb809a26f",
+  "crypto_record": {
+    "document_id": "b7cbc1970436f6bdd8ee8fd1c14d3b366b48758e7b971ddd4dfcc39cb809a26f",
+    "content_hash": "b7cbc1970436f6bdd8ee8fd1c14d3b366b48758e7b971ddd4dfcc39cb809a26f",
+    "collection_timestamp": "2025-07-09T21:08:19.314818",
+    "source_metadata": {
+      "title": "Political news is making me miserable. Is it wrong to tune out? - vox.com",
+      "url": "https://www.vox.com/future-perfect/409257/politics-news-consumption-attention-empathy-compassion",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-20",
+      "collected_at": "2025-07-09T21:03:12.442154",
+      "id": "f1ca660447f6_1752095299313",
+      "author": "Sigal Samuel",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f1ca660447f6_1752095299313",
+      "stored_at": "2025-07-09T21:08:19.313264"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.vox.com/future-perfect/409257/politics-news-consumption-attention-empathy-compassion",
+    "stored_doc_id": "f1ca660447f6_1752095299313"
+  },
+  "collection_signature": "HzKUA9I/+yUYwgNizGxM33VdxRqYKCMcKKTq4Tv5CN8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.314969"
+}

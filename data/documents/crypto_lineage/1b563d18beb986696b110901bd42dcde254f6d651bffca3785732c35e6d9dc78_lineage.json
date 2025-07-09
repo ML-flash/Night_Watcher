@@ -1,0 +1,31 @@
+{
+  "document_id": "1b563d18beb986696b110901bd42dcde254f6d651bffca3785732c35e6d9dc78",
+  "crypto_record": {
+    "document_id": "1b563d18beb986696b110901bd42dcde254f6d651bffca3785732c35e6d9dc78",
+    "content_hash": "1b563d18beb986696b110901bd42dcde254f6d651bffca3785732c35e6d9dc78",
+    "collection_timestamp": "2025-07-09T21:25:56.943676",
+    "source_metadata": {
+      "title": "DOD educator unions sue Trump over collective bargaining rights",
+      "url": "https://www.marinecorpstimes.com/news/pentagon-congress/2025/05/07/dod-educator-unions-sue-trump-over-collective-bargaining-rights/",
+      "source": "marinecorpstimes.com",
+      "bias_label": "unknown",
+      "published": "2025-05-07",
+      "collected_at": "2025-07-09T21:18:05.588097",
+      "id": "e0e671f73330_1752096356942",
+      "author": "Karen Jowers",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "e0e671f73330_1752096356942",
+      "stored_at": "2025-07-09T21:25:56.942994"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.marinecorpstimes.com/news/pentagon-congress/2025/05/07/dod-educator-unions-sue-trump-over-collective-bargaining-rights/",
+    "stored_doc_id": "e0e671f73330_1752096356942"
+  },
+  "collection_signature": "VD9ISvQG+fRDHBtupUzjAJbUVw4D0za1HGXkahc9qmw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.943753"
+}

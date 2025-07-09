@@ -1,0 +1,31 @@
+{
+  "document_id": "ef03dc0b61d94b2aad36e1c61525f9df2a4ed6c78ae41a2855c981afcebd6c8b",
+  "crypto_record": {
+    "document_id": "ef03dc0b61d94b2aad36e1c61525f9df2a4ed6c78ae41a2855c981afcebd6c8b",
+    "content_hash": "ef03dc0b61d94b2aad36e1c61525f9df2a4ed6c78ae41a2855c981afcebd6c8b",
+    "collection_timestamp": "2025-07-09T21:08:18.546008",
+    "source_metadata": {
+      "title": "Assessing Joe Biden\u2019s Long (and Complicated) Taiwan Legacy - Global Taiwan Institute",
+      "url": "https://globaltaiwan.org/2025/02/assessing-joe-bidens-long-and-complicated-taiwan-legacy/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-05",
+      "collected_at": "2025-07-09T20:38:09.330828",
+      "id": "9c01b328bdd1_1752095298544",
+      "author": "Global Taiwan Institute",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "9c01b328bdd1_1752095298544",
+      "stored_at": "2025-07-09T21:08:18.545096"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://globaltaiwan.org/2025/02/assessing-joe-bidens-long-and-complicated-taiwan-legacy/",
+    "stored_doc_id": "9c01b328bdd1_1752095298544"
+  },
+  "collection_signature": "jVL7usULBOKz4YsHHTu2KZuAm9HddgjIaUBGqlTX/Kg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.546121"
+}

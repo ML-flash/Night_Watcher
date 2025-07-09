@@ -1,0 +1,31 @@
+{
+  "document_id": "d1860cbb197b2682f68e890c7e22660dc7421ac9c58c596d1b2385faf5b00f79",
+  "crypto_record": {
+    "document_id": "d1860cbb197b2682f68e890c7e22660dc7421ac9c58c596d1b2385faf5b00f79",
+    "content_hash": "d1860cbb197b2682f68e890c7e22660dc7421ac9c58c596d1b2385faf5b00f79",
+    "collection_timestamp": "2025-07-09T21:08:18.789564",
+    "source_metadata": {
+      "title": "Michigan Senate Democrats Introduce Legislation to Strengthen Protections for Vulnerable Adults - Michigan Senate Democrats",
+      "url": "https://senatedems.com/klinefelt/2025/02/27/michigan-senate-democrats-introduce-legislation-to-strengthen-protections-for-vulnerable-adults/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-27T00:00:00",
+      "collected_at": "2025-07-09T20:48:57.443521",
+      "id": "7784aa4f869b_1752095298786",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "7784aa4f869b_1752095298786",
+      "stored_at": "2025-07-09T21:08:18.786605"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://senatedems.com/klinefelt/2025/02/27/michigan-senate-democrats-introduce-legislation-to-strengthen-protections-for-vulnerable-adults/",
+    "stored_doc_id": "7784aa4f869b_1752095298786"
+  },
+  "collection_signature": "Xk5SdefSNnhg0NXZ2WOxpcnfpwWScoNFR4f+CNAaMmo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.789651"
+}

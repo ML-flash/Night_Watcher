@@ -1,0 +1,31 @@
+{
+  "document_id": "a8a8c1d097ef81b3277c4cc602311f30b9d2944499a10df2d74d28d1499f166b",
+  "crypto_record": {
+    "document_id": "a8a8c1d097ef81b3277c4cc602311f30b9d2944499a10df2d74d28d1499f166b",
+    "content_hash": "a8a8c1d097ef81b3277c4cc602311f30b9d2944499a10df2d74d28d1499f166b",
+    "collection_timestamp": "2025-07-09T21:25:56.688979",
+    "source_metadata": {
+      "title": "SDP : st\u00e4 t\u00e4ystyrm\u00e4ys hallituksen uusille pt\u00f6ksille \u2013  Kaikkien aikojen huonoin hallitus  ",
+      "url": "https://www.iltalehti.fi/politiikka/a/5e03b29f-e3bd-4eb7-b85d-033b445aa37c",
+      "source": "iltalehti.fi",
+      "bias_label": "unknown",
+      "published": "2025-04-24",
+      "collected_at": "2025-07-09T21:08:34.118374",
+      "id": "38abe4d1a38a_1752096356688",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "38abe4d1a38a_1752096356688",
+      "stored_at": "2025-07-09T21:25:56.688319"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.iltalehti.fi/politiikka/a/5e03b29f-e3bd-4eb7-b85d-033b445aa37c",
+    "stored_doc_id": "38abe4d1a38a_1752096356688"
+  },
+  "collection_signature": "B6sJwEvNW+1BEFZVm4MjxtaZHyHn+nfSEweZZrfoRH4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.689086"
+}

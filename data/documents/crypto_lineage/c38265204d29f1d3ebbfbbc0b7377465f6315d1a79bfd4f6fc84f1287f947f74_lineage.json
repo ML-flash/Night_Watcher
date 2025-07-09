@@ -1,0 +1,31 @@
+{
+  "document_id": "c38265204d29f1d3ebbfbbc0b7377465f6315d1a79bfd4f6fc84f1287f947f74",
+  "crypto_record": {
+    "document_id": "c38265204d29f1d3ebbfbbc0b7377465f6315d1a79bfd4f6fc84f1287f947f74",
+    "content_hash": "c38265204d29f1d3ebbfbbc0b7377465f6315d1a79bfd4f6fc84f1287f947f74",
+    "collection_timestamp": "2025-07-09T20:28:10.793424",
+    "source_metadata": {
+      "title": "Headlines for July  9, 2025",
+      "url": "http://www.democracynow.org/2025/7/9/headlines",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:27:24.769383",
+      "id": "81fec4905ddf_1752092890792",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "81fec4905ddf_1752092890792",
+      "stored_at": "2025-07-09T20:28:10.792804"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/7/9/headlines",
+    "stored_doc_id": "81fec4905ddf_1752092890792"
+  },
+  "collection_signature": "dfEPs3ttvFK9MpiDs1M9gsjykUb7zmmeY7e6IU/VaNQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.793504"
+}

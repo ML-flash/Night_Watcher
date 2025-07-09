@@ -1,0 +1,31 @@
+{
+  "document_id": "3e279ad377a1564c0e093fed81fdc144cfb6c89647dd88ec12e4c29d42cddf61",
+  "crypto_record": {
+    "document_id": "3e279ad377a1564c0e093fed81fdc144cfb6c89647dd88ec12e4c29d42cddf61",
+    "content_hash": "3e279ad377a1564c0e093fed81fdc144cfb6c89647dd88ec12e4c29d42cddf61",
+    "collection_timestamp": "2025-07-09T20:28:10.797485",
+    "source_metadata": {
+      "title": "Peter Beinart on Zohran Mamdani & Why Democratic Voters Are Increasingly Skeptical of Israel",
+      "url": "http://www.democracynow.org/2025/7/8/peter_beinart_nyt_mamdani",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T20:27:26.593825",
+      "id": "76f81f742f42_1752092890794",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "76f81f742f42_1752092890794",
+      "stored_at": "2025-07-09T20:28:10.795000"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/7/8/peter_beinart_nyt_mamdani",
+    "stored_doc_id": "76f81f742f42_1752092890794"
+  },
+  "collection_signature": "p6kv2K+qpTKd50An5p9CA3bqRV0Tx21rSnjB/203sBQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.797572"
+}

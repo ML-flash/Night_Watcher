@@ -1,0 +1,21 @@
+{
+  "content_hash": "42cf811f9754bad5833ca1a04a93d3dd78c35689fa7b869034fd7cac936d04ae",
+  "metadata": {
+    "title": "Hospital expenses per inpatient day across 50 states - Becker Hospital Review",
+    "url": "https://www.beckershospitalreview.com/finance/hospital-expenses-per-inpatient-day-across-50-states-2025/",
+    "source": "beckershospitalreview.com",
+    "bias_label": "unknown",
+    "published": "2025-05-14",
+    "collected_at": "2025-07-09T21:08:23.592591",
+    "id": "0ad584c85cd0_1752096356683",
+    "author": "Molly Gamble",
+    "via_google_news": false,
+    "via_gdelt": true,
+    "via_gov_api": false,
+    "extraction_method": "trafilatura",
+    "document_id": "0ad584c85cd0_1752096356683",
+    "stored_at": "2025-07-09T21:25:56.683499"
+  },
+  "timestamp": "2025-07-09T21:25:56.684084",
+  "signature": "Cna9aALvbRPlqMtMljtv5kwmrb8eTX59PJh7QnncNS0="
+}

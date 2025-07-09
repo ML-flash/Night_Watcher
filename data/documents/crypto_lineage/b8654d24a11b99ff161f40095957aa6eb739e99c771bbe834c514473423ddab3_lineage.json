@@ -1,0 +1,31 @@
+{
+  "document_id": "b8654d24a11b99ff161f40095957aa6eb739e99c771bbe834c514473423ddab3",
+  "crypto_record": {
+    "document_id": "b8654d24a11b99ff161f40095957aa6eb739e99c771bbe834c514473423ddab3",
+    "content_hash": "b8654d24a11b99ff161f40095957aa6eb739e99c771bbe834c514473423ddab3",
+    "collection_timestamp": "2025-07-09T21:08:18.653985",
+    "source_metadata": {
+      "title": "House passes final version of One Big Beautiful Bill Act | AHA News - American Hospital Association",
+      "url": "https://www.aha.org/news/headline/2025-07-03-house-passes-final-version-one-big-beautiful-bill-act",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-07-03",
+      "collected_at": "2025-07-09T20:43:24.040202",
+      "id": "0acc75357d22_1752095298653",
+      "author": "Ngill Drupal",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "0acc75357d22_1752095298653",
+      "stored_at": "2025-07-09T21:08:18.653313"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.aha.org/news/headline/2025-07-03-house-passes-final-version-one-big-beautiful-bill-act",
+    "stored_doc_id": "0acc75357d22_1752095298653"
+  },
+  "collection_signature": "3qMa2hq4am4w5ylD7r/tUe3O519ZJgMFI0h02/Y24AQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.654087"
+}

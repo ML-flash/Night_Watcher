@@ -1,0 +1,31 @@
+{
+  "document_id": "b4146f346ac843aecc51e5abdea54d7904a8096a01951d5df1b1669e15f75e14",
+  "crypto_record": {
+    "document_id": "b4146f346ac843aecc51e5abdea54d7904a8096a01951d5df1b1669e15f75e14",
+    "content_hash": "b4146f346ac843aecc51e5abdea54d7904a8096a01951d5df1b1669e15f75e14",
+    "collection_timestamp": "2025-07-09T20:26:48.608245",
+    "source_metadata": {
+      "title": "A forgotten Supreme Court case protects unpopular speech",
+      "url": "https://thehill.com/opinion/judiciary/5390081-a-forgotten-supreme-court-case-protects-unpopular-speech/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:44.023860",
+      "id": "86a331057d8c_1752092808607",
+      "author": "Richard Labunski; Opinion Contributor",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "86a331057d8c_1752092808607",
+      "stored_at": "2025-07-09T20:26:48.607666"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/opinion/judiciary/5390081-a-forgotten-supreme-court-case-protects-unpopular-speech/",
+    "stored_doc_id": "86a331057d8c_1752092808607"
+  },
+  "collection_signature": "tJBFBCriDuRQjqz/9pphHaeBXcfjeh1n6ymKr+/TL3w=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.608334"
+}

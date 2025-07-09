@@ -1,0 +1,31 @@
+{
+  "document_id": "6c40d6b8bacbd1daff569ee397a3531f8ca44662ac246c504f0a3cc297a9134d",
+  "crypto_record": {
+    "document_id": "6c40d6b8bacbd1daff569ee397a3531f8ca44662ac246c504f0a3cc297a9134d",
+    "content_hash": "6c40d6b8bacbd1daff569ee397a3531f8ca44662ac246c504f0a3cc297a9134d",
+    "collection_timestamp": "2025-07-09T21:25:56.843500",
+    "source_metadata": {
+      "title": "Elon Musk DOGE Goons Surreptitiously Transmitted Reams of White House Data",
+      "url": "https://www.thedailybeast.com/elon-musks-doge-goons-surreptitiously-transmitted-reams-of-white-house-data/",
+      "source": "thedailybeast.com",
+      "bias_label": "unknown",
+      "published": "2025-06-07",
+      "collected_at": "2025-07-09T21:13:52.744153",
+      "id": "63d47a173974_1752096356838",
+      "author": "Liam Archacki",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "63d47a173974_1752096356838",
+      "stored_at": "2025-07-09T21:25:56.838749"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.thedailybeast.com/elon-musks-doge-goons-surreptitiously-transmitted-reams-of-white-house-data/",
+    "stored_doc_id": "63d47a173974_1752096356838"
+  },
+  "collection_signature": "jh2dEY+GoTtr16rZJa4NcYZFRMg9vvFCTDsuvV65uZI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.843587"
+}

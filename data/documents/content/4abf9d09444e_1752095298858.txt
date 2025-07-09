@@ -1,0 +1,9 @@
+Location: 2318 Rayburn House Office Building
+Subcommittee:
+Subcommittee on Research and Technology
+Opening Statements:
+Witnesses:
+- Mr. Adam Thierer, Resident Senior Fellow, Technology and Innovation, R Street Institute
+- Mr. Gregory Allen, Director, Wadhwani Center for AI & Advanced Technologies, Center for Strategic and International Studies
+- Dr. Julia Stoyanovich, Institute Associate Professor of Computer Science & Engineering, Tandon School of Engineering; Associate Professor of Data Science, Center for Data Science; Director, Center for Responsible AI, New York University
+- Mr. Tim Fist, Director of Emerging Technology Policy, Institute for Progress

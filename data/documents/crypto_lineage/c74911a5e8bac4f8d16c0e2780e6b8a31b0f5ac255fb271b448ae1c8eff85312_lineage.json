@@ -1,0 +1,31 @@
+{
+  "document_id": "c74911a5e8bac4f8d16c0e2780e6b8a31b0f5ac255fb271b448ae1c8eff85312",
+  "crypto_record": {
+    "document_id": "c74911a5e8bac4f8d16c0e2780e6b8a31b0f5ac255fb271b448ae1c8eff85312",
+    "content_hash": "c74911a5e8bac4f8d16c0e2780e6b8a31b0f5ac255fb271b448ae1c8eff85312",
+    "collection_timestamp": "2025-07-09T21:08:18.564608",
+    "source_metadata": {
+      "title": "President Donald J. Trump\u2019s Statement on His Call with President Vladimir Putin - USEmbassy.gov",
+      "url": "https://ru.usembassy.gov/president-trumps-statement-on-his-call-with-president-vladimir-putin/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-19",
+      "collected_at": "2025-07-09T20:39:30.334124",
+      "id": "06a46a518ff9_1752095298563",
+      "author": "By; Topics News; President; Press Releases",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "06a46a518ff9_1752095298563",
+      "stored_at": "2025-07-09T21:08:18.563777"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://ru.usembassy.gov/president-trumps-statement-on-his-call-with-president-vladimir-putin/",
+    "stored_doc_id": "06a46a518ff9_1752095298563"
+  },
+  "collection_signature": "wo1qAWAN/xm8xC0Iipt+36admqzQSF68RcMGgxFS9kA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.564695"
+}

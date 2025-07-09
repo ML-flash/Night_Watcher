@@ -1,0 +1,31 @@
+{
+  "document_id": "d783598ac9e801ca9879e2cc35be838da69baec71806effc6518ff30bf2c83ae",
+  "crypto_record": {
+    "document_id": "d783598ac9e801ca9879e2cc35be838da69baec71806effc6518ff30bf2c83ae",
+    "content_hash": "d783598ac9e801ca9879e2cc35be838da69baec71806effc6518ff30bf2c83ae",
+    "collection_timestamp": "2025-07-09T21:08:19.362519",
+    "source_metadata": {
+      "title": "America Party: Trump calls Musk's new political party plan 'ridiculous' - BBC",
+      "url": "https://www.bbc.com/news/articles/cy4n09lpz41o",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-07-07",
+      "collected_at": "2025-07-09T21:03:57.340285",
+      "id": "774411f82cef_1752095299358",
+      "author": "Osmond Chia",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "774411f82cef_1752095299358",
+      "stored_at": "2025-07-09T21:08:19.358950"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.bbc.com/news/articles/cy4n09lpz41o",
+    "stored_doc_id": "774411f82cef_1752095299358"
+  },
+  "collection_signature": "YkXcbWMwvMkq07JUw/E61QtnX71W0HWuMjhPniZWIg4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.362609"
+}

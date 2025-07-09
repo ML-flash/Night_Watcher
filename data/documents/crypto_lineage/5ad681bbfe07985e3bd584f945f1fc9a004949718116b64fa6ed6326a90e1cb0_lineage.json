@@ -1,0 +1,31 @@
+{
+  "document_id": "5ad681bbfe07985e3bd584f945f1fc9a004949718116b64fa6ed6326a90e1cb0",
+  "crypto_record": {
+    "document_id": "5ad681bbfe07985e3bd584f945f1fc9a004949718116b64fa6ed6326a90e1cb0",
+    "content_hash": "5ad681bbfe07985e3bd584f945f1fc9a004949718116b64fa6ed6326a90e1cb0",
+    "collection_timestamp": "2025-07-09T21:08:19.456079",
+    "source_metadata": {
+      "title": "Government Accountability official says fraud does exist, but it's not widespread - NPR",
+      "url": "https://www.npr.org/2025/02/16/g-s1-49261/we-can-do-better-gao-director-welcomes-renewed-focus-on-government-fraud",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-16",
+      "collected_at": "2025-07-09T21:08:01.015705",
+      "id": "38ce534feb44_1752095299455",
+      "author": "Luke Garrett",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "38ce534feb44_1752095299455",
+      "stored_at": "2025-07-09T21:08:19.455283"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/02/16/g-s1-49261/we-can-do-better-gao-director-welcomes-renewed-focus-on-government-fraud",
+    "stored_doc_id": "38ce534feb44_1752095299455"
+  },
+  "collection_signature": "uDbOVPeoWgZ/v6pR0nZUUk/T8lgvgglI+7IXn+8+wQU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.456180"
+}

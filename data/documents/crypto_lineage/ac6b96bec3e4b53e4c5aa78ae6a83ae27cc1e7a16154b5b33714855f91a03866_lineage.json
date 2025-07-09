@@ -1,0 +1,31 @@
+{
+  "document_id": "ac6b96bec3e4b53e4c5aa78ae6a83ae27cc1e7a16154b5b33714855f91a03866",
+  "crypto_record": {
+    "document_id": "ac6b96bec3e4b53e4c5aa78ae6a83ae27cc1e7a16154b5b33714855f91a03866",
+    "content_hash": "ac6b96bec3e4b53e4c5aa78ae6a83ae27cc1e7a16154b5b33714855f91a03866",
+    "collection_timestamp": "2025-07-09T21:08:19.429174",
+    "source_metadata": {
+      "title": "The USAID Betrayal - Committee on Foreign Affairs (.gov)",
+      "url": "https://foreignaffairs.house.gov/hearing/the-usaid-betrayal/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-24",
+      "collected_at": "2025-07-09T21:06:25.752830",
+      "id": "f8ca8724eab0_1752095299427",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f8ca8724eab0_1752095299427",
+      "stored_at": "2025-07-09T21:08:19.427467"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://foreignaffairs.house.gov/hearing/the-usaid-betrayal/",
+    "stored_doc_id": "f8ca8724eab0_1752095299427"
+  },
+  "collection_signature": "sd/Uvz/T+UGLn/GLuH9Y9f2vrE0HviH77m79/ySqYkY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.429265"
+}

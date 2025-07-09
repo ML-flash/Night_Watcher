@@ -1,0 +1,31 @@
+{
+  "document_id": "5bd3d363a2aafefb00eac22c48baa5734693881ee684813829e465a8577cdb07",
+  "crypto_record": {
+    "document_id": "5bd3d363a2aafefb00eac22c48baa5734693881ee684813829e465a8577cdb07",
+    "content_hash": "5bd3d363a2aafefb00eac22c48baa5734693881ee684813829e465a8577cdb07",
+    "collection_timestamp": "2025-07-09T20:27:16.724728",
+    "source_metadata": {
+      "title": "FDA Layoffs Could Compromise Safety of Medications Made at Foreign Factories, Inspectors Say",
+      "url": "https://www.propublica.org/article/fda-cuts-drug-factory-inspections",
+      "source": "ProPublica",
+      "bias_label": "center-left",
+      "published": "2025-07-07",
+      "collected_at": "2025-07-09T20:26:58.649727",
+      "id": "9b8460785c82_1752092836723",
+      "author": "Victoria Malis; Katherine Dailey; Sadie Leite; Debbie Cenziper; Megan Rose",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "9b8460785c82_1752092836723",
+      "stored_at": "2025-07-09T20:27:16.724042"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.propublica.org/article/fda-cuts-drug-factory-inspections",
+    "stored_doc_id": "9b8460785c82_1752092836723"
+  },
+  "collection_signature": "NR21kyOxrBL6YZQJRbBp9+BdSHhlwgYEWt6bW5Cv6t8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:27:16.724803"
+}

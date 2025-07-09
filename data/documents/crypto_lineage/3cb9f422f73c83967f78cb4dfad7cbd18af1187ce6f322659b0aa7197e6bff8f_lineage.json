@@ -1,0 +1,31 @@
+{
+  "document_id": "3cb9f422f73c83967f78cb4dfad7cbd18af1187ce6f322659b0aa7197e6bff8f",
+  "crypto_record": {
+    "document_id": "3cb9f422f73c83967f78cb4dfad7cbd18af1187ce6f322659b0aa7197e6bff8f",
+    "content_hash": "3cb9f422f73c83967f78cb4dfad7cbd18af1187ce6f322659b0aa7197e6bff8f",
+    "collection_timestamp": "2025-07-09T21:08:19.103387",
+    "source_metadata": {
+      "title": "Doing Business with FEMA - FEMA.gov",
+      "url": "https://www.fema.gov/business-industry/doing-business",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-25",
+      "collected_at": "2025-07-09T20:57:56.359370",
+      "id": "c5151d63c80c_1752095299102",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "c5151d63c80c_1752095299102",
+      "stored_at": "2025-07-09T21:08:19.102644"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.fema.gov/business-industry/doing-business",
+    "stored_doc_id": "c5151d63c80c_1752095299102"
+  },
+  "collection_signature": "mDjDOZ3PgQgNK2tDIurCKuh2sXl5yKAMuoFWFub6qc4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.103472"
+}

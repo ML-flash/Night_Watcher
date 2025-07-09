@@ -1,0 +1,31 @@
+{
+  "document_id": "818430ca57fdfb6cfe8b6edb497d5530950514aee2e4a762c890137471f719a5",
+  "crypto_record": {
+    "document_id": "818430ca57fdfb6cfe8b6edb497d5530950514aee2e4a762c890137471f719a5",
+    "content_hash": "818430ca57fdfb6cfe8b6edb497d5530950514aee2e4a762c890137471f719a5",
+    "collection_timestamp": "2025-07-09T21:08:19.019114",
+    "source_metadata": {
+      "title": "Judge blocks Trump order on international students - Harvard Gazette",
+      "url": "https://news.harvard.edu/gazette/story/2025/06/judge-blocks-trump-order-on-international-students/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-06",
+      "collected_at": "2025-07-09T20:53:50.783174",
+      "id": "5bcead4ab551_1752095299016",
+      "author": "Terry Murphy",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "5bcead4ab551_1752095299016",
+      "stored_at": "2025-07-09T21:08:19.016557"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://news.harvard.edu/gazette/story/2025/06/judge-blocks-trump-order-on-international-students/",
+    "stored_doc_id": "5bcead4ab551_1752095299016"
+  },
+  "collection_signature": "5zf/dHVo9g/vFBRfnKXulAZ42HE+SYB0D/wWphM/IkA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.019230"
+}

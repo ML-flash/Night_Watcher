@@ -1,0 +1,31 @@
+{
+  "document_id": "8ff955c1063c3ada19c620873e49a44b00a54725ac20b32a28fabba23b29f764",
+  "crypto_record": {
+    "document_id": "8ff955c1063c3ada19c620873e49a44b00a54725ac20b32a28fabba23b29f764",
+    "content_hash": "8ff955c1063c3ada19c620873e49a44b00a54725ac20b32a28fabba23b29f764",
+    "collection_timestamp": "2025-07-09T21:25:57.118291",
+    "source_metadata": {
+      "title": "Full list of Tories awarded peerages in Rishi Sunak resignation honours",
+      "url": "https://www.express.co.uk/news/politics/2040464/rishi-sunak-peerages-full-list",
+      "source": "express.co.uk",
+      "bias_label": "unknown",
+      "published": "2025-04-11T14:18:00+01:00",
+      "collected_at": "2025-07-09T21:24:28.509384",
+      "id": "04ce09ae5f37_1752096357114",
+      "author": "Hannah Kane, Martyn Brown",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "04ce09ae5f37_1752096357114",
+      "stored_at": "2025-07-09T21:25:57.114416"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.express.co.uk/news/politics/2040464/rishi-sunak-peerages-full-list",
+    "stored_doc_id": "04ce09ae5f37_1752096357114"
+  },
+  "collection_signature": "BxvgGhg9H3JTTpFpTEGjgOz2qXX94eL9R5xPOc4DtpQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.118493"
+}

@@ -1,0 +1,21 @@
+{
+  "content_hash": "496379d91dc45bee3729e8bf34e8fc73c9545bfb460024a59c4668aaa7a60d11",
+  "metadata": {
+    "title": "FedRAMP - GSA (.gov)",
+    "url": "https://www.gsa.gov/technology/government-it-initiatives/fedramp",
+    "source": "Google News Aggregate",
+    "bias_label": "unknown",
+    "published": "2025-03-31",
+    "collected_at": "2025-07-09T20:57:11.171281",
+    "id": "c474764ed430_1752095299101",
+    "author": null,
+    "via_google_news": true,
+    "via_gdelt": false,
+    "via_gov_api": false,
+    "extraction_method": "trafilatura",
+    "document_id": "c474764ed430_1752095299101",
+    "stored_at": "2025-07-09T21:08:19.101365"
+  },
+  "timestamp": "2025-07-09T21:08:19.101760",
+  "signature": "Fq7Y038MxdlEarlJlYgGsG2Pf+SRaloKyGuNp81oDn4="
+}

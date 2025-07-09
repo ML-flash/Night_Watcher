@@ -1,0 +1,31 @@
+{
+  "document_id": "6a4ff3dea201211c6016086ec20084c9be157fd5ff67337e40c787bceb89d93e",
+  "crypto_record": {
+    "document_id": "6a4ff3dea201211c6016086ec20084c9be157fd5ff67337e40c787bceb89d93e",
+    "content_hash": "6a4ff3dea201211c6016086ec20084c9be157fd5ff67337e40c787bceb89d93e",
+    "collection_timestamp": "2025-07-09T20:27:16.749232",
+    "source_metadata": {
+      "title": "\u201cYou\u2019re Already Approved\u201d: How One Tennessee Company Sets a Debt Trap",
+      "url": "https://www.propublica.org/article/flex-lenders-reborrow",
+      "source": "ProPublica",
+      "bias_label": "center-left",
+      "published": "2025-06-26",
+      "collected_at": "2025-07-09T20:27:14.593613",
+      "id": "530a50726b00_1752092836748",
+      "author": "Adam Friedman",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "530a50726b00_1752092836748",
+      "stored_at": "2025-07-09T20:27:16.748569"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.propublica.org/article/flex-lenders-reborrow",
+    "stored_doc_id": "530a50726b00_1752092836748"
+  },
+  "collection_signature": "tGkN6USTZcgGVfqK0RfwFV4UyjzotAzUUl0+VTUtgUg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:27:16.749311"
+}

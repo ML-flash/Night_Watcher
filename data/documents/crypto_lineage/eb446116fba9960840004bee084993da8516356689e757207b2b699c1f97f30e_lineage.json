@@ -1,0 +1,31 @@
+{
+  "document_id": "eb446116fba9960840004bee084993da8516356689e757207b2b699c1f97f30e",
+  "crypto_record": {
+    "document_id": "eb446116fba9960840004bee084993da8516356689e757207b2b699c1f97f30e",
+    "content_hash": "eb446116fba9960840004bee084993da8516356689e757207b2b699c1f97f30e",
+    "collection_timestamp": "2025-07-09T21:08:19.071050",
+    "source_metadata": {
+      "title": "Judge blocks Trump administration from attempting to dismantle Department of Education - ABC News - Breaking News, Latest News and Videos",
+      "url": "https://abcnews.go.com/US/judge-blocks-trump-administration-attempting-dismantle-department-education/story?id=122078365",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-22",
+      "collected_at": "2025-07-09T20:54:54.177976",
+      "id": "8a61da36693a_1752095299065",
+      "author": "ABC News; Peter Charalambous",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "8a61da36693a_1752095299065",
+      "stored_at": "2025-07-09T21:08:19.065794"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://abcnews.go.com/US/judge-blocks-trump-administration-attempting-dismantle-department-education/story?id=122078365",
+    "stored_doc_id": "8a61da36693a_1752095299065"
+  },
+  "collection_signature": "YW+MT9sDelemLjETMrf9z8Wr9ya+UUvESHXd3RrxOc4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.071178"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "bfe2b4124dad19c6a316af9625c390dc34b9c8f5a1eaf7e4e352c43d1284d257",
+  "crypto_record": {
+    "document_id": "bfe2b4124dad19c6a316af9625c390dc34b9c8f5a1eaf7e4e352c43d1284d257",
+    "content_hash": "bfe2b4124dad19c6a316af9625c390dc34b9c8f5a1eaf7e4e352c43d1284d257",
+    "collection_timestamp": "2025-07-09T21:08:19.276352",
+    "source_metadata": {
+      "title": "Defending America\u2019s Security through Visa and Travel Restrictions on South Sudan - U.S. Department of State (.gov)",
+      "url": "https://www.state.gov/defending-americas-security-through-visa-and-travel-restrictions-on-south-sudan/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": null,
+      "collected_at": "2025-07-09T21:01:52.112113",
+      "id": "cc4828c3a185_1752095299275",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "cc4828c3a185_1752095299275",
+      "stored_at": "2025-07-09T21:08:19.275528"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.state.gov/defending-americas-security-through-visa-and-travel-restrictions-on-south-sudan/",
+    "stored_doc_id": "cc4828c3a185_1752095299275"
+  },
+  "collection_signature": "PbT3NybuRHq7ztTJy+uFxlFzLGbGXIOtOEW57EEpLyA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.276442"
+}

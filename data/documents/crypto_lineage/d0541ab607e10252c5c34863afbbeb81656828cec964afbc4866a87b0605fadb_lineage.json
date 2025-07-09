@@ -1,0 +1,31 @@
+{
+  "document_id": "d0541ab607e10252c5c34863afbbeb81656828cec964afbc4866a87b0605fadb",
+  "crypto_record": {
+    "document_id": "d0541ab607e10252c5c34863afbbeb81656828cec964afbc4866a87b0605fadb",
+    "content_hash": "d0541ab607e10252c5c34863afbbeb81656828cec964afbc4866a87b0605fadb",
+    "collection_timestamp": "2025-07-09T21:08:19.011360",
+    "source_metadata": {
+      "title": "Federal Court Blocks Trump Birthright Citizenship Executive Order - American Civil Liberties Union",
+      "url": "https://www.aclu.org/press-releases/federal-court-blocks-trump-birthright-citizenship-executive-order",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-10",
+      "collected_at": "2025-07-09T20:53:26.703111",
+      "id": "f40729977641_1752095299010",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f40729977641_1752095299010",
+      "stored_at": "2025-07-09T21:08:19.010669"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.aclu.org/press-releases/federal-court-blocks-trump-birthright-citizenship-executive-order",
+    "stored_doc_id": "f40729977641_1752095299010"
+  },
+  "collection_signature": "cTHkcVZ2AE/6JT6BuUXPIZn587axQRboUFTGVaz6Gr0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.011438"
+}

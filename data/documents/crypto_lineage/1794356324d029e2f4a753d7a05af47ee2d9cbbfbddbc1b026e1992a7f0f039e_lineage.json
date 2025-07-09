@@ -1,0 +1,31 @@
+{
+  "document_id": "1794356324d029e2f4a753d7a05af47ee2d9cbbfbddbc1b026e1992a7f0f039e",
+  "crypto_record": {
+    "document_id": "1794356324d029e2f4a753d7a05af47ee2d9cbbfbddbc1b026e1992a7f0f039e",
+    "content_hash": "1794356324d029e2f4a753d7a05af47ee2d9cbbfbddbc1b026e1992a7f0f039e",
+    "collection_timestamp": "2025-07-09T21:08:19.139025",
+    "source_metadata": {
+      "title": "Dykema Adds Government Policy Advisor Carson Gatt in Lansing - Dykema",
+      "url": "https://www.dykema.com/news-insights/dykemas-adds-government-policy-advisor-carson-gatt-in-lansing.html",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-23",
+      "collected_at": "2025-07-09T20:58:50.774665",
+      "id": "93bd9f2c8f27_1752095299138",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "93bd9f2c8f27_1752095299138",
+      "stored_at": "2025-07-09T21:08:19.138401"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.dykema.com/news-insights/dykemas-adds-government-policy-advisor-carson-gatt-in-lansing.html",
+    "stored_doc_id": "93bd9f2c8f27_1752095299138"
+  },
+  "collection_signature": "+jWfE6o7FnR+ogSTA3AOm9LC8TmcHJnbF3x3S9L+7B8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.139662"
+}

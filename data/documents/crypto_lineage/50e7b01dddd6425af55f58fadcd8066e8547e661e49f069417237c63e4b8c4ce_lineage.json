@@ -1,0 +1,31 @@
+{
+  "document_id": "50e7b01dddd6425af55f58fadcd8066e8547e661e49f069417237c63e4b8c4ce",
+  "crypto_record": {
+    "document_id": "50e7b01dddd6425af55f58fadcd8066e8547e661e49f069417237c63e4b8c4ce",
+    "content_hash": "50e7b01dddd6425af55f58fadcd8066e8547e661e49f069417237c63e4b8c4ce",
+    "collection_timestamp": "2025-07-09T21:08:18.866888",
+    "source_metadata": {
+      "title": "Exploring the Potential of Deep-Sea Mining to Expand American Mineral Production | Oversight and Investigations Subcommittee - House Committee on Natural Resources (.gov)",
+      "url": "https://naturalresources.house.gov/calendar/eventsingle.aspx?EventID=417053",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-29",
+      "collected_at": "2025-07-09T20:50:19.204394",
+      "id": "11c4f684b970_1752095298865",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "11c4f684b970_1752095298865",
+      "stored_at": "2025-07-09T21:08:18.865120"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://naturalresources.house.gov/calendar/eventsingle.aspx?EventID=417053",
+    "stored_doc_id": "11c4f684b970_1752095298865"
+  },
+  "collection_signature": "pKmjN7fq7rLdzU2wBm8fBVUcZQebzqUY7JLI0QvWeVc=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.866977"
+}

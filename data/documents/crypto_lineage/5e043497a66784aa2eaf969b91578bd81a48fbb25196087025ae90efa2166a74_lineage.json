@@ -1,0 +1,31 @@
+{
+  "document_id": "5e043497a66784aa2eaf969b91578bd81a48fbb25196087025ae90efa2166a74",
+  "crypto_record": {
+    "document_id": "5e043497a66784aa2eaf969b91578bd81a48fbb25196087025ae90efa2166a74",
+    "content_hash": "5e043497a66784aa2eaf969b91578bd81a48fbb25196087025ae90efa2166a74",
+    "collection_timestamp": "2025-07-09T21:08:19.120690",
+    "source_metadata": {
+      "title": "Information technology policy - GSA (.gov)",
+      "url": "https://www.gsa.gov/policy-regulations/policy/information-technology-policy",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-14",
+      "collected_at": "2025-07-09T20:58:30.243560",
+      "id": "533d27b1f9bf_1752095299119",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "533d27b1f9bf_1752095299119",
+      "stored_at": "2025-07-09T21:08:19.119764"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.gsa.gov/policy-regulations/policy/information-technology-policy",
+    "stored_doc_id": "533d27b1f9bf_1752095299119"
+  },
+  "collection_signature": "e71wAyS3zpGlUcDM38PXPDVn5tvBtpm0b1kgaJ0HOwE=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.120796"
+}

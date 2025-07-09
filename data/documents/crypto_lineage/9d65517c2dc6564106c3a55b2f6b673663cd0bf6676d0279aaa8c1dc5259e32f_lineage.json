@@ -1,0 +1,31 @@
+{
+  "document_id": "9d65517c2dc6564106c3a55b2f6b673663cd0bf6676d0279aaa8c1dc5259e32f",
+  "crypto_record": {
+    "document_id": "9d65517c2dc6564106c3a55b2f6b673663cd0bf6676d0279aaa8c1dc5259e32f",
+    "content_hash": "9d65517c2dc6564106c3a55b2f6b673663cd0bf6676d0279aaa8c1dc5259e32f",
+    "collection_timestamp": "2025-07-09T21:25:56.883219",
+    "source_metadata": {
+      "title": "H\u00f8jesteret baner vej for Trumps f\u00f8derale massefyringer",
+      "url": "https://politiken.dk/internationalt/art10479145/H%C3%B8jesteret-baner-vej-for-Trumps-f%C3%B8derale-massefyringer",
+      "source": "politiken.dk",
+      "bias_label": "unknown",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T21:16:43.924037",
+      "id": "03f83928e25f_1752096356882",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "03f83928e25f_1752096356882",
+      "stored_at": "2025-07-09T21:25:56.882268"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://politiken.dk/internationalt/art10479145/H%C3%B8jesteret-baner-vej-for-Trumps-f%C3%B8derale-massefyringer",
+    "stored_doc_id": "03f83928e25f_1752096356882"
+  },
+  "collection_signature": "sRQigMsJhUtAXUe+00jUar4q5AA5hA47tYI909rM+OU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.883306"
+}

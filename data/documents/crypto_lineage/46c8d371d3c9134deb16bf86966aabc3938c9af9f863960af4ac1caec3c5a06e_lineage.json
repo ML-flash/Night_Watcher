@@ -1,0 +1,31 @@
+{
+  "document_id": "46c8d371d3c9134deb16bf86966aabc3938c9af9f863960af4ac1caec3c5a06e",
+  "crypto_record": {
+    "document_id": "46c8d371d3c9134deb16bf86966aabc3938c9af9f863960af4ac1caec3c5a06e",
+    "content_hash": "46c8d371d3c9134deb16bf86966aabc3938c9af9f863960af4ac1caec3c5a06e",
+    "collection_timestamp": "2025-07-09T21:08:18.689562",
+    "source_metadata": {
+      "title": "WHAT THEY ARE SAYING: President Trump Congratulates House Republicans on Passage of the One Big Beautiful Bill Act - House Committee on the Budget (.gov)",
+      "url": "https://budget.house.gov/press-release/what-they-are-saying-president-trump-congratulates-house-republicans-on-passage-of-the-one-big-beautiful-bill-act",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-27",
+      "collected_at": "2025-07-09T20:44:24.175432",
+      "id": "3a0b2d38b855_1752095298688",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "3a0b2d38b855_1752095298688",
+      "stored_at": "2025-07-09T21:08:18.688357"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://budget.house.gov/press-release/what-they-are-saying-president-trump-congratulates-house-republicans-on-passage-of-the-one-big-beautiful-bill-act",
+    "stored_doc_id": "3a0b2d38b855_1752095298688"
+  },
+  "collection_signature": "Mv0aQREbIAgbsQmE/47O2ahxj49LzWhNLscpx5v9tXU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.689645"
+}

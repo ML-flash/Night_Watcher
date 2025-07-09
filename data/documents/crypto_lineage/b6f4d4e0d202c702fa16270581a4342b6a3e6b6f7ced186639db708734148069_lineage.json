@@ -1,0 +1,31 @@
+{
+  "document_id": "b6f4d4e0d202c702fa16270581a4342b6a3e6b6f7ced186639db708734148069",
+  "crypto_record": {
+    "document_id": "b6f4d4e0d202c702fa16270581a4342b6a3e6b6f7ced186639db708734148069",
+    "content_hash": "b6f4d4e0d202c702fa16270581a4342b6a3e6b6f7ced186639db708734148069",
+    "collection_timestamp": "2025-07-09T21:25:56.827821",
+    "source_metadata": {
+      "title": "Watch Live : Trump Signs  Big , Beautiful Bill  Into Law During Independence Day Event",
+      "url": "https://www.zerohedge.com/political/watch-live-trump-signs-big-beautiful-bill-law-during-independence-day-event",
+      "source": "zerohedge.com",
+      "bias_label": "unknown",
+      "published": "2025-07-04",
+      "collected_at": "2025-07-09T21:13:31.071408",
+      "id": "dcf9afad531b_1752096356826",
+      "author": "Tyler Durden",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "dcf9afad531b_1752096356826",
+      "stored_at": "2025-07-09T21:25:56.827038"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.zerohedge.com/political/watch-live-trump-signs-big-beautiful-bill-law-during-independence-day-event",
+    "stored_doc_id": "dcf9afad531b_1752096356826"
+  },
+  "collection_signature": "QpGI+m9FYJ6gyvlwuktVQgyY4Uq+1RSVeRemLl2Vg9g=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.827893"
+}

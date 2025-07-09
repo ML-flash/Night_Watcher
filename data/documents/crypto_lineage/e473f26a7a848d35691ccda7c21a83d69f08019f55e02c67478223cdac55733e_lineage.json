@@ -1,0 +1,31 @@
+{
+  "document_id": "e473f26a7a848d35691ccda7c21a83d69f08019f55e02c67478223cdac55733e",
+  "crypto_record": {
+    "document_id": "e473f26a7a848d35691ccda7c21a83d69f08019f55e02c67478223cdac55733e",
+    "content_hash": "e473f26a7a848d35691ccda7c21a83d69f08019f55e02c67478223cdac55733e",
+    "collection_timestamp": "2025-07-09T21:25:57.122615",
+    "source_metadata": {
+      "title": "BA ( Hons ) History or BA ( Hons ) Political Science : Which one should a student choose",
+      "url": "https://indianexpress.com/article/education/cuet-ug-2025-ba-hons-history-vs-ba-hons-political-science-the-right-choice-purpose-score-career-options-9649350/",
+      "source": "indianexpress.com",
+      "bias_label": "unknown",
+      "published": "2025-06-08",
+      "collected_at": "2025-07-09T21:24:42.757707",
+      "id": "a8fa02bc05c6_1752096357121",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a8fa02bc05c6_1752096357121",
+      "stored_at": "2025-07-09T21:25:57.121883"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://indianexpress.com/article/education/cuet-ug-2025-ba-hons-history-vs-ba-hons-political-science-the-right-choice-purpose-score-career-options-9649350/",
+    "stored_doc_id": "a8fa02bc05c6_1752096357121"
+  },
+  "collection_signature": "5iJKZ8yvaJQH81DASsPl96iRAPUlkGo7qVVEhO2GVDY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.122695"
+}

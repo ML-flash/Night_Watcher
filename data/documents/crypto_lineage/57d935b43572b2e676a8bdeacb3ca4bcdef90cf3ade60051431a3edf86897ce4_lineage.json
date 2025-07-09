@@ -1,0 +1,31 @@
+{
+  "document_id": "57d935b43572b2e676a8bdeacb3ca4bcdef90cf3ade60051431a3edf86897ce4",
+  "crypto_record": {
+    "document_id": "57d935b43572b2e676a8bdeacb3ca4bcdef90cf3ade60051431a3edf86897ce4",
+    "content_hash": "57d935b43572b2e676a8bdeacb3ca4bcdef90cf3ade60051431a3edf86897ce4",
+    "collection_timestamp": "2025-07-09T21:08:19.020891",
+    "source_metadata": {
+      "title": "Federal judge blocks deportation of family of man charged in Boulder attack - Colorado Newsline",
+      "url": "https://coloradonewsline.com/briefs/federal-judge-blocks-deportation-boulder-attack/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-04",
+      "collected_at": "2025-07-09T20:53:54.778304",
+      "id": "444b49e8b9e6_1752095299019",
+      "author": "Chase Woodruff",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "444b49e8b9e6_1752095299019",
+      "stored_at": "2025-07-09T21:08:19.019713"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://coloradonewsline.com/briefs/federal-judge-blocks-deportation-boulder-attack/",
+    "stored_doc_id": "444b49e8b9e6_1752095299019"
+  },
+  "collection_signature": "xK3/GXQS1A5kpzB3FuJOO0wDcg14z/+AQj7yerbIs4M=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.021226"
+}

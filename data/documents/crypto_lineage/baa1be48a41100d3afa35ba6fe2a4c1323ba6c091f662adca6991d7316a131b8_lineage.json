@@ -1,0 +1,31 @@
+{
+  "document_id": "baa1be48a41100d3afa35ba6fe2a4c1323ba6c091f662adca6991d7316a131b8",
+  "crypto_record": {
+    "document_id": "baa1be48a41100d3afa35ba6fe2a4c1323ba6c091f662adca6991d7316a131b8",
+    "content_hash": "baa1be48a41100d3afa35ba6fe2a4c1323ba6c091f662adca6991d7316a131b8",
+    "collection_timestamp": "2025-07-09T21:08:18.563351",
+    "source_metadata": {
+      "title": "Feeling out a bizarre post-presidency, Biden reemerges on the public stage - CNN",
+      "url": "https://www.cnn.com/2025/04/15/politics/biden-post-presidency-legacy-trump",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-15",
+      "collected_at": "2025-07-09T20:39:21.747802",
+      "id": "d6aceb2036de_1752095298562",
+      "author": "Edward-Isaac Dovere",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d6aceb2036de_1752095298562",
+      "stored_at": "2025-07-09T21:08:18.562503"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.cnn.com/2025/04/15/politics/biden-post-presidency-legacy-trump",
+    "stored_doc_id": "d6aceb2036de_1752095298562"
+  },
+  "collection_signature": "2Sd+uHbHTL+Oz8pfO/gxaawPAymnXyIG5Wk5ACmecB4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.563433"
+}

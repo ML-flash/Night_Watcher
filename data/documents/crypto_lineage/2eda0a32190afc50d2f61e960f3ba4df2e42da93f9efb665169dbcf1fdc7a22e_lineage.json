@@ -1,0 +1,31 @@
+{
+  "document_id": "2eda0a32190afc50d2f61e960f3ba4df2e42da93f9efb665169dbcf1fdc7a22e",
+  "crypto_record": {
+    "document_id": "2eda0a32190afc50d2f61e960f3ba4df2e42da93f9efb665169dbcf1fdc7a22e",
+    "content_hash": "2eda0a32190afc50d2f61e960f3ba4df2e42da93f9efb665169dbcf1fdc7a22e",
+    "collection_timestamp": "2025-07-09T20:26:48.593369",
+    "source_metadata": {
+      "title": "Trump put a target on the University of Virginia \u2014 now its president is gone",
+      "url": "https://thehill.com/opinion/education/5390570-trump-administration-targets-uva/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:29.843293",
+      "id": "f7dc7c8b0e8d_1752092808592",
+      "author": "Ann Brown; Chris Ford; Opinion Contributors",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f7dc7c8b0e8d_1752092808592",
+      "stored_at": "2025-07-09T20:26:48.592667"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/opinion/education/5390570-trump-administration-targets-uva/",
+    "stored_doc_id": "f7dc7c8b0e8d_1752092808592"
+  },
+  "collection_signature": "4El/nlb8OkdTUci0acUatcRwzHDccHO2XyMGMVTWFAI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.593459"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "c993cfc47ad9f6c166caac3dc85195b9b130e80b2e608b41c045c99492ccebd7",
+  "crypto_record": {
+    "document_id": "c993cfc47ad9f6c166caac3dc85195b9b130e80b2e608b41c045c99492ccebd7",
+    "content_hash": "c993cfc47ad9f6c166caac3dc85195b9b130e80b2e608b41c045c99492ccebd7",
+    "collection_timestamp": "2025-07-09T21:25:56.966807",
+    "source_metadata": {
+      "title": "US suspends security clearances for two lawyers at WilmerHale as it challenges Trump executive order",
+      "url": "https://www.abajournal.com/news/article/us-suspends-security-clearances-for-two-lawyers-at-wilmer-cutler-as-it-challenges-trumps-executive-order",
+      "source": "abajournal.com",
+      "bias_label": "unknown",
+      "published": "2025-05-14",
+      "collected_at": "2025-07-09T21:18:14.090445",
+      "id": "f8f9863c5676_1752096356954",
+      "author": "Debra Cassens Weiss; ABA Journal",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f8f9863c5676_1752096356954",
+      "stored_at": "2025-07-09T21:25:56.954155"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.abajournal.com/news/article/us-suspends-security-clearances-for-two-lawyers-at-wilmer-cutler-as-it-challenges-trumps-executive-order",
+    "stored_doc_id": "f8f9863c5676_1752096356954"
+  },
+  "collection_signature": "778ClSirqRUQjyISqJpURUKRL9aEpiR+ZrW8lh8wQe8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.966917"
+}

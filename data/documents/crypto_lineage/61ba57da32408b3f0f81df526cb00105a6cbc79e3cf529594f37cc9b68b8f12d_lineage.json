@@ -1,0 +1,31 @@
+{
+  "document_id": "61ba57da32408b3f0f81df526cb00105a6cbc79e3cf529594f37cc9b68b8f12d",
+  "crypto_record": {
+    "document_id": "61ba57da32408b3f0f81df526cb00105a6cbc79e3cf529594f37cc9b68b8f12d",
+    "content_hash": "61ba57da32408b3f0f81df526cb00105a6cbc79e3cf529594f37cc9b68b8f12d",
+    "collection_timestamp": "2025-07-09T21:25:56.783395",
+    "source_metadata": {
+      "title": "\u0926\u093f\u0932\u094d\u0932\u0940 \u0935\u093e\u0932\u0940 \u0917\u0932\u0924\u0940 \u092c\u093f\u0939\u093e\u0930 \u092e\u0947\u0902 \u0930\u093f\u092a\u0940\u091f \u0928\u0939\u0940\u0902 \u0915\u0930\u0947\u0917\u0940 \u0915\u093e\u0902\u0917\u094d\u0930\u0947\u0938 ! \u0916\u0930\u0917\u0947 , \u0930\u093e\u0939\u0941\u0932 \u0915\u0947 \u0938\u093e\u0925 \u0924\u0947\u091c\u0938\u094d\u0935\u0940 \u092c\u0928\u093e\u090f\u0902\u0917\u0947  \u092b\u0941\u0932 \u092a\u094d\u0930\u0942\u092b  \u092a\u094d\u0932\u093e\u0928 | Bihar elections : Congress - RJD meeting to be held on April 15 at Mallikarjun Kharge residence in Delhi",
+      "url": "https://www.patrika.com/rajasthan-news/national-news/bihar-elections-congress-rjd-meeting-to-be-held-on-april-15-at-mallikarjun-kharges-residence-in-delhi-19530338",
+      "source": "patrika.com",
+      "bias_label": "unknown",
+      "published": null,
+      "collected_at": "2025-07-09T21:12:31.661786",
+      "id": "084263ed4400_1752096356780",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "084263ed4400_1752096356780",
+      "stored_at": "2025-07-09T21:25:56.780525"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.patrika.com/rajasthan-news/national-news/bihar-elections-congress-rjd-meeting-to-be-held-on-april-15-at-mallikarjun-kharges-residence-in-delhi-19530338",
+    "stored_doc_id": "084263ed4400_1752096356780"
+  },
+  "collection_signature": "T2cuEwQ6ugzotc3cg6O3n06c9OsOr2P8RKWWNmhOTus=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.783490"
+}

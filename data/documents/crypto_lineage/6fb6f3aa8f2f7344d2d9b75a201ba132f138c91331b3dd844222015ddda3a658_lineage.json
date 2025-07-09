@@ -1,0 +1,31 @@
+{
+  "document_id": "6fb6f3aa8f2f7344d2d9b75a201ba132f138c91331b3dd844222015ddda3a658",
+  "crypto_record": {
+    "document_id": "6fb6f3aa8f2f7344d2d9b75a201ba132f138c91331b3dd844222015ddda3a658",
+    "content_hash": "6fb6f3aa8f2f7344d2d9b75a201ba132f138c91331b3dd844222015ddda3a658",
+    "collection_timestamp": "2025-07-09T20:26:48.567773",
+    "source_metadata": {
+      "title": "Greene: People \u2018not going to accept\u2019 memo saying there\u2019s no Epstein client list",
+      "url": "https://thehill.com/homenews/house/5392384-marjorie-greene-epstein-client-list/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:06.525939",
+      "id": "3294fe43b5a3_1752092808567",
+      "author": "Elizabeth Crisp",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "3294fe43b5a3_1752092808567",
+      "stored_at": "2025-07-09T20:26:48.567160"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/house/5392384-marjorie-greene-epstein-client-list/",
+    "stored_doc_id": "3294fe43b5a3_1752092808567"
+  },
+  "collection_signature": "J05XJi5ABbaUlXlnwAV6OfFEQX9s/CQBicczyufHZL4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.567847"
+}

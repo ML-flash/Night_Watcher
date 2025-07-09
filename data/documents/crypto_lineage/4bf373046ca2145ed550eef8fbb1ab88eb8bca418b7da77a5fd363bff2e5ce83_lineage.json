@@ -1,0 +1,31 @@
+{
+  "document_id": "4bf373046ca2145ed550eef8fbb1ab88eb8bca418b7da77a5fd363bff2e5ce83",
+  "crypto_record": {
+    "document_id": "4bf373046ca2145ed550eef8fbb1ab88eb8bca418b7da77a5fd363bff2e5ce83",
+    "content_hash": "4bf373046ca2145ed550eef8fbb1ab88eb8bca418b7da77a5fd363bff2e5ce83",
+    "collection_timestamp": "2025-07-09T21:08:19.375817",
+    "source_metadata": {
+      "title": "Investigation launched into alleged election fraud in Rolling Fork - WLBT",
+      "url": "https://www.wlbt.com/2025/05/15/investigation-launched-into-alleged-election-fraud-rolling-fork/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-15",
+      "collected_at": "2025-07-09T21:04:29.796139",
+      "id": "bdd3bb811b69_1752095299375",
+      "author": "Maggie Wade",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "bdd3bb811b69_1752095299375",
+      "stored_at": "2025-07-09T21:08:19.375167"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.wlbt.com/2025/05/15/investigation-launched-into-alleged-election-fraud-rolling-fork/",
+    "stored_doc_id": "bdd3bb811b69_1752095299375"
+  },
+  "collection_signature": "SOgfh6TXerf44ZszQkVfM6MEPVwgsnzS8LH7Iiwb5Jw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.377297"
+}

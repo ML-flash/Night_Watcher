@@ -1,0 +1,31 @@
+{
+  "document_id": "268bf28ffe49b4666f5a384324ea8f9e220ea846a7e6e1a49a53243d36bdb6a5",
+  "crypto_record": {
+    "document_id": "268bf28ffe49b4666f5a384324ea8f9e220ea846a7e6e1a49a53243d36bdb6a5",
+    "content_hash": "268bf28ffe49b4666f5a384324ea8f9e220ea846a7e6e1a49a53243d36bdb6a5",
+    "collection_timestamp": "2025-07-09T20:28:10.824382",
+    "source_metadata": {
+      "title": "\"Ethnic Cleansing\": U.N. High Commissioner for Human Rights, Volker T\u00fcrk, on Israel's War in Gaza",
+      "url": "http://www.democracynow.org/2025/7/1/united_nations_human_rights_council_gaza",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-07-01",
+      "collected_at": "2025-07-09T20:27:49.850715",
+      "id": "d640c0912e16_1752092890823",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d640c0912e16_1752092890823",
+      "stored_at": "2025-07-09T20:28:10.823404"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/7/1/united_nations_human_rights_council_gaza",
+    "stored_doc_id": "d640c0912e16_1752092890823"
+  },
+  "collection_signature": "u9QLZVWw4UB4dKghHkk/Z8DiWAZMZ/KgVq/a6hWUoJ0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.824476"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "035d275e704fe54c98da86e934b30767e59fae1cc07b7fb4f70b7e39e8ce2fae",
+  "crypto_record": {
+    "document_id": "035d275e704fe54c98da86e934b30767e59fae1cc07b7fb4f70b7e39e8ce2fae",
+    "content_hash": "035d275e704fe54c98da86e934b30767e59fae1cc07b7fb4f70b7e39e8ce2fae",
+    "collection_timestamp": "2025-07-09T21:25:56.947148",
+    "source_metadata": {
+      "title": "Executive order against Jenner & Block ruled unconstitutional",
+      "url": "https://www.yahoo.com/news/executive-order-against-jenner-block-220846459.html",
+      "source": "yahoo.com",
+      "bias_label": "unknown",
+      "published": "2025-05-23",
+      "collected_at": "2025-07-09T21:18:07.650192",
+      "id": "a3e1c2742d0c_1752096356946",
+      "author": "Katherine Tangalakis-Lippert; Jacob Shamsian",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a3e1c2742d0c_1752096356946",
+      "stored_at": "2025-07-09T21:25:56.946318"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.yahoo.com/news/executive-order-against-jenner-block-220846459.html",
+    "stored_doc_id": "a3e1c2742d0c_1752096356946"
+  },
+  "collection_signature": "V/Z+b1grbJc2om+IAOFpaMjPJWMpS2FgMZ5D+mjfrOA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.947223"
+}

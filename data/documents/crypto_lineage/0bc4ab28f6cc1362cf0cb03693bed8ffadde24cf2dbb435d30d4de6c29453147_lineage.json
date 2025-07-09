@@ -1,0 +1,31 @@
+{
+  "document_id": "0bc4ab28f6cc1362cf0cb03693bed8ffadde24cf2dbb435d30d4de6c29453147",
+  "crypto_record": {
+    "document_id": "0bc4ab28f6cc1362cf0cb03693bed8ffadde24cf2dbb435d30d4de6c29453147",
+    "content_hash": "0bc4ab28f6cc1362cf0cb03693bed8ffadde24cf2dbb435d30d4de6c29453147",
+    "collection_timestamp": "2025-07-09T21:08:19.097490",
+    "source_metadata": {
+      "title": "About Us - FEMA.gov",
+      "url": "https://www.fema.gov/about",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-22",
+      "collected_at": "2025-07-09T20:56:47.815014",
+      "id": "7695e397e8ce_1752095299096",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7695e397e8ce_1752095299096",
+      "stored_at": "2025-07-09T21:08:19.096622"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.fema.gov/about",
+    "stored_doc_id": "7695e397e8ce_1752095299096"
+  },
+  "collection_signature": "D6YU25bHNGoeNQ8NSOz9CxqNcAfTN71JZsrbndDwnIs=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.097574"
+}

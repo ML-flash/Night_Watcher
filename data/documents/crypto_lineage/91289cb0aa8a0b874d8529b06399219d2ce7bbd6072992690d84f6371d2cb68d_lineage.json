@@ -1,0 +1,31 @@
+{
+  "document_id": "91289cb0aa8a0b874d8529b06399219d2ce7bbd6072992690d84f6371d2cb68d",
+  "crypto_record": {
+    "document_id": "91289cb0aa8a0b874d8529b06399219d2ce7bbd6072992690d84f6371d2cb68d",
+    "content_hash": "91289cb0aa8a0b874d8529b06399219d2ce7bbd6072992690d84f6371d2cb68d",
+    "collection_timestamp": "2025-07-09T21:08:18.665383",
+    "source_metadata": {
+      "title": "Congress Passes Full-Year Continuing Resolution Bill, Maintaining Global Health Funding at Prior Year Levels - KFF",
+      "url": "https://www.kff.org/global-health-policy/fact-sheet/congress-passes-full-year-continuing-resolution-bill-maintaining-global-health-funding-at-prior-year-levels/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-10",
+      "collected_at": "2025-07-09T20:43:41.338119",
+      "id": "e9ce261b53fa_1752095298660",
+      "author": "Published",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "e9ce261b53fa_1752095298660",
+      "stored_at": "2025-07-09T21:08:18.660888"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.kff.org/global-health-policy/fact-sheet/congress-passes-full-year-continuing-resolution-bill-maintaining-global-health-funding-at-prior-year-levels/",
+    "stored_doc_id": "e9ce261b53fa_1752095298660"
+  },
+  "collection_signature": "lHfdNWob7JPWbpKFaXR1Ezb75bP8H2xvxYrxWZWK3r4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.665473"
+}

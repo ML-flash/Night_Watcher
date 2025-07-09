@@ -1,0 +1,31 @@
+{
+  "document_id": "02c97ca7948a57bdadb181eb46940dc609884d507ab5cf69c3d61d96be9d6e66",
+  "crypto_record": {
+    "document_id": "02c97ca7948a57bdadb181eb46940dc609884d507ab5cf69c3d61d96be9d6e66",
+    "content_hash": "02c97ca7948a57bdadb181eb46940dc609884d507ab5cf69c3d61d96be9d6e66",
+    "collection_timestamp": "2025-07-09T21:25:56.833308",
+    "source_metadata": {
+      "title": "  \u516d\u4ee3\u673a\u673a\u5bc6\u4f1a\u8bae \uff0c \u624e\u514b\u4f2f\u683c\u7a81\u7136\u95ef\u5165 \uff0c \u767d\u5bab\u56de\u5e94 _ \u519b\u4e8b\u9891\u9053 _ \u4e2d\u534e\u7f51",
+      "url": "https://military.china.com/important/64/20250704/48556670.html",
+      "source": "military.china.com",
+      "bias_label": "unknown",
+      "published": "2025-07-04",
+      "collected_at": "2025-07-09T21:13:34.631277",
+      "id": "13d5cf624e2b_1752096356832",
+      "author": "\u00c8\u00b4\u00a3\u00c4\u00bb\u00bb\u00c7\u00bc\u00c8\u00be\u00cf\u00bc\u00c8\u00ae\u00b8\u00c6",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "13d5cf624e2b_1752096356832",
+      "stored_at": "2025-07-09T21:25:56.832477"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://military.china.com/important/64/20250704/48556670.html",
+    "stored_doc_id": "13d5cf624e2b_1752096356832"
+  },
+  "collection_signature": "YooX28gnQy8fQM7JFegU0fruFmM9VESXmBxmM4nkERM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.833393"
+}

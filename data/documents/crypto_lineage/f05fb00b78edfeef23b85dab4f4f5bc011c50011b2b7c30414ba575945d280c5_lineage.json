@@ -1,0 +1,31 @@
+{
+  "document_id": "f05fb00b78edfeef23b85dab4f4f5bc011c50011b2b7c30414ba575945d280c5",
+  "crypto_record": {
+    "document_id": "f05fb00b78edfeef23b85dab4f4f5bc011c50011b2b7c30414ba575945d280c5",
+    "content_hash": "f05fb00b78edfeef23b85dab4f4f5bc011c50011b2b7c30414ba575945d280c5",
+    "collection_timestamp": "2025-07-09T21:08:19.159250",
+    "source_metadata": {
+      "title": "Poverty and Government Policy Part One: Observations - Dordt University",
+      "url": "https://www.dordt.edu/in-all-things/poverty-and-government-policy-observations",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-23",
+      "collected_at": "2025-07-09T20:58:58.415467",
+      "id": "65b488f16c53_1752095299140",
+      "author": "John Visser",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "65b488f16c53_1752095299140",
+      "stored_at": "2025-07-09T21:08:19.140296"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.dordt.edu/in-all-things/poverty-and-government-policy-observations",
+    "stored_doc_id": "65b488f16c53_1752095299140"
+  },
+  "collection_signature": "oKfkGnYPnYnF+pbLFG42T2XAjMsFM573l6O2hacNOGk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.159332"
+}

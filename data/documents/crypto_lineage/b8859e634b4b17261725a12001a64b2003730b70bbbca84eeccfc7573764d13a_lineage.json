@@ -1,0 +1,31 @@
+{
+  "document_id": "b8859e634b4b17261725a12001a64b2003730b70bbbca84eeccfc7573764d13a",
+  "crypto_record": {
+    "document_id": "b8859e634b4b17261725a12001a64b2003730b70bbbca84eeccfc7573764d13a",
+    "content_hash": "b8859e634b4b17261725a12001a64b2003730b70bbbca84eeccfc7573764d13a",
+    "collection_timestamp": "2025-07-09T21:25:57.036554",
+    "source_metadata": {
+      "title": "New Executive Order Aims To End Disparate Impact Liability For Discrimination",
+      "url": "https://www.mondaq.com:443/unitedstates/employee-rights-labour-relations/1618172/new-executive-order-aims-to-end-disparate-impact-liability-for-discrimination",
+      "source": "mondaq.com",
+      "bias_label": "unknown",
+      "published": "2025-05-01",
+      "collected_at": "2025-07-09T21:19:08.672145",
+      "id": "7e071cb10e22_1752096357035",
+      "author": "Myles Moran",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7e071cb10e22_1752096357035",
+      "stored_at": "2025-07-09T21:25:57.035946"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.mondaq.com:443/unitedstates/employee-rights-labour-relations/1618172/new-executive-order-aims-to-end-disparate-impact-liability-for-discrimination",
+    "stored_doc_id": "7e071cb10e22_1752096357035"
+  },
+  "collection_signature": "hsLJH327ODi42lZ2va+VWDdetGaqc2qwFiO0qH+wlqo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.036638"
+}

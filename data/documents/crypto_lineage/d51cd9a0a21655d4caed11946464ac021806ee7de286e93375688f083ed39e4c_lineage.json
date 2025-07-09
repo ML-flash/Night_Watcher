@@ -1,0 +1,31 @@
+{
+  "document_id": "d51cd9a0a21655d4caed11946464ac021806ee7de286e93375688f083ed39e4c",
+  "crypto_record": {
+    "document_id": "d51cd9a0a21655d4caed11946464ac021806ee7de286e93375688f083ed39e4c",
+    "content_hash": "d51cd9a0a21655d4caed11946464ac021806ee7de286e93375688f083ed39e4c",
+    "collection_timestamp": "2025-07-09T21:08:18.987275",
+    "source_metadata": {
+      "title": "What Courts Can Do If the Trump Administration Defies Court Orders - Brennan Center for Justice",
+      "url": "https://www.brennancenter.org/our-work/research-reports/what-courts-can-do-if-trump-administration-defies-court-orders",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-14",
+      "collected_at": "2025-07-09T20:52:24.717516",
+      "id": "ca962d3fdcab_1752095298986",
+      "author": "Yasmin Abusaif",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "ca962d3fdcab_1752095298986",
+      "stored_at": "2025-07-09T21:08:18.986371"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.brennancenter.org/our-work/research-reports/what-courts-can-do-if-trump-administration-defies-court-orders",
+    "stored_doc_id": "ca962d3fdcab_1752095298986"
+  },
+  "collection_signature": "IoUJTVGxxny5Asa4mmSpNyc8REg2lEMSaV4E+F18888=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.987361"
+}

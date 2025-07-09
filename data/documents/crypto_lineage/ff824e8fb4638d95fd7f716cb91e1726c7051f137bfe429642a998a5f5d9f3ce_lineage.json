@@ -1,0 +1,31 @@
+{
+  "document_id": "ff824e8fb4638d95fd7f716cb91e1726c7051f137bfe429642a998a5f5d9f3ce",
+  "crypto_record": {
+    "document_id": "ff824e8fb4638d95fd7f716cb91e1726c7051f137bfe429642a998a5f5d9f3ce",
+    "content_hash": "ff824e8fb4638d95fd7f716cb91e1726c7051f137bfe429642a998a5f5d9f3ce",
+    "collection_timestamp": "2025-07-09T21:08:18.597327",
+    "source_metadata": {
+      "title": "All the executive orders Trump has signed after 1 week in office - NPR",
+      "url": "https://www.npr.org/2025/01/28/nx-s1-5276293/trump-executive-orders",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-28",
+      "collected_at": "2025-07-09T20:41:16.386451",
+      "id": "bce5b9d1ead8_1752095298596",
+      "author": "NPR Staff",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "bce5b9d1ead8_1752095298596",
+      "stored_at": "2025-07-09T21:08:18.596541"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/01/28/nx-s1-5276293/trump-executive-orders",
+    "stored_doc_id": "bce5b9d1ead8_1752095298596"
+  },
+  "collection_signature": "xaiHWNOnOgmAS3fpsc7HjTgiejYTdI3IeduiQ7sEkQY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.597403"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "83a4ace3c5de462b62942f4e0db03a8807601ed1ce8d4fabea685dbdfda39b59",
+  "crypto_record": {
+    "document_id": "83a4ace3c5de462b62942f4e0db03a8807601ed1ce8d4fabea685dbdfda39b59",
+    "content_hash": "83a4ace3c5de462b62942f4e0db03a8807601ed1ce8d4fabea685dbdfda39b59",
+    "collection_timestamp": "2025-07-09T21:08:19.431819",
+    "source_metadata": {
+      "title": "HEARINGS NOTICE: House Financial Services Committee Schedule for April 2025 - House Committee on Financial Services (.gov)",
+      "url": "https://financialservices.house.gov/news/documentsingle.aspx?DocumentID=409507",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-03-21",
+      "collected_at": "2025-07-09T21:06:29.440340",
+      "id": "61b1fe6fb444_1752095299429",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "61b1fe6fb444_1752095299429",
+      "stored_at": "2025-07-09T21:08:19.430034"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://financialservices.house.gov/news/documentsingle.aspx?DocumentID=409507",
+    "stored_doc_id": "61b1fe6fb444_1752095299429"
+  },
+  "collection_signature": "jrB/by2r2VI8puChfJYZeWsXUkTlnqEZ8mQAH41DzmA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.431916"
+}

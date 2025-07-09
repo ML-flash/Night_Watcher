@@ -1,0 +1,31 @@
+{
+  "document_id": "09c52658db651e83cea6853a166d83350089fb8d7526be07e7deb8f46907f69b",
+  "crypto_record": {
+    "document_id": "09c52658db651e83cea6853a166d83350089fb8d7526be07e7deb8f46907f69b",
+    "content_hash": "09c52658db651e83cea6853a166d83350089fb8d7526be07e7deb8f46907f69b",
+    "collection_timestamp": "2025-07-09T21:08:19.350385",
+    "source_metadata": {
+      "title": "Exploring data and its influence on political behavior - MIT News",
+      "url": "https://news.mit.edu/2025/exploring-data-and-its-influence-political-behavior-0707",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-07-07",
+      "collected_at": "2025-07-09T21:03:49.705258",
+      "id": "34655b6e359a_1752095299348",
+      "author": "Benjamin Daniel; School; Arts; Social Sciences",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "34655b6e359a_1752095299348",
+      "stored_at": "2025-07-09T21:08:19.348177"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://news.mit.edu/2025/exploring-data-and-its-influence-political-behavior-0707",
+    "stored_doc_id": "34655b6e359a_1752095299348"
+  },
+  "collection_signature": "ILGZxLsNkdOvOctGy+Tq1fbS1Ujq6yO05wGvv6hkpsQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.350479"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "8a885a1e5728829cf2710f7d24f95ee9fc72042236f37ca09b519668d9a17895",
+  "crypto_record": {
+    "document_id": "8a885a1e5728829cf2710f7d24f95ee9fc72042236f37ca09b519668d9a17895",
+    "content_hash": "8a885a1e5728829cf2710f7d24f95ee9fc72042236f37ca09b519668d9a17895",
+    "collection_timestamp": "2025-07-09T20:28:10.811861",
+    "source_metadata": {
+      "title": "\"Empire of AI\": Karen Hao on How AI Is Threatening Democracy & Creating a New Colonial World",
+      "url": "http://www.democracynow.org/2025/7/4/empire_of_ai_karen_hao_on",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-07-04",
+      "collected_at": "2025-07-09T20:27:38.033705",
+      "id": "517ded629612_1752092890810",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "517ded629612_1752092890810",
+      "stored_at": "2025-07-09T20:28:10.810919"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/7/4/empire_of_ai_karen_hao_on",
+    "stored_doc_id": "517ded629612_1752092890810"
+  },
+  "collection_signature": "N3y/S/qGCR5vUDaNsJAmlqV7LqeIGL9PldEYkc7xFQM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.811939"
+}

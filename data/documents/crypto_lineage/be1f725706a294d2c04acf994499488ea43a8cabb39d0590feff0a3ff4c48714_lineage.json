@@ -1,0 +1,31 @@
+{
+  "document_id": "be1f725706a294d2c04acf994499488ea43a8cabb39d0590feff0a3ff4c48714",
+  "crypto_record": {
+    "document_id": "be1f725706a294d2c04acf994499488ea43a8cabb39d0590feff0a3ff4c48714",
+    "content_hash": "be1f725706a294d2c04acf994499488ea43a8cabb39d0590feff0a3ff4c48714",
+    "collection_timestamp": "2025-07-09T21:25:56.858382",
+    "source_metadata": {
+      "title": "Clinton Library exhibition captures ex - president , family in conventional , unconventional portraits | The Arkansas Democrat - Gazette",
+      "url": "https://www.arkansasonline.com/news/2025/jun/11/clinton-library-exhibition-captures-ex-president/",
+      "source": "arkansasonline.com",
+      "bias_label": "unknown",
+      "published": "2025-06-11",
+      "collected_at": "2025-07-09T21:13:59.390345",
+      "id": "9eca07fd89a8_1752096356851",
+      "author": "Eric E Harrison",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "9eca07fd89a8_1752096356851",
+      "stored_at": "2025-07-09T21:25:56.851604"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.arkansasonline.com/news/2025/jun/11/clinton-library-exhibition-captures-ex-president/",
+    "stored_doc_id": "9eca07fd89a8_1752096356851"
+  },
+  "collection_signature": "4VganeGr03uwUCFWM3+VgaqKLZppZ6zgOkxe3xzBvpg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.858478"
+}

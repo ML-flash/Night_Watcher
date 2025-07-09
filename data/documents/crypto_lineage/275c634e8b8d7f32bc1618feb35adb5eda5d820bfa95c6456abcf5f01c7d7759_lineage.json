@@ -1,0 +1,31 @@
+{
+  "document_id": "275c634e8b8d7f32bc1618feb35adb5eda5d820bfa95c6456abcf5f01c7d7759",
+  "crypto_record": {
+    "document_id": "275c634e8b8d7f32bc1618feb35adb5eda5d820bfa95c6456abcf5f01c7d7759",
+    "content_hash": "275c634e8b8d7f32bc1618feb35adb5eda5d820bfa95c6456abcf5f01c7d7759",
+    "collection_timestamp": "2025-07-09T20:26:48.576153",
+    "source_metadata": {
+      "title": "Trump: \u2018I haven\u2019t thought about\u2019 who ordered Ukraine weapons pause",
+      "url": "https://thehill.com/homenews/administration/5392555-trump-ukraine-weapons-shipments/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:12.195037",
+      "id": "3b9b64437952_1752092808575",
+      "author": "Alex Gangitano",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "3b9b64437952_1752092808575",
+      "stored_at": "2025-07-09T20:26:48.575617"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/administration/5392555-trump-ukraine-weapons-shipments/",
+    "stored_doc_id": "3b9b64437952_1752092808575"
+  },
+  "collection_signature": "WfE8OjL2QnHiQKpLUUWoELqPat1sAJz0i0+Z99NTHpc=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.576241"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "6640316b8a27b0e4d73aed80b1f940c9d465b9c9883a483574f824f4a722438b",
+  "crypto_record": {
+    "document_id": "6640316b8a27b0e4d73aed80b1f940c9d465b9c9883a483574f824f4a722438b",
+    "content_hash": "6640316b8a27b0e4d73aed80b1f940c9d465b9c9883a483574f824f4a722438b",
+    "collection_timestamp": "2025-07-09T21:08:18.635120",
+    "source_metadata": {
+      "title": "Limiting Lame-Duck Collective Bargaining Agreements That Improperly Attempt to Constrain the New President - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/01/limiting-lame-duck-collective-bargaining-agreements-that-improperly-attempt-to-constrain-the-new-president/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-31",
+      "collected_at": "2025-07-09T20:42:41.692461",
+      "id": "7355bac7e09b_1752095298634",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7355bac7e09b_1752095298634",
+      "stored_at": "2025-07-09T21:08:18.634313"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/01/limiting-lame-duck-collective-bargaining-agreements-that-improperly-attempt-to-constrain-the-new-president/",
+    "stored_doc_id": "7355bac7e09b_1752095298634"
+  },
+  "collection_signature": "QSkRa3/gRar4jaKESFTunOcqliRS1zlmApQxsZSwEgY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.635206"
+}

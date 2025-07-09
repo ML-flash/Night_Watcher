@@ -1,0 +1,21 @@
+{
+  "content_hash": "0c3dd017ed17a5d6d3331b14f372282a69b2f7cb6ac483c2a3a3d06d1ea8e9f5",
+  "metadata": {
+    "title": "Michael Anton - U.S. Department of State (.gov)",
+    "url": "https://www.state.gov/biographies/michael-anton/",
+    "source": "Google News Aggregate",
+    "bias_label": "unknown",
+    "published": null,
+    "collected_at": "2025-07-09T21:01:34.568372",
+    "id": "dd698a651fc3_1752095299270",
+    "author": null,
+    "via_google_news": true,
+    "via_gdelt": false,
+    "via_gov_api": false,
+    "extraction_method": "newspaper3k",
+    "document_id": "dd698a651fc3_1752095299270",
+    "stored_at": "2025-07-09T21:08:19.270140"
+  },
+  "timestamp": "2025-07-09T21:08:19.270503",
+  "signature": "lchpT4fIWbOh//qYSPesuRyfIosDhrcFWFY80jHkY1Q="
+}

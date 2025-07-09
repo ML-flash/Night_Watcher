@@ -1,0 +1,31 @@
+{
+  "document_id": "ec6e7b3788d02db4c227ce4713fb3b512c561ea8bcf908cad9b850aed20e4d02",
+  "crypto_record": {
+    "document_id": "ec6e7b3788d02db4c227ce4713fb3b512c561ea8bcf908cad9b850aed20e4d02",
+    "content_hash": "ec6e7b3788d02db4c227ce4713fb3b512c561ea8bcf908cad9b850aed20e4d02",
+    "collection_timestamp": "2025-07-09T21:25:56.723564",
+    "source_metadata": {
+      "title": "Motta e Alcolumbre prometem a Lula dar  prioridade  \u00e0 PEC da Seguran\u00e7a P\u00fablica no Congresso",
+      "url": "https://www.otempo.com.br/politica/congresso/2025/4/23/motta-e-alcolumbre-prometem-a-lula-dar-prioridade-a-pec-da-seguranca-publica-no-congresso",
+      "source": "otempo.com.br",
+      "bias_label": "unknown",
+      "published": "2025-04-23",
+      "collected_at": "2025-07-09T21:11:13.401570",
+      "id": "a964757744af_1752096356721",
+      "author": "Lara Alves",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a964757744af_1752096356721",
+      "stored_at": "2025-07-09T21:25:56.722070"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.otempo.com.br/politica/congresso/2025/4/23/motta-e-alcolumbre-prometem-a-lula-dar-prioridade-a-pec-da-seguranca-publica-no-congresso",
+    "stored_doc_id": "a964757744af_1752096356721"
+  },
+  "collection_signature": "ZuRix3X0c8dCFl7ZUd20tTy9YKGh6YjC8E7m0O1L1vA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.723650"
+}

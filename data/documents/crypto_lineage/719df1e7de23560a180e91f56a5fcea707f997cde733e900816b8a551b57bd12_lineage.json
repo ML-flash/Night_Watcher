@@ -1,0 +1,31 @@
+{
+  "document_id": "719df1e7de23560a180e91f56a5fcea707f997cde733e900816b8a551b57bd12",
+  "crypto_record": {
+    "document_id": "719df1e7de23560a180e91f56a5fcea707f997cde733e900816b8a551b57bd12",
+    "content_hash": "719df1e7de23560a180e91f56a5fcea707f997cde733e900816b8a551b57bd12",
+    "collection_timestamp": "2025-07-09T20:27:16.732925",
+    "source_metadata": {
+      "title": "A \u201cStriking\u201d Trend: After Texas Banned Abortion, More Women Nearly Bled to Death During Miscarriage",
+      "url": "https://www.propublica.org/article/texas-abortion-ban-miscarriage-blood-transfusions",
+      "source": "ProPublica",
+      "bias_label": "center-left",
+      "published": "2025-07-01",
+      "collected_at": "2025-07-09T20:27:04.616152",
+      "id": "db697f1ff239_1752092836732",
+      "author": "Kavitha Surana; Lizzie Presser; Andrea Suozzo",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "db697f1ff239_1752092836732",
+      "stored_at": "2025-07-09T20:27:16.732163"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.propublica.org/article/texas-abortion-ban-miscarriage-blood-transfusions",
+    "stored_doc_id": "db697f1ff239_1752092836732"
+  },
+  "collection_signature": "tLn+0QD3YNusNq57gu8fcxwd4IHBavlwihRJlBjayTw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:27:16.733000"
+}

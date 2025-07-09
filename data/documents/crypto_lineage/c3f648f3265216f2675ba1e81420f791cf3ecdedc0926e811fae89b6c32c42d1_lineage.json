@@ -1,0 +1,31 @@
+{
+  "document_id": "c3f648f3265216f2675ba1e81420f791cf3ecdedc0926e811fae89b6c32c42d1",
+  "crypto_record": {
+    "document_id": "c3f648f3265216f2675ba1e81420f791cf3ecdedc0926e811fae89b6c32c42d1",
+    "content_hash": "c3f648f3265216f2675ba1e81420f791cf3ecdedc0926e811fae89b6c32c42d1",
+    "collection_timestamp": "2025-07-09T21:08:19.258099",
+    "source_metadata": {
+      "title": "Highlights: Musk plays a key role at Trump's first Cabinet meeting - NBC News",
+      "url": "https://www.nbcnews.com/politics/white-house/live-blog/live-updates-trump-cabinet-meeting-elon-musk-doge-rcna193745",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-26",
+      "collected_at": "2025-07-09T21:01:02.128692",
+      "id": "fa29c7bc609c_1752095299252",
+      "author": "Chloe Atkins Nnamdi Egwuonwu Chloe Atkins; Nnamdi Egwuonwu",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "fa29c7bc609c_1752095299252",
+      "stored_at": "2025-07-09T21:08:19.253142"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nbcnews.com/politics/white-house/live-blog/live-updates-trump-cabinet-meeting-elon-musk-doge-rcna193745",
+    "stored_doc_id": "fa29c7bc609c_1752095299252"
+  },
+  "collection_signature": "Dxd0idbO3DEYEPb2rH+6SVHqmaXQvOfg5NOQWO0UZMI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.258195"
+}

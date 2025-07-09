@@ -1,0 +1,31 @@
+{
+  "document_id": "76f82725631b3d83f9c5aaa02ca04456f3e5a0f11df35a45ab8df2212a3313e6",
+  "crypto_record": {
+    "document_id": "76f82725631b3d83f9c5aaa02ca04456f3e5a0f11df35a45ab8df2212a3313e6",
+    "content_hash": "76f82725631b3d83f9c5aaa02ca04456f3e5a0f11df35a45ab8df2212a3313e6",
+    "collection_timestamp": "2025-07-09T20:28:16.944259",
+    "source_metadata": {
+      "title": "Warning: These Social Media Rules Will Erode Civil Liberties",
+      "url": "https://reason.com/2025/07/09/warning-these-social-media-rules-will-erode-civil-liberties/",
+      "source": "Reason Magazine",
+      "bias_label": "libertarian",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:28:16.013900",
+      "id": "5cb6fa970b39_1752092896943",
+      "author": "Elizabeth Nolan Brown",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "5cb6fa970b39_1752092896943",
+      "stored_at": "2025-07-09T20:28:16.943534"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://reason.com/2025/07/09/warning-these-social-media-rules-will-erode-civil-liberties/",
+    "stored_doc_id": "5cb6fa970b39_1752092896943"
+  },
+  "collection_signature": "mxh2dzqeLxMOL7jeC1MDv2lEBG9gwFGX1J+zhLvNdSw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:16.944336"
+}

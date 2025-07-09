@@ -1,0 +1,31 @@
+{
+  "document_id": "d68e5bcb7e21ec84db7400e6853e333b3b218fcb25c8c51c2bab00eaf430a3cd",
+  "crypto_record": {
+    "document_id": "d68e5bcb7e21ec84db7400e6853e333b3b218fcb25c8c51c2bab00eaf430a3cd",
+    "content_hash": "d68e5bcb7e21ec84db7400e6853e333b3b218fcb25c8c51c2bab00eaf430a3cd",
+    "collection_timestamp": "2025-07-09T21:25:56.898358",
+    "source_metadata": {
+      "title": "MODIFYING RECIPROCAL TARIFF RATES TO REFLECT DISCUSSIONS WITH THE PEOPLE REPUBLIC OF CHINA",
+      "url": "https://www.globalsecurity.org/wmd/library/news/china/2025/05/china-250512-whitehouse01.htm",
+      "source": "globalsecurity.org",
+      "bias_label": "unknown",
+      "published": "2025-05-12",
+      "collected_at": "2025-07-09T21:16:49.562883",
+      "id": "d4416b73242a_1752096356897",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d4416b73242a_1752096356897",
+      "stored_at": "2025-07-09T21:25:56.897345"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.globalsecurity.org/wmd/library/news/china/2025/05/china-250512-whitehouse01.htm",
+    "stored_doc_id": "d4416b73242a_1752096356897"
+  },
+  "collection_signature": "jMTqDbfs/bdTZkMf54Ehr7d1aFABRX0h/oLb8Z9M5Ek=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.898441"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "51a2b415e6afc9abe8c1dc075d1267c1c90ce094aaffe49fc4fa9114f18594dd",
+  "crypto_record": {
+    "document_id": "51a2b415e6afc9abe8c1dc075d1267c1c90ce094aaffe49fc4fa9114f18594dd",
+    "content_hash": "51a2b415e6afc9abe8c1dc075d1267c1c90ce094aaffe49fc4fa9114f18594dd",
+    "collection_timestamp": "2025-07-09T20:26:48.605138",
+    "source_metadata": {
+      "title": "Musk AI firm deleting antisemitic Grok posts",
+      "url": "https://thehill.com/policy/technology/5391838-musk-ai-chatbot-antisemitic-responses/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:40.168152",
+      "id": "378114f4c067_1752092808604",
+      "author": "Julia Shapero",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "378114f4c067_1752092808604",
+      "stored_at": "2025-07-09T20:26:48.604481"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/policy/technology/5391838-musk-ai-chatbot-antisemitic-responses/",
+    "stored_doc_id": "378114f4c067_1752092808604"
+  },
+  "collection_signature": "7jffLj9sfB9yyOtPSt6ChJDCoad89Q98dEeeI+8fwYY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.605220"
+}

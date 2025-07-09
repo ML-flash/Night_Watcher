@@ -1,0 +1,31 @@
+{
+  "document_id": "1027c6b96bc2f6def54b47ba48711938cdf7742c1953687eef5d14fbccdf8d24",
+  "crypto_record": {
+    "document_id": "1027c6b96bc2f6def54b47ba48711938cdf7742c1953687eef5d14fbccdf8d24",
+    "content_hash": "1027c6b96bc2f6def54b47ba48711938cdf7742c1953687eef5d14fbccdf8d24",
+    "collection_timestamp": "2025-07-09T21:08:19.004979",
+    "source_metadata": {
+      "title": "Federal Court Rules in Favor of Voters in North Carolina Post-Election Disenfranchisement Case - League of Women Voters",
+      "url": "https://www.lwv.org/newsroom/press-releases/federal-court-rules-favor-voters-north-carolina-post-election",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-06",
+      "collected_at": "2025-07-09T20:53:04.867408",
+      "id": "32cb8fc5ad1a_1752095299004",
+      "author": "Adam Ginsburg",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "32cb8fc5ad1a_1752095299004",
+      "stored_at": "2025-07-09T21:08:19.004236"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.lwv.org/newsroom/press-releases/federal-court-rules-favor-voters-north-carolina-post-election",
+    "stored_doc_id": "32cb8fc5ad1a_1752095299004"
+  },
+  "collection_signature": "yqdLCgz7GMVH8bGOhr55IW8uy/BXoWcaW+7LTc7wHLc=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.005081"
+}

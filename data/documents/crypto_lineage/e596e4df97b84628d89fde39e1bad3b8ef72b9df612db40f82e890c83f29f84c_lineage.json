@@ -1,0 +1,31 @@
+{
+  "document_id": "e596e4df97b84628d89fde39e1bad3b8ef72b9df612db40f82e890c83f29f84c",
+  "crypto_record": {
+    "document_id": "e596e4df97b84628d89fde39e1bad3b8ef72b9df612db40f82e890c83f29f84c",
+    "content_hash": "e596e4df97b84628d89fde39e1bad3b8ef72b9df612db40f82e890c83f29f84c",
+    "collection_timestamp": "2025-07-09T21:08:19.130977",
+    "source_metadata": {
+      "title": "E-News | Updates announced for US Government Policy for Oversight of DURC and PePP - enews.wvu.edu",
+      "url": "https://enews.wvu.edu/articles/2025/05/06/updates-to-the-united-states-government-policy-for-oversight-of-durc-and-pepp",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-06",
+      "collected_at": "2025-07-09T20:58:38.172694",
+      "id": "91e86a1f4a48_1752095299123",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "91e86a1f4a48_1752095299123",
+      "stored_at": "2025-07-09T21:08:19.123848"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://enews.wvu.edu/articles/2025/05/06/updates-to-the-united-states-government-policy-for-oversight-of-durc-and-pepp",
+    "stored_doc_id": "91e86a1f4a48_1752095299123"
+  },
+  "collection_signature": "zKC0XD1S+p8EWADVaK1VO3WPrI4FjauYxn1NrJEUwmw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.131180"
+}

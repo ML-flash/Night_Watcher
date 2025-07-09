@@ -1,0 +1,31 @@
+{
+  "document_id": "099ca8f92f56893aaf814ed7eab6a9a89217ebc75b9a612eb99069648afd7e26",
+  "crypto_record": {
+    "document_id": "099ca8f92f56893aaf814ed7eab6a9a89217ebc75b9a612eb99069648afd7e26",
+    "content_hash": "099ca8f92f56893aaf814ed7eab6a9a89217ebc75b9a612eb99069648afd7e26",
+    "collection_timestamp": "2025-07-09T21:08:19.312765",
+    "source_metadata": {
+      "title": "Political retribution doesn\u2019t pay \u2014 even with partisan voters - Northwestern Now News",
+      "url": "https://news.northwestern.edu/stories/2025/06/study-finds-retribution-doesnt-pay-even-with-partisan-voters-2/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-11",
+      "collected_at": "2025-07-09T21:03:08.622839",
+      "id": "ef1418eb9da6_1752095299310",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "ef1418eb9da6_1752095299310",
+      "stored_at": "2025-07-09T21:08:19.310374"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://news.northwestern.edu/stories/2025/06/study-finds-retribution-doesnt-pay-even-with-partisan-voters-2/",
+    "stored_doc_id": "ef1418eb9da6_1752095299310"
+  },
+  "collection_signature": "JMeTH8szQ+kevNieBZ2LFKSr3lAU0o8O8304IwdV2Pw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.312847"
+}

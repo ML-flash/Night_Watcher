@@ -1,0 +1,31 @@
+{
+  "document_id": "a60da9dbc1beb4f4ef1f36e17af80247db1aedcb6245cbd79cf3ca631fd34034",
+  "crypto_record": {
+    "document_id": "a60da9dbc1beb4f4ef1f36e17af80247db1aedcb6245cbd79cf3ca631fd34034",
+    "content_hash": "a60da9dbc1beb4f4ef1f36e17af80247db1aedcb6245cbd79cf3ca631fd34034",
+    "collection_timestamp": "2025-07-09T21:08:19.026680",
+    "source_metadata": {
+      "title": "Judge blocks Trump push to cut public school funding over diversity programs - PBS",
+      "url": "https://www.pbs.org/newshour/politics/judge-blocks-trump-push-to-cut-public-school-funding-over-diversity-programs",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-24T17:39:42-04:00",
+      "collected_at": "2025-07-09T20:54:06.293882",
+      "id": "7d055136b318_1752095299023",
+      "author": "Holly Ramer, Associated Press, Collin Binkley",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "7d055136b318_1752095299023",
+      "stored_at": "2025-07-09T21:08:19.023475"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.pbs.org/newshour/politics/judge-blocks-trump-push-to-cut-public-school-funding-over-diversity-programs",
+    "stored_doc_id": "7d055136b318_1752095299023"
+  },
+  "collection_signature": "7blMl2Cth4ne5Dpj4tPYUQ4NkCJI/+y9U4IPKlmRVhA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.026767"
+}

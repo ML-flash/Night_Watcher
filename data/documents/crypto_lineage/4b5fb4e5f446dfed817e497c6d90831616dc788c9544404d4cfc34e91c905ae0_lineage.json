@@ -1,0 +1,31 @@
+{
+  "document_id": "4b5fb4e5f446dfed817e497c6d90831616dc788c9544404d4cfc34e91c905ae0",
+  "crypto_record": {
+    "document_id": "4b5fb4e5f446dfed817e497c6d90831616dc788c9544404d4cfc34e91c905ae0",
+    "content_hash": "4b5fb4e5f446dfed817e497c6d90831616dc788c9544404d4cfc34e91c905ae0",
+    "collection_timestamp": "2025-07-09T21:08:19.177278",
+    "source_metadata": {
+      "title": "Ending Radical And Wasteful Government DEI Programs And Preferencing - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/01/ending-radical-and-wasteful-government-dei-programs-and-preferencing/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-21",
+      "collected_at": "2025-07-09T20:59:19.278699",
+      "id": "006a97d0c57e_1752095299176",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "006a97d0c57e_1752095299176",
+      "stored_at": "2025-07-09T21:08:19.176484"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/01/ending-radical-and-wasteful-government-dei-programs-and-preferencing/",
+    "stored_doc_id": "006a97d0c57e_1752095299176"
+  },
+  "collection_signature": "ScYW819LB6Y4XzCCqqfvO+by593WGJHCt+p+ZV5+ILA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.177365"
+}

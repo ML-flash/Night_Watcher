@@ -1,0 +1,31 @@
+{
+  "document_id": "6ebbf0144af5fc59353258113aca56fbcde9f4a94af99ed7d53278433ad1fcb8",
+  "crypto_record": {
+    "document_id": "6ebbf0144af5fc59353258113aca56fbcde9f4a94af99ed7d53278433ad1fcb8",
+    "content_hash": "6ebbf0144af5fc59353258113aca56fbcde9f4a94af99ed7d53278433ad1fcb8",
+    "collection_timestamp": "2025-07-09T21:08:19.196544",
+    "source_metadata": {
+      "title": "REMOVING BARRIERS TO AMERICAN LEADERSHIP IN ARTIFICIAL INTELLIGENCE - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/01/removing-barriers-to-american-leadership-in-artificial-intelligence/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-23",
+      "collected_at": "2025-07-09T20:59:36.257273",
+      "id": "eed78a55d647_1752095299195",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "eed78a55d647_1752095299195",
+      "stored_at": "2025-07-09T21:08:19.195723"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/01/removing-barriers-to-american-leadership-in-artificial-intelligence/",
+    "stored_doc_id": "eed78a55d647_1752095299195"
+  },
+  "collection_signature": "kKgScHt73p9yysAfbedx0z6eaKv6Xs+yTL8a6jhE/NM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.196627"
+}

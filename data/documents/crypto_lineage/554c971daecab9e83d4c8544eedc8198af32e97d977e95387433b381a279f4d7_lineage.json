@@ -1,0 +1,31 @@
+{
+  "document_id": "554c971daecab9e83d4c8544eedc8198af32e97d977e95387433b381a279f4d7",
+  "crypto_record": {
+    "document_id": "554c971daecab9e83d4c8544eedc8198af32e97d977e95387433b381a279f4d7",
+    "content_hash": "554c971daecab9e83d4c8544eedc8198af32e97d977e95387433b381a279f4d7",
+    "collection_timestamp": "2025-07-09T21:08:18.589851",
+    "source_metadata": {
+      "title": "What Is an Executive Order and How Does it Work? - American Civil Liberties Union",
+      "url": "https://www.aclu.org/news/privacy-technology/what-is-an-executive-order-and-how-does-it-work",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-04",
+      "collected_at": "2025-07-09T20:40:50.651908",
+      "id": "63e1da5cae03_1752095298588",
+      "author": "Christopher Anders",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "63e1da5cae03_1752095298588",
+      "stored_at": "2025-07-09T21:08:18.589006"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.aclu.org/news/privacy-technology/what-is-an-executive-order-and-how-does-it-work",
+    "stored_doc_id": "63e1da5cae03_1752095298588"
+  },
+  "collection_signature": "hACVXEKkhaNJmwYaDPOre99nLcxkOJTz6cDwinrA+ko=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.589928"
+}

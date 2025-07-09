@@ -1,0 +1,31 @@
+{
+  "document_id": "7f03e40a96aceb36831e0eb71fa742b9fa8befd159330782fb0234060b528834",
+  "crypto_record": {
+    "document_id": "7f03e40a96aceb36831e0eb71fa742b9fa8befd159330782fb0234060b528834",
+    "content_hash": "7f03e40a96aceb36831e0eb71fa742b9fa8befd159330782fb0234060b528834",
+    "collection_timestamp": "2025-07-09T21:08:18.763035",
+    "source_metadata": {
+      "title": "House approves omnibus tax bill with increased taxes on cannabis, data centers - MN House of Representatives (.gov)",
+      "url": "https://www.house.mn.gov/sessiondaily/Story/18841",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-09",
+      "collected_at": "2025-07-09T20:47:50.845992",
+      "id": "35824c4f0580_1752095298758",
+      "author": "Rob Hubbard",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "35824c4f0580_1752095298758",
+      "stored_at": "2025-07-09T21:08:18.759026"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.house.mn.gov/sessiondaily/Story/18841",
+    "stored_doc_id": "35824c4f0580_1752095298758"
+  },
+  "collection_signature": "UOYxzB5Bg3gpMKPoF2o86SZxMTZ6FyVHPtLPBFbfHaM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.763150"
+}

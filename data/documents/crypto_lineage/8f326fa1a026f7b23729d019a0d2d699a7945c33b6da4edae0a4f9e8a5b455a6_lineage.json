@@ -1,0 +1,31 @@
+{
+  "document_id": "8f326fa1a026f7b23729d019a0d2d699a7945c33b6da4edae0a4f9e8a5b455a6",
+  "crypto_record": {
+    "document_id": "8f326fa1a026f7b23729d019a0d2d699a7945c33b6da4edae0a4f9e8a5b455a6",
+    "content_hash": "8f326fa1a026f7b23729d019a0d2d699a7945c33b6da4edae0a4f9e8a5b455a6",
+    "collection_timestamp": "2025-07-09T20:26:48.597470",
+    "source_metadata": {
+      "title": "Federal forecast concerns surface in Texas\u2019 deadly flooding debate",
+      "url": "https://thehill.com/homenews/state-watch/5392024-federal-forecast-concerns-surface-in-texas-deadly-flooding-debate/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:33.788036",
+      "id": "d6b944acdfb5_1752092808596",
+      "author": "Josh Hinkle; David Barer",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d6b944acdfb5_1752092808596",
+      "stored_at": "2025-07-09T20:26:48.596896"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/state-watch/5392024-federal-forecast-concerns-surface-in-texas-deadly-flooding-debate/",
+    "stored_doc_id": "d6b944acdfb5_1752092808596"
+  },
+  "collection_signature": "sYBRgiSduqOPHGdQ+7UQgEXkld0Dp5HkB9Ng7Ydien0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.597553"
+}

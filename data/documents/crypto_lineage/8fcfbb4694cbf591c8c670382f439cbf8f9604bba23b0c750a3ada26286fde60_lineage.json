@@ -1,0 +1,31 @@
+{
+  "document_id": "8fcfbb4694cbf591c8c670382f439cbf8f9604bba23b0c750a3ada26286fde60",
+  "crypto_record": {
+    "document_id": "8fcfbb4694cbf591c8c670382f439cbf8f9604bba23b0c750a3ada26286fde60",
+    "content_hash": "8fcfbb4694cbf591c8c670382f439cbf8f9604bba23b0c750a3ada26286fde60",
+    "collection_timestamp": "2025-07-09T20:27:16.720485",
+    "source_metadata": {
+      "title": "The Texas Flash Flood Is a Preview of the Chaos to Come",
+      "url": "https://www.propublica.org/article/texas-flash-flood-camp-mystic-climate-change-trump-noaa-fema",
+      "source": "ProPublica",
+      "bias_label": "center-left",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:53.769154",
+      "id": "c0d41a51caaf_1752092836719",
+      "author": "Abrahm Lustgarten",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "c0d41a51caaf_1752092836719",
+      "stored_at": "2025-07-09T20:27:16.719702"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.propublica.org/article/texas-flash-flood-camp-mystic-climate-change-trump-noaa-fema",
+    "stored_doc_id": "c0d41a51caaf_1752092836719"
+  },
+  "collection_signature": "Bu0nwIAIMZ2JD4bMdeszuWT+qbXhfgxB0RLKHF5GNYM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:27:16.720573"
+}

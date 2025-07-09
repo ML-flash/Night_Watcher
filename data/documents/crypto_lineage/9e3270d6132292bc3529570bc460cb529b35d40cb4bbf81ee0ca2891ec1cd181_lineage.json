@@ -1,0 +1,31 @@
+{
+  "document_id": "9e3270d6132292bc3529570bc460cb529b35d40cb4bbf81ee0ca2891ec1cd181",
+  "crypto_record": {
+    "document_id": "9e3270d6132292bc3529570bc460cb529b35d40cb4bbf81ee0ca2891ec1cd181",
+    "content_hash": "9e3270d6132292bc3529570bc460cb529b35d40cb4bbf81ee0ca2891ec1cd181",
+    "collection_timestamp": "2025-07-09T21:08:19.277849",
+    "source_metadata": {
+      "title": "Imposing Measures on Sudan for its Use of Chemical Weapons - U.S. Department of State (.gov)",
+      "url": "https://www.state.gov/releases/office-of-the-spokesperson/2025/05/imposing-measures-on-sudan-for-its-use-of-chemical-weapons/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": null,
+      "collected_at": "2025-07-09T21:01:56.959123",
+      "id": "623a2e7e3cb9_1752095299276",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "623a2e7e3cb9_1752095299276",
+      "stored_at": "2025-07-09T21:08:19.276847"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.state.gov/releases/office-of-the-spokesperson/2025/05/imposing-measures-on-sudan-for-its-use-of-chemical-weapons/",
+    "stored_doc_id": "623a2e7e3cb9_1752095299276"
+  },
+  "collection_signature": "cHW8ALtEAzmT2mgu30nGA+O1tCA9Y8/7VcsCxHtUW3g=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.277941"
+}

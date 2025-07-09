@@ -1,0 +1,31 @@
+{
+  "document_id": "b61fc28861499d0239d5da4528b2dcba0913978d20b078035cae86612192d49c",
+  "crypto_record": {
+    "document_id": "b61fc28861499d0239d5da4528b2dcba0913978d20b078035cae86612192d49c",
+    "content_hash": "b61fc28861499d0239d5da4528b2dcba0913978d20b078035cae86612192d49c",
+    "collection_timestamp": "2025-07-09T21:08:19.389768",
+    "source_metadata": {
+      "title": "Federal investigation launched into Minnesota over transgender athlete - WPMI",
+      "url": "https://mynbc15.com/news/nation-world/federal-investigation-launched-minnesota-over-transgender-athlete-title-ix-champlin-park-katie-porter-democrat",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-27",
+      "collected_at": "2025-07-09T21:04:53.450897",
+      "id": "d194efa83f32_1752095299386",
+      "author": "KAYLA GASKINS; The National News Desk",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d194efa83f32_1752095299386",
+      "stored_at": "2025-07-09T21:08:19.387031"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://mynbc15.com/news/nation-world/federal-investigation-launched-minnesota-over-transgender-athlete-title-ix-champlin-park-katie-porter-democrat",
+    "stored_doc_id": "d194efa83f32_1752095299386"
+  },
+  "collection_signature": "5aHvrO3dsPrSMDDHibCzr+b1vDx8Z2xankkz0q9DJuM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.389859"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "3f1439aafabde1e90ac8df6ff2102eef858af78334476c79e9b2b6949153dbe7",
+  "crypto_record": {
+    "document_id": "3f1439aafabde1e90ac8df6ff2102eef858af78334476c79e9b2b6949153dbe7",
+    "content_hash": "3f1439aafabde1e90ac8df6ff2102eef858af78334476c79e9b2b6949153dbe7",
+    "collection_timestamp": "2025-07-09T21:25:56.953676",
+    "source_metadata": {
+      "title": "Trump cannot use new executive order to skirt  sanctuary  cities ruling , judge says",
+      "url": "https://www.aol.com/trump-cannot-executive-order-skirt-225021416.html",
+      "source": "aol.com",
+      "bias_label": "unknown",
+      "published": "2025-05-09",
+      "collected_at": "2025-07-09T21:18:13.466775",
+      "id": "7f816d8ce7da_1752096356952",
+      "author": "AOL Staff; Nate Raymond",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7f816d8ce7da_1752096356952",
+      "stored_at": "2025-07-09T21:25:56.953028"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.aol.com/trump-cannot-executive-order-skirt-225021416.html",
+    "stored_doc_id": "7f816d8ce7da_1752096356952"
+  },
+  "collection_signature": "SAluFUlDl0DlZhCafU0wR5cZStqTV8NZJsOqBcpoQWg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.953761"
+}

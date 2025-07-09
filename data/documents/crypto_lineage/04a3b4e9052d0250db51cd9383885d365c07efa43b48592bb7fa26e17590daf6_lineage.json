@@ -1,0 +1,31 @@
+{
+  "document_id": "04a3b4e9052d0250db51cd9383885d365c07efa43b48592bb7fa26e17590daf6",
+  "crypto_record": {
+    "document_id": "04a3b4e9052d0250db51cd9383885d365c07efa43b48592bb7fa26e17590daf6",
+    "content_hash": "04a3b4e9052d0250db51cd9383885d365c07efa43b48592bb7fa26e17590daf6",
+    "collection_timestamp": "2025-07-09T21:25:57.087623",
+    "source_metadata": {
+      "title": "WA Premier Roger Cook pulls back on WA climate change targets , says emissions may rise",
+      "url": "https://www.abc.net.au/news/2025-05-07/wa-premier-roger-cook-walks-back-climate-targets/105263382",
+      "source": "abc.net.au",
+      "bias_label": "unknown",
+      "published": "2025-05-07",
+      "collected_at": "2025-07-09T21:20:32.897689",
+      "id": "3bdec7a4d1c7_1752096357084",
+      "author": "Keane Bourke; Andrea Mayes",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "3bdec7a4d1c7_1752096357084",
+      "stored_at": "2025-07-09T21:25:57.084676"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.abc.net.au/news/2025-05-07/wa-premier-roger-cook-walks-back-climate-targets/105263382",
+    "stored_doc_id": "3bdec7a4d1c7_1752096357084"
+  },
+  "collection_signature": "D23A6k0I2F+q7pUMOBAQm/SnXYR8CoSp0csODowpoto=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.087713"
+}

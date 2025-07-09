@@ -1,0 +1,31 @@
+{
+  "document_id": "82d34e1aa88adebc3c9fc95b3360bce8419a70e9fcc8496777205c5a7e93eb0b",
+  "crypto_record": {
+    "document_id": "82d34e1aa88adebc3c9fc95b3360bce8419a70e9fcc8496777205c5a7e93eb0b",
+    "content_hash": "82d34e1aa88adebc3c9fc95b3360bce8419a70e9fcc8496777205c5a7e93eb0b",
+    "collection_timestamp": "2025-07-09T21:08:19.368520",
+    "source_metadata": {
+      "title": "IRS says churches can endorse political candidates without losing tax exemptions - NBC News",
+      "url": "https://www.nbcnews.com/politics/trump-administration/irs-says-churches-can-endorse-political-candidates-losing-tax-exemptio-rcna217483",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T21:04:01.665657",
+      "id": "831466525370_1752095299364",
+      "author": "Gary Grumbach; Dareh Gregorian",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "831466525370_1752095299364",
+      "stored_at": "2025-07-09T21:08:19.364130"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nbcnews.com/politics/trump-administration/irs-says-churches-can-endorse-political-candidates-losing-tax-exemptio-rcna217483",
+    "stored_doc_id": "831466525370_1752095299364"
+  },
+  "collection_signature": "2MeT0ef2FK2A6WGc2LX+2FBrYN+0o2rGGVmpRHOYGLI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.368732"
+}

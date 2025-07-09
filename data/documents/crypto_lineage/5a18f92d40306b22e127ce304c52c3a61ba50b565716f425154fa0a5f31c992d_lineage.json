@@ -1,0 +1,31 @@
+{
+  "document_id": "5a18f92d40306b22e127ce304c52c3a61ba50b565716f425154fa0a5f31c992d",
+  "crypto_record": {
+    "document_id": "5a18f92d40306b22e127ce304c52c3a61ba50b565716f425154fa0a5f31c992d",
+    "content_hash": "5a18f92d40306b22e127ce304c52c3a61ba50b565716f425154fa0a5f31c992d",
+    "collection_timestamp": "2025-07-09T20:36:43.185537",
+    "source_metadata": {
+      "title": "Trump shows his dominance over Congress in passing the 'big, beautiful bill' - NBC News",
+      "url": "https://www.nbcnews.com/politics/donald-trump/trump-dominance-congress-passing-big-beautiful-bill-rcna216747",
+      "source": "Congressional Activity",
+      "bias_label": "aggregate",
+      "published": "2025-07-04",
+      "collected_at": "2025-07-09T20:36:35.337261",
+      "id": "ca534139ecd4_1752093403184",
+      "author": "Peter Nicholas; Melanie Zanona; Henry J Gomez; Monica Alba",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "ca534139ecd4_1752093403184",
+      "stored_at": "2025-07-09T20:36:43.184803"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nbcnews.com/politics/donald-trump/trump-dominance-congress-passing-big-beautiful-bill-rcna216747",
+    "stored_doc_id": "ca534139ecd4_1752093403184"
+  },
+  "collection_signature": "AikBBms0rArEQjnf1h/aRB5ttN+qdENHVj/E5v3ggLk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:36:43.185620"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "f6315605d4235c3021950e6079501b769612a8c660cda78e5ce3f55fa210147b",
+  "crypto_record": {
+    "document_id": "f6315605d4235c3021950e6079501b769612a8c660cda78e5ce3f55fa210147b",
+    "content_hash": "f6315605d4235c3021950e6079501b769612a8c660cda78e5ce3f55fa210147b",
+    "collection_timestamp": "2025-07-09T21:08:18.725912",
+    "source_metadata": {
+      "title": "Senate adopts budget resolution after marathon vote-a-rama. Now what? - NPR",
+      "url": "https://www.npr.org/2025/02/21/g-s1-50100/senate-budget-resolution",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-21",
+      "collected_at": "2025-07-09T20:46:02.571810",
+      "id": "970c2e43ce90_1752095298723",
+      "author": "Barbara Sprunt",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "970c2e43ce90_1752095298723",
+      "stored_at": "2025-07-09T21:08:18.723439"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/02/21/g-s1-50100/senate-budget-resolution",
+    "stored_doc_id": "970c2e43ce90_1752095298723"
+  },
+  "collection_signature": "w1/34zaV4cSOjGEZvD1V9NeKW6aZFu+1SInUyckhxOA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.725998"
+}

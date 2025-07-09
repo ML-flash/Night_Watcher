@@ -1,0 +1,31 @@
+{
+  "document_id": "e2f2e81c6283e50b58c874a2a3026eeac097bcab85322327a809b50300cc6e47",
+  "crypto_record": {
+    "document_id": "e2f2e81c6283e50b58c874a2a3026eeac097bcab85322327a809b50300cc6e47",
+    "content_hash": "e2f2e81c6283e50b58c874a2a3026eeac097bcab85322327a809b50300cc6e47",
+    "collection_timestamp": "2025-07-09T21:08:18.824100",
+    "source_metadata": {
+      "title": "Subcommittee on Communications and Technology Holds Hearing on American Wireless Leadership - House Committee on Energy and Commerce (.gov)",
+      "url": "https://energycommerce.house.gov/posts/subcommittee-on-communications-and-technology-holds-hearing-on-american-wireless-leadership",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-23",
+      "collected_at": "2025-07-09T20:49:49.257097",
+      "id": "61c641c556dc_1752095298821",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "61c641c556dc_1752095298821",
+      "stored_at": "2025-07-09T21:08:18.821360"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://energycommerce.house.gov/posts/subcommittee-on-communications-and-technology-holds-hearing-on-american-wireless-leadership",
+    "stored_doc_id": "61c641c556dc_1752095298821"
+  },
+  "collection_signature": "mED3PzmLHgBnKWDBjj6CvjCuhEa32hL2uL/eoRpbhIs=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.824191"
+}

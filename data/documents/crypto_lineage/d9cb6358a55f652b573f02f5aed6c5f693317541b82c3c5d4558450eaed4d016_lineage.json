@@ -1,0 +1,31 @@
+{
+  "document_id": "d9cb6358a55f652b573f02f5aed6c5f693317541b82c3c5d4558450eaed4d016",
+  "crypto_record": {
+    "document_id": "d9cb6358a55f652b573f02f5aed6c5f693317541b82c3c5d4558450eaed4d016",
+    "content_hash": "d9cb6358a55f652b573f02f5aed6c5f693317541b82c3c5d4558450eaed4d016",
+    "collection_timestamp": "2025-07-09T20:28:10.810481",
+    "source_metadata": {
+      "title": "Journalist Karen Hao on Sam Altman, OpenAI & the \"Quasi-Religious\" Push for Artificial Intelligence",
+      "url": "http://www.democracynow.org/2025/7/4/journalist_karen_hao_on_sam_altman",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-07-04",
+      "collected_at": "2025-07-09T20:27:36.382893",
+      "id": "1eb19c38c931_1752092890809",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "1eb19c38c931_1752092890809",
+      "stored_at": "2025-07-09T20:28:10.809594"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/7/4/journalist_karen_hao_on_sam_altman",
+    "stored_doc_id": "1eb19c38c931_1752092890809"
+  },
+  "collection_signature": "QogmFjMxnc+Xb7ryW4e31rxyJU/YrSA6FvLHuHZYAl0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.810575"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "280d262f6f559796a48b69ac74ec14866fe1cc7ec50c62a6717d87859939ab86",
+  "crypto_record": {
+    "document_id": "280d262f6f559796a48b69ac74ec14866fe1cc7ec50c62a6717d87859939ab86",
+    "content_hash": "280d262f6f559796a48b69ac74ec14866fe1cc7ec50c62a6717d87859939ab86",
+    "collection_timestamp": "2025-07-09T21:25:56.917091",
+    "source_metadata": {
+      "title": "The Latest National Park Executive Order Is Going to Make Park Fees More Expensive for Some Tourists What to Know",
+      "url": "https://www.yahoo.com/news/latest-national-park-executive-order-221945690.html",
+      "source": "yahoo.com",
+      "bias_label": "unknown",
+      "published": "2025-07-07",
+      "collected_at": "2025-07-09T21:16:52.268775",
+      "id": "d6764a8f4a4a_1752096356913",
+      "author": "Staff Author; Opheli Garcia Lawler",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d6764a8f4a4a_1752096356913",
+      "stored_at": "2025-07-09T21:25:56.913409"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.yahoo.com/news/latest-national-park-executive-order-221945690.html",
+    "stored_doc_id": "d6764a8f4a4a_1752096356913"
+  },
+  "collection_signature": "bMRvx8TJ4n/TxTJj3lKKCaVUO/kjTdw+WEBRwTlVDwo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.917185"
+}

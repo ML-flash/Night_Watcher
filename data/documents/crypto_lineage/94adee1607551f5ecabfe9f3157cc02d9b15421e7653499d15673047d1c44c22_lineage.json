@@ -1,0 +1,31 @@
+{
+  "document_id": "94adee1607551f5ecabfe9f3157cc02d9b15421e7653499d15673047d1c44c22",
+  "crypto_record": {
+    "document_id": "94adee1607551f5ecabfe9f3157cc02d9b15421e7653499d15673047d1c44c22",
+    "content_hash": "94adee1607551f5ecabfe9f3157cc02d9b15421e7653499d15673047d1c44c22",
+    "collection_timestamp": "2025-07-09T21:08:19.279596",
+    "source_metadata": {
+      "title": "Department Press Briefing \u2013 March 21, 2025 - U.S. Department of State (.gov)",
+      "url": "https://www.state.gov/briefings/department-press-briefing-march-21-2025/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": null,
+      "collected_at": "2025-07-09T21:02:01.364603",
+      "id": "70f67e87fb6f_1752095299278",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "70f67e87fb6f_1752095299278",
+      "stored_at": "2025-07-09T21:08:19.278530"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.state.gov/briefings/department-press-briefing-march-21-2025/",
+    "stored_doc_id": "70f67e87fb6f_1752095299278"
+  },
+  "collection_signature": "QChO4nh1uVcaJEb+3AbJXfLGGw155dPAkYWoFnAM+K8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.279684"
+}

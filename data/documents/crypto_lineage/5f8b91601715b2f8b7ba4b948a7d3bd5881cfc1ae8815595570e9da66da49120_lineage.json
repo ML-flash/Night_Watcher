@@ -1,0 +1,31 @@
+{
+  "document_id": "5f8b91601715b2f8b7ba4b948a7d3bd5881cfc1ae8815595570e9da66da49120",
+  "crypto_record": {
+    "document_id": "5f8b91601715b2f8b7ba4b948a7d3bd5881cfc1ae8815595570e9da66da49120",
+    "content_hash": "5f8b91601715b2f8b7ba4b948a7d3bd5881cfc1ae8815595570e9da66da49120",
+    "collection_timestamp": "2025-07-09T21:08:19.319107",
+    "source_metadata": {
+      "title": "Poll: Most feel democracy is threatened and political violence is a major problem - NPR",
+      "url": "https://www.npr.org/2025/07/01/nx-s1-5452527/poll-democracy-trump-immigration",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-07-01",
+      "collected_at": "2025-07-09T21:03:22.712974",
+      "id": "6f3711891142_1752095299316",
+      "author": "Domenico Montanaro",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "6f3711891142_1752095299316",
+      "stored_at": "2025-07-09T21:08:19.316125"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/07/01/nx-s1-5452527/poll-democracy-trump-immigration",
+    "stored_doc_id": "6f3711891142_1752095299316"
+  },
+  "collection_signature": "39UyPTrP0U0S/8x7Hmufso1azpXEeXKKWCoP1Dk4y9A=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.319201"
+}

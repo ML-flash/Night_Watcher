@@ -1,0 +1,31 @@
+{
+  "document_id": "26ffe4220e1a9375e8b38952311004cd69fd139795967417e7e36b4b12a39e90",
+  "crypto_record": {
+    "document_id": "26ffe4220e1a9375e8b38952311004cd69fd139795967417e7e36b4b12a39e90",
+    "content_hash": "26ffe4220e1a9375e8b38952311004cd69fd139795967417e7e36b4b12a39e90",
+    "collection_timestamp": "2025-07-09T21:25:57.065448",
+    "source_metadata": {
+      "title": "NPR sues Trump administration over federal funding cuts",
+      "url": "https://www.kcra.com/article/npr-lawsuit-trump-federal-funding-first-amendment/64890620",
+      "source": "kcra.com",
+      "bias_label": "unknown",
+      "published": "2025-05-27",
+      "collected_at": "2025-07-09T21:19:20.605193",
+      "id": "3cacf51499af_1752096357064",
+      "author": "Associated Press",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "3cacf51499af_1752096357064",
+      "stored_at": "2025-07-09T21:25:57.064207"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.kcra.com/article/npr-lawsuit-trump-federal-funding-first-amendment/64890620",
+    "stored_doc_id": "3cacf51499af_1752096357064"
+  },
+  "collection_signature": "4PD1QH927ZHMWGHtFKi4XDkPs8OWZK8yqjdAjXNY2ME=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.065582"
+}

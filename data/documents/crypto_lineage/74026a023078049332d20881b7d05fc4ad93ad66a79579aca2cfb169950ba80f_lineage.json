@@ -1,0 +1,31 @@
+{
+  "document_id": "74026a023078049332d20881b7d05fc4ad93ad66a79579aca2cfb169950ba80f",
+  "crypto_record": {
+    "document_id": "74026a023078049332d20881b7d05fc4ad93ad66a79579aca2cfb169950ba80f",
+    "content_hash": "74026a023078049332d20881b7d05fc4ad93ad66a79579aca2cfb169950ba80f",
+    "collection_timestamp": "2025-07-09T21:25:56.937139",
+    "source_metadata": {
+      "title": "Biden Autopen Use Increased As Cognitive Decline Deepened , Analysis Finds",
+      "url": "https://www.zerohedge.com/political/biden-autopen-use-increased-cognitive-decline-deepened-analysis-finds",
+      "source": "zerohedge.com",
+      "bias_label": "unknown",
+      "published": "2025-05-03",
+      "collected_at": "2025-07-09T21:17:53.473789",
+      "id": "2e6f087eac72_1752096356936",
+      "author": "Tyler Durden",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "2e6f087eac72_1752096356936",
+      "stored_at": "2025-07-09T21:25:56.936514"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.zerohedge.com/political/biden-autopen-use-increased-cognitive-decline-deepened-analysis-finds",
+    "stored_doc_id": "2e6f087eac72_1752096356936"
+  },
+  "collection_signature": "vhFeh2gNIrVVVB+Ncp557oSxuIO7SxUHZBH5eQGxLss=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.937221"
+}

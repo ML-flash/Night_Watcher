@@ -1,0 +1,31 @@
+{
+  "document_id": "c8958811ee427625afafa5b7d018ef0e140e1af256d9e8e10b23c07faf8a3c4f",
+  "crypto_record": {
+    "document_id": "c8958811ee427625afafa5b7d018ef0e140e1af256d9e8e10b23c07faf8a3c4f",
+    "content_hash": "c8958811ee427625afafa5b7d018ef0e140e1af256d9e8e10b23c07faf8a3c4f",
+    "collection_timestamp": "2025-07-09T21:25:56.929346",
+    "source_metadata": {
+      "title": "Trump administration suspended clearances of lawyers from targeted firm",
+      "url": "https://www.msnbc.com/deadline-white-house/deadline-legal-blog/trump-wilmerhale-security-clearances-suspended-rcna206730",
+      "source": "msnbc.com",
+      "bias_label": "unknown",
+      "published": "2025-05-14",
+      "collected_at": "2025-07-09T21:16:54.122984",
+      "id": "d2b0bc75d648_1752096356928",
+      "author": "Jordan Rubin",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d2b0bc75d648_1752096356928",
+      "stored_at": "2025-07-09T21:25:56.928475"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.msnbc.com/deadline-white-house/deadline-legal-blog/trump-wilmerhale-security-clearances-suspended-rcna206730",
+    "stored_doc_id": "d2b0bc75d648_1752096356928"
+  },
+  "collection_signature": "cf17CRTAFbZSvDKCHerozkqRnxp1sMcTLcPqI2MxxFM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.929435"
+}

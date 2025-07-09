@@ -1,0 +1,31 @@
+{
+  "document_id": "cc9140cec716b184dbdd0e2691b468f070a6474759631148a7f352351aff3406",
+  "crypto_record": {
+    "document_id": "cc9140cec716b184dbdd0e2691b468f070a6474759631148a7f352351aff3406",
+    "content_hash": "cc9140cec716b184dbdd0e2691b468f070a6474759631148a7f352351aff3406",
+    "collection_timestamp": "2025-07-09T20:26:48.602980",
+    "source_metadata": {
+      "title": "Biden\u2019s White House doctor declines to answer questions in House deposition",
+      "url": "https://thehill.com/homenews/house/5391898-biden-white-house-doctor-refuses-testimony/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:37.831582",
+      "id": "87d045e914e4_1752092808602",
+      "author": "Emily Brooks",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "87d045e914e4_1752092808602",
+      "stored_at": "2025-07-09T20:26:48.602308"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/house/5391898-biden-white-house-doctor-refuses-testimony/",
+    "stored_doc_id": "87d045e914e4_1752092808602"
+  },
+  "collection_signature": "2cp8QOf/fBZK+blUASIYbhTRQKRKQ9f9wesrXgSgB4A=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.603091"
+}

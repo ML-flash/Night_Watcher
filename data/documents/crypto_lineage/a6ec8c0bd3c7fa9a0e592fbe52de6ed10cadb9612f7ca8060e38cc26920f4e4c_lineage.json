@@ -1,0 +1,31 @@
+{
+  "document_id": "a6ec8c0bd3c7fa9a0e592fbe52de6ed10cadb9612f7ca8060e38cc26920f4e4c",
+  "crypto_record": {
+    "document_id": "a6ec8c0bd3c7fa9a0e592fbe52de6ed10cadb9612f7ca8060e38cc26920f4e4c",
+    "content_hash": "a6ec8c0bd3c7fa9a0e592fbe52de6ed10cadb9612f7ca8060e38cc26920f4e4c",
+    "collection_timestamp": "2025-07-09T21:08:18.682941",
+    "source_metadata": {
+      "title": "Congress Passes TAKE IT DOWN Act Despite Major Flaws - Electronic Frontier Foundation",
+      "url": "https://www.eff.org/deeplinks/2025/04/congress-passes-take-it-down-act-despite-major-flaws",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-28",
+      "collected_at": "2025-07-09T20:44:08.564820",
+      "id": "800d811da06b_1752095298681",
+      "author": "Jason Kelley",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "800d811da06b_1752095298681",
+      "stored_at": "2025-07-09T21:08:18.681280"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.eff.org/deeplinks/2025/04/congress-passes-take-it-down-act-despite-major-flaws",
+    "stored_doc_id": "800d811da06b_1752095298681"
+  },
+  "collection_signature": "Bi/hE4db593ibODXxdOt3Z+cq/W7LL+50zH4q1GSciY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.683031"
+}

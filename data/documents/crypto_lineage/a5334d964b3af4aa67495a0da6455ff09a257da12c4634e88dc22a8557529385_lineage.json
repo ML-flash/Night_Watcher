@@ -1,0 +1,31 @@
+{
+  "document_id": "a5334d964b3af4aa67495a0da6455ff09a257da12c4634e88dc22a8557529385",
+  "crypto_record": {
+    "document_id": "a5334d964b3af4aa67495a0da6455ff09a257da12c4634e88dc22a8557529385",
+    "content_hash": "a5334d964b3af4aa67495a0da6455ff09a257da12c4634e88dc22a8557529385",
+    "collection_timestamp": "2025-07-09T21:08:19.094261",
+    "source_metadata": {
+      "title": "Governor Mills Nominates Maine Superior Court Justice Julia Lipez to Serve on the Maine Supreme Judicial Court - Maine.gov",
+      "url": "https://www.maine.gov/governor/mills/news/governor-mills-nominates-maine-superior-court-justice-julia-lipez-serve-maine-supreme-judicial",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-28",
+      "collected_at": "2025-07-09T20:56:15.343810",
+      "id": "aabff0285a23_1752095299093",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "aabff0285a23_1752095299093",
+      "stored_at": "2025-07-09T21:08:19.093402"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.maine.gov/governor/mills/news/governor-mills-nominates-maine-superior-court-justice-julia-lipez-serve-maine-supreme-judicial",
+    "stored_doc_id": "aabff0285a23_1752095299093"
+  },
+  "collection_signature": "RtBpUPJVV0OOl+ZkBtj5LBu6UTkfPCHQeLimzCN/ZuM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.094489"
+}

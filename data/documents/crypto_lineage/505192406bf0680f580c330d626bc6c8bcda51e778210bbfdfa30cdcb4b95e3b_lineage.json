@@ -1,0 +1,31 @@
+{
+  "document_id": "505192406bf0680f580c330d626bc6c8bcda51e778210bbfdfa30cdcb4b95e3b",
+  "crypto_record": {
+    "document_id": "505192406bf0680f580c330d626bc6c8bcda51e778210bbfdfa30cdcb4b95e3b",
+    "content_hash": "505192406bf0680f580c330d626bc6c8bcda51e778210bbfdfa30cdcb4b95e3b",
+    "collection_timestamp": "2025-07-09T21:25:57.131994",
+    "source_metadata": {
+      "title": "A political vanishing act | July 8 editorial cartoons",
+      "url": "https://theweek.com/cartoons/a-political-vanishing-act-july-8-editorial-cartoons",
+      "source": "theweek.com",
+      "bias_label": "unknown",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T21:25:47.855218",
+      "id": "8a1748c72ed3_1752096357131",
+      "author": "The Week US",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "8a1748c72ed3_1752096357131",
+      "stored_at": "2025-07-09T21:25:57.131413"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://theweek.com/cartoons/a-political-vanishing-act-july-8-editorial-cartoons",
+    "stored_doc_id": "8a1748c72ed3_1752096357131"
+  },
+  "collection_signature": "zFEHA1ofwc0Pc4QC0mwGib4OXgVdhCLDhlh7vDFzsaI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.132106"
+}

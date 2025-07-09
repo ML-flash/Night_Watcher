@@ -1,0 +1,18 @@
+Verizon launches government cloud-managed SD WAN to accelerate federal agency modernization
+WASHINGTON, D.C. - Verizon today announced the launch of its first Government Cloud-Managed Software Defined Wide Area Network (SD WAN) product. Built on Verizon’s Federal Risk and Authorization Management Program (FedRAMP) High Ready Government Cloud Platform for U.S. federal agencies, the new offering is highlighted by the platform’s first SaaS Managed SD WAN solution. This innovative offering, already FedRAMP High Ready and built to NIST 800-53 controls, provides Federal agencies with a secure, scalable, and modernized network infrastructure tailored to meet their unique network and connectivity requirements.
+Built to meet the stringent security demands of federal cloud environments, the Verizon Business product was developed in alignment with the federal government’s ongoing transition to cloud-based technologies, providing a competitive edge by uniquely integrating with Verizon’s secure and reliable network. This synergy enhances operational efficiency, supports mission-critical applications, and empowers agencies to achieve their modernization goals with a seamless, scalable, and secure platform for the future.
+“Federal agencies continue to look for opportunities to leverage the latest technology to increase efficiency, while also modernizing their network infrastructure with the required compliance and security,” said Kim Mirabella, vice president for business development and strategic sales at Verizon. “Verizon’s Government Cloud-Managed SD WAN delivers tailored solutions that empower agencies to meet these demands more efficiently, while reallocating critical resources and accelerating the deployment of cutting-edge technology.”
+Delivering Real Value to Federal Customers
+Verizon Business now offers federal agencies a FedRAMP High Ready Government Cloud Platform and a FedRAMP High Ready SD WAN SaaS solution. This stands to provide tremendous value to its customers given Verizon’s backbone network infrastructure, best-in-class professional services team, and AI empowered end-to-end visibility of the compliant platform it's built on. The offering will simplify the transition from outdated network systems to a modernized, cloud-managed architecture, as part of the federal government’s continued transition from legacy communication tools to more internet-based technologies.
+By delivering advanced capabilities through Cisco SD WAN technology, Verizon provides:
+- Improved accessibility: Tailored solutions readily accessible to Federal customers.
+- Faster time to market: Streamlined deployment of secure and scalable technological solutions and applications.
+- Enhanced network performance: Advanced security protocols to protect sensitive government data.
+- Integrated Services & Unified Support: Bundled services (such as MPLS) managed by Verizon.
+- Scalable & Future Proof: Integrated cutting edge technology backed by Verizon’s extensive national and global infrastructure for easier scalability.
+- True Network Optimization: Optimized SD WAN routing with existing backbone network infrastructure.
+- End-to-End Control and Visibility: End-to-end control of network infrastructure and detailed visibility to enhance optimization and troubleshooting.
+Strategic Market Expansion
+The launch marks a significant milestone for Verizon, enabling the company to enter a previously untapped segment of the Federal market.
+Call to Action
+Verizon’s new dedicated online hub for the U.S. federal government reinforces the company’s long term commitment to the public sector. Federal agencies looking to modernize their networks can learn more about Verizon’s Government Cloud-Managed SD WAN solution by visiting verizongov.com.

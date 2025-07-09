@@ -1,0 +1,31 @@
+{
+  "document_id": "e7a92739382dc4d2e6d75de0c4b20597ff723d8b1c109738aceb49791b95d6c3",
+  "crypto_record": {
+    "document_id": "e7a92739382dc4d2e6d75de0c4b20597ff723d8b1c109738aceb49791b95d6c3",
+    "content_hash": "e7a92739382dc4d2e6d75de0c4b20597ff723d8b1c109738aceb49791b95d6c3",
+    "collection_timestamp": "2025-07-09T21:25:57.125145",
+    "source_metadata": {
+      "title": "Political survival",
+      "url": "https://www.thenews.com.pk/print/1316231-political-survival",
+      "source": "thenews.com.pk",
+      "bias_label": "unknown",
+      "published": "2025-05-29",
+      "collected_at": "2025-07-09T21:24:50.746563",
+      "id": "7cc1221876a8_1752096357122",
+      "author": "Editorial Board",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7cc1221876a8_1752096357122",
+      "stored_at": "2025-07-09T21:25:57.123009"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.thenews.com.pk/print/1316231-political-survival",
+    "stored_doc_id": "7cc1221876a8_1752096357122"
+  },
+  "collection_signature": "Go6nTya1Z7nCOZaffgd9Bbp0hdBCR3X2nIE7vIgf3no=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.125230"
+}

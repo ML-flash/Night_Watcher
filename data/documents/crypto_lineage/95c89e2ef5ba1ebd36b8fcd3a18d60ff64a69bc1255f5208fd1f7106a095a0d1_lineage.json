@@ -1,0 +1,31 @@
+{
+  "document_id": "95c89e2ef5ba1ebd36b8fcd3a18d60ff64a69bc1255f5208fd1f7106a095a0d1",
+  "crypto_record": {
+    "document_id": "95c89e2ef5ba1ebd36b8fcd3a18d60ff64a69bc1255f5208fd1f7106a095a0d1",
+    "content_hash": "95c89e2ef5ba1ebd36b8fcd3a18d60ff64a69bc1255f5208fd1f7106a095a0d1",
+    "collection_timestamp": "2025-07-09T21:08:19.289543",
+    "source_metadata": {
+      "title": "Protecting and Championing Free Speech at the State Department - U.S. Department of State (.gov)",
+      "url": "https://www.state.gov/protecting-and-championing-free-speech-at-the-state-department/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": null,
+      "collected_at": "2025-07-09T21:02:27.878936",
+      "id": "a323e763e50f_1752095299288",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "a323e763e50f_1752095299288",
+      "stored_at": "2025-07-09T21:08:19.288660"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.state.gov/protecting-and-championing-free-speech-at-the-state-department/",
+    "stored_doc_id": "a323e763e50f_1752095299288"
+  },
+  "collection_signature": "rLXZDnhZW37ysMyNmW0T/ePoZ345f3U9+RpK7EWo0U0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.289634"
+}

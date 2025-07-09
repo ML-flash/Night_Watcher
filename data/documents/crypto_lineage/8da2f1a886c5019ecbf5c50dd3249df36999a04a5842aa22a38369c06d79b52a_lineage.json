@@ -1,0 +1,31 @@
+{
+  "document_id": "8da2f1a886c5019ecbf5c50dd3249df36999a04a5842aa22a38369c06d79b52a",
+  "crypto_record": {
+    "document_id": "8da2f1a886c5019ecbf5c50dd3249df36999a04a5842aa22a38369c06d79b52a",
+    "content_hash": "8da2f1a886c5019ecbf5c50dd3249df36999a04a5842aa22a38369c06d79b52a",
+    "collection_timestamp": "2025-07-09T20:26:48.587942",
+    "source_metadata": {
+      "title": "DOJ sues California over alleged Title IX violations\u00a0involving trans athletes",
+      "url": "https://thehill.com/homenews/lgbtq/5392215-doj-sues-california-title-ix-trans-athletes-bondi-trump-mcmahon-newsom/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:24.704862",
+      "id": "3b18d7c16a0d_1752092808587",
+      "author": "Brooke Migdon",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "3b18d7c16a0d_1752092808587",
+      "stored_at": "2025-07-09T20:26:48.587280"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/lgbtq/5392215-doj-sues-california-title-ix-trans-athletes-bondi-trump-mcmahon-newsom/",
+    "stored_doc_id": "3b18d7c16a0d_1752092808587"
+  },
+  "collection_signature": "p6ns0BCWQqOUIbSfdiIdVuTsg01O3rndw3E+LwaB/Cs=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.588026"
+}

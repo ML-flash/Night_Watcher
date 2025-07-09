@@ -1,0 +1,31 @@
+{
+  "document_id": "d59784de5ac4a0ba8b49bf639d098d9e34c6b3e94cb85ecd276558d8c670bb42",
+  "crypto_record": {
+    "document_id": "d59784de5ac4a0ba8b49bf639d098d9e34c6b3e94cb85ecd276558d8c670bb42",
+    "content_hash": "d59784de5ac4a0ba8b49bf639d098d9e34c6b3e94cb85ecd276558d8c670bb42",
+    "collection_timestamp": "2025-07-09T20:32:31.347775",
+    "source_metadata": {
+      "title": "Senate Passes Trump\u2019s Big, Beautiful Boon for Police",
+      "url": "https://theintercept.com/2025/07/01/big-beautiful-bill-senate-police-funding/",
+      "source": "The Intercept",
+      "bias_label": "left",
+      "published": "2025-07-01",
+      "collected_at": "2025-07-09T20:32:26.233553",
+      "id": "1480f2c083b4_1752093151346",
+      "author": "Akela Lacy",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "1480f2c083b4_1752093151346",
+      "stored_at": "2025-07-09T20:32:31.347079"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://theintercept.com/2025/07/01/big-beautiful-bill-senate-police-funding/",
+    "stored_doc_id": "1480f2c083b4_1752093151346"
+  },
+  "collection_signature": "1F1HKb4llYeWQwRMTVKHzjPciwHxvzT3ZvZiszWBgZw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:32:31.347856"
+}

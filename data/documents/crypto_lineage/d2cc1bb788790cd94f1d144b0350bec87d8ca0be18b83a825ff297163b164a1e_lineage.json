@@ -1,0 +1,31 @@
+{
+  "document_id": "d2cc1bb788790cd94f1d144b0350bec87d8ca0be18b83a825ff297163b164a1e",
+  "crypto_record": {
+    "document_id": "d2cc1bb788790cd94f1d144b0350bec87d8ca0be18b83a825ff297163b164a1e",
+    "content_hash": "d2cc1bb788790cd94f1d144b0350bec87d8ca0be18b83a825ff297163b164a1e",
+    "collection_timestamp": "2025-07-09T20:32:49.020971",
+    "source_metadata": {
+      "title": "Sarah Jessica Parker Won't Push Her Politics Because 'Many Generations Were Elected Without Someone Having to Say Something on Instagram'",
+      "url": "https://www.breitbart.com/entertainment/2025/07/09/sarah-jessica-parker-wont-push-her-politics-because-many-generations-were-elected-without-someone-having-to-say-something-on-instagram/",
+      "source": "Breitbart Politics",
+      "bias_label": "right",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:32:47.593409",
+      "id": "8ff517d6e06a_1752093169018",
+      "author": "Andrew Breitbart; Alana Mastrangelo",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "8ff517d6e06a_1752093169018",
+      "stored_at": "2025-07-09T20:32:49.018654"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.breitbart.com/entertainment/2025/07/09/sarah-jessica-parker-wont-push-her-politics-because-many-generations-were-elected-without-someone-having-to-say-something-on-instagram/",
+    "stored_doc_id": "8ff517d6e06a_1752093169018"
+  },
+  "collection_signature": "8nIWntKI3eG4mJnaoo3miXj+hR4ZZXpNoi1lHtSpviM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:32:49.021086"
+}

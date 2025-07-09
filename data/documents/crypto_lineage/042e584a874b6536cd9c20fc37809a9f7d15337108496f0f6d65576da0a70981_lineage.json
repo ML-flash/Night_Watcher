@@ -1,0 +1,31 @@
+{
+  "document_id": "042e584a874b6536cd9c20fc37809a9f7d15337108496f0f6d65576da0a70981",
+  "crypto_record": {
+    "document_id": "042e584a874b6536cd9c20fc37809a9f7d15337108496f0f6d65576da0a70981",
+    "content_hash": "042e584a874b6536cd9c20fc37809a9f7d15337108496f0f6d65576da0a70981",
+    "collection_timestamp": "2025-07-09T21:08:18.751707",
+    "source_metadata": {
+      "title": "US House approves \u2018dumb\u2019 legislation renaming Gulf of Mexico \u2018Gulf of America\u2019 - The Guardian",
+      "url": "https://www.theguardian.com/us-news/2025/may/08/us-house-gulf-of-mexico",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-08",
+      "collected_at": "2025-07-09T20:46:48.817823",
+      "id": "91badab1f801_1752095298750",
+      "author": "Chris Stein",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "91badab1f801_1752095298750",
+      "stored_at": "2025-07-09T21:08:18.750445"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.theguardian.com/us-news/2025/may/08/us-house-gulf-of-mexico",
+    "stored_doc_id": "91badab1f801_1752095298750"
+  },
+  "collection_signature": "CP3bD4wqSoNWR9pn1VVHH/GgbDJ+Xi96xM09HD9n7Dw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.751793"
+}

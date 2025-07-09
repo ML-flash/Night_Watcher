@@ -1,0 +1,31 @@
+{
+  "document_id": "7229c4f92193d1e0850a300daa4599c362544d05336318de26bcb8f8b4fe4667",
+  "crypto_record": {
+    "document_id": "7229c4f92193d1e0850a300daa4599c362544d05336318de26bcb8f8b4fe4667",
+    "content_hash": "7229c4f92193d1e0850a300daa4599c362544d05336318de26bcb8f8b4fe4667",
+    "collection_timestamp": "2025-07-09T21:08:19.083354",
+    "source_metadata": {
+      "title": "Governor Lamont Nominates Judge William Bright to the Supreme Court, Judge Robin Wilson to the Appellate Court, and 13 Other Jurists to the Superior Court - CT.GOV-Connecticut's Official State Website (.gov)",
+      "url": "https://portal.ct.gov/governor/news/press-releases/2025/01-2025/governor-lamont-nominates-judge-william-bright-to-the-supreme-court",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-27",
+      "collected_at": "2025-07-09T20:55:40.061796",
+      "id": "5ecf3d41b86e_1752095299080",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "5ecf3d41b86e_1752095299080",
+      "stored_at": "2025-07-09T21:08:19.081006"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://portal.ct.gov/governor/news/press-releases/2025/01-2025/governor-lamont-nominates-judge-william-bright-to-the-supreme-court",
+    "stored_doc_id": "5ecf3d41b86e_1752095299080"
+  },
+  "collection_signature": "GLdDLVtD9fFJutlxFnxXNncSjFd2pEB7+Ld4fAtc8F4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.083455"
+}

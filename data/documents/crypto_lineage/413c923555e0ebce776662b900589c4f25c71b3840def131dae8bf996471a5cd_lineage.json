@@ -1,0 +1,31 @@
+{
+  "document_id": "413c923555e0ebce776662b900589c4f25c71b3840def131dae8bf996471a5cd",
+  "crypto_record": {
+    "document_id": "413c923555e0ebce776662b900589c4f25c71b3840def131dae8bf996471a5cd",
+    "content_hash": "413c923555e0ebce776662b900589c4f25c71b3840def131dae8bf996471a5cd",
+    "collection_timestamp": "2025-07-09T21:25:57.110599",
+    "source_metadata": {
+      "title": "\u0417\u041c\u0406 : \u0430\u0434\u043c\u0456\u043d\u0456\u0441\u0442\u0440\u0430\u0446\u0456\u044f \u0422\u0440\u0430\u043c\u043f\u0430 \u043f\u043b\u0430\u043d\u0443\u0454 \u043f\u0440\u043e\u0434\u0430\u0442\u0438 \u0448\u0442\u0430\u0431 - \u043a\u0432\u0430\u0440\u0442\u0438\u0440\u0443  \u0413\u043e\u043b\u043e\u0441\u0443 \u0410\u043c\u0435\u0440\u0438\u043a\u0438  ",
+      "url": "https://www.eurointegration.com.ua/news/2025/05/16/7211719/",
+      "source": "eurointegration.com.ua",
+      "bias_label": "unknown",
+      "published": "2025-05-16",
+      "collected_at": "2025-07-09T21:23:42.994301",
+      "id": "b36b47108a49_1752096357106",
+      "author": "\u0423\u043b\u044f\u043d\u0430 \u041a\u0440\u0438\u0447\u043a\u043e\u0432\u0441\u044c\u043a\u0430",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "b36b47108a49_1752096357106",
+      "stored_at": "2025-07-09T21:25:57.106528"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.eurointegration.com.ua/news/2025/05/16/7211719/",
+    "stored_doc_id": "b36b47108a49_1752096357106"
+  },
+  "collection_signature": "CHvzvSD5HeFZX56d5prx+YHYv/bki4hW7iVPQx2zP/I=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.110688"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "8f2faafe8db581fa4b719a66634704e2cc5a09f2d926ebab7d57d386ceb53f9d",
+  "crypto_record": {
+    "document_id": "8f2faafe8db581fa4b719a66634704e2cc5a09f2d926ebab7d57d386ceb53f9d",
+    "content_hash": "8f2faafe8db581fa4b719a66634704e2cc5a09f2d926ebab7d57d386ceb53f9d",
+    "collection_timestamp": "2025-07-09T21:08:19.230317",
+    "source_metadata": {
+      "title": "President Trump Holds Cabinet Meeting - C-SPAN",
+      "url": "https://www.c-span.org/program/white-house-event/president-trump-holds-cabinet-meeting/659306",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-30",
+      "collected_at": "2025-07-09T21:00:31.346785",
+      "id": "a627e689eb40_1752095299227",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a627e689eb40_1752095299227",
+      "stored_at": "2025-07-09T21:08:19.227169"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.c-span.org/program/white-house-event/president-trump-holds-cabinet-meeting/659306",
+    "stored_doc_id": "a627e689eb40_1752095299227"
+  },
+  "collection_signature": "89WrYSeT/XHPVmbEQPHZM1VtMWIJnBeuV9HMT+R9iS4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.230588"
+}

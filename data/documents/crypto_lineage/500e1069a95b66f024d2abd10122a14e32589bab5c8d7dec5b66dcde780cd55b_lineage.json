@@ -1,0 +1,31 @@
+{
+  "document_id": "500e1069a95b66f024d2abd10122a14e32589bab5c8d7dec5b66dcde780cd55b",
+  "crypto_record": {
+    "document_id": "500e1069a95b66f024d2abd10122a14e32589bab5c8d7dec5b66dcde780cd55b",
+    "content_hash": "500e1069a95b66f024d2abd10122a14e32589bab5c8d7dec5b66dcde780cd55b",
+    "collection_timestamp": "2025-07-09T21:08:19.427009",
+    "source_metadata": {
+      "title": "MARKUP NOTICE: House Committee on the Budget - House Committee on the Budget (.gov)",
+      "url": "https://budget.house.gov/hearing/markup-notice-house-committee-on-the-budget",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-16",
+      "collected_at": "2025-07-09T21:06:24.824169",
+      "id": "1ad9f7c506e0_1752095299424",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "1ad9f7c506e0_1752095299424",
+      "stored_at": "2025-07-09T21:08:19.424937"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://budget.house.gov/hearing/markup-notice-house-committee-on-the-budget",
+    "stored_doc_id": "1ad9f7c506e0_1752095299424"
+  },
+  "collection_signature": "7ZdoXzizZ7z6N9I+EPzcH2EsqmBgTu84tz3seiQ4JBg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.427129"
+}

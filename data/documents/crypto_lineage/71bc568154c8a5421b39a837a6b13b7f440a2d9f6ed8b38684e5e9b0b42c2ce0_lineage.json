@@ -1,0 +1,31 @@
+{
+  "document_id": "71bc568154c8a5421b39a837a6b13b7f440a2d9f6ed8b38684e5e9b0b42c2ce0",
+  "crypto_record": {
+    "document_id": "71bc568154c8a5421b39a837a6b13b7f440a2d9f6ed8b38684e5e9b0b42c2ce0",
+    "content_hash": "71bc568154c8a5421b39a837a6b13b7f440a2d9f6ed8b38684e5e9b0b42c2ce0",
+    "collection_timestamp": "2025-07-09T21:08:19.022853",
+    "source_metadata": {
+      "title": "Judge blocks State Department layoffs - Government Executive",
+      "url": "https://www.govexec.com/workforce/2025/06/judge-blocks-state-department-layoffs/406083/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-13",
+      "collected_at": "2025-07-09T20:53:58.583123",
+      "id": "42333c169644_1752095299021",
+      "author": "Eric Katz",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "42333c169644_1752095299021",
+      "stored_at": "2025-07-09T21:08:19.021541"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.govexec.com/workforce/2025/06/judge-blocks-state-department-layoffs/406083/",
+    "stored_doc_id": "42333c169644_1752095299021"
+  },
+  "collection_signature": "DQNoLjLQ5Ce/vTPH3sBriUsUKSpAkD3M+TVgRk1Any4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.022945"
+}

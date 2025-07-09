@@ -1,0 +1,31 @@
+{
+  "document_id": "3f0fa9db45980c074c8cdee58a7117afd1230af5ede5fd54bb1b06794a945b75",
+  "crypto_record": {
+    "document_id": "3f0fa9db45980c074c8cdee58a7117afd1230af5ede5fd54bb1b06794a945b75",
+    "content_hash": "3f0fa9db45980c074c8cdee58a7117afd1230af5ede5fd54bb1b06794a945b75",
+    "collection_timestamp": "2025-07-09T21:08:19.423437",
+    "source_metadata": {
+      "title": "Research & Technology Subcommittee Hearing - DeepSeek: A Deep Dive - House.gov",
+      "url": "https://science.house.gov/2025/4/deepseek-a-deep-dive",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-08",
+      "collected_at": "2025-07-09T21:06:15.648580",
+      "id": "4abf9d09444e_1752095299422",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "4abf9d09444e_1752095299422",
+      "stored_at": "2025-07-09T21:08:19.422515"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://science.house.gov/2025/4/deepseek-a-deep-dive",
+    "stored_doc_id": "4abf9d09444e_1752095299422"
+  },
+  "collection_signature": "v859T10UczeueyXuoBMPciG/U/fQe84rS6Lo8gSCoNw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.423523"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "eb4b86dd15eed0cd24f866161d86c854cc528e43b3dc52f9baf1d56e1940b02c",
+  "crypto_record": {
+    "document_id": "eb4b86dd15eed0cd24f866161d86c854cc528e43b3dc52f9baf1d56e1940b02c",
+    "content_hash": "eb4b86dd15eed0cd24f866161d86c854cc528e43b3dc52f9baf1d56e1940b02c",
+    "collection_timestamp": "2025-07-09T21:08:19.374683",
+    "source_metadata": {
+      "title": "Investigation launched after incident involving Buffalo police vehicle, ATV - WIVB News 4",
+      "url": "https://www.wivb.com/news/crime/investigation-launched-after-incident-involving-buffalo-police-vehicle-atv-video/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-28",
+      "collected_at": "2025-07-09T21:04:25.386542",
+      "id": "102f9dcaea93_1752095299371",
+      "author": "Rob Petree",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "102f9dcaea93_1752095299371",
+      "stored_at": "2025-07-09T21:08:19.371464"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.wivb.com/news/crime/investigation-launched-after-incident-involving-buffalo-police-vehicle-atv-video/",
+    "stored_doc_id": "102f9dcaea93_1752095299371"
+  },
+  "collection_signature": "2ld/zZ5XB8/C9enoLk+V5HxrLNee6I3SScqkYxWGpBM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.374800"
+}

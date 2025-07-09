@@ -1,0 +1,31 @@
+{
+  "document_id": "8b948d3f492871dd2ad454c61cd850562b1d540aa27dee834776d2177189405b",
+  "crypto_record": {
+    "document_id": "8b948d3f492871dd2ad454c61cd850562b1d540aa27dee834776d2177189405b",
+    "content_hash": "8b948d3f492871dd2ad454c61cd850562b1d540aa27dee834776d2177189405b",
+    "collection_timestamp": "2025-07-09T20:32:49.013967",
+    "source_metadata": {
+      "title": "Tiffany Cross: Trump Is Kidnapping Non-White People, Throwing Them in 'Concentration Camps'",
+      "url": "https://www.breitbart.com/clips/2025/07/09/tiffany-cross-trump-is-kidnapping-non-white-people-throwing-them-in-concentration-camps/",
+      "source": "Breitbart Politics",
+      "bias_label": "right",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:32:42.455465",
+      "id": "47929adeffbe_1752093169013",
+      "author": "Pam Key",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "47929adeffbe_1752093169013",
+      "stored_at": "2025-07-09T20:32:49.013430"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.breitbart.com/clips/2025/07/09/tiffany-cross-trump-is-kidnapping-non-white-people-throwing-them-in-concentration-camps/",
+    "stored_doc_id": "47929adeffbe_1752093169013"
+  },
+  "collection_signature": "yO+sgpEWEgQYvtB6qfeaOy4sQH6fLdTN+tHDnru37XE=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:32:49.014040"
+}

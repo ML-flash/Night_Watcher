@@ -1,0 +1,31 @@
+{
+  "document_id": "1e7db0fb50814f48446879334b132c9564025d595684bff14850cc17c944e85f",
+  "crypto_record": {
+    "document_id": "1e7db0fb50814f48446879334b132c9564025d595684bff14850cc17c944e85f",
+    "content_hash": "1e7db0fb50814f48446879334b132c9564025d595684bff14850cc17c944e85f",
+    "collection_timestamp": "2025-07-09T21:08:18.630850",
+    "source_metadata": {
+      "title": "Extension of Hiring Freeze - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/04/extension-of-hiring-freeze/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-17",
+      "collected_at": "2025-07-09T20:42:29.745187",
+      "id": "8256d1cd1898_1752095298630",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "8256d1cd1898_1752095298630",
+      "stored_at": "2025-07-09T21:08:18.630160"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/04/extension-of-hiring-freeze/",
+    "stored_doc_id": "8256d1cd1898_1752095298630"
+  },
+  "collection_signature": "dCRRSxwfQa/N/yGcdEW9yjIQiU1FH3fzQQ2oPP67las=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.630930"
+}

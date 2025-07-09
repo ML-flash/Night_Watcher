@@ -1,0 +1,31 @@
+{
+  "document_id": "759a086bb8ebf0a4d0babce571f78778f7aad8b824ac2f22b13b405556de27e9",
+  "crypto_record": {
+    "document_id": "759a086bb8ebf0a4d0babce571f78778f7aad8b824ac2f22b13b405556de27e9",
+    "content_hash": "759a086bb8ebf0a4d0babce571f78778f7aad8b824ac2f22b13b405556de27e9",
+    "collection_timestamp": "2025-07-09T21:25:56.776352",
+    "source_metadata": {
+      "title": "Cracks in Opposition bloc ahead of panchayat polls",
+      "url": "https://www.newindianexpress.com/nation/2025/Apr/21/cracks-in-opposition-bloc-ahead-of-panchayat-polls",
+      "source": "newindianexpress.com",
+      "bias_label": "unknown",
+      "published": "2025-04-21",
+      "collected_at": "2025-07-09T21:12:16.584139",
+      "id": "789256e8cee7_1752096356775",
+      "author": "Prasanta Mazumdar",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "789256e8cee7_1752096356775",
+      "stored_at": "2025-07-09T21:25:56.775655"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.newindianexpress.com/nation/2025/Apr/21/cracks-in-opposition-bloc-ahead-of-panchayat-polls",
+    "stored_doc_id": "789256e8cee7_1752096356775"
+  },
+  "collection_signature": "M/trA4s+SxVPImXHvqqpzsWZ38vqg0GZ8V6ySbA1Xk0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.776432"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "b7f2b99296d50c00cfc59dcaf9883cf24925af546fdf5c5697309d6f35496fba",
+  "crypto_record": {
+    "document_id": "b7f2b99296d50c00cfc59dcaf9883cf24925af546fdf5c5697309d6f35496fba",
+    "content_hash": "b7f2b99296d50c00cfc59dcaf9883cf24925af546fdf5c5697309d6f35496fba",
+    "collection_timestamp": "2025-07-09T21:08:19.263847",
+    "source_metadata": {
+      "title": "See moment Trump vents his anger about Putin during Cabinet meeting - CNN",
+      "url": "https://www.cnn.com/2025/07/08/politics/video/donald-trump-considers-sanction-vladimir-putin-digvid",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T21:01:07.406277",
+      "id": "d22870469ee5_1752095299260",
+      "author": "Daniel Lewis",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d22870469ee5_1752095299260",
+      "stored_at": "2025-07-09T21:08:19.260425"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.cnn.com/2025/07/08/politics/video/donald-trump-considers-sanction-vladimir-putin-digvid",
+    "stored_doc_id": "d22870469ee5_1752095299260"
+  },
+  "collection_signature": "XNBKdh11hmMg5PdsO0L6A9uPqaEc1Ld3HvIWC2b6+aY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.263944"
+}

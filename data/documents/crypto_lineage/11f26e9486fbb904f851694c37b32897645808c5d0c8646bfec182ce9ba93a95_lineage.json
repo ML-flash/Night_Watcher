@@ -1,0 +1,31 @@
+{
+  "document_id": "11f26e9486fbb904f851694c37b32897645808c5d0c8646bfec182ce9ba93a95",
+  "crypto_record": {
+    "document_id": "11f26e9486fbb904f851694c37b32897645808c5d0c8646bfec182ce9ba93a95",
+    "content_hash": "11f26e9486fbb904f851694c37b32897645808c5d0c8646bfec182ce9ba93a95",
+    "collection_timestamp": "2025-07-09T21:25:56.699256",
+    "source_metadata": {
+      "title": "Is there a new government scheme offering earnings of Rs 10 , 000 per day ? PIB clarifies",
+      "url": "https://economictimes.indiatimes.com/wealth/save/is-there-a-new-government-scheme-offering-earnings-of-rs-10000-per-day-pib-clarifies/articleshow/121210755.cms",
+      "source": "economictimes.indiatimes.com",
+      "bias_label": "unknown",
+      "published": "2025-05-16",
+      "collected_at": "2025-07-09T21:09:26.552429",
+      "id": "36d7f373d070_1752096356697",
+      "author": "Sneha Kulkarni",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "36d7f373d070_1752096356697",
+      "stored_at": "2025-07-09T21:25:56.697655"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://economictimes.indiatimes.com/wealth/save/is-there-a-new-government-scheme-offering-earnings-of-rs-10000-per-day-pib-clarifies/articleshow/121210755.cms",
+    "stored_doc_id": "36d7f373d070_1752096356697"
+  },
+  "collection_signature": "mRo92yJDg+tUp9PW3IumbDKNV9gi7N8HVP03gs6AVdY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.700762"
+}

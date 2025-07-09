@@ -1,0 +1,31 @@
+{
+  "document_id": "408eb991c3b88c845862fb80e58ab67cd1486c4fa79503459383b7a8a9e0fa3e",
+  "crypto_record": {
+    "document_id": "408eb991c3b88c845862fb80e58ab67cd1486c4fa79503459383b7a8a9e0fa3e",
+    "content_hash": "408eb991c3b88c845862fb80e58ab67cd1486c4fa79503459383b7a8a9e0fa3e",
+    "collection_timestamp": "2025-07-09T20:28:10.790190",
+    "source_metadata": {
+      "title": "\"Ideological Deportation\": AAUP v. Rubio Trial Challenges Trump Crackdown on Pro-Palestine Students",
+      "url": "http://www.democracynow.org/2025/7/9/aaup",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:27:21.133177",
+      "id": "95ca6729689b_1752092890789",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "95ca6729689b_1752092890789",
+      "stored_at": "2025-07-09T20:28:10.789512"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/7/9/aaup",
+    "stored_doc_id": "95ca6729689b_1752092890789"
+  },
+  "collection_signature": "xsmv1ZoUG4hDdt35w9PTd4E9gy7AixXhjEKwo74tWbM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.790271"
+}

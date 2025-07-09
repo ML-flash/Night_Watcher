@@ -1,0 +1,31 @@
+{
+  "document_id": "b063a67645ed2092a0122060df65d040ab23e6b46a9c58e3ff608d60679917a3",
+  "crypto_record": {
+    "document_id": "b063a67645ed2092a0122060df65d040ab23e6b46a9c58e3ff608d60679917a3",
+    "content_hash": "b063a67645ed2092a0122060df65d040ab23e6b46a9c58e3ff608d60679917a3",
+    "collection_timestamp": "2025-07-09T21:08:18.776595",
+    "source_metadata": {
+      "title": "Tillis Leads Legislation to Eliminate Biden\u2019s \u201cPill Penalty,\u201d Restore Incentives for Life-Saving Drug Innovation - Senator Thom Tillis (.gov)",
+      "url": "https://www.tillis.senate.gov/2025/3/tillis-leads-legislation-to-eliminate-biden-s-pill-penalty-restore-incentives-for-life-saving-drug-innovation",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-03-05",
+      "collected_at": "2025-07-09T20:48:32.132814",
+      "id": "4ed2dde7f126_1752095298775",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "4ed2dde7f126_1752095298775",
+      "stored_at": "2025-07-09T21:08:18.775335"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.tillis.senate.gov/2025/3/tillis-leads-legislation-to-eliminate-biden-s-pill-penalty-restore-incentives-for-life-saving-drug-innovation",
+    "stored_doc_id": "4ed2dde7f126_1752095298775"
+  },
+  "collection_signature": "AuyrUGoE7+l5Hm1X9CKcL+YxjSD3ehksD/Xj80l1Tp8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.776688"
+}

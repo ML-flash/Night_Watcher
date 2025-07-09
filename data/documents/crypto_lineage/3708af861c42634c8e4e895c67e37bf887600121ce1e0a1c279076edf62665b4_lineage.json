@@ -1,0 +1,31 @@
+{
+  "document_id": "3708af861c42634c8e4e895c67e37bf887600121ce1e0a1c279076edf62665b4",
+  "crypto_record": {
+    "document_id": "3708af861c42634c8e4e895c67e37bf887600121ce1e0a1c279076edf62665b4",
+    "content_hash": "3708af861c42634c8e4e895c67e37bf887600121ce1e0a1c279076edf62665b4",
+    "collection_timestamp": "2025-07-09T21:25:56.944738",
+    "source_metadata": {
+      "title": "Democrat seeks to codify Trump executive order to reduce drug prices",
+      "url": "https://www.washingtonexaminer.com/news/3411641/ro-khanna-codify-trump-executive-order-reduce-drug-prices/",
+      "source": "washingtonexaminer.com",
+      "bias_label": "unknown",
+      "published": "2025-05-15",
+      "collected_at": "2025-07-09T21:18:06.803720",
+      "id": "0a258e322393_1752096356944",
+      "author": "Washington Examiner Staff",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "0a258e322393_1752096356944",
+      "stored_at": "2025-07-09T21:25:56.944158"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.washingtonexaminer.com/news/3411641/ro-khanna-codify-trump-executive-order-reduce-drug-prices/",
+    "stored_doc_id": "0a258e322393_1752096356944"
+  },
+  "collection_signature": "DmYyv6PR/SSUktu6QE9xsXOEv6id9GU/e1M8gke5Wf8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.944821"
+}

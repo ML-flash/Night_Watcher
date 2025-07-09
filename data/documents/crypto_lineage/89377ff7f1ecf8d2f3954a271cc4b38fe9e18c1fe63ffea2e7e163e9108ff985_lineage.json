@@ -1,0 +1,31 @@
+{
+  "document_id": "89377ff7f1ecf8d2f3954a271cc4b38fe9e18c1fe63ffea2e7e163e9108ff985",
+  "crypto_record": {
+    "document_id": "89377ff7f1ecf8d2f3954a271cc4b38fe9e18c1fe63ffea2e7e163e9108ff985",
+    "content_hash": "89377ff7f1ecf8d2f3954a271cc4b38fe9e18c1fe63ffea2e7e163e9108ff985",
+    "collection_timestamp": "2025-07-09T20:32:38.869180",
+    "source_metadata": {
+      "title": "How a Shadowy Online Blacklist Became a Legal Threat to Pro-Palestinian Activists",
+      "url": "https://www.motherjones.com/politics/2025/07/canary-mission-israel-palestine-blacklist-university-trump-deportation-ozturk-khalil/",
+      "source": "Mother Jones Politics",
+      "bias_label": "left",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T20:32:36.818485",
+      "id": "8101357aa3f9_1752093158868",
+      "author": "Sophie Hurwitz",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "8101357aa3f9_1752093158868",
+      "stored_at": "2025-07-09T20:32:38.868440"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.motherjones.com/politics/2025/07/canary-mission-israel-palestine-blacklist-university-trump-deportation-ozturk-khalil/",
+    "stored_doc_id": "8101357aa3f9_1752093158868"
+  },
+  "collection_signature": "AU0S57hGTn5c2FaQh8DzYy0Pv6sesRU8+1HMhwnJ/qE=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:32:38.869265"
+}

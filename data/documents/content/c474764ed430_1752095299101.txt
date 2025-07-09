@@ -1,0 +1,23 @@
+General Inquiries
+info@fedramp.gov
+Press Inquiries
+press@gsa.gov
+Official websites use .gov
+A .gov website belongs to an official government organization in the United States.
+Secure .gov websites use HTTPS
+A lock
+( https:// means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.
+The Federal Risk and Authorization Management Program (FedRAMP) is a governmentwide program that provides a standardized approach to security assessment, authorization, and continuous monitoring for cloud products and services. FedRAMP empowers agencies to use modern cloud technologies, with emphasis on security and protection of federal information, and helps accelerate the adoption of secure, cloud solutions.
+FedRAMP consists of two primary entities: the Joint Authorization Board (JAB) and the Program Management Office (PMO). Members of the JAB include the chief information officers (CIOs) from the Department of Defense, Department of Homeland Security, and General Services Administration. The JAB serves as the primary governance and decision-making body for FedRAMP.
+The FedRAMP PMO resides within GSA and supports agencies and cloud service providers through the FedRAMP authorization process and maintains a secure repository of FedRAMP authorizations to enable reuse of security packages.
+Visit the FedRAMP website at www.fedramp.gov.
+For questions about FedRAMP, email info@fedramp.gov.
+For a list of FedRAMP-authorized cloud service offerings, visit the FedRAMP Marketplace.
+Error, The Per Diem API is not responding. Please try again later.
+No results could be found for the location you've entered.
+Rates are available between 10/1/2022 and 09/30/2025.
+The End Date of your trip can not occur before the Start Date.
+Traveler reimbursement is based on the location of the work activities and not the accommodations, unless lodging is not available at the work activity, then the agency may authorize the rate where lodging is obtained.
+Unless otherwise specified, the per diem locality is defined as "all locations within, or entirely surrounded by, the corporate limits of the key city, including independent entities located within those boundaries."
+Per diem localities with county definitions shall include"all locations within, or entirely surrounded by, the corporate limits of the key city as well as the boundaries of the listed counties, including independent entities located within the boundaries of the key city and the listed counties (unless otherwise listed separately)."
+When a military installation or Government - related facility(whether or not specifically named) is located partially within more than one city or county boundary, the applicable per diem rate for the entire installation or facility is the higher of the rates which apply to the cities and / or counties, even though part(s) of such activities may be located outside the defined per diem locality.

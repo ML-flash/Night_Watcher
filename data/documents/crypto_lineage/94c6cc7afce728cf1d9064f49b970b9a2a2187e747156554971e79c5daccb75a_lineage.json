@@ -1,0 +1,31 @@
+{
+  "document_id": "94c6cc7afce728cf1d9064f49b970b9a2a2187e747156554971e79c5daccb75a",
+  "crypto_record": {
+    "document_id": "94c6cc7afce728cf1d9064f49b970b9a2a2187e747156554971e79c5daccb75a",
+    "content_hash": "94c6cc7afce728cf1d9064f49b970b9a2a2187e747156554971e79c5daccb75a",
+    "collection_timestamp": "2025-07-09T20:32:31.346633",
+    "source_metadata": {
+      "title": "The Whiff of Corruption: Trump\u2019s New Perfume Has Strong Notes of Graft",
+      "url": "https://theintercept.com/2025/07/01/trump-fragrance-crypto/",
+      "source": "The Intercept",
+      "bias_label": "left",
+      "published": "2025-07-01",
+      "collected_at": "2025-07-09T20:32:24.666712",
+      "id": "74eb9101f8d3_1752093151345",
+      "author": "Nick Turse",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "74eb9101f8d3_1752093151345",
+      "stored_at": "2025-07-09T20:32:31.345947"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://theintercept.com/2025/07/01/trump-fragrance-crypto/",
+    "stored_doc_id": "74eb9101f8d3_1752093151345"
+  },
+  "collection_signature": "3hFXJigsC5/CXcNIznDN9+oDNLDg//81OcmZbdGiBfI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:32:31.346714"
+}

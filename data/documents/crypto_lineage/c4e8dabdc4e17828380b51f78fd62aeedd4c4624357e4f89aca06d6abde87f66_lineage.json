@@ -1,0 +1,31 @@
+{
+  "document_id": "c4e8dabdc4e17828380b51f78fd62aeedd4c4624357e4f89aca06d6abde87f66",
+  "crypto_record": {
+    "document_id": "c4e8dabdc4e17828380b51f78fd62aeedd4c4624357e4f89aca06d6abde87f66",
+    "content_hash": "c4e8dabdc4e17828380b51f78fd62aeedd4c4624357e4f89aca06d6abde87f66",
+    "collection_timestamp": "2025-07-09T21:08:19.448267",
+    "source_metadata": {
+      "title": "589 Ways to Improve Government Efficiency and Reduce Deficits - Peter G. Peterson Foundation",
+      "url": "https://www.pgpf.org/article/589-ways-to-improve-government-efficiency-and-reduce-deficits/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-17",
+      "collected_at": "2025-07-09T21:07:27.601213",
+      "id": "855bb0ea361c_1752095299447",
+      "author": "Jcurry",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "855bb0ea361c_1752095299447",
+      "stored_at": "2025-07-09T21:08:19.447473"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.pgpf.org/article/589-ways-to-improve-government-efficiency-and-reduce-deficits/",
+    "stored_doc_id": "855bb0ea361c_1752095299447"
+  },
+  "collection_signature": "sE1GxvV80DLlEGVqND0CtpBg1129ipyE5ZOcG0UeESY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.448349"
+}

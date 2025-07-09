@@ -1,0 +1,31 @@
+{
+  "document_id": "3cd32aa4c34fb5b32e331a34313cf12a67566c1337e1483460b68b593a9fa0cc",
+  "crypto_record": {
+    "document_id": "3cd32aa4c34fb5b32e331a34313cf12a67566c1337e1483460b68b593a9fa0cc",
+    "content_hash": "3cd32aa4c34fb5b32e331a34313cf12a67566c1337e1483460b68b593a9fa0cc",
+    "collection_timestamp": "2025-07-09T21:25:56.830325",
+    "source_metadata": {
+      "title": "Thousands expected to attend the White House Easter Egg Roll",
+      "url": "https://www.pilotonline.com/2025/04/21/white-house-easter-egg-roll/",
+      "source": "pilotonline.com",
+      "bias_label": "unknown",
+      "published": "2025-04-21",
+      "collected_at": "2025-07-09T21:13:33.332122",
+      "id": "1e1a9b4553a1_1752096356829",
+      "author": "Associated Press",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "1e1a9b4553a1_1752096356829",
+      "stored_at": "2025-07-09T21:25:56.829486"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.pilotonline.com/2025/04/21/white-house-easter-egg-roll/",
+    "stored_doc_id": "1e1a9b4553a1_1752096356829"
+  },
+  "collection_signature": "qWTI7/k5qMNsBOoLByY73isvrztn9w/UvLvs1sXiwL4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.830401"
+}

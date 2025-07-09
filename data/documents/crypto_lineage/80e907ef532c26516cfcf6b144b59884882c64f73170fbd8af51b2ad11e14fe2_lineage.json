@@ -1,0 +1,31 @@
+{
+  "document_id": "80e907ef532c26516cfcf6b144b59884882c64f73170fbd8af51b2ad11e14fe2",
+  "crypto_record": {
+    "document_id": "80e907ef532c26516cfcf6b144b59884882c64f73170fbd8af51b2ad11e14fe2",
+    "content_hash": "80e907ef532c26516cfcf6b144b59884882c64f73170fbd8af51b2ad11e14fe2",
+    "collection_timestamp": "2025-07-09T21:08:18.670423",
+    "source_metadata": {
+      "title": "House Passes Bill That Would Devastate Health Coverage for Millions in Medicaid and Medicare - Medicare Rights Center",
+      "url": "https://www.medicarerights.org/medicare-watch/2025/05/22/house-passes-bill-that-would-devastate-health-coverage-for-millions-in-medicaid-and-medicare",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-22",
+      "collected_at": "2025-07-09T20:43:46.946629",
+      "id": "3af286f8a05f_1752095298668",
+      "author": "Lindsey Copeland",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "3af286f8a05f_1752095298668",
+      "stored_at": "2025-07-09T21:08:18.668351"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.medicarerights.org/medicare-watch/2025/05/22/house-passes-bill-that-would-devastate-health-coverage-for-millions-in-medicaid-and-medicare",
+    "stored_doc_id": "3af286f8a05f_1752095298668"
+  },
+  "collection_signature": "ajGixHpwcPEy+mwR/Z2h1fyJLKcuLiceBGHTqK82ueg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.670517"
+}

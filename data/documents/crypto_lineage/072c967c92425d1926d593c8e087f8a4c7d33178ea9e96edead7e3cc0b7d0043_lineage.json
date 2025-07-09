@@ -1,0 +1,31 @@
+{
+  "document_id": "072c967c92425d1926d593c8e087f8a4c7d33178ea9e96edead7e3cc0b7d0043",
+  "crypto_record": {
+    "document_id": "072c967c92425d1926d593c8e087f8a4c7d33178ea9e96edead7e3cc0b7d0043",
+    "content_hash": "072c967c92425d1926d593c8e087f8a4c7d33178ea9e96edead7e3cc0b7d0043",
+    "collection_timestamp": "2025-07-09T21:08:19.100719",
+    "source_metadata": {
+      "title": "Verizon launches government cloud-managed SD WAN to accelerate federal agency modernization - Verizon",
+      "url": "https://www.verizon.com/about/news/verizon-launches-government-cloud-managed-sd-wan",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-29",
+      "collected_at": "2025-07-09T20:56:56.751389",
+      "id": "c40a2a322789_1752095299099",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "c40a2a322789_1752095299099",
+      "stored_at": "2025-07-09T21:08:19.099866"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.verizon.com/about/news/verizon-launches-government-cloud-managed-sd-wan",
+    "stored_doc_id": "c40a2a322789_1752095299099"
+  },
+  "collection_signature": "Z+06Fy5GViW+HstRIGF3oQ4SOy1PhuKa6IfoukOmCxE=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.100801"
+}

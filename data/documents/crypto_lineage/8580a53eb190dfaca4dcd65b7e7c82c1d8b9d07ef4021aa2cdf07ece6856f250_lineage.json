@@ -1,0 +1,31 @@
+{
+  "document_id": "8580a53eb190dfaca4dcd65b7e7c82c1d8b9d07ef4021aa2cdf07ece6856f250",
+  "crypto_record": {
+    "document_id": "8580a53eb190dfaca4dcd65b7e7c82c1d8b9d07ef4021aa2cdf07ece6856f250",
+    "content_hash": "8580a53eb190dfaca4dcd65b7e7c82c1d8b9d07ef4021aa2cdf07ece6856f250",
+    "collection_timestamp": "2025-07-09T21:08:18.698161",
+    "source_metadata": {
+      "title": "Senate Republicans narrowly pass Trump megabill after marathon voting session - NBC News",
+      "url": "https://www.nbcnews.com/politics/congress/senate-final-vote-trump-big-beautiful-bill-republicans-rcna216096",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-07-01",
+      "collected_at": "2025-07-09T20:44:46.922321",
+      "id": "c6939ce0daca_1752095298696",
+      "author": "Scott Wong; Sahil Kapur; Frank Thorp V; Brennan Leach; Julie Tsirkin",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "c6939ce0daca_1752095298696",
+      "stored_at": "2025-07-09T21:08:18.696702"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nbcnews.com/politics/congress/senate-final-vote-trump-big-beautiful-bill-republicans-rcna216096",
+    "stored_doc_id": "c6939ce0daca_1752095298696"
+  },
+  "collection_signature": "CuAldhbbLTJOQItMmMvC6j6RxgzTNyPXPrXwr4cuyG0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.698254"
+}

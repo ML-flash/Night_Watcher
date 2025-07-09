@@ -1,0 +1,31 @@
+{
+  "document_id": "d48b47fdd5d18a512771d9b087b621cde6ffdbb38569e793d29ad3d524db3eb8",
+  "crypto_record": {
+    "document_id": "d48b47fdd5d18a512771d9b087b621cde6ffdbb38569e793d29ad3d524db3eb8",
+    "content_hash": "d48b47fdd5d18a512771d9b087b621cde6ffdbb38569e793d29ad3d524db3eb8",
+    "collection_timestamp": "2025-07-09T20:26:48.592261",
+    "source_metadata": {
+      "title": "Democrats launch investigation into EEOC\u2019s probes of major law firms",
+      "url": "https://thehill.com/regulation/court-battles/5392138-democrats-investigation-eeoc-law-firms/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:28.452039",
+      "id": "d87eb51a3671_1752092808591",
+      "author": "Rebecca Beitsch",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d87eb51a3671_1752092808591",
+      "stored_at": "2025-07-09T20:26:48.591592"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/regulation/court-battles/5392138-democrats-investigation-eeoc-law-firms/",
+    "stored_doc_id": "d87eb51a3671_1752092808591"
+  },
+  "collection_signature": "fFmh3Sg5Ep/sfT5HYgJpZjDmmQs/MEZzQ1flq3V3ZRg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.592347"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "b1bb626c6293265b5b4281c8a68ca9ca6d39c6307559a89e3fe02004bd342ad4",
+  "crypto_record": {
+    "document_id": "b1bb626c6293265b5b4281c8a68ca9ca6d39c6307559a89e3fe02004bd342ad4",
+    "content_hash": "b1bb626c6293265b5b4281c8a68ca9ca6d39c6307559a89e3fe02004bd342ad4",
+    "collection_timestamp": "2025-07-09T21:08:19.282985",
+    "source_metadata": {
+      "title": "100 Days of an America First State Department - U.S. Department of State (.gov)",
+      "url": "https://www.state.gov/releases/2025/04/100-days-of-an-america-first-state-department/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-10T00:00:00",
+      "collected_at": "2025-07-09T21:02:10.385991",
+      "id": "23232b41b86d_1752095299282",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "23232b41b86d_1752095299282",
+      "stored_at": "2025-07-09T21:08:19.282207"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.state.gov/releases/2025/04/100-days-of-an-america-first-state-department/",
+    "stored_doc_id": "23232b41b86d_1752095299282"
+  },
+  "collection_signature": "nccJlpnw9HUpelAR/Ur/99L2j4XcYDOIFSo+UBwjC3s=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.283120"
+}

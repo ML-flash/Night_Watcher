@@ -1,0 +1,31 @@
+{
+  "document_id": "c2b09ca3361bb8f7c25d7cd51cf7f007e169280964b7c65b6ab28f821f80c1ae",
+  "crypto_record": {
+    "document_id": "c2b09ca3361bb8f7c25d7cd51cf7f007e169280964b7c65b6ab28f821f80c1ae",
+    "content_hash": "c2b09ca3361bb8f7c25d7cd51cf7f007e169280964b7c65b6ab28f821f80c1ae",
+    "collection_timestamp": "2025-07-09T21:08:18.639695",
+    "source_metadata": {
+      "title": "Memorandum for the Secretary of State, the Secretary of Defense, the Secretary of Health and Human Services, the Administrator of the United States for International Development - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/01/memorandum-for-the-secretary-of-state-the-secretary-of-defense-the-secretary-of-health-and-human-services-the-administrator-of-the-united-states-for-international-development/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-25",
+      "collected_at": "2025-07-09T20:42:52.890493",
+      "id": "7b8d2dfffd56_1752095298638",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7b8d2dfffd56_1752095298638",
+      "stored_at": "2025-07-09T21:08:18.638637"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/01/memorandum-for-the-secretary-of-state-the-secretary-of-defense-the-secretary-of-health-and-human-services-the-administrator-of-the-united-states-for-international-development/",
+    "stored_doc_id": "7b8d2dfffd56_1752095298638"
+  },
+  "collection_signature": "A5wfx/KDiIZwwR4wgTCtNQy9GELBvFjfioCp/UjdUhw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.639781"
+}

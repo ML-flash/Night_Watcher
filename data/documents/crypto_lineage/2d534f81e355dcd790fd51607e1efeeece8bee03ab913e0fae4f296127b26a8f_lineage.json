@@ -1,0 +1,31 @@
+{
+  "document_id": "2d534f81e355dcd790fd51607e1efeeece8bee03ab913e0fae4f296127b26a8f",
+  "crypto_record": {
+    "document_id": "2d534f81e355dcd790fd51607e1efeeece8bee03ab913e0fae4f296127b26a8f",
+    "content_hash": "2d534f81e355dcd790fd51607e1efeeece8bee03ab913e0fae4f296127b26a8f",
+    "collection_timestamp": "2025-07-09T20:28:10.829827",
+    "source_metadata": {
+      "title": "SCOTUS Clears Way for Trump Agenda, from Limits to Birthright Citizenship to LGBTQ Books in Schools",
+      "url": "http://www.democracynow.org/2025/6/30/scotus_ruling",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-06-30",
+      "collected_at": "2025-07-09T20:27:55.488909",
+      "id": "9ec39b0b06e8_1752092890828",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "9ec39b0b06e8_1752092890828",
+      "stored_at": "2025-07-09T20:28:10.828863"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/6/30/scotus_ruling",
+    "stored_doc_id": "9ec39b0b06e8_1752092890828"
+  },
+  "collection_signature": "W7AjSwjWjio3BI+wFHmyPy7EN6qHbUx1A208X7ZotTQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.829917"
+}

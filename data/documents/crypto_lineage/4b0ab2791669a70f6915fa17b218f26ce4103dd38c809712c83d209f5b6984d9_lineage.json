@@ -1,0 +1,31 @@
+{
+  "document_id": "4b0ab2791669a70f6915fa17b218f26ce4103dd38c809712c83d209f5b6984d9",
+  "crypto_record": {
+    "document_id": "4b0ab2791669a70f6915fa17b218f26ce4103dd38c809712c83d209f5b6984d9",
+    "content_hash": "4b0ab2791669a70f6915fa17b218f26ce4103dd38c809712c83d209f5b6984d9",
+    "collection_timestamp": "2025-07-09T21:08:19.175093",
+    "source_metadata": {
+      "title": "PPIC Statewide Survey: Californians and Their Government - Public Policy Institute of California",
+      "url": "https://www.ppic.org/publication/ppic-statewide-survey-californians-and-their-government-june-2025/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-12",
+      "collected_at": "2025-07-09T20:59:17.847130",
+      "id": "88842b94b474_1752095299171",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "88842b94b474_1752095299171",
+      "stored_at": "2025-07-09T21:08:19.171871"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.ppic.org/publication/ppic-statewide-survey-californians-and-their-government-june-2025/",
+    "stored_doc_id": "88842b94b474_1752095299171"
+  },
+  "collection_signature": "xrAAfW2fkVEdnS6bmeHybB/3PLEifnb4qSuaElDecic=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.175201"
+}

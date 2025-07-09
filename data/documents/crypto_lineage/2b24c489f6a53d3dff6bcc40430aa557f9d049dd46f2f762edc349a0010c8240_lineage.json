@@ -1,0 +1,31 @@
+{
+  "document_id": "2b24c489f6a53d3dff6bcc40430aa557f9d049dd46f2f762edc349a0010c8240",
+  "crypto_record": {
+    "document_id": "2b24c489f6a53d3dff6bcc40430aa557f9d049dd46f2f762edc349a0010c8240",
+    "content_hash": "2b24c489f6a53d3dff6bcc40430aa557f9d049dd46f2f762edc349a0010c8240",
+    "collection_timestamp": "2025-07-09T21:08:18.964231",
+    "source_metadata": {
+      "title": "Supreme Court limits nationwide injunctions in birthright citizenship order - NPR",
+      "url": "https://www.npr.org/2025/06/27/nx-s1-5435786/scotus-birthright-citizenship-universal-injunctions",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-27",
+      "collected_at": "2025-07-09T20:52:13.336945",
+      "id": "a0761cc583c7_1752095298952",
+      "author": "Nina Totenberg",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a0761cc583c7_1752095298952",
+      "stored_at": "2025-07-09T21:08:18.952651"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/06/27/nx-s1-5435786/scotus-birthright-citizenship-universal-injunctions",
+    "stored_doc_id": "a0761cc583c7_1752095298952"
+  },
+  "collection_signature": "H+yF6cDPaqceIxgZwMzD3C94CJfWBaAerpbGpb/iqLw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.964326"
+}

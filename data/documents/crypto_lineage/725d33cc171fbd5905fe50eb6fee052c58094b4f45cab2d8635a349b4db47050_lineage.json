@@ -1,0 +1,31 @@
+{
+  "document_id": "725d33cc171fbd5905fe50eb6fee052c58094b4f45cab2d8635a349b4db47050",
+  "crypto_record": {
+    "document_id": "725d33cc171fbd5905fe50eb6fee052c58094b4f45cab2d8635a349b4db47050",
+    "content_hash": "725d33cc171fbd5905fe50eb6fee052c58094b4f45cab2d8635a349b4db47050",
+    "collection_timestamp": "2025-07-09T21:08:18.566964",
+    "source_metadata": {
+      "title": "WATCH: President Trump delivers remarks at \u2018no tax on tips\u2019 event in Las Vegas - PBS",
+      "url": "https://www.pbs.org/newshour/politics/watch-live-president-trump-delivers-remarks-at-no-tax-on-tips-event-in-las-vegas",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-25T14:57:48-04:00",
+      "collected_at": "2025-07-09T20:39:44.352782",
+      "id": "da3d8478c505_1752095298566",
+      "author": "Will Weissert, Associated Press",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "da3d8478c505_1752095298566",
+      "stored_at": "2025-07-09T21:08:18.566324"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.pbs.org/newshour/politics/watch-live-president-trump-delivers-remarks-at-no-tax-on-tips-event-in-las-vegas",
+    "stored_doc_id": "da3d8478c505_1752095298566"
+  },
+  "collection_signature": "ZkZJXlRKK7c0kZrvhpDPhIG2ucyxPZb2X4w+5BClnuY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.567048"
+}

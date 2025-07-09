@@ -1,0 +1,31 @@
+{
+  "document_id": "393bff825f314b2623a0dcda912980894eca7f05e857551b83bbc75dcd197ce2",
+  "crypto_record": {
+    "document_id": "393bff825f314b2623a0dcda912980894eca7f05e857551b83bbc75dcd197ce2",
+    "content_hash": "393bff825f314b2623a0dcda912980894eca7f05e857551b83bbc75dcd197ce2",
+    "collection_timestamp": "2025-07-09T20:26:48.598542",
+    "source_metadata": {
+      "title": "Federal leaders spar on NWS flood warning response, pose safety review after Texas disaster",
+      "url": "https://thehill.com/homenews/state-watch/5392046-federal-leaders-spar-on-nws-flood-warning-response-pose-safety-review-after-texas-disaster/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:34.497538",
+      "id": "fb5eac5fcd69_1752092808597",
+      "author": "Josh Hinkle; David Barer",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "fb5eac5fcd69_1752092808597",
+      "stored_at": "2025-07-09T20:26:48.597884"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/state-watch/5392046-federal-leaders-spar-on-nws-flood-warning-response-pose-safety-review-after-texas-disaster/",
+    "stored_doc_id": "fb5eac5fcd69_1752092808597"
+  },
+  "collection_signature": "pcPYOG8/BX02CFi542DWhWKgQ+YXvQXpkrr2sayhXkE=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.598630"
+}

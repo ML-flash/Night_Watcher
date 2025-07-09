@@ -1,0 +1,31 @@
+{
+  "document_id": "41510968a390b7c35b41ad9eeb6a46c183a81aaa2bb0f4fc306df3c5986aab2f",
+  "crypto_record": {
+    "document_id": "41510968a390b7c35b41ad9eeb6a46c183a81aaa2bb0f4fc306df3c5986aab2f",
+    "content_hash": "41510968a390b7c35b41ad9eeb6a46c183a81aaa2bb0f4fc306df3c5986aab2f",
+    "collection_timestamp": "2025-07-09T21:25:56.940379",
+    "source_metadata": {
+      "title": "Performance and Delivery Department scrapped as Ruto restructures government",
+      "url": "https://www.standardmedia.co.ke/national/article/2001521619/performance-and-delivery-department-scrapped-as-ruto-restructures-government",
+      "source": "standardmedia.co.ke",
+      "bias_label": "unknown",
+      "published": "2025-06-12",
+      "collected_at": "2025-07-09T21:17:59.640451",
+      "id": "81a0ebe29dac_1752096356939",
+      "author": "Mate Tongola",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "81a0ebe29dac_1752096356939",
+      "stored_at": "2025-07-09T21:25:56.939738"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.standardmedia.co.ke/national/article/2001521619/performance-and-delivery-department-scrapped-as-ruto-restructures-government",
+    "stored_doc_id": "81a0ebe29dac_1752096356939"
+  },
+  "collection_signature": "si80qoYyhTUVS+COZfTdX9Asf28hJc4OoNBOZ4xTlRw=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.940466"
+}

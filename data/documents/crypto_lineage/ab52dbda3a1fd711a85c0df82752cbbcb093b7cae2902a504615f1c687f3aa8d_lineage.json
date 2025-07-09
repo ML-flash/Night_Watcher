@@ -1,0 +1,31 @@
+{
+  "document_id": "ab52dbda3a1fd711a85c0df82752cbbcb093b7cae2902a504615f1c687f3aa8d",
+  "crypto_record": {
+    "document_id": "ab52dbda3a1fd711a85c0df82752cbbcb093b7cae2902a504615f1c687f3aa8d",
+    "content_hash": "ab52dbda3a1fd711a85c0df82752cbbcb093b7cae2902a504615f1c687f3aa8d",
+    "collection_timestamp": "2025-07-09T21:08:19.170034",
+    "source_metadata": {
+      "title": "Policy and Government Relations in Kentucky | TNC - The Nature Conservancy",
+      "url": "https://www.nature.org/en-us/about-us/where-we-work/united-states/kentucky/stories-in-kentucky/government-relations-policy-solutions/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-04",
+      "collected_at": "2025-07-09T20:59:13.859435",
+      "id": "463909dd6318_1752095299167",
+      "author": "Last updated February",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "463909dd6318_1752095299167",
+      "stored_at": "2025-07-09T21:08:19.167727"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nature.org/en-us/about-us/where-we-work/united-states/kentucky/stories-in-kentucky/government-relations-policy-solutions/",
+    "stored_doc_id": "463909dd6318_1752095299167"
+  },
+  "collection_signature": "Iqcrs7uJ76K6BZ12vh8BWXTX9bB6jXTs2qSWeDcOZaM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.171470"
+}

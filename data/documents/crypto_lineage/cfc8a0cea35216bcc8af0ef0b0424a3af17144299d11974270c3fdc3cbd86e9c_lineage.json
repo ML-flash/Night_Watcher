@@ -1,0 +1,31 @@
+{
+  "document_id": "cfc8a0cea35216bcc8af0ef0b0424a3af17144299d11974270c3fdc3cbd86e9c",
+  "crypto_record": {
+    "document_id": "cfc8a0cea35216bcc8af0ef0b0424a3af17144299d11974270c3fdc3cbd86e9c",
+    "content_hash": "cfc8a0cea35216bcc8af0ef0b0424a3af17144299d11974270c3fdc3cbd86e9c",
+    "collection_timestamp": "2025-07-09T21:25:56.703482",
+    "source_metadata": {
+      "title": "Major victory for employees , BJP : Amit Malviya on SC directing WB govt to pay 25 % DA to its employees",
+      "url": "https://news.webindia123.com/news/Articles/India/20250516/4317055.html",
+      "source": "news.webindia123.com",
+      "bias_label": "unknown",
+      "published": "2025-05-16",
+      "collected_at": "2025-07-09T21:09:45.606661",
+      "id": "212729cf36c7_1752096356702",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "212729cf36c7_1752096356702",
+      "stored_at": "2025-07-09T21:25:56.702721"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://news.webindia123.com/news/Articles/India/20250516/4317055.html",
+    "stored_doc_id": "212729cf36c7_1752096356702"
+  },
+  "collection_signature": "lnMHS0qxPh/GVtbi4Eq4tKBWI2SduCMGGgEgsrE++RU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.703564"
+}

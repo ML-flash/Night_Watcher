@@ -1,0 +1,31 @@
+{
+  "document_id": "b58e5fe49298d5cd07e7c557037a5bf5d1b93aa831895dd62f925f6ea1e2dc38",
+  "crypto_record": {
+    "document_id": "b58e5fe49298d5cd07e7c557037a5bf5d1b93aa831895dd62f925f6ea1e2dc38",
+    "content_hash": "b58e5fe49298d5cd07e7c557037a5bf5d1b93aa831895dd62f925f6ea1e2dc38",
+    "collection_timestamp": "2025-07-09T21:25:56.779281",
+    "source_metadata": {
+      "title": "\u0915\u094c\u0928 \u0925\u0947 \u092c\u0939\u0930\u0941\u0932 \u0907\u0938\u094d\u0932\u093e\u092e ? \u0915\u093e\u0902\u0917\u094d\u0930\u0947\u0938 \u0938\u0947 \u0930\u093e\u091c\u094d\u092f\u0938\u092d\u093e \u0938\u093e\u0902\u0938\u0926 \u0907\u0938\u094d\u0924\u0940\u092b\u093e \u0926\u0947\u0915\u0930 \u092c\u0928\u0947 HC \u0914\u0930 SC \u0915\u0947 \u091c\u091c , \u0930\u093f\u091f\u093e\u092f\u0930\u092e\u0947\u0902\u091f \u0915\u0947 \u092c\u093e\u0926 \u092b\u093f\u0930 \u092a\u0939\u0941\u0902\u091a\u0947 \u0938\u0902\u0938\u0926 - Nishikant Dubey posted Who was Baharul Islam Rajya Sabha MP from Congress resigned became High Court supreme court judge",
+      "url": "https://www.jansatta.com/national/nishikant-dubey-posted-who-was-baharul-islam-rajya-sabha-mp-from-congress-resigned-became-high-court-supreme-court-judge/3931964/",
+      "source": "jansatta.com",
+      "bias_label": "unknown",
+      "published": "2025-04-22",
+      "collected_at": "2025-07-09T21:12:20.929336",
+      "id": "8c0bdaf091f4_1752096356777",
+      "author": "Nitesh Dubey",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "8c0bdaf091f4_1752096356777",
+      "stored_at": "2025-07-09T21:25:56.778099"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.jansatta.com/national/nishikant-dubey-posted-who-was-baharul-islam-rajya-sabha-mp-from-congress-resigned-became-high-court-supreme-court-judge/3931964/",
+    "stored_doc_id": "8c0bdaf091f4_1752096356777"
+  },
+  "collection_signature": "JRkBr1vSPgq/L+Jyj8YEZfNrnLgajrvxNe9CssWh260=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.779366"
+}

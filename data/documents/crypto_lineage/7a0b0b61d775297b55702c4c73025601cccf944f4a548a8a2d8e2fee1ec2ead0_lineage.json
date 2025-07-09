@@ -1,0 +1,31 @@
+{
+  "document_id": "7a0b0b61d775297b55702c4c73025601cccf944f4a548a8a2d8e2fee1ec2ead0",
+  "crypto_record": {
+    "document_id": "7a0b0b61d775297b55702c4c73025601cccf944f4a548a8a2d8e2fee1ec2ead0",
+    "content_hash": "7a0b0b61d775297b55702c4c73025601cccf944f4a548a8a2d8e2fee1ec2ead0",
+    "collection_timestamp": "2025-07-09T21:08:19.440970",
+    "source_metadata": {
+      "title": "A Review of the Fiscal Year 2026 Budget Requests for the Congressional Budget Office, the Government Accountability Office, and the Government Publishing Office - Senate Appropriations Committee (.gov)",
+      "url": "https://www.appropriations.senate.gov/hearings/a-review-of-the-fiscal-year-2026-budget-requests-for-the-congressional-budget-office-the-government-accountability-office-and-the-government-publishing-office",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-29",
+      "collected_at": "2025-07-09T21:06:52.850250",
+      "id": "7b847c443f07_1752095299439",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7b847c443f07_1752095299439",
+      "stored_at": "2025-07-09T21:08:19.439795"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.appropriations.senate.gov/hearings/a-review-of-the-fiscal-year-2026-budget-requests-for-the-congressional-budget-office-the-government-accountability-office-and-the-government-publishing-office",
+    "stored_doc_id": "7b847c443f07_1752095299439"
+  },
+  "collection_signature": "Xx1X/XFZNwXJC0TmSVUviEWXYHPyKb5lAs8lAcmO1K0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.441084"
+}

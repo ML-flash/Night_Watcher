@@ -1,0 +1,31 @@
+{
+  "document_id": "0efe9edf2d873effc2b02ab85e2143871c1cecd4efdabfea1f5aca362ef481be",
+  "crypto_record": {
+    "document_id": "0efe9edf2d873effc2b02ab85e2143871c1cecd4efdabfea1f5aca362ef481be",
+    "content_hash": "0efe9edf2d873effc2b02ab85e2143871c1cecd4efdabfea1f5aca362ef481be",
+    "collection_timestamp": "2025-07-09T21:08:19.335492",
+    "source_metadata": {
+      "title": "Musk says he\u2019s formed the America Party. Here\u2019s what to know - PBS",
+      "url": "https://www.pbs.org/newshour/politics/musk-says-hes-formed-the-america-party-heres-what-to-know",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-07-07T17:21:14-04:00",
+      "collected_at": "2025-07-09T21:03:37.506434",
+      "id": "beed55aee8fd_1752095299331",
+      "author": "Meg Kinnard, Associated Press",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "beed55aee8fd_1752095299331",
+      "stored_at": "2025-07-09T21:08:19.331840"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.pbs.org/newshour/politics/musk-says-hes-formed-the-america-party-heres-what-to-know",
+    "stored_doc_id": "beed55aee8fd_1752095299331"
+  },
+  "collection_signature": "jZayKZcaO1UOErkdUIjASjvzY+70xIcIevSZMC5wfZc=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.335576"
+}

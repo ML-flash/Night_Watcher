@@ -1,0 +1,31 @@
+{
+  "document_id": "350a17960a07bcf0b6456a6edba318a5b0478c263ac2e32a59bbaadf42accb4d",
+  "crypto_record": {
+    "document_id": "350a17960a07bcf0b6456a6edba318a5b0478c263ac2e32a59bbaadf42accb4d",
+    "content_hash": "350a17960a07bcf0b6456a6edba318a5b0478c263ac2e32a59bbaadf42accb4d",
+    "collection_timestamp": "2025-07-09T20:28:10.799859",
+    "source_metadata": {
+      "title": "Hold GOP Accountable: Youngest Dem. Congresswoman on Medicaid, Climate Cuts & Her Visit to ICE Jail",
+      "url": "http://www.democracynow.org/2025/7/8/rep_yassamin_ansari_big_beautiful_bill",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T20:27:29.510628",
+      "id": "7ae16ecf1e1d_1752092890799",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7ae16ecf1e1d_1752092890799",
+      "stored_at": "2025-07-09T20:28:10.799164"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/7/8/rep_yassamin_ansari_big_beautiful_bill",
+    "stored_doc_id": "7ae16ecf1e1d_1752092890799"
+  },
+  "collection_signature": "XmjavCDoELgrmSOEjZ75aeUN4awyojveYfcTlETrjnE=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.799936"
+}

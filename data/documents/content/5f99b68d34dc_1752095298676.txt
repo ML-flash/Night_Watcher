@@ -1,0 +1,74 @@
+U.S. Congress passes reconciliation bill: What it means for counties
+Author
+Upcoming Events
+Related News
+Key Takeaways
+The U.S. House has voted 218-214 to pass the One Big Beautiful Bill Act (H.R. 1), with no changes to the bill passed by the U.S. Senate on July 1. Passage of H.R. 1 before the July 4 holiday was a top priority for the White House and congressional leadership and the bill will now go to the president’s desk to be signed into law, completing the reconciliation process. The sweeping legislative package will have major impacts on America’s county governments, as detailed below.
+How did we get here?
+In February, the U.S. Congress initiated the budget reconciliation process when the House and Senate unveiled budget resolutions containing instructions to relevant congressional committees to draft legislation to either raise federal revenues or federal spending. On May 22, the House voted to pass its version of H.R. 1 by a vote of 215-214, moving the bill to the Senate.
+The Senate made major changes, striking text that violated the “Byrd Rule,” which states that only budget-related provisions can be included in reconciliation. Additionally, during the vote-a-rama senators voted to adopt amendments further changing the text. See the full list of key changes made in the Senate here. On July 1, the Senate voted 51-50, with Vice President J.D. Vance casting the tiebreaking vote, to send its changes back to the House for final passage.
+Outcomes
+Overall, the bill represents a mixed outcome, with significant cost shifts to states and certain counties, mainly in Medicaid, indigent and uncompensated healthcare and SNAP administration and benefits matching.
+Positive Provisions for Counties
+- Municipal Bonds Preserved:
+- Leaves municipal bonds untouched, preserving the tax exemption for all bonds and protecting counties’ ability to finance critical infrastructure at lower costs.
+- Major Event Preparedness:
+- Includes $1.6 billion for local and state preparation for the 2026 World Cup and 2028 Olympics, funding counties through FEMA’s State Homeland Security Grant Program.
+- Creation of Rural Hospital Grant:
+- Creates a new Rural Health Transformation Program funded with $50 billion from FY 2028 to FY 2032 to support state efforts to strengthen rural hospitals and health providers. States must submit a detailed transformation plan by December 31, 2025 outlining strategies to expand rural access, improve outcomes, leverage technology, boost clinician recruitment and stabilize hospital finances. Funds must not be used for state Medicaid cost-sharing and may be withheld or reclaimed if misused. Unused funds can be redistributed annually through 2034.
+- Conservation Funding:
+- Integrates $13 billion in unobligated Inflation Reduction Act (IRA) funding to provide mandatory funding for U.S. Department of Agriculture conservation programs, empowering counties and local partners to invest in soil, water and land stewardship.
+- Nursing Home Staffing Rule Delay:
+- Delays implementation of the federal nursing home staffing rule until September 2034, easing pressure on county-run facilities facing workforce shortages.
+- Renewable Energy Revenue Sharing:
+- Establishes that counties would receive 25%of revenue from wind and solar energy produced on federal lands, mirroring oil and gas revenue-sharing models.
+- Low-Income Housing Tax Credit:
+- Permanently increases the volume of tax credits available for low-income housing by 12.5% and lowers the private activity bond financing required to access the credit to 25% through calendar year 2029.
+- New Markets Tax Credit:
+- Permanently extends the New Markets Tax Credit (NMTC) that promotes community development and economic growth by attracting private investment in low-income communities with high unemployment and poverty.
+- GOMESA revenue sharing:
+- Raises the cap on revenue sharing for Gulf of Mexico Energy Security Act (GOMESA) from $500 million to $650 million through 2034, allowing counties in Louisiana, Texas, Mississippi and Alabama to receive additional revenue for offshore oil and gas energy produced in the Gulf for coastal protection and restoration.
+Key County Concerns
+- Supplemental Nutrition Assistance Program (SNAP):
+- Benefit Cost Shift: Rather than requiring states to contribute between 5-25% of benefits based on their payment error rates, the Senate bill exempts states with error rates below 6% from contributing to benefits. States with higher error rates would gradually assume a cost share of up to 15%. States may use either their FY 2025 or FY 2026 payment error rate to determine their required match for FY 2028. For FY 2029 and beyond, the match is based on the payment error rate from three fiscal years prior.
+- Generally, implementation will begin in FY 2028. However, if the payment error rate of a state in FY 2025 multiplied by 1.5 is equal to or above 20%, the implementation date will be FY 2029. If a state meets these criteria in FY 2026, implementation is pushed to FY 2030. Ultimately, states with the highest error rates will have delayed implementation.
+- Administrative Cost Shift: Increases the state and county administrative cost share from 50 to 75% beginning in FY 2027, one year later than the House version. We estimate that this could raise the annual administrative cost share to $2.6 billion (up from $1.7 billion) for counties in the 10 states where we administer SNAP.
+- Work Requirements: Expands work requirements for Able-Bodied Adults Without Dependents (ABAWDs), raising the age range from 18–54 to 18–64. Additionally, the bill expands work requirements for those with dependents over age 14, compared to age six in the House bill.
+- Benefit Cost Shift: Rather than requiring states to contribute between 5-25% of benefits based on their payment error rates, the Senate bill exempts states with error rates below 6% from contributing to benefits. States with higher error rates would gradually assume a cost share of up to 15%. States may use either their FY 2025 or FY 2026 payment error rate to determine their required match for FY 2028. For FY 2029 and beyond, the match is based on the payment error rate from three fiscal years prior.
+- Medicaid Provisions:
+- Work Requirements: Imposes work requirements on Medicaid recipients aged 19 to 64 who are not pregnant, not enrolled in Medicare and not otherwise exempt starting no later than the first quarter of 2027. Medicaid applicants and recipients must demonstrate community engagement—such as working, volunteering or attending school for 80 hours per month—to maintain eligibility. States must verify compliance at each eligibility redetermination and may conduct additional verifications more frequently. Exemptions apply for certain groups including minors, caretakers of children 13 years or younger, recently incarcerated individuals, those with medical hardships or residents of disaster-affected areas. The Medicaid community engagement requirement cannot be waived under Section 1115. However, the Secretary of Health and Human Services may grant a temporary exemption to a state (valid through December 31, 2028, and not renewable) if the state demonstrates a good faith effort to comply, submits regular progress reports and addresses barriers to implementation.
+- Medicaid Cost Sharing: Imposes new out-of-pocket costs on low-income Medicaid enrollees starting October 1, 2028. Cost sharing would not be more than $35 per service, and includes exemptions on services like primary care, mental health, substance use disorder services or services at federally qualified health centers and similar clinics. Despite excluding health clinics, the provision is likely to increase uncompensated care costs for county safety net hospitals.
+- Energy Infrastructure on International Boundaries:
+- Does not include the House provision to create an expedited permitting process for pipelines and electric transmission facilities that cross an international border of the U.S. where a certificate crossing from the Federal Energy Regulatory Commission (FERC) can be obtained for a $50,000 fee, which could preempt county permitting/zoning authority.
+- Opt-In Fees for Accelerated NEPA Reviews:
+- Amends the National Environmental Policy Act (NEPA) by allowing project sponsors the ability to expedite environmental reviews if the sponsor pays a fee of 125% of the costs to prepare the environmental review. This could preempt county permitting/zoning authority.
+- Sequestration:
+- NACo is still awaiting final estimates on the cost of the Senate reconciliation bill, however the legislation will likely trigger spending cuts through sequestration of some mandatory funding, putting the Social Services Block Grant (SSBG) and Promoting Safe and Stable Families (PSSF) funds at risk of elimination without additional action from Congress.
+Other County Impacts
+- SALT Deduction:
+- Raises the state and local tax (SALT) deduction cap to $40,000 for 2025 for individuals and joint filers making less than $500,000 per year in modified adjusted gross income (MAGI) and $40,400 in 2026 for individuals and joint filers making less than $505,000 in MAGI. For 2027-2029, both the cap and the income threshold would be 101% of the previous year’s amount. For 2025-2029, the cap would be reduced by 30% of the excess of income threshold, if any, with a minimum cap of $10,000. In 2030, the cap would return to $10,000 with no income threshold or phase-out, meaning that lawmakers will need to again address the SALT cap.
+- Medicaid Provisions:
+- Shortened Presumptive Eligibility: Cuts retroactive Medicaid coverage from three to two months for the non-expansion population and one month for the expansion population. These changes may contribute to increased delays in care and financial strain on county health systems.
+- New Verification and Redetermination Requirements: Adds several new administrative requirements that would increase the burden on counties, particularly in states where counties are responsible for Medicaid eligibility operations. These include monthly address checks beginning in 2029, quarterly death checks for enrollees starting in 2028, monthly provider eligibility and death screenings starting in 2028 and twice-yearly eligibility redeterminations beginning in 2026. Individuals with disabilities may be exempted from this requirement.
+- Provider Tax Restrictions: Prohibits non-expansion states from assessing new provider taxes on a class of services if they do not already have place at the time of the bill’s enactment. In Medicaid expansion states, it gradually reduces the hold harmless threshold for all provider types—except nursing and intermediate care facilities—by 0.5% each year until 2032, when the threshold reaches 3.5%.
+- Ending Enhanced FMAP Incentive for Late Expansion States: To qualify for the enhanced federal Medicaid match (FMAP), states must expand Medicaid by January 1, 2026. States that expand after this deadline will no longer receive additional federal funding incentive. For counties in non-expansion states, this means that if their state expands Medicaid after the deadline, the full cost of the expansion will fall more heavily on the state and local governments, increasing their share of expenses for resident care.
+- Elective Pay for Clean Energy
+- While counties can still use elective pay for clean energy projects, the bill phases out the clean energy tax credits counties can pursue elective pay for with amended stipulations.
+- Spectrum Auctions:
+- Reauthorizes the FCC’s spectrum auction authority. Counties support efforts to close the digital divide, but have limited concerns that existing bands utilized by local authorities may be re-dedicated, thus affecting public safety communications and existing broadband connectivity for residents.
+- IRA Funds Rescinded:
+- Rescinds certain unobligated IRA funds, potentially reducing county access to energy efficiency and conservation grants as well as certain transportation funding.
+- Opportunity Zones:
+- Establishes a new round and permanently extends the Opportunity Zones tax incentive program that provides tax incentives for investments in designated distressed neighborhoods, or qualified opportunity zones, with key reforms.
+- Air Traffic Control:
+- Invests in upgrades to air traffic control systems at airports across the country, which would likely include some county-owned airports.
+- Child Tax Credit:
+- Permanently expands the Child Tax Credit from the current $2000 level to $2200. However, the bill requires both parents and all children to be U.S. citizens and have a social security number and does not address the credit’s phase in, preventing over 17 million children from low-income families from receiving the full credit.
+- Secure Rural Schools (SRS):
+- The final bill does not include reauthorization of the Secure Rural Schools (SRS) program. However, the Secure Rural Schools Reauthorization Act (S. 356) — a standalone bill — did pass the Senate through unanimous consent on June 18.
+Related News
+Ahead of the Senate and House's budget reconcilliation votes, county officials from five states traveled to Capitol Hill June 24, to advocate against its provisions related to the social safety net programs.
+The EPA sets and regulates a maximum level of fluoridation in public water systems, but the federal government cannot require states or localities to fluoridate their water, nor can it remove fluoridation in jurisdictions where it is already policy.
+Advocacy
+U.S. Senate passes amended reconciliation bill text: What it means for counties
+On July 1, the U.S. Senate narrowly passed their version of sweeping budget reconciliation legislation.

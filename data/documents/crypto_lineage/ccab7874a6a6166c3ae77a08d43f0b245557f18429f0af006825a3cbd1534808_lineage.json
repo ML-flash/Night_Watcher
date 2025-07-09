@@ -1,0 +1,31 @@
+{
+  "document_id": "ccab7874a6a6166c3ae77a08d43f0b245557f18429f0af006825a3cbd1534808",
+  "crypto_record": {
+    "document_id": "ccab7874a6a6166c3ae77a08d43f0b245557f18429f0af006825a3cbd1534808",
+    "content_hash": "ccab7874a6a6166c3ae77a08d43f0b245557f18429f0af006825a3cbd1534808",
+    "collection_timestamp": "2025-07-09T21:25:56.706044",
+    "source_metadata": {
+      "title": "Elon Musk government role gets even murkier",
+      "url": "https://www.yahoo.com/news/elon-musk-government-role-gets-191220989.html",
+      "source": "yahoo.com",
+      "bias_label": "unknown",
+      "published": "2025-04-23",
+      "collected_at": "2025-07-09T21:09:46.580919",
+      "id": "0d729d3d2bc8_1752096356705",
+      "author": "Zachary B Wolf; CNN",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "0d729d3d2bc8_1752096356705",
+      "stored_at": "2025-07-09T21:25:56.705272"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.yahoo.com/news/elon-musk-government-role-gets-191220989.html",
+    "stored_doc_id": "0d729d3d2bc8_1752096356705"
+  },
+  "collection_signature": "Aa4FgtoGzQdWk/SaH+5QF1hTeRMc7PQuIbtEvl35AKs=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.706149"
+}

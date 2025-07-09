@@ -1,0 +1,31 @@
+{
+  "document_id": "3c9d28a3c2f54f3c0811b1f847f5ed4967efbdea59dd13e38625b1a29c902d7d",
+  "crypto_record": {
+    "document_id": "3c9d28a3c2f54f3c0811b1f847f5ed4967efbdea59dd13e38625b1a29c902d7d",
+    "content_hash": "3c9d28a3c2f54f3c0811b1f847f5ed4967efbdea59dd13e38625b1a29c902d7d",
+    "collection_timestamp": "2025-07-09T21:08:18.558266",
+    "source_metadata": {
+      "title": "Former President Joe Biden diagnosed with 'aggressive' prostate cancer - ABC News - Breaking News, Latest News and Videos",
+      "url": "https://abcnews.go.com/Politics/former-president-joe-biden-diagnosed-prostate-cancer/story?id=121932146",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-18",
+      "collected_at": "2025-07-09T20:39:03.867621",
+      "id": "7a00860d976d_1752095298557",
+      "author": "ABC News; Averi Harper; Brittany Shepherd; Oren Oppenheim",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "7a00860d976d_1752095298557",
+      "stored_at": "2025-07-09T21:08:18.557487"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://abcnews.go.com/Politics/former-president-joe-biden-diagnosed-prostate-cancer/story?id=121932146",
+    "stored_doc_id": "7a00860d976d_1752095298557"
+  },
+  "collection_signature": "f415HMXIw1OHGM5SE3I0X3B+9AaClhYHESa+SwTOaLM=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.558344"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "a15ab69d38368c5fbf45953f5fb76238e21498d0d7c503555e2dba699052ff2a",
+  "crypto_record": {
+    "document_id": "a15ab69d38368c5fbf45953f5fb76238e21498d0d7c503555e2dba699052ff2a",
+    "content_hash": "a15ab69d38368c5fbf45953f5fb76238e21498d0d7c503555e2dba699052ff2a",
+    "collection_timestamp": "2025-07-09T20:25:41.287368",
+    "source_metadata": {
+      "title": "Tillis says he'll 'probably' vote in support of Trump's controversial judge pick (Hailey Fuchs/Politico)",
+      "url": "http://www.memeorandum.com/250709/p91#a250709p91",
+      "source": "Memeorandum Politics",
+      "bias_label": "aggregate",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:25:35.724786",
+      "id": "d3a693a1fd12_1752092741286",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d3a693a1fd12_1752092741286",
+      "stored_at": "2025-07-09T20:25:41.286697"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.memeorandum.com/250709/p91#a250709p91",
+    "stored_doc_id": "d3a693a1fd12_1752092741286"
+  },
+  "collection_signature": "NuuY8/7RaTSdKIH3K3+p1hJevONGjmScwa6LWQBP/9s=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:25:41.287439"
+}

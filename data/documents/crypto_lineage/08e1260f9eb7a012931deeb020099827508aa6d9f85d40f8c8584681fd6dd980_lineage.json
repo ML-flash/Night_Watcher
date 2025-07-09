@@ -1,0 +1,31 @@
+{
+  "document_id": "08e1260f9eb7a012931deeb020099827508aa6d9f85d40f8c8584681fd6dd980",
+  "crypto_record": {
+    "document_id": "08e1260f9eb7a012931deeb020099827508aa6d9f85d40f8c8584681fd6dd980",
+    "content_hash": "08e1260f9eb7a012931deeb020099827508aa6d9f85d40f8c8584681fd6dd980",
+    "collection_timestamp": "2025-07-09T21:08:19.442485",
+    "source_metadata": {
+      "title": "DOGE tried assigning a team to the Government Accountability Office. It refused - NPR",
+      "url": "https://www.npr.org/2025/05/16/nx-s1-5401008/doge-gao-congress",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-16",
+      "collected_at": "2025-07-09T21:06:57.192357",
+      "id": "bbd4e3c2eaa3_1752095299441",
+      "author": "Stephen Fowler",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "bbd4e3c2eaa3_1752095299441",
+      "stored_at": "2025-07-09T21:08:19.441824"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/05/16/nx-s1-5401008/doge-gao-congress",
+    "stored_doc_id": "bbd4e3c2eaa3_1752095299441"
+  },
+  "collection_signature": "gcg/rFRvxE+lN0+Q3b/tZUshqoWOOSZXBWrLyfHzylI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.442564"
+}

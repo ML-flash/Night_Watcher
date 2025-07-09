@@ -1,0 +1,31 @@
+{
+  "document_id": "d0e157226102cf39d6a713ac742196e71f14b3562cb6ae6bb7c6506d6c862bd7",
+  "crypto_record": {
+    "document_id": "d0e157226102cf39d6a713ac742196e71f14b3562cb6ae6bb7c6506d6c862bd7",
+    "content_hash": "d0e157226102cf39d6a713ac742196e71f14b3562cb6ae6bb7c6506d6c862bd7",
+    "collection_timestamp": "2025-07-09T20:35:58.427917",
+    "source_metadata": {
+      "title": "DEPLOYING ADVANCED NUCLEAR REACTOR TECHNOLOGIES FOR NATIONAL SECURITY - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/05/deploying-advanced-nuclear-reactor-technologies-for-national-security/",
+      "source": "Executive Orders Search",
+      "bias_label": "aggregate",
+      "published": "2025-05-23",
+      "collected_at": "2025-07-09T20:35:28.833039",
+      "id": "e73a101ed87d_1752093358425",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "e73a101ed87d_1752093358425",
+      "stored_at": "2025-07-09T20:35:58.425755"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/05/deploying-advanced-nuclear-reactor-technologies-for-national-security/",
+    "stored_doc_id": "e73a101ed87d_1752093358425"
+  },
+  "collection_signature": "8Wz1qZA5uWZferUW1H5T4tBl52qMIPao22drvLOn2j8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:35:58.428022"
+}

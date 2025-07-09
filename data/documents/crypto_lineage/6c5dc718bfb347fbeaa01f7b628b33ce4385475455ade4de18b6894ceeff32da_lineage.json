@@ -1,0 +1,31 @@
+{
+  "document_id": "6c5dc718bfb347fbeaa01f7b628b33ce4385475455ade4de18b6894ceeff32da",
+  "crypto_record": {
+    "document_id": "6c5dc718bfb347fbeaa01f7b628b33ce4385475455ade4de18b6894ceeff32da",
+    "content_hash": "6c5dc718bfb347fbeaa01f7b628b33ce4385475455ade4de18b6894ceeff32da",
+    "collection_timestamp": "2025-07-09T20:26:48.581609",
+    "source_metadata": {
+      "title": "Jeffries\u2019s speech is proof that Democrats are just performative and reactionary",
+      "url": "https://thehill.com/opinion/5390161-democrats-failing-to-unify/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:17.144861",
+      "id": "f26298f3535c_1752092808580",
+      "author": "Jos Joseph; Opinion Contributor",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f26298f3535c_1752092808580",
+      "stored_at": "2025-07-09T20:26:48.581000"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/opinion/5390161-democrats-failing-to-unify/",
+    "stored_doc_id": "f26298f3535c_1752092808580"
+  },
+  "collection_signature": "ljgdZWUayJqBvNiVx0BkU1R6d9kx2aj1/22VfYT+yQc=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.581694"
+}

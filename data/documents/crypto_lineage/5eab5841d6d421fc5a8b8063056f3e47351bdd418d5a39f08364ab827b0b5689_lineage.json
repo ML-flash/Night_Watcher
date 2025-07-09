@@ -1,0 +1,31 @@
+{
+  "document_id": "5eab5841d6d421fc5a8b8063056f3e47351bdd418d5a39f08364ab827b0b5689",
+  "crypto_record": {
+    "document_id": "5eab5841d6d421fc5a8b8063056f3e47351bdd418d5a39f08364ab827b0b5689",
+    "content_hash": "5eab5841d6d421fc5a8b8063056f3e47351bdd418d5a39f08364ab827b0b5689",
+    "collection_timestamp": "2025-07-09T21:08:19.291787",
+    "source_metadata": {
+      "title": "Department Press Briefing \u2013 June 10, 2025 - U.S. Department of State (.gov)",
+      "url": "https://www.state.gov/briefings/department-press-briefing-june-10-2025/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": null,
+      "collected_at": "2025-07-09T21:02:32.608050",
+      "id": "1ed4dab116cf_1752095299290",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "1ed4dab116cf_1752095299290",
+      "stored_at": "2025-07-09T21:08:19.290378"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.state.gov/briefings/department-press-briefing-june-10-2025/",
+    "stored_doc_id": "1ed4dab116cf_1752095299290"
+  },
+  "collection_signature": "BPYce/pO2/WRvNtB+AwXZMEnMi5T3bfLGflxy2zzpqo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.291866"
+}

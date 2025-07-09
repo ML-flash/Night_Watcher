@@ -1,0 +1,31 @@
+{
+  "document_id": "4390d6f1003263bf00a5835b64ad3aad251c44f5a86706c7d5a6ebcdc1424604",
+  "crypto_record": {
+    "document_id": "4390d6f1003263bf00a5835b64ad3aad251c44f5a86706c7d5a6ebcdc1424604",
+    "content_hash": "4390d6f1003263bf00a5835b64ad3aad251c44f5a86706c7d5a6ebcdc1424604",
+    "collection_timestamp": "2025-07-09T21:25:56.884734",
+    "source_metadata": {
+      "title": "Changes To Birthright Citizenship And The Impact On Fertility And Assisted Reproduction Clinics",
+      "url": "https://www.mondaq.com:443/unitedstates/trials-appeals-compensation/1647620/changes-to-birthright-citizenship-and-the-impact-on-fertility-and-assisted-reproduction-clinics",
+      "source": "mondaq.com",
+      "bias_label": "unknown",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T21:16:47.263581",
+      "id": "5990d743d39e_1752096356883",
+      "author": "Heath Ingram",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "5990d743d39e_1752096356883",
+      "stored_at": "2025-07-09T21:25:56.883701"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.mondaq.com:443/unitedstates/trials-appeals-compensation/1647620/changes-to-birthright-citizenship-and-the-impact-on-fertility-and-assisted-reproduction-clinics",
+    "stored_doc_id": "5990d743d39e_1752096356883"
+  },
+  "collection_signature": "9EhcK5V4cUElMzrV8C623nccdLCPNK9Ik49oGjF3kC8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.884816"
+}

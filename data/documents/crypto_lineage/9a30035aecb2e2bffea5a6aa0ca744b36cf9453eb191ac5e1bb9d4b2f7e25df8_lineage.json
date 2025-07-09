@@ -1,0 +1,31 @@
+{
+  "document_id": "9a30035aecb2e2bffea5a6aa0ca744b36cf9453eb191ac5e1bb9d4b2f7e25df8",
+  "crypto_record": {
+    "document_id": "9a30035aecb2e2bffea5a6aa0ca744b36cf9453eb191ac5e1bb9d4b2f7e25df8",
+    "content_hash": "9a30035aecb2e2bffea5a6aa0ca744b36cf9453eb191ac5e1bb9d4b2f7e25df8",
+    "collection_timestamp": "2025-07-09T20:28:10.839473",
+    "source_metadata": {
+      "title": "Headlines for June 27, 2025",
+      "url": "http://www.democracynow.org/2025/6/27/headlines",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-06-27",
+      "collected_at": "2025-07-09T20:28:04.145378",
+      "id": "91fcdd9fa6db_1752092890838",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "91fcdd9fa6db_1752092890838",
+      "stored_at": "2025-07-09T20:28:10.838646"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/6/27/headlines",
+    "stored_doc_id": "91fcdd9fa6db_1752092890838"
+  },
+  "collection_signature": "qr+bnI6eDIFnw7DLVIqLrzvaIGMOzZ5FFHMe/DrWHo8=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.839554"
+}

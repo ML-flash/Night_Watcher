@@ -1,0 +1,31 @@
+{
+  "document_id": "5ab55aeefca1ef027372f3c902a69107fc669e998ff1633aaf8a4fda95ac8417",
+  "crypto_record": {
+    "document_id": "5ab55aeefca1ef027372f3c902a69107fc669e998ff1633aaf8a4fda95ac8417",
+    "content_hash": "5ab55aeefca1ef027372f3c902a69107fc669e998ff1633aaf8a4fda95ac8417",
+    "collection_timestamp": "2025-07-09T21:25:56.803712",
+    "source_metadata": {
+      "title": "Deaf advocacy group sues the White House for lack of ASL interpreters : NPR",
+      "url": "https://www.npr.org/2025/05/29/nx-s1-5415687/deaf-sign-language-trump-white-house-lawsuit",
+      "source": "npr.org",
+      "bias_label": "unknown",
+      "published": "2025-05-29",
+      "collected_at": "2025-07-09T21:12:52.227420",
+      "id": "2e724d2e59c3_1752096356801",
+      "author": "Kristin Wright",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "2e724d2e59c3_1752096356801",
+      "stored_at": "2025-07-09T21:25:56.801492"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/05/29/nx-s1-5415687/deaf-sign-language-trump-white-house-lawsuit",
+    "stored_doc_id": "2e724d2e59c3_1752096356801"
+  },
+  "collection_signature": "mgkpFrGBj2FHJgwPuY3WIpZ0FiVCVhI26y9PQY1/i8U=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.803807"
+}

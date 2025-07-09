@@ -1,0 +1,31 @@
+{
+  "document_id": "fa41903ecc6ae77121508b9785086caf8c21c8057d6ba8a13d5a65530bd71cc9",
+  "crypto_record": {
+    "document_id": "fa41903ecc6ae77121508b9785086caf8c21c8057d6ba8a13d5a65530bd71cc9",
+    "content_hash": "fa41903ecc6ae77121508b9785086caf8c21c8057d6ba8a13d5a65530bd71cc9",
+    "collection_timestamp": "2025-07-09T21:08:18.878852",
+    "source_metadata": {
+      "title": "Hearing Entitled: Exposing the Proxy Advisory Cartel: How ISS & Glass Lewis Influence Markets - House Committee on Financial Services (.gov)",
+      "url": "https://financialservices.house.gov/calendar/eventsingle.aspx?EventID=409697",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-29",
+      "collected_at": "2025-07-09T20:50:36.932968",
+      "id": "24103bbf859d_1752095298877",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "24103bbf859d_1752095298877",
+      "stored_at": "2025-07-09T21:08:18.877259"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://financialservices.house.gov/calendar/eventsingle.aspx?EventID=409697",
+    "stored_doc_id": "24103bbf859d_1752095298877"
+  },
+  "collection_signature": "i2clJZ0fuCMcOOjt+uQNDp/Lrz/gJ5y7JSuxZiG16kg=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.878936"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "5f8f44d370e3f59ee76ffecd5436fbca93de731308f226e4a67850dfd9993ec9",
+  "crypto_record": {
+    "document_id": "5f8f44d370e3f59ee76ffecd5436fbca93de731308f226e4a67850dfd9993ec9",
+    "content_hash": "5f8f44d370e3f59ee76ffecd5436fbca93de731308f226e4a67850dfd9993ec9",
+    "collection_timestamp": "2025-07-09T20:35:58.415506",
+    "source_metadata": {
+      "title": "As Trump slashed weather agency, his appointees have ties to companies that stand to benefit from privatizing forecasts - PBS",
+      "url": "https://www.pbs.org/newshour/politics/as-trump-slashed-weather-agency-his-appointees-have-ties-to-companies-that-stand-to-benefit-from-privatizing-forecasts",
+      "source": "Executive Orders Search",
+      "bias_label": "aggregate",
+      "published": "2025-07-09T13:53:35-04:00",
+      "collected_at": "2025-07-09T20:34:18.494798",
+      "id": "0fbdc44381df_1752093358414",
+      "author": "Brian Slodysko, Associated Press, Michael Biesecker",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "newspaper3k",
+      "document_id": "0fbdc44381df_1752093358414",
+      "stored_at": "2025-07-09T20:35:58.414354"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.pbs.org/newshour/politics/as-trump-slashed-weather-agency-his-appointees-have-ties-to-companies-that-stand-to-benefit-from-privatizing-forecasts",
+    "stored_doc_id": "0fbdc44381df_1752093358414"
+  },
+  "collection_signature": "7gEaJ1ENod+VLx8fJGU+IgFooK9i2MVlQEw0arFIUyQ=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:35:58.415599"
+}

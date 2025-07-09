@@ -1,0 +1,31 @@
+{
+  "document_id": "9ab7a13257cda19a299d83dda7a5b965af30b5ee43b89fa293493e48e7d2f6ac",
+  "crypto_record": {
+    "document_id": "9ab7a13257cda19a299d83dda7a5b965af30b5ee43b89fa293493e48e7d2f6ac",
+    "content_hash": "9ab7a13257cda19a299d83dda7a5b965af30b5ee43b89fa293493e48e7d2f6ac",
+    "collection_timestamp": "2025-07-09T21:08:18.926451",
+    "source_metadata": {
+      "title": "What To Know About the Supreme Court Case on Birthright Citizenship and Nationwide Injunctions - Center for American Progress",
+      "url": "https://www.americanprogress.org/article/what-to-know-about-the-supreme-court-case-on-birthright-citizenship-and-nationwide-injunctions/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-12",
+      "collected_at": "2025-07-09T20:51:39.823189",
+      "id": "da8fae114f73_1752095298923",
+      "author": "Hayley Durudogan; Devon Ombres; Steve Bonitatibus",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "da8fae114f73_1752095298923",
+      "stored_at": "2025-07-09T21:08:18.923743"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.americanprogress.org/article/what-to-know-about-the-supreme-court-case-on-birthright-citizenship-and-nationwide-injunctions/",
+    "stored_doc_id": "da8fae114f73_1752095298923"
+  },
+  "collection_signature": "bYE1Ylso/cvuY7m4Q5ZsYdIjRt8DAAeAgdVtz1AE0lk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.926546"
+}

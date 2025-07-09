@@ -1,0 +1,31 @@
+{
+  "document_id": "9392653ba2440438b30e079f3e871a7b6a53d0273480dc3286c79edadd87a144",
+  "crypto_record": {
+    "document_id": "9392653ba2440438b30e079f3e871a7b6a53d0273480dc3286c79edadd87a144",
+    "content_hash": "9392653ba2440438b30e079f3e871a7b6a53d0273480dc3286c79edadd87a144",
+    "collection_timestamp": "2025-07-09T20:28:10.807682",
+    "source_metadata": {
+      "title": "Texas Flood Kills 82+, Including 28 Kids, Amid Drought, Trump Cuts to Weather Service, NOAA & FEMA",
+      "url": "http://www.democracynow.org/2025/7/7/texas_floods",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-07-07",
+      "collected_at": "2025-07-09T20:27:33.772375",
+      "id": "2306371d8c29_1752092890805",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "2306371d8c29_1752092890805",
+      "stored_at": "2025-07-09T20:28:10.805864"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/7/7/texas_floods",
+    "stored_doc_id": "2306371d8c29_1752092890805"
+  },
+  "collection_signature": "VCFBdhOu5x8dFj6wK3iw1ubgs+mDR11/CS1ONhz5nx0=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.807764"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "23c9780ffb7dbb02040e38fd406c02023b7152dd482fdc591a97bb42551deb24",
+  "crypto_record": {
+    "document_id": "23c9780ffb7dbb02040e38fd406c02023b7152dd482fdc591a97bb42551deb24",
+    "content_hash": "23c9780ffb7dbb02040e38fd406c02023b7152dd482fdc591a97bb42551deb24",
+    "collection_timestamp": "2025-07-09T21:08:18.920598",
+    "source_metadata": {
+      "title": "Supreme Court sides with Trump administration on nationwide injunctions in birthright citizenship case - SCOTUSblog",
+      "url": "https://www.scotusblog.com/2025/06/supreme-court-sides-with-trump-administration-on-nationwide-injunctions-in-birthright-citizenship-case/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-06-27",
+      "collected_at": "2025-07-09T20:51:35.304459",
+      "id": "e0c921f36d59_1752095298917",
+      "author": "Amy Howe",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "e0c921f36d59_1752095298917",
+      "stored_at": "2025-07-09T21:08:18.917505"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.scotusblog.com/2025/06/supreme-court-sides-with-trump-administration-on-nationwide-injunctions-in-birthright-citizenship-case/",
+    "stored_doc_id": "e0c921f36d59_1752095298917"
+  },
+  "collection_signature": "CN87+vEvzE1owpXrEDpM0oDp4BWYaWamZxg0OcgHAvY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.920688"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "aa69136993aef1c75ca5a6193965444a0d3563ba3f29ad6013f5264f239bffef",
+  "crypto_record": {
+    "document_id": "aa69136993aef1c75ca5a6193965444a0d3563ba3f29ad6013f5264f239bffef",
+    "content_hash": "aa69136993aef1c75ca5a6193965444a0d3563ba3f29ad6013f5264f239bffef",
+    "collection_timestamp": "2025-07-09T21:08:18.693834",
+    "source_metadata": {
+      "title": "House passes GOP's 'big, beautiful bill,' sends it to Trump - NBC News",
+      "url": "https://www.nbcnews.com/politics/trump-administration/live-blog/trump-big-beautiful-bill-house-taxes-immigration-live-updates-rcna215842",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-07-03",
+      "collected_at": "2025-07-09T20:44:34.813424",
+      "id": "f9d57268063c_1752095298692",
+      "author": "Zo\u00eb Richards Tara Prindiville Zo\u00eb Richards; Tara Prindiville",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "f9d57268063c_1752095298692",
+      "stored_at": "2025-07-09T21:08:18.692880"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nbcnews.com/politics/trump-administration/live-blog/trump-big-beautiful-bill-house-taxes-immigration-live-updates-rcna215842",
+    "stored_doc_id": "f9d57268063c_1752095298692"
+  },
+  "collection_signature": "WJ0UW5KbgPAOIDlFjE7gBbX/Yz7aM4488GcyGdxpcbo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.693929"
+}

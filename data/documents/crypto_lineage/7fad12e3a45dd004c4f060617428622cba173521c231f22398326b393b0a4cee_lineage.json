@@ -1,0 +1,31 @@
+{
+  "document_id": "7fad12e3a45dd004c4f060617428622cba173521c231f22398326b393b0a4cee",
+  "crypto_record": {
+    "document_id": "7fad12e3a45dd004c4f060617428622cba173521c231f22398326b393b0a4cee",
+    "content_hash": "7fad12e3a45dd004c4f060617428622cba173521c231f22398326b393b0a4cee",
+    "collection_timestamp": "2025-07-09T21:25:57.060628",
+    "source_metadata": {
+      "title": "Supreme Court Trump wins 6 - 3 ruling on federal workforce reductions",
+      "url": "https://www.foxnews.com/politics/supreme-court-lets-trumps-wrecking-ball-federal-job-cuts-proceed-legal-fight-continues",
+      "source": "foxnews.com",
+      "bias_label": "unknown",
+      "published": "2025-07-08",
+      "collected_at": "2025-07-09T21:19:18.046979",
+      "id": "a7bcdebe58e1_1752096357058",
+      "author": "Jasmine Baehr; Shannon Bream; Bill Mears",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a7bcdebe58e1_1752096357058",
+      "stored_at": "2025-07-09T21:25:57.058182"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.foxnews.com/politics/supreme-court-lets-trumps-wrecking-ball-federal-job-cuts-proceed-legal-fight-continues",
+    "stored_doc_id": "a7bcdebe58e1_1752096357058"
+  },
+  "collection_signature": "YE4/vo9h5JrAl5RgFnQqBAYoiJunafsWFzed7e+lX5k=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:57.061817"
+}

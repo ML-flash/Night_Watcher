@@ -1,0 +1,31 @@
+{
+  "document_id": "961647b736ffcbdca4cbe5ca2b89eeae14249aff4bb420e25aac2ea129c22ba2",
+  "crypto_record": {
+    "document_id": "961647b736ffcbdca4cbe5ca2b89eeae14249aff4bb420e25aac2ea129c22ba2",
+    "content_hash": "961647b736ffcbdca4cbe5ca2b89eeae14249aff4bb420e25aac2ea129c22ba2",
+    "collection_timestamp": "2025-07-09T20:28:10.842320",
+    "source_metadata": {
+      "title": "\"A Clown Show\": RFK Jr. Fires CDC Panel & Stacks It with Anti-Vaxxers, Cuts Funding for Int'l Vaccines",
+      "url": "http://www.democracynow.org/2025/6/26/trump_administration_vaccinations_rfk",
+      "source": "Democracy Now",
+      "bias_label": "left",
+      "published": "2025-06-26",
+      "collected_at": "2025-07-09T20:28:07.022012",
+      "id": "dc0f81b8d329_1752092890841",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "dc0f81b8d329_1752092890841",
+      "stored_at": "2025-07-09T20:28:10.841516"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "http://www.democracynow.org/2025/6/26/trump_administration_vaccinations_rfk",
+    "stored_doc_id": "dc0f81b8d329_1752092890841"
+  },
+  "collection_signature": "InRe9PsqkWv5mfvRLcHlOn5AqQWkj7042marzL2Ym18=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:28:10.842408"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "6cf9aeb1dd1d629285075cc325a3006f2688075a5366ec64c5ad898931259323",
+  "crypto_record": {
+    "document_id": "6cf9aeb1dd1d629285075cc325a3006f2688075a5366ec64c5ad898931259323",
+    "content_hash": "6cf9aeb1dd1d629285075cc325a3006f2688075a5366ec64c5ad898931259323",
+    "collection_timestamp": "2025-07-09T21:25:56.826630",
+    "source_metadata": {
+      "title": "The White House is sued over lack of sign language interpreters at press briefings",
+      "url": "https://laist.com/news/politics/the-white-house-is-sued-over-lack-of-sign-language-interpreters-at-press-briefings",
+      "source": "laist.com",
+      "bias_label": "unknown",
+      "published": "2025-05-30",
+      "collected_at": "2025-07-09T21:13:27.649551",
+      "id": "a60487d3e151_1752096356825",
+      "author": "NPR",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "a60487d3e151_1752096356825",
+      "stored_at": "2025-07-09T21:25:56.825959"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://laist.com/news/politics/the-white-house-is-sued-over-lack-of-sign-language-interpreters-at-press-briefings",
+    "stored_doc_id": "a60487d3e151_1752096356825"
+  },
+  "collection_signature": "xPaAGkY/akFox0/D+C6wT8I3Oi4PhOk8uloh+RLfGrA=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.826717"
+}

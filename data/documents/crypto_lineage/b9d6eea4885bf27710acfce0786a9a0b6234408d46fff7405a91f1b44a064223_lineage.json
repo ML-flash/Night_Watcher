@@ -1,0 +1,31 @@
+{
+  "document_id": "b9d6eea4885bf27710acfce0786a9a0b6234408d46fff7405a91f1b44a064223",
+  "crypto_record": {
+    "document_id": "b9d6eea4885bf27710acfce0786a9a0b6234408d46fff7405a91f1b44a064223",
+    "content_hash": "b9d6eea4885bf27710acfce0786a9a0b6234408d46fff7405a91f1b44a064223",
+    "collection_timestamp": "2025-07-09T21:25:56.729247",
+    "source_metadata": {
+      "title": "J & K Congress Unit Gears Up To Launch  Samvidhan Bachao  Campaign On April 22 , Demands Restoration Of Statehood",
+      "url": "https://www.freepressjournal.in/india/jk-congress-unit-gears-up-to-launch-samvidhan-bachao-campaign-on-april-22-demands-restoration-of-statehood",
+      "source": "freepressjournal.in",
+      "bias_label": "unknown",
+      "published": "2025-04-21",
+      "collected_at": "2025-07-09T21:11:23.443706",
+      "id": "792512a77d37_1752096356726",
+      "author": "ANI",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "792512a77d37_1752096356726",
+      "stored_at": "2025-07-09T21:25:56.726831"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.freepressjournal.in/india/jk-congress-unit-gears-up-to-launch-samvidhan-bachao-campaign-on-april-22-demands-restoration-of-statehood",
+    "stored_doc_id": "792512a77d37_1752096356726"
+  },
+  "collection_signature": "+hrPTwbfjQFWRMmDMlGn5KFWBSd7UHMOlG+8C5KRh0Q=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.729333"
+}

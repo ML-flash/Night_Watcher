@@ -1,0 +1,31 @@
+{
+  "document_id": "731eb24b8995c9382d55794ca1047b8e3c424bc41154896bb7bed9ea9a4b39f6",
+  "crypto_record": {
+    "document_id": "731eb24b8995c9382d55794ca1047b8e3c424bc41154896bb7bed9ea9a4b39f6",
+    "content_hash": "731eb24b8995c9382d55794ca1047b8e3c424bc41154896bb7bed9ea9a4b39f6",
+    "collection_timestamp": "2025-07-09T21:25:56.976380",
+    "source_metadata": {
+      "title": "Judge strikes down Trump order targeting law firm Jenner & Block , calling parts of it a  screed  ",
+      "url": "https://www.cbsnews.com/news/judge-strikes-down-trump-order-targeting-law-firm-jenner-block-calling-parts-of-it-a-screed/",
+      "source": "cbsnews.com",
+      "bias_label": "unknown",
+      "published": "2025-05-23",
+      "collected_at": "2025-07-09T21:18:18.071845",
+      "id": "53c6857ec829_1752096356968",
+      "author": "Jacob Rosen",
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "53c6857ec829_1752096356968",
+      "stored_at": "2025-07-09T21:25:56.968568"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.cbsnews.com/news/judge-strikes-down-trump-order-targeting-law-firm-jenner-block-calling-parts-of-it-a-screed/",
+    "stored_doc_id": "53c6857ec829_1752096356968"
+  },
+  "collection_signature": "MTaUuUMb1SdLREGRtzPMgFz813qZ2xQHISo/0FDzs54=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.976490"
+}

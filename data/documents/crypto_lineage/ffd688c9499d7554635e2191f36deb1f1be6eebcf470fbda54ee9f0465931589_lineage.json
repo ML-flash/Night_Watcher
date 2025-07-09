@@ -1,0 +1,31 @@
+{
+  "document_id": "ffd688c9499d7554635e2191f36deb1f1be6eebcf470fbda54ee9f0465931589",
+  "crypto_record": {
+    "document_id": "ffd688c9499d7554635e2191f36deb1f1be6eebcf470fbda54ee9f0465931589",
+    "content_hash": "ffd688c9499d7554635e2191f36deb1f1be6eebcf470fbda54ee9f0465931589",
+    "collection_timestamp": "2025-07-09T20:25:53.190303",
+    "source_metadata": {
+      "title": "Foreign policy dominating President Trump's week",
+      "url": "https://www.npr.org/2025/07/09/nx-s1-5461108/foreign-policy-dominating-president-trumps-week",
+      "source": "NPR Politics",
+      "bias_label": "center-left",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:25:51.002159",
+      "id": "31bd4994795a_1752092753189",
+      "author": "Tamara Keith",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "31bd4994795a_1752092753189",
+      "stored_at": "2025-07-09T20:25:53.189736"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/07/09/nx-s1-5461108/foreign-policy-dominating-president-trumps-week",
+    "stored_doc_id": "31bd4994795a_1752092753189"
+  },
+  "collection_signature": "1kkFF39jQQQSaOe0RHF2XPbGeb8IcLqt/xHJRQLLW3E=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:25:53.190382"
+}

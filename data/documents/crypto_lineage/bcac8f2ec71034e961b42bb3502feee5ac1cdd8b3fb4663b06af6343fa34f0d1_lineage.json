@@ -1,0 +1,31 @@
+{
+  "document_id": "bcac8f2ec71034e961b42bb3502feee5ac1cdd8b3fb4663b06af6343fa34f0d1",
+  "crypto_record": {
+    "document_id": "bcac8f2ec71034e961b42bb3502feee5ac1cdd8b3fb4663b06af6343fa34f0d1",
+    "content_hash": "bcac8f2ec71034e961b42bb3502feee5ac1cdd8b3fb4663b06af6343fa34f0d1",
+    "collection_timestamp": "2025-07-09T20:27:16.748109",
+    "source_metadata": {
+      "title": "Congress Is Pushing for a Medicaid Work Requirement. Here\u2019s What Happened When Georgia Tried It.",
+      "url": "https://www.propublica.org/article/georgia-medicaid-work-requirement-big-beautiful-bill",
+      "source": "ProPublica",
+      "bias_label": "center-left",
+      "published": "2025-06-26",
+      "collected_at": "2025-07-09T20:27:13.662980",
+      "id": "8bd2250ac219_1752092836746",
+      "author": "Margaret Coker",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "8bd2250ac219_1752092836746",
+      "stored_at": "2025-07-09T20:27:16.746785"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.propublica.org/article/georgia-medicaid-work-requirement-big-beautiful-bill",
+    "stored_doc_id": "8bd2250ac219_1752092836746"
+  },
+  "collection_signature": "+1dBJsi8Seqad/MX0oE8YP2H4H3ysECxmABaZq54Ios=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:27:16.748199"
+}

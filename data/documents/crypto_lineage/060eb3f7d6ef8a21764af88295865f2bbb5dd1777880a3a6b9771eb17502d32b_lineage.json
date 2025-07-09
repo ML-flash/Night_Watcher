@@ -1,0 +1,31 @@
+{
+  "document_id": "060eb3f7d6ef8a21764af88295865f2bbb5dd1777880a3a6b9771eb17502d32b",
+  "crypto_record": {
+    "document_id": "060eb3f7d6ef8a21764af88295865f2bbb5dd1777880a3a6b9771eb17502d32b",
+    "content_hash": "060eb3f7d6ef8a21764af88295865f2bbb5dd1777880a3a6b9771eb17502d32b",
+    "collection_timestamp": "2025-07-09T21:08:19.057631",
+    "source_metadata": {
+      "title": "Trump-appointed federal judge blocks use of Alien Enemies Act for Venezuelans in South Texas - NPR",
+      "url": "https://www.npr.org/2025/05/01/g-s1-63830/trump-appointed-federal-judge-blocks-use-of-alien-enemies-act-for-venezuelans-in-south-texas",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-01",
+      "collected_at": "2025-07-09T20:54:41.842167",
+      "id": "d8d876480209_1752095299056",
+      "author": "Sergio Mart\u00ednez-Beltr\u00e1n",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d8d876480209_1752095299056",
+      "stored_at": "2025-07-09T21:08:19.056595"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.npr.org/2025/05/01/g-s1-63830/trump-appointed-federal-judge-blocks-use-of-alien-enemies-act-for-venezuelans-in-south-texas",
+    "stored_doc_id": "d8d876480209_1752095299056"
+  },
+  "collection_signature": "MUguMylwnSzsnvaJMGBVGYtRe7L4+8+lMMpCVYaG86Q=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.057725"
+}

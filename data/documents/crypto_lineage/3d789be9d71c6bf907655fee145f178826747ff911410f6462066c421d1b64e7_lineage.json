@@ -1,0 +1,31 @@
+{
+  "document_id": "3d789be9d71c6bf907655fee145f178826747ff911410f6462066c421d1b64e7",
+  "crypto_record": {
+    "document_id": "3d789be9d71c6bf907655fee145f178826747ff911410f6462066c421d1b64e7",
+    "content_hash": "3d789be9d71c6bf907655fee145f178826747ff911410f6462066c421d1b64e7",
+    "collection_timestamp": "2025-07-09T20:26:48.577199",
+    "source_metadata": {
+      "title": "Appeals court throws out right-wing influencer\u2019s conviction for 2016 election interference",
+      "url": "https://thehill.com/regulation/court-battles/5392329-appeals-court-reverses-douglass-mackey-conviction/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:13.515776",
+      "id": "012cf4bb96a7_1752092808576",
+      "author": "Ella Lee",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "012cf4bb96a7_1752092808576",
+      "stored_at": "2025-07-09T20:26:48.576576"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/regulation/court-battles/5392329-appeals-court-reverses-douglass-mackey-conviction/",
+    "stored_doc_id": "012cf4bb96a7_1752092808576"
+  },
+  "collection_signature": "BSpem9KSas/97CVkgc3gErzjf4zV1hsJN/kIDRp+Rck=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.577284"
+}

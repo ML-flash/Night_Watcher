@@ -1,0 +1,13 @@
+Elon Musk’s goons at the Department of Government Efficiency transmitted a large amount of data—all of it undetected—using a Starlink Wi-Fi terminal they installed on top of the White House, according to a new report.
+Starlink is a satellite Wi-Fi service owned and operated by Musk’s SpaceX. The DOGE goons installed it in mid-March with the sign-off of Donald Trump’s administration, but against concerns raised by security officials, according to The Washington Post.
+The officials in charge of protecting the White House’s communications were not informed of the installation ahead of time, insiders told the Post.
+At the time, DOGE said installing Starlink was intended to address connection “dead zones” on the White House compound.
+However, the insiders suggested that the move was intended to bypass White House systems that track the transmission of data—with names and time stamps—and secure it from spies.
+“Starlink doesn’t require anything. It allows you to transmit data without any kind of record or tracking,” one insider told the Post. “White House IT systems had very strong controls on network access. You had to be on a full-tunnel VPN at all times. If you are not on the VPN, White House-issued devices can’t connect to the outside.”
+“With a Starlink connection, that means White House devices could leave the network and go out through gateways,“ the person said. “It’s going to help you bypass security.”
+The White House did not immediately return the Daily Beast’s request for comment.
+Anthony Guglielmi, a spokesperson for the Secret Service, told the Post, “We were aware of DOGE’s intentions to improve internet access on the campus and did not consider this matter a security incident or security breach.”
+Before Musk departed the government—and blew up his relationship with Trump—he was busy laying siege to sensitive government databases, including the one that handles Social Security, sparking concerns from critics.
+In April, a whistleblower at the National Labor Relations Board accused the Musk-led department of a “significant cybersecurity breach.” Daniel Berulis, an IT staffer, said he saw anomalously large data transfers and sign-in attempts from Russia after DOGE took over his agency’s systems.
+In that case, the DOGE staffers insisted that their actions in the system not be tracked.
+While Trump and the rest of his administration supported Musk against critics while he sought to slash government jobs and budgets on Trump’s behalf, the two have now suffered a nasty, mud-slinging breakup.

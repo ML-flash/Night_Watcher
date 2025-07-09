@@ -1,0 +1,31 @@
+{
+  "document_id": "42a9692fa05bfe930003ef91680b30392e873bf402fe22ee1a6e6f34e0d433fc",
+  "crypto_record": {
+    "document_id": "42a9692fa05bfe930003ef91680b30392e873bf402fe22ee1a6e6f34e0d433fc",
+    "content_hash": "42a9692fa05bfe930003ef91680b30392e873bf402fe22ee1a6e6f34e0d433fc",
+    "collection_timestamp": "2025-07-09T21:08:18.701849",
+    "source_metadata": {
+      "title": "Hickenlooper, Bennet give Colorado the nation\u2019s biggest pro-Trump skew in Senate votes - Colorado Newsline",
+      "url": "https://coloradonewsline.com/2025/04/02/hickenlooper-bennet-colorado-biggest-pro-trump-skew/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-02",
+      "collected_at": "2025-07-09T20:44:56.248322",
+      "id": "5eae6ef8cfe0_1752095298700",
+      "author": "Chase Woodruff",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "5eae6ef8cfe0_1752095298700",
+      "stored_at": "2025-07-09T21:08:18.700556"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://coloradonewsline.com/2025/04/02/hickenlooper-bennet-colorado-biggest-pro-trump-skew/",
+    "stored_doc_id": "5eae6ef8cfe0_1752095298700"
+  },
+  "collection_signature": "PQPtQgZXZuziGGIE2eCUofEE0nzNu7LpjWy9gaGaPpk=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.701926"
+}

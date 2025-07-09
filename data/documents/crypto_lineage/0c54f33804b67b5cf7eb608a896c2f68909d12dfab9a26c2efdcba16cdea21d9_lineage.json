@@ -1,0 +1,31 @@
+{
+  "document_id": "0c54f33804b67b5cf7eb608a896c2f68909d12dfab9a26c2efdcba16cdea21d9",
+  "crypto_record": {
+    "document_id": "0c54f33804b67b5cf7eb608a896c2f68909d12dfab9a26c2efdcba16cdea21d9",
+    "content_hash": "0c54f33804b67b5cf7eb608a896c2f68909d12dfab9a26c2efdcba16cdea21d9",
+    "collection_timestamp": "2025-07-09T21:08:18.548679",
+    "source_metadata": {
+      "title": "President Biden to make Chicago speech in first appearance since leaving office - NBC 5 Chicago",
+      "url": "https://www.nbcchicago.com/news/local/chicago-politics/president-biden-to-make-chicago-speech-in-first-appearance-since-leaving-office/3721886/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-04-14",
+      "collected_at": "2025-07-09T20:38:20.789541",
+      "id": "b0211bfd77a3_1752095298547",
+      "author": "NBC Chicago Staff",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "b0211bfd77a3_1752095298547",
+      "stored_at": "2025-07-09T21:08:18.547816"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.nbcchicago.com/news/local/chicago-politics/president-biden-to-make-chicago-speech-in-first-appearance-since-leaving-office/3721886/",
+    "stored_doc_id": "b0211bfd77a3_1752095298547"
+  },
+  "collection_signature": "GuwtrVWCiYEI30fi+MAaOEfnTILdOlleC/DsiN3DwGo=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.548752"
+}

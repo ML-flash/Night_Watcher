@@ -1,0 +1,31 @@
+{
+  "document_id": "d3f895f9f3f508205e60f293f77f27295481f335df8bb7fe82da002f1156a5da",
+  "crypto_record": {
+    "document_id": "d3f895f9f3f508205e60f293f77f27295481f335df8bb7fe82da002f1156a5da",
+    "content_hash": "d3f895f9f3f508205e60f293f77f27295481f335df8bb7fe82da002f1156a5da",
+    "collection_timestamp": "2025-07-09T21:08:18.578284",
+    "source_metadata": {
+      "title": "Joint Statement from 13 State Attorneys General: President Trump is Misleading the American People on Purpose of Diversity, Equity, Inclusion, and Accessibility Initiatives - State of California - Department of Justice (.gov)",
+      "url": "https://oag.ca.gov/news/press-releases/joint-statement-13-state-attorneys-general-president-trump-misleading-american",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-31",
+      "collected_at": "2025-07-09T20:40:22.662286",
+      "id": "c2998c0f219d_1752095298576",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "c2998c0f219d_1752095298576",
+      "stored_at": "2025-07-09T21:08:18.576791"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://oag.ca.gov/news/press-releases/joint-statement-13-state-attorneys-general-president-trump-misleading-american",
+    "stored_doc_id": "c2998c0f219d_1752095298576"
+  },
+  "collection_signature": "HO7T/PiS/OgavKG5vAnCZgZUIeImRSObJuWAUfVS6+E=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.578367"
+}

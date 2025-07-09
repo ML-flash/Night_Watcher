@@ -1,0 +1,128 @@
+On the first day of his second term of office, President Donald Trump issued ten executive orders and proclamations seeking to change the face of U.S. immigration law and policy, touching nearly every aspect of a complex and exacting system. The Trump administration has followed up the record of its first term, and the promises of its presidential campaign, with an effort to redefine America to exclude everyone from border-crossers seeking refuge to children born next month to parents who are in the U.S. on temporary visas. Woven through these executive orders are novel legal arguments that fully task the U.S. military with repelling asylum-seekers; threaten aggressive use of criminal penalties to ensure compliance; and open the door to future invocations of the centuries-old Insurrection Act and Alien Enemies Act.
+It is important to understand not just the scope of the executive orders, but also what precisely they aim to do, and on what timescale. The flurry of first-day activity was itself a signal to immigrant communities that they are under attack—but it is also a blueprint for future actions. Most of the policy changes heralded in these executive actions take the form of instructions to federal departments or agencies. Some of these were executed within the first 48 hours; others will require further scrutiny and guidance in the coming weeks and months and will be subjected to lawsuits challenging their implementation.
+This analysis is by no means an exhaustive list of the changes made by the “Day One” executive orders, much less a breakdown of the legal arguments contained within them. Because so much depends on implementation, it is possible that provisions excluded from this analysis may turn out to be enormously influential—and that some provisions we highlight may not do much other than impose confusion and fear. However, this analysis represents our best effort to synthesize the executive actions into an agenda of proposed and accomplished changes, and to point out some future developments to watch for as these texts are turned into reality for immigrants and all Americans.
+Turning the U.S. Interior into an Enforcement Dragnet
+The executive orders signed on the first day of President Trump’s second term radically expand the legal authorities used to enforce immigration law against immigrants already in the U.S., while calling for an equally radical expansion of the infrastructure that would be needed to accomplish the “mass deportations” the president has promised. Furthermore, they signal efforts to immiserate unauthorized immigrants living in the United States, depriving them of the ability to work legally and punishing them for being unable to “register” with the U.S. government—something they have no way of doing.
+Key policy changes
+-
+Ordering the expansion of “expedited removal,” which allows the U.S. to deport someone without a court hearing, to the maximum permitted under federal law (an extent to which it has never been used before). U.S. officials will be authorized to arrest someone accused of entering the country without inspection anywhere inside the U.S. and subject them to expedited removal if they believe that person has been here for less than two years, with the burden on the immigrant to prove that they have been here for longer. (“Protecting the American People Against Invasion”)
+-
+Requiring all noncitizens to register and present their fingerprints to the U.S. government under a rarely-used provision of U.S. law and declaring that all those who have not registered will be subject to criminal penalties. This requirement could be very difficult to meet for immigrants who entered the U.S. without authorization, thus opening the door for them to be targeted for arrest and criminal prosecution. (“Protecting the American People”)
+-
+Instructing the Department of Homeland Security (DHS) to “ensure” that work permits are not given to people without other legal status—even if they have a pending immigration application. If implemented, this change would radically restrict the population of people who are eligible to work in the U.S. legally. (“Protecting the American People”)
+-
+Directing the Office of Management and Budget (OMB) to take action to ensure no public benefits are provided to unauthorized immigrants. (“Protecting the American People”)
+-
+Threatening the revocation of all federal funding to states and localities deemed to be “sanctuary” jurisdictions. (“Protecting the American People”)
+-
+Ordering DHS to expand 287(g) agreements with state and local law enforcement to mobilize them as partners in enforcing federal immigration law, “to the maximum extent permitted by law.” (“Protecting the American People”)
+-
+Revoking all Biden policies setting priorities for immigration enforcement. (“Protecting the American People”)
+-
+Directing audits of any federal contracts with non-governmental organizations engaged directly or indirectly in assisting undocumented immigrants in any way, freezing all funding during these audits, and threatening to order the return of those funds following the audit. (“Protecting the American People”)
+What’s already happened
+-
+The expansion of the government’s expedited removal authority was announced effective January 21 via a Federal Register notice.
+-
+Revocations of Biden-era enforcement policies are immediate.
+What happens next
+-
+The use of the “registration” provisions will likely be subject to future guidance from the Department of Homeland Security and/or the Department of Justice. While this may be used as a pretext for arrests, the extent to which it will be relied upon is unclear, and further guidance may illuminate it.
+-
+It is unclear how the federal government intends to prevent work permits from being issued to immigrants who are allowed to receive them under current law and regulation, such as asylum or green card applicants. Further guidance will clarify to what extent this may affect people with existing work permits. The administration may seek to change the underlying regulations that allow many unauthorized immigrants to obtain work permits. Any effort to either violate existing regulations on work-permit eligibility or change those regulations would likely be subject to lawsuits.
+-
+The instruction to OMB to prevent unauthorized immigrants from receiving public benefits is vague, and to what extent it signals future policy changes is unclear.
+What it all means
+To get a handle on what these executive orders do, it is worth pointing out what they do not do: focus on immigrants convicted of serious crimes. The initial wave of executive actions scales up a “mass deportation” operation that everyone without legal status in the United States will be highly vulnerable to on the first day these practices go into effect. Indeed, by invoking the registration provision, the Trump administration is threatening to turn all immigrants into criminals by setting them up for the “crime” of failing to register.
+The expansion of expedited removal alone could subject millions of recent arrivals, and others swept up by error, to potential deportation without a court hearing, depriving them of the chance to demonstrate that they qualify for legal status. The pressure to expand 287(g) agreements will empower local law enforcement agencies who want to target immigrants and lead to increased racial profiling, while the funding threats and threats of criminal prosecution to “sanctuary” jurisdictions may successfully intimidate localities who would otherwise seek to avoid entangling their local law enforcement with Trump’s mass deportation campaign.
+Depriving applicants for legal status of the ability to work legally, meanwhile, will create further strains on local governments by preventing people from being able to support themselves—exacerbating one of the problems the administration has used to justify its crackdown.
+“Sealing” the Border—Using the U.S. Military and More
+The Trump administration’s executive actions unilaterally bar anyone without legal status from presenting themselves to seek protection at the U.S./Mexico border, while laying the groundwork to resume, and accelerate, the shuttling of asylum-seekers to “third countries” temporarily or indefinitely. Furthermore, the executive orders assert that migration via the U.S./Mexico border constitutes an “invasion,” and enlist the U.S. military in “repelling” migrants, tapping into military funding and personnel for border enforcement and opening the door to a future invocation of the Insurrection Act, a law which authorizes the U.S. military to be used to enforce federal law in narrow circumstances.
+Key policy changes
+-
+“Suspending” the entry of anyone “engaged in the invasion” of the United States at the U.S./Mexico border under provision 212(f) of the Immigration and Nationality Act. This is the same provision used under the first Trump administration for travel and refugee bans, and which the administration attempted—and failed—to use to restrict asylum during Trump’s first term. A similar 212(f) proclamation was put into effect by President Biden in June 2024. (“Guaranteeing the States Protection Against Invasion”)
+-
+Decreeing that anyone engaged in said “invasion,” as well as any other noncitizen who does not provide sufficient information to the U.S. government prior to entry into the United States, is barred from receiving any relief under the Immigration and Nationality Act. This likely includes not only asylum (mentioned in the executive order) but other humanitarian protections that prevent deportation, including protections for unaccompanied children. (“Guaranteeing the States”)
+-
+Eliminating the use of the CBP One app to make asylum appointments at ports of entry—stranding on the Mexican side of the border an estimated 270,000 people who had either made appointments and were waiting for their chance to present themselves legally, or were waiting to win the appointment lottery. (“Securing Our Borders”)
+-
+Directing DHS and the State Department to reinstate the Migrant Protection Protocols (“Remain in Mexico”) policy “as soon as practicable.” (“Securing Our Borders”)
+-
+Directing the State Department to begin negotiations with other countries to accept U.S. deportations of asylum seekers under “Safe Third Country” agreements. (“Securing Our Borders”)
+-
+Declaring a “national emergency” to unlock a legal authority permitting the Department of Defense (DOD) to redirect military funds for border enforcement, including construction of permanent and temporary border barriers and expanding detention capacity, and directing the Departments of Defense and Homeland Security to mobilize sufficient personnel for “operational control” of the U.S./Mexico border. (“Declaring A National Emergency at the Southern Border,” “Securing Our Borders”)
+-
+Assigning USNORTHCOM—the Department of Defense “combatant command” responsible for the protection of the U.S., Canada, and Mexico—the “mission” of “sealing the borders.” (“Clarifying the Military’s Role in Protecting the Territorial Integrity of the United States”)
+-
+Establishing a process to declare certain cartels “foreign terrorist organizations,” and threatening to invoke the Alien Enemies Act against people declared to be members of those organizations—which could allow those people to be deported without trial, even if they had legal status in the U.S. (“Designating Cartels and Other Organizations as Foreign Terrorist Organizations”)
+-
+Directing DHS and the Department of Defense to mobilize sufficient personnel for “operational control” of the U.S./Mexico border, and to construct permanent and temporary border barriers. (“Securing Our Borders,” “Declaring A National Emergency”)
+What’s already happened
+-
+DHS disabled the CBP One app‘s ability to set asylum appointments on January 20, and thousands of pending appointments were immediately cancelled.
+-
+The asylum ban is in place immediately as of January 21, 2025.
+-
+The U.S. government announced that it was reimplementing the Remain in Mexico program on January 21. This is consistent with statements made the same day by Mexican President Claudia Sheinbaum, who confirmed that Mexico would accept people waiting for their asylum hearings for “humanitarian” reasons.
+-
+The Department of Defense has announced plans to deploy up to 1,500 active-duty troops to the U.S./Mexico border.
+What happens next
+-
+A plan from USNORTHCOM for “sealing the borders” must be presented within 10 days, with a commander’s estimate for the plan expected within 30 days.
+-
+Within 14 days, federal agencies are directed to recommend which cartels and transnational criminal organizations should be designated as Foreign Terrorist Organizations, and prepare for the possible use of the Alien Enemies Act against any such designated organizations. How broadly the act will be applied—and how it can be enforced without cooperation from deportees’ home countries—remains unclear.
+-
+DOD and DHS are required to report to the president within 90 days on whether additional actions—including the invocation of the Insurrection Act, which would authorize the military to engage in some domestic law enforcement—will be needed to secure “operational control” of the border.
+-
+Further guidance will be needed to clarify how some of these changes will interact with each other—for example, why people who are enrolled in the reanimated Remain in Mexico program will be placed in immigration court proceedings if they are preemptively excluded from any kind of immigration protections under the 212(f) proclamation—and how they will interact with existing restrictions on asylum.
+-
+The executive orders claim a novel constitutional right to suspend the “physical entry” of people declared to be engaging in “invasion.” It is not clear what this means, and future guidance or policy changes may better illuminate it.
+-
+The government is likely to face litigation over the use of INA section 212(f) not only to prevent the entry of people across the U.S./Mexico border, but to prevent such people from seeking any immigration relief. Litigation is also likely over the elimination of the existing asylum pathway via the CBP One app.
+What it all means
+Even before January 20, it was extremely difficult for someone apprehended by a Border Patrol agent to seek asylum in the United States. Biden administration policy changes made most unauthorized border-crossers ineligible for asylum and subjected them to a restrictive and demanding process to be allowed to stay in the United States and seek any kind of humanitarian relief. However, the Biden administration still permitted migrants to seek asylum by going to ports of entry and using the CBP One app.
+For over a decade, successive administrations have continued to add layers of complexity and restriction to the process of seeking asylum at the U.S./Mexico border. However, the fundamental promise of asylum—that someone fleeing danger can present themselves to U.S. officials to seek safety—remained intact in one form or another. With these executive actions, asylum, in that form, is dead.
+The overlapping nature of the existing restrictions and the new barriers added by Trump’s executive orders mean that it will take some time to untangle their impact. (In practice, overlapping restrictions often mean that border agents are given arbitrary and unaccountable power to determine what happens to a given asylum seeker.) They may prove impossible to fully unravel or undo, even if the political climate were to grow more favorable to humanitarian immigration.
+The executive actions throw into question the future of asylum as laid out in the Refugee Act of 1980. Without further guidance on who will be deemed to have provided the U.S. with sufficient information prior to arrival, it is impossible to know who, if anyone, will qualify for asylum or other protections in future.
+Rolling Back Existing Legal Protections—Up to and Including U.S. Citizenship
+The Day One executive actions target a broad range of people who currently hold, or have traditionally qualified for, protections under U.S. law. These protections range from programs put in place by the Biden administration, to statutory authorities, to the Constitutional guarantee of birthright citizenship.
+Key policy changes
+-
+Declaring that the federal government will no longer recognize the U.S. citizenship of babies born after February 19, 2025 on U.S. soil, if the baby’s mother is unlawfully present or has temporary lawful status, and the baby’s father is not a U.S. citizen or green card holder. (“Protecting the Meaning and Value of American Citizenship”)
+-
+Directing the Department of Homeland Security to end Biden-era parole programs it deems to be impermissible uses of the president’s parole authority. The Cuban, Haitian, Nicaraguan, and Venezuelan (CHNV) parole program is specifically singled out for likely termination. (“Protecting the American People”)
+-
+Directing a “review” of designations of Temporary Protected Status (“TPS”) made by the Biden administration. (“Protecting the American People”)
+What’s already happened
+-
+On January 21, DHS announced that officials had been instructed to “phase out” the CHNV parole program and others. Which parole programs will be targeted remains unclear but could include policies of parole for those released at the U.S. border; Family Reunification Parole programs; and humanitarian programs such as Uniting for Ukraine and the Afghan parole program. It also remains unclear whether “phasing out” will simply apply to new grants of parole, or whether the administration will attempt to revoke existing parole grants before they are set to expire.
+What happens next
+-
+The federal government has declared it will stop recognizing the citizenship of certain U.S.-born babies after February 19. However, it is still unclear how this will work in practice—especially given the essential role that state governments play in issuing birth records, as well as the uncertainty the wording of the order poses for LGBTQ+ parents and parents using in vitro fertilization. The effort to unilaterally revoke birthright citizenship is already facing multiple lawsuits, and the implementation of this effort may be halted through the courts.
+-
+DHS‘ review of TPS designations may result in the revocation of some or all existing TPS grants—affecting approximately one million current TPS holders.
+What it all means
+Both the effort to unilaterally end birthright citizenship and the campaign to end temporary protections (including parole and TPS) draw an ever-narrowing circle around who counts as legitimately in the United States. Revoking protections takes people who were legally recognized by the government and turns them deportable. Restricting birthright citizenship, even from many children born to immigrants lawfully present in the U.S., will render a large number of future babies stateless and immediately deportable.
+Even before any of these changes go into effect, however, they are subjecting immigrants to uncertainty and anxiety as they attempt to plan for the next steps in their families’ lives without knowing what (if any) legal status they will have in the United States in future. The extent of the chaos will be determined by implementation, but evidence from the first term of the Trump administration shows that the uncertainty itself produces strain on immigrants and their families—especially children—that will have long-term consequences for their futures and the future of the country that is currently declaring them unwelcome.
+Restricting Future Arrivals to the United States
+The Trump administration has brought back some of the actions from the first week in office during its first term—namely, a suspension of refugee resettlement to the United States, and the promise of a future travel ban for certain countries.
+Key policy changes
+-
+Suspending arrivals of refugees to the United States indefinitely as of January 27, 2025. (“Realigning the U.S. Refugee Admissions Program”)
+-
+Directing the federal government to design a new refugee process that selects only refugees who will be able to “assimilate into the United States,” and gives states and localities more say in allowing refugees to settle in their areas. (“Realigning the U.S. Refugee Admissions Program”)
+-
+Instructing officials to create a list of countries that are alleged to share insufficient information with the U.S. for vetting purposes, laying the groundwork for a new travel ban. (“Protecting the United States from Foreign Terrorists”)
+What’s already happened
+-
+While the text of the executive actions gives January 27 as the date for the suspension of the refugee program, the State Department sent a memo to resettlement agencies on January 21 instructing them to cancel all travel for incoming refugees—essentially suspending the program six days early.
+What happens next
+-
+U.S. refugee admissions—with potential case-by-case exceptions—will be halted until the U.S. government is satisfied a better program has been created. The Homeland Security Secretary is responsible for providing reports every 90 days on the progress of such a program.
+-
+A list of countries that share “insufficient” information with the U.S. will be provided to the president within 60 days, at which time travel and immigration bans may be issued against anyone from those countries.
+-
+Within 30 days, the Secretary of State is directed to provide recommendations to limit visa programs to exclude foreign nationals who do not support specific ideological values.
+What it all means
+Under the first Trump administration, a philosophy of “extreme vetting” went far beyond the explicit country-based travel bans and the initial suspension of refugee resettlement. Would-be legal immigrants—especially refugees—were subjected to elaborate and opaque scrutiny, resulting in fewer of them being allowed to come to the United States at all. The impositions went far beyond background checks. For example, in 2020, the Trump administration implemented a policy of rejecting any application that contained any blank spaces on specific forms, even if the applicant was not required to provide an answer to the question. These policies increased the cost and difficulty of obtaining any legal immigration benefit.
+The Trump administration’s declaration that it wishes to reestablish the level of vetting that existed during its first term serves as a signal to watch for obstacles and delays throughout the legal immigration system. Policy changes are not always formally announced, and it is not always clear why delays occur. The administration will not need to issue further waves of executive orders to radically change the face of legal immigration to the U.S.

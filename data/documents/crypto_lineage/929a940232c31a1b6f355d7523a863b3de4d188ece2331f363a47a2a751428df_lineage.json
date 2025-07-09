@@ -1,0 +1,31 @@
+{
+  "document_id": "929a940232c31a1b6f355d7523a863b3de4d188ece2331f363a47a2a751428df",
+  "crypto_record": {
+    "document_id": "929a940232c31a1b6f355d7523a863b3de4d188ece2331f363a47a2a751428df",
+    "content_hash": "929a940232c31a1b6f355d7523a863b3de4d188ece2331f363a47a2a751428df",
+    "collection_timestamp": "2025-07-09T20:26:48.590014",
+    "source_metadata": {
+      "title": "Conflicting officials, social posts leave evacuation delay questions in Kerr County flooding",
+      "url": "https://thehill.com/homenews/state-watch/5392020-conflicting-officials-social-posts-leave-evacuation-delay-questions-in-kerr-county-flooding/",
+      "source": "The Hill",
+      "bias_label": "center",
+      "published": "2025-07-09",
+      "collected_at": "2025-07-09T20:26:26.711315",
+      "id": "b307464ab5a3_1752092808589",
+      "author": "Josh Hinkle",
+      "via_google_news": false,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "b307464ab5a3_1752092808589",
+      "stored_at": "2025-07-09T20:26:48.589421"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://thehill.com/homenews/state-watch/5392020-conflicting-officials-social-posts-leave-evacuation-delay-questions-in-kerr-county-flooding/",
+    "stored_doc_id": "b307464ab5a3_1752092808589"
+  },
+  "collection_signature": "PYUJuvctU0HsCyY/y3CWBPi5EFsYW+ElkxuZoIw8sro=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T20:26:48.590119"
+}

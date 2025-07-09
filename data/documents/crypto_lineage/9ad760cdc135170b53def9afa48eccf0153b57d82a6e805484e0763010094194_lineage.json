@@ -1,0 +1,31 @@
+{
+  "document_id": "9ad760cdc135170b53def9afa48eccf0153b57d82a6e805484e0763010094194",
+  "crypto_record": {
+    "document_id": "9ad760cdc135170b53def9afa48eccf0153b57d82a6e805484e0763010094194",
+    "content_hash": "9ad760cdc135170b53def9afa48eccf0153b57d82a6e805484e0763010094194",
+    "collection_timestamp": "2025-07-09T21:08:19.075949",
+    "source_metadata": {
+      "title": "White House Press Release - President Donald J. Trump Announces Judicial Candidate Nominations - The American Presidency Project",
+      "url": "https://www.presidency.ucsb.edu/documents/white-house-press-release-president-donald-j-trump-announces-judicial-candidate-1",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-05-06",
+      "collected_at": "2025-07-09T20:55:10.700676",
+      "id": "8ccc8639a815_1752095299074",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "8ccc8639a815_1752095299074",
+      "stored_at": "2025-07-09T21:08:19.075043"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.presidency.ucsb.edu/documents/white-house-press-release-president-donald-j-trump-announces-judicial-candidate-1",
+    "stored_doc_id": "8ccc8639a815_1752095299074"
+  },
+  "collection_signature": "427QpN5mvOYmXPVQjMYZEGSkfkAyBCuti7TlI30U8WU=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.076042"
+}

@@ -1,0 +1,31 @@
+{
+  "document_id": "1dd607febc3f37d1a3cff01236e6505258e27633a5936df0881d20443e788234",
+  "crypto_record": {
+    "document_id": "1dd607febc3f37d1a3cff01236e6505258e27633a5936df0881d20443e788234",
+    "content_hash": "1dd607febc3f37d1a3cff01236e6505258e27633a5936df0881d20443e788234",
+    "collection_timestamp": "2025-07-09T21:08:19.219966",
+    "source_metadata": {
+      "title": "Key takeaways from Donald Trump\u2019s first cabinet meeting with Elon Musk - Al Jazeera",
+      "url": "https://www.aljazeera.com/news/2025/2/26/key-takeaways-from-donald-trumps-first-cabinet-meeting-with-elon-musk",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-26",
+      "collected_at": "2025-07-09T21:00:24.334523",
+      "id": "442f829c5812_1752095299214",
+      "author": "Al Jazeera Staff",
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "442f829c5812_1752095299214",
+      "stored_at": "2025-07-09T21:08:19.215001"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.aljazeera.com/news/2025/2/26/key-takeaways-from-donald-trumps-first-cabinet-meeting-with-elon-musk",
+    "stored_doc_id": "442f829c5812_1752095299214"
+  },
+  "collection_signature": "9myzQMguv2sTTiLvni83Y+5RtziUhSSmutrSQYS6gLs=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.220085"
+}

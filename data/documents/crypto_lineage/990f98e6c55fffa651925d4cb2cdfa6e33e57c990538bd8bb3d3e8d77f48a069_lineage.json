@@ -1,0 +1,31 @@
+{
+  "document_id": "990f98e6c55fffa651925d4cb2cdfa6e33e57c990538bd8bb3d3e8d77f48a069",
+  "crypto_record": {
+    "document_id": "990f98e6c55fffa651925d4cb2cdfa6e33e57c990538bd8bb3d3e8d77f48a069",
+    "content_hash": "990f98e6c55fffa651925d4cb2cdfa6e33e57c990538bd8bb3d3e8d77f48a069",
+    "collection_timestamp": "2025-07-09T21:25:56.991815",
+    "source_metadata": {
+      "title": "Trump cannot use new executive order to skirt  sanctuary  cities ruling , judge says",
+      "url": "https://www.marketscreener.com/news/latest/Trump-cannot-use-new-executive-order-to-skirt-sanctuary-cities-ruling-judge-says-49899699/",
+      "source": "marketscreener.com",
+      "bias_label": "unknown",
+      "published": "2025-05-10",
+      "collected_at": "2025-07-09T21:18:55.449596",
+      "id": "2613aa3b3a81_1752096356990",
+      "author": null,
+      "via_google_news": false,
+      "via_gdelt": true,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "2613aa3b3a81_1752096356990",
+      "stored_at": "2025-07-09T21:25:56.990439"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.marketscreener.com/news/latest/Trump-cannot-use-new-executive-order-to-skirt-sanctuary-cities-ruling-judge-says-49899699/",
+    "stored_doc_id": "2613aa3b3a81_1752096356990"
+  },
+  "collection_signature": "r+LDqgKy/ubHh7jBMOgl64tjJcIg3Ngp8QyAsjR9KwY=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:25:56.991898"
+}

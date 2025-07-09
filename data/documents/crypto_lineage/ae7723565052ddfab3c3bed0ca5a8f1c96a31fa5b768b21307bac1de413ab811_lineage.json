@@ -1,0 +1,31 @@
+{
+  "document_id": "ae7723565052ddfab3c3bed0ca5a8f1c96a31fa5b768b21307bac1de413ab811",
+  "crypto_record": {
+    "document_id": "ae7723565052ddfab3c3bed0ca5a8f1c96a31fa5b768b21307bac1de413ab811",
+    "content_hash": "ae7723565052ddfab3c3bed0ca5a8f1c96a31fa5b768b21307bac1de413ab811",
+    "collection_timestamp": "2025-07-09T21:08:19.107749",
+    "source_metadata": {
+      "title": "COUNCIL TO ASSESS THE FEDERAL EMERGENCY MANAGEMENT AGENCY - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/01/council-to-assess-the-federal-emergency-management-agency/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-01-24",
+      "collected_at": "2025-07-09T20:58:08.633540",
+      "id": "d85f86ee836b_1752095299105",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "d85f86ee836b_1752095299105",
+      "stored_at": "2025-07-09T21:08:19.105690"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/01/council-to-assess-the-federal-emergency-management-agency/",
+    "stored_doc_id": "d85f86ee836b_1752095299105"
+  },
+  "collection_signature": "uCbOFSDZ1Cx5lkbnnzXhcAkyty0VoJ2k9x1QPqUr/z4=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:19.107834"
+}

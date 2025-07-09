@@ -1,0 +1,31 @@
+{
+  "document_id": "6378e630a1a5e7806ea9c7807f8fccd9e9b384e44e8ce830a86467c8cdcbbc07",
+  "crypto_record": {
+    "document_id": "6378e630a1a5e7806ea9c7807f8fccd9e9b384e44e8ce830a86467c8cdcbbc07",
+    "content_hash": "6378e630a1a5e7806ea9c7807f8fccd9e9b384e44e8ce830a86467c8cdcbbc07",
+    "collection_timestamp": "2025-07-09T21:08:18.619915",
+    "source_metadata": {
+      "title": "NATIONAL SECURITY PRESIDENTIAL MEMORANDUM/NSPM-2 - The White House (.gov)",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/02/national-security-presidential-memorandum-nspm-2/",
+      "source": "Google News Aggregate",
+      "bias_label": "unknown",
+      "published": "2025-02-05",
+      "collected_at": "2025-07-09T20:42:17.382029",
+      "id": "bdcaa6039a48_1752095298619",
+      "author": null,
+      "via_google_news": true,
+      "via_gdelt": false,
+      "via_gov_api": false,
+      "extraction_method": "trafilatura",
+      "document_id": "bdcaa6039a48_1752095298619",
+      "stored_at": "2025-07-09T21:08:18.619269"
+    },
+    "collector_version": "1.0.0",
+    "collection_method": "unknown",
+    "original_url": "https://www.whitehouse.gov/presidential-actions/2025/02/national-security-presidential-memorandum-nspm-2/",
+    "stored_doc_id": "bdcaa6039a48_1752095298619"
+  },
+  "collection_signature": "vK2Ir8ZvZvDdmWlyG1skei+F/S+4fLUnBuCTD0uU0jI=",
+  "lineage_type": "document_collection",
+  "created_at": "2025-07-09T21:08:18.619993"
+}
