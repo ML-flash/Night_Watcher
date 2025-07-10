@@ -40,10 +40,10 @@
         "limit": 200
       },
       {
-        "url": "https://rss.app/feeds/8ZLRA1MIdInNK9TW.xml",
+        "url": "https://news.google.com/rss/search?q=site:apnews.com+politics&hl=en-US&gl=US&ceid=US:en",
         "type": "rss",
         "bias": "center",
-        "name": "AP News Politics",
+        "name": "AP News Politics (Google)",
         "site_domain": "apnews.com",
         "enabled": true,
         "limit": 200
@@ -58,10 +58,10 @@
         "limit": 200
       },
       {
-        "url": "https://www.politico.com/rss/politicopicks.xml",
+        "url": "https://rss.politico.com/politics-news.xml",
         "type": "rss",
         "bias": "center",
-        "name": "Politico Top Picks",
+        "name": "Politico Politics",
         "site_domain": "politico.com",
         "enabled": true,
         "limit": 200
@@ -76,10 +76,10 @@
         "limit": 200
       },
       {
-        "url": "https://www.reuters.com/world/us/rss",
+        "url": "https://news.google.com/rss/search?q=site:reuters.com+us+politics&hl=en-US&gl=US&ceid=US:en",
         "type": "rss",
         "bias": "center",
-        "name": "Reuters US",
+        "name": "Reuters US (Google)",
         "site_domain": "reuters.com",
         "enabled": true,
         "limit": 200
@@ -112,7 +112,7 @@
         "limit": 200
       },
       {
-        "url": "https://www.whitehouse.gov/briefing-room/statements-releases/feed/",
+        "url": "https://www.whitehouse.gov/briefings-statements/feed/",
         "type": "rss",
         "bias": "official",
         "name": "White House Press Releases",
@@ -460,6 +460,8 @@
       "national emergency",
       "state of emergency"
     ],
+    "political_threshold": 1,
+    "google_news_results_per_query": 50,
     "request_timeout": 45,
     "delay_between_requests": 2.0
   },
