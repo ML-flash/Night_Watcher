@@ -156,6 +156,9 @@ class ContentCollector:
         self.gov_article_limit = cc.get("gov_scraper_limit", self.article_limit)
         self.govinfo_api_key = cc.get("govinfo_api_key")
 
+        self.political_threshold = cc.get("political_threshold", 2)
+        self.google_news_results_per_query = cc.get("google_news_results_per_query", 20)
+
         self.cancelled = False
         
         # State files
@@ -188,6 +191,8 @@ class ContentCollector:
         
         self.logger.info(f"Collector initialized with {len(self.sources)} sources")
         self.logger.info(f"Political keywords: {len(self.govt_keywords)} loaded")
+        self.logger.info(f"Political threshold: {self.political_threshold}")
+        self.logger.info(f"Google News results per query: {self.google_news_results_per_query}")
         self.logger.info(f"Google News decoder available: {GOOGLENEWSDECODER_AVAILABLE}")
 
     def _setup_debug_logging(self):
@@ -1098,7 +1103,7 @@ class ContentCollector:
         """Check if content is political with logging."""
         text = f"{title} {content}".lower()
         matches = [kw for kw in self.govt_keywords if kw in text]
-        is_political = len(matches) >= 2
+        is_political = len(matches) >= self.political_threshold
         
         self.logger.debug(f"Political check: {len(matches)} keyword matches ({'political' if is_political else 'not political'})")
         if matches:
@@ -1157,6 +1162,8 @@ class ContentCollector:
         self.logger.info(f"Google News date range: {start_str} to {end_str}")
         self.logger.info(f"Will try {len(search_queries)} search queries")
         
+        results_per_query = self.google_news_results_per_query
+
         for i, query in enumerate(search_queries):
             if self.cancelled:
                 break
@@ -1164,46 +1171,55 @@ class ContentCollector:
             self.logger.debug(f"Google News query {i+1}/{len(search_queries)}: '{query}'")
             
             try:
-                # Build Google News RSS URL with date filter
                 encoded_query = quote(f'{query} after:{start_str} before:{end_str}')
-                google_news_url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en"
-                
-                self.logger.debug(f"Google News URL: {google_news_url}")
-                
-                # Parse the RSS feed
-                feed = feedparser.parse(google_news_url)
-                entries_found = len(feed.entries)
-                
-                self.logger.debug(f"Google News returned {entries_found} entries for query '{query}'")
-                
                 articles_from_query = 0
-                for entry in feed.entries[:20]:  # Limit per query
-                    if self.cancelled:
+
+                for start in range(0, results_per_query, 20):
+                    google_news_url = (
+                        f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en&num=20&start={start}"
+                    )
+
+                    self.logger.debug(f"Google News URL: {google_news_url}")
+
+                    feed = feedparser.parse(google_news_url)
+                    entries_found = len(feed.entries)
+
+                    self.logger.debug(
+                        f"Google News returned {entries_found} entries for query '{query}' start {start}"
+                    )
+
+                    if not feed.entries:
                         break
-                        
-                    # Extract the article
-                    article = self._extract_article(entry.link, entry.title)
-                    if article and self._is_political(article.get("title", ""), article.get("content", "")):
-                        article['search_query'] = query
-                        article['via_google_news'] = True
-                        article['source'] = 'Google News Aggregate'
-                        all_articles.append(article)
-                        articles_from_query += 1
-                        
-                        if callback:
-                            callback({
-                                "type": "article",
-                                "source": "Google News Search",
-                                "title": article.get("title"),
-                                "query": query
-                            })
-                    
-                    # Small delay to be respectful
-                    time.sleep(random.uniform(0.5, 1.5))
-                
+
+                    for entry in feed.entries:
+                        if self.cancelled:
+                            break
+
+                        article = self._extract_article(entry.link, entry.title)
+                        if article and self._is_political(article.get("title", ""), article.get("content", "")):
+                            article['search_query'] = query
+                            article['via_google_news'] = True
+                            article['source'] = 'Google News Aggregate'
+                            all_articles.append(article)
+                            articles_from_query += 1
+
+                            if callback:
+                                callback({
+                                    "type": "article",
+                                    "source": "Google News Search",
+                                    "title": article.get("title"),
+                                    "query": query
+                                })
+
+                        time.sleep(random.uniform(0.5, 1.5))
+
+                    if entries_found < 20 or articles_from_query >= results_per_query:
+                        break
+
+                    time.sleep(random.uniform(1, 2))
+
                 self.logger.debug(f"Query '{query}' yielded {articles_from_query} political articles")
-                
-                # Delay between queries
+
                 time.sleep(random.uniform(2, 3))
                 
             except Exception as e:
