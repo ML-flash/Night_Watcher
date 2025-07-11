@@ -130,7 +130,7 @@
         "limit": 200
       },
       {
-        "url": "https://www.justice.gov/feeds/press_releases/rss.xml",
+        "url": "https://www.justice.gov/justice-news/rss.xml",
         "type": "rss",
         "bias": "official",
         "name": "DOJ Press Releases",
@@ -190,7 +190,7 @@
         "limit": 200
       },
       {
-        "url": "https://www.axios.com/feeds/politics.xml",
+        "url": "https://www.axios.com/politics/feed",
         "type": "rss",
         "bias": "center",
         "name": "Axios Politics",
@@ -241,7 +241,7 @@
         "limit": 200
       },
       {
-        "url": "https://www.uscourts.gov/news/rss/all",
+        "url": "https://www.uscourts.gov/taxonomy/term/15/feed",
         "type": "rss",
         "bias": "official",
         "name": "US Courts News",
@@ -273,7 +273,7 @@
         "limit": 200
       },
       {
-        "url": "https://www.dhs.gov/news_and_updates/rss.xml",
+        "url": "https://www.dhs.gov/news-releases/feed",
         "type": "rss",
         "bias": "official",
         "name": "Homeland Security",
@@ -461,7 +461,7 @@
       "state of emergency"
     ],
     "political_threshold": 1,
-    "google_news_results_per_query": 50,
+    "google_news_results_per_query": 100,
     "request_timeout": 45,
     "delay_between_requests": 2.0
   },
