@@ -79,6 +79,8 @@ python Night_Watcher.py --web
 - **Web dashboard** for monitoring and control
 - **Cryptographic provenance** to prevent tampering
 - **Automatic archival retrieval** when collecting older dates
+- **Google News search retrieves up to 100 results per query**
+- **Articles flagged political with one keyword match**
 
 ## 🔧 Command Line Usage
 

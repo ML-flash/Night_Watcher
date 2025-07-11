@@ -40,10 +40,10 @@
         "limit": 200
       },
       {
-        "url": "https://rss.app/feeds/8ZLRA1MIdInNK9TW.xml",
+        "url": "https://news.google.com/rss/search?q=site:apnews.com+politics&hl=en-US&gl=US&ceid=US:en",
         "type": "rss",
         "bias": "center",
-        "name": "AP News Politics",
+        "name": "AP News via Google",
         "site_domain": "apnews.com",
         "enabled": true,
         "limit": 200
@@ -58,10 +58,10 @@
         "limit": 200
       },
       {
-        "url": "https://www.politico.com/rss/politicopicks.xml",
+        "url": "https://news.google.com/rss/search?q=site:politico.com+politics&hl=en-US&gl=US&ceid=US:en",
         "type": "rss",
         "bias": "center",
-        "name": "Politico Top Picks",
+        "name": "Politico via Google",
         "site_domain": "politico.com",
         "enabled": true,
         "limit": 200
@@ -76,10 +76,10 @@
         "limit": 200
       },
       {
-        "url": "https://www.reuters.com/world/us/rss",
+        "url": "https://news.google.com/rss/search?q=site:reuters.com+us+politics&hl=en-US&gl=US&ceid=US:en",
         "type": "rss",
         "bias": "center",
-        "name": "Reuters US",
+        "name": "Reuters via Google",
         "site_domain": "reuters.com",
         "enabled": true,
         "limit": 200

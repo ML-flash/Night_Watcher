@@ -1098,7 +1098,8 @@ class ContentCollector:
         """Check if content is political with logging."""
         text = f"{title} {content}".lower()
         matches = [kw for kw in self.govt_keywords if kw in text]
-        is_political = len(matches) >= 2
+        # Relax threshold to a single keyword match
+        is_political = len(matches) >= 1
         
         self.logger.debug(f"Political check: {len(matches)} keyword matches ({'political' if is_political else 'not political'})")
         if matches:
@@ -1166,7 +1167,10 @@ class ContentCollector:
             try:
                 # Build Google News RSS URL with date filter
                 encoded_query = quote(f'{query} after:{start_str} before:{end_str}')
-                google_news_url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en"
+                google_news_url = (
+                    f"https://news.google.com/rss/search?q={encoded_query}"
+                    "&hl=en-US&gl=US&ceid=US:en&num=100"
+                )
                 
                 self.logger.debug(f"Google News URL: {google_news_url}")
                 
@@ -1177,7 +1181,7 @@ class ContentCollector:
                 self.logger.debug(f"Google News returned {entries_found} entries for query '{query}'")
                 
                 articles_from_query = 0
-                for entry in feed.entries[:20]:  # Limit per query
+                for entry in feed.entries:
                     if self.cancelled:
                         break
                         
