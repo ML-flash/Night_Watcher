@@ -156,7 +156,7 @@ class ContentCollector:
         self.gov_article_limit = cc.get("gov_scraper_limit", self.article_limit)
         self.govinfo_api_key = cc.get("govinfo_api_key")
 
-        self.political_threshold = cc.get("political_threshold", 2)
+        self.political_threshold = cc.get("political_threshold", 1)
         self.google_news_results_per_query = cc.get("google_news_results_per_query", 20)
 
         self.cancelled = False
