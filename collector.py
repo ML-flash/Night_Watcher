@@ -92,6 +92,10 @@ class CollectionStats:
         self.filter_reasons = {}
         self.google_news_decoded = 0
         self.google_news_failed = 0
+        self.failed_urls = []
+        self.failed_urls_by_source = {}
+        self.recovery_attempts = 0
+        self.recovery_successes = 0
         
     def log_source_error(self, source_name, error):
         if source_name not in self.source_errors:
@@ -129,7 +133,12 @@ class CollectionStats:
             },
             'extraction_methods': self.extraction_methods,
             'filter_reasons': self.filter_reasons,
-            'source_errors': self.source_errors
+            'source_errors': self.source_errors,
+            'recovery': {
+                'attempts': self.recovery_attempts,
+                'successes': self.recovery_successes,
+                'pending_failures': len(self.failed_urls)
+            }
         }
 
 
@@ -158,6 +167,8 @@ class ContentCollector:
 
         self.political_threshold = cc.get("political_threshold", 1)
         self.google_news_results_per_query = cc.get("google_news_results_per_query", 20)
+        self.enable_failure_recovery = cc.get("enable_failure_recovery", True)
+        self.max_recovery_attempts = cc.get("max_recovery_attempts", 50)
 
         self.cancelled = False
         
@@ -193,6 +204,8 @@ class ContentCollector:
         self.logger.info(f"Political keywords: {len(self.govt_keywords)} loaded")
         self.logger.info(f"Political threshold: {self.political_threshold}")
         self.logger.info(f"Google News results per query: {self.google_news_results_per_query}")
+        self.logger.info(f"Failure recovery enabled: {self.enable_failure_recovery}")
+        self.logger.info(f"Max recovery attempts: {self.max_recovery_attempts}")
         self.logger.info(f"Google News decoder available: {GOOGLENEWSDECODER_AVAILABLE}")
 
     def _setup_debug_logging(self):
@@ -722,7 +735,24 @@ class ContentCollector:
                 article["document_id"] = doc_id
             
             all_articles.append(article)
-        
+
+        # Recovery Phase for failed URLs
+        if self.enable_failure_recovery and self.stats.failed_urls:
+            self.logger.info("=== FAILURE RECOVERY PHASE ===")
+            if callback:
+                callback({"type": "status", "message": "Recovering failed articles via Google News..."})
+            recovered_articles = self._recover_failed_articles(callback)
+            self.logger.info(f"Recovered {len(recovered_articles)} articles")
+            for article in recovered_articles:
+                article["id"] = self._generate_id(article["url"])
+
+                if self.document_repository:
+                    doc_id = self._store_article(article)
+                    document_ids.append(doc_id)
+                    article["document_id"] = doc_id
+
+                all_articles.append(article)
+
         # Update collection history
         self._update_collection_history(all_articles)
         
@@ -1059,6 +1089,8 @@ class ContentCollector:
             self.logger.debug(f"Successfully extracted article: {article.get('title')}")
         else:
             self.stats.extraction_failures += 1
+            self.stats.failed_urls.append(entry_link)
+            self.stats.failed_urls_by_source[entry_link] = source_name
             self.logger.warning(f"Failed to extract article from {entry_link}")
         time.sleep(random.uniform(0.5, 1.5))
         return article
@@ -1414,7 +1446,56 @@ class ContentCollector:
         self.logger.info(f"Government scraping complete: {len(articles)} documents")
         return articles
 
-    # ... (rest of the methods remain the same)
+
+    def _build_recovery_search_query(self, url: str, source_name: str) -> str:
+        """Build Google News search query for a failed URL."""
+        parsed = urlparse(url)
+        domain = parsed.netloc
+        slug = parsed.path.split('/')[-1]
+        slug = re.sub(r'\.[a-zA-Z0-9]+$', '', slug)
+        slug_words = re.sub(r'[^a-zA-Z0-9]+', ' ', slug).strip()
+        if slug_words:
+            return f"site:{domain} {slug_words}"
+        return f"site:{domain} {source_name}".strip()
+
+    def _recover_failed_articles(self, callback=None) -> List[Dict[str, Any]]:
+        """Recover failed articles using Google News search."""
+        recovered: List[Dict[str, Any]] = []
+        attempts = 0
+        for url in self.stats.failed_urls[: self.max_recovery_attempts]:
+            if self.cancelled:
+                break
+            attempts += 1
+            source_name = self.stats.failed_urls_by_source.get(url, urlparse(url).netloc)
+            query = self._build_recovery_search_query(url, source_name)
+            encoded_query = quote(query)
+            search_url = (
+                f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en&num=20"
+            )
+            feed = feedparser.parse(search_url)
+            for entry in feed.entries:
+                if self.cancelled:
+                    break
+                resolved = self._resolve_google_news_url(entry.link) or entry.link
+                if urlparse(resolved).netloc != urlparse(url).netloc:
+                    continue
+                article = self._extract_article(resolved, entry.title)
+                if article:
+                    article["recovery_method"] = "google_news_fallback"
+                    article["original_failed_url"] = url
+                    article["recovery_timestamp"] = datetime.now().isoformat()
+                    article["source"] = source_name
+                    article["via_google_news"] = True
+                    recovered.append(article)
+                    self.stats.recovery_successes += 1
+                    if callback:
+                        callback({"type": "article", "source": "Recovery", "title": article.get("title")})
+                    break
+                time.sleep(random.uniform(0.5, 1.0))
+            time.sleep(random.uniform(1, 2))
+        self.stats.recovery_attempts += attempts
+        return recovered
+
 
     def _collect_from_sitemap(self, source: Dict[str, Any], start_date: datetime, end_date: datetime, limit: int, callback=None) -> List[Dict[str, Any]]:
         """Collect articles from XML sitemaps with detailed logging."""
