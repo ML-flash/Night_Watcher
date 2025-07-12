@@ -541,6 +541,10 @@
                         <div class="value" id="pending-analysis">0</div>
                     </div>
                     <div class="status-card">
+                        <h4>Articles Collected</h4>
+                        <div class="value" id="articles-collected">0</div>
+                    </div>
+                    <div class="status-card">
                         <h4>LLM Status</h4>
                         <div class="value" id="llm-status">Unknown</div>
                     </div>
@@ -1056,11 +1060,11 @@
         async function updateTaskStatus() {
             try {
                 const taskStatus = await apiCall('/task-status');
-                
+
                 // Update progress bar
-                const progress = data.progress || 0;
+                const progress = taskStatus.progress || 0;
                 document.getElementById('task-progress').style.width = progress + '%';
-                if (data.task === 'analysis') {
+                if (taskStatus.task === 'analysis') {
                     document.getElementById('analysis-progress').style.width = progress + '%';
                 }
                 
@@ -1088,6 +1092,11 @@
                     if (taskStatus.task === 'analysis') {
                         analyzerContainer.scrollTop = analyzerContainer.scrollHeight;
                     }
+                }
+
+                const countElem = document.getElementById('articles-collected');
+                if (countElem) {
+                    countElem.textContent = taskStatus.articles_collected || 0;
                 }
                 
                 // Stop polling if task is done

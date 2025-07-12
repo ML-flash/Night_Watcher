@@ -32,7 +32,13 @@ CORS(app)
 night_watcher = None
 current_task = None
 task_thread = None
-task_status = {"running": False, "task": None, "progress": 0, "messages": []}
+task_status = {
+    "running": False,
+    "task": None,
+    "progress": 0,
+    "messages": [],
+    "articles_collected": 0,
+}
 
 # Statistics cache
 stats_cache = {"last_update": None, "data": {}}
@@ -552,10 +558,12 @@ def api_collect():
         task_status["running"] = True
         task_status["task"] = "collection"
         task_status["progress"] = 0
+        task_status["articles_collected"] = 0
         add_log_message("info", f"Starting collection (mode: {mode})")
 
         def progress(event):
             if event.get("type") == "article":
+                task_status["articles_collected"] += 1
                 add_log_message("info", f"Collected: {event.get('title')}")
             elif event.get("type") == "error":
                 add_log_message(
@@ -841,6 +849,7 @@ def api_task_status():
             "running": task_status["running"],
             "task": task_status["task"],
             "progress": task_status["progress"],
+            "articles_collected": task_status.get("articles_collected", 0),
             "messages": task_status["messages"][-20:],  # Last 20 messages
         }
     )
