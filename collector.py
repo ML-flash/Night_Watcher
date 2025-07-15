@@ -24,6 +24,7 @@ import psutil
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from dateutil import parser as date_parser
 from gov_scrapers import (
     fetch_federal_register_api,
     fetch_white_house_actions_api,
@@ -1631,22 +1632,107 @@ class ContentCollector:
         except:
             return True
 
+    def _parse_date_string(self, date_str: str) -> Optional[datetime]:
+        """Parse a date string with fallbacks for partial dates."""
+        if not date_str:
+            return None
+        # Partial dates (YYYY-MM or YYYY)
+        m = re.match(r"^(\d{4})-(\d{2})$", date_str)
+        if m:
+            try:
+                return datetime(int(m.group(1)), int(m.group(2)), 1)
+            except Exception:
+                return None
+        m = re.match(r"^(\d{4})$", date_str)
+        if m:
+            try:
+                return datetime(int(m.group(1)), 1, 1)
+            except Exception:
+                return None
+
+        try:
+            return date_parser.parse(date_str)
+        except Exception:
+            return None
+
+    def _parse_date_from_url(self, url: str) -> Optional[datetime]:
+        """Extract date from common government URL patterns."""
+        patterns = [
+            r"/documents/(\d{4})/(\d{2})/(\d{2})/",
+            r"/(\d{4})/(\d{2})/(\d{2})/",
+            r"-(\d{4})-(\d{2})-(\d{2})(?:/|$)",
+        ]
+        for pat in patterns:
+            m = re.search(pat, url)
+            if m:
+                try:
+                    y, mo, d = map(int, m.groups())
+                    return datetime(y, mo, d)
+                except Exception:
+                    continue
+
+        m = re.search(r"/(\d{4})/(\d{2})/", url)
+        if m:
+            try:
+                return datetime(int(m.group(1)), int(m.group(2)), 1)
+            except Exception:
+                return None
+
+        m = re.search(r"/(\d{4})/", url)
+        if m:
+            try:
+                return datetime(int(m.group(1)), 1, 1)
+            except Exception:
+                return None
+        return None
+
     def _parse_date(self, entry: Any) -> Optional[datetime]:
-        """Parse date from RSS entry."""
+        """Parse date from RSS entry with support for government formats."""
         if hasattr(entry, 'published_parsed') and entry.published_parsed:
             try:
                 return datetime.fromtimestamp(time.mktime(entry.published_parsed))
-            except:
+            except Exception:
                 pass
-        
-        # Try other date fields
+
         for field in ['updated_parsed', 'created_parsed']:
             if hasattr(entry, field) and getattr(entry, field):
                 try:
                     return datetime.fromtimestamp(time.mktime(getattr(entry, field)))
-                except:
+                except Exception:
                     pass
-        
+
+        string_fields = [
+            'fr_citation_date',
+            'publication_date',
+            'lastmod_date',
+            'date',
+            'dc_date',
+            'prism_publicationDate',
+            'dc:date',
+            'prism:publicationDate',
+        ]
+
+        for field in string_fields:
+            if hasattr(entry, field):
+                dt = self._parse_date_string(getattr(entry, field))
+                if dt:
+                    return dt
+            if isinstance(entry, dict) and field in entry:
+                dt = self._parse_date_string(entry[field])
+                if dt:
+                    return dt
+
+        url = None
+        if hasattr(entry, 'link'):
+            url = getattr(entry, 'link')
+        elif isinstance(entry, dict):
+            url = entry.get('link') or entry.get('url')
+
+        if url:
+            dt = self._parse_date_from_url(url)
+            if dt:
+                return dt
+
         return None
 
     def _extract_title(self, html: str) -> str:
