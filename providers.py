@@ -31,6 +31,9 @@ MODEL_CONTEXT_WINDOWS = {
     "openai/gpt-4-32k": 32768,
     "openai/gpt-4-turbo": 128000,
     "openai/gpt-4o": 128000,
+    "google/gemini-pro": 30720,
+    "google/gemini-1.5-pro": 1048576,
+    "google/gemini-1.5-flash": 1048576,
 }
 
 # Conservative token estimation (characters to tokens ratio)
@@ -436,6 +439,105 @@ class AnthropicProvider:
             return {"error": str(e)}
 
 
+class GeminiProvider:
+    """Google Gemini API provider."""
+
+    def __init__(self, api_key: str, model: str = "gemini-pro"):
+        self.api_key = api_key
+        self.model = model
+        self.logger = logging.getLogger("GeminiProvider")
+
+        # Initialize context management
+        self.model_config = ModelConfig()
+        self.context_manager = ContextWindowManager(self.model_config)
+
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=api_key)
+            self.genai = genai
+            self.client = genai.GenerativeModel(model)
+        except ImportError:
+            raise ImportError("Install google-generativeai: pip install google-generativeai")
+
+    def update_model(self, model: str):
+        """Update the model to use."""
+        self.model = model
+        self.client = self.genai.GenerativeModel(model)
+        self.logger.info(f"Model updated to: {model}")
+
+    def list_models(self) -> List[str]:
+        """Return available Gemini models."""
+        try:
+            models = self.genai.list_models()
+            return [m.name for m in models]
+        except Exception as e:
+            self.logger.error(f"Error listing models: {e}")
+            return []
+
+    def get_model_config(self) -> Dict[str, Any]:
+        """Get configuration for current model."""
+        return self.model_config.load_config(f"gemini/{self.model}")
+
+    def save_model_config(self, config: Dict[str, Any]):
+        """Save configuration for current model."""
+        self.model_config.save_config(f"gemini/{self.model}", config)
+
+    def count_tokens(self, text: str) -> int:
+        """Return token count for text."""
+        try:
+            resp = self.client.count_tokens(text)
+            return int(getattr(resp, "total_tokens", 0))
+        except Exception as e:
+            self.logger.error(f"Gemini count_tokens error: {e}")
+            return self.context_manager.estimate_tokens(text)
+
+    def complete(self, prompt: str, max_tokens: Optional[int] = None,
+                temperature: Optional[float] = None, auto_adjust_tokens: bool = True) -> Dict[str, Any]:
+        """Get completion from Gemini with intelligent token management."""
+        try:
+            model_config = self.get_model_config()
+
+            if auto_adjust_tokens:
+                optimal_tokens, calc_info = self.context_manager.calculate_optimal_tokens(
+                    f"gemini/{self.model}", prompt, max_tokens
+                )
+                max_tokens = optimal_tokens
+                self.logger.info(
+                    f"Token calculation for {self.model}: prompt={calc_info['prompt_tokens']}, "
+                    f"optimal_output={optimal_tokens}, utilization={calc_info['utilization']:.1%}"
+                )
+            else:
+                max_tokens = max_tokens or model_config.get("max_tokens", 2048)
+
+            if temperature is None:
+                temperature = model_config.get("temperature", 0.1)
+
+            gen_cfg = {
+                "max_output_tokens": max_tokens,
+                "temperature": temperature,
+                "top_p": model_config.get("top_p", 0.9),
+            }
+
+            response = self.client.generate_content(prompt, generation_config=gen_cfg)
+
+            usage = {}
+            if hasattr(response, "usage_metadata") and response.usage_metadata:
+                usage = {
+                    "prompt_tokens": getattr(response.usage_metadata, "prompt_token_count", 0),
+                    "completion_tokens": getattr(response.usage_metadata, "candidates_token_count", 0),
+                    "total_tokens": getattr(response.usage_metadata, "total_token_count", 0),
+                }
+
+            return {
+                "choices": [{"text": getattr(response, "text", "")}],
+                "usage": usage,
+            }
+
+        except Exception as e:
+            self.logger.error(f"Gemini completion error: {e}")
+            return {"error": str(e)}
+
+
 def initialize_llm_provider(config: Dict[str, Any]) -> Optional[Any]:
     """Initialize LLM provider based on config."""
     llm_config = config.get("llm_provider", {})
@@ -492,6 +594,24 @@ def initialize_llm_provider(config: Dict[str, Any]) -> Optional[Any]:
                 logger.error(f"Anthropic init failed: {e}")
         else:
             logger.error("No Anthropic API key found in config, environment, or key file")
+
+    elif provider_type == "gemini":
+        api_key = llm_config.get("api_key") or os.environ.get("GOOGLE_API_KEY")
+
+        if api_key:
+            try:
+                model = llm_config.get("model", "gemini-pro")
+                provider = GeminiProvider(api_key, model)
+                logger.info(f"Gemini provider initialized with model: {model}")
+                return provider
+            except ImportError:
+                logger.error(
+                    "google-generativeai package not installed - run: pip install google-generativeai"
+                )
+            except Exception as e:
+                logger.error(f"Gemini init failed: {e}")
+        else:
+            logger.error("No Google API key found in config or environment")
 
     logger.warning("No LLM provider available")
     return None

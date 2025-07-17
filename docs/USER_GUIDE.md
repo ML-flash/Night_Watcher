@@ -48,6 +48,8 @@ These steps mirror the "Option A: Local with LM Studio" instructions in the READ
 
 If you prefer Anthropic's hosted model, set the `ANTHROPIC_API_KEY` environment variable as shown in the README【F:README.md†L34-L36】.
 
+To use Google's hosted Gemini models instead, set the `GOOGLE_API_KEY` environment variable as shown in the README【F:README.md†L34-L40】.
+
 ## 5. Launch the Web Interface
 
 Start the web server from the command line:

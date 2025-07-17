@@ -35,6 +35,11 @@ python setup_night_watcher.py
 export ANTHROPIC_API_KEY='your-key-here'
 ```
 
+**Option C: Google Gemini API**
+```bash
+export GOOGLE_API_KEY='your-api-key'
+```
+
 ### 4. First Run
 
 **Test Mode (Recommended for first time):**
